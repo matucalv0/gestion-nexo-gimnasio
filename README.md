@@ -1,3 +1,23 @@
-ARQUITECTURAS Y PATRONES DE DISEÑO: MVC | SINGLETON | INYECCION DE DEPENDENCIAS | INVERSION DE CONTROL (GRACIAS A LA INYECCION DE DEPENDENCIAS) | SRP |
+ **Arquitecturas y Patrones de Diseño Aplicados**
 
-Tecnologias usadas: JAVA | SPRING | JPA | HIBERNATE | POSTGRESQL |
+Este proyecto fue desarrollado aplicando buenas prácticas de diseño de software, utilizando los siguientes conceptos clave:
+
+*  **MVC (Model–View–Controller)**
+*  **Singleton**
+*  **Inyección de Dependencias**
+*  **Inversión de Control (implementada gracias a la Inyección de Dependencias)**
+*  **SRP – Principio de Responsabilidad Única**
+
+---
+
+ **Tecnologías Utilizadas**
+
+*  **Java**
+*  **Spring Framework**
+*  **JPA**
+*  **Hibernate**
+*  **PostgreSQL**
+
+---
+
+
