@@ -4,12 +4,12 @@ import jakarta.persistence.Column;
 
 import java.math.BigDecimal;
 
-public class ProductoCreateDTO {
+public class ProductoPatchDTO {
     private String nombre;
     @Column(precision = 10, scale = 2)
     private BigDecimal precio_sugerido;
     private Integer stock;
-
+    private Boolean activo;
 
     public String getNombre() {
         return nombre;
@@ -33,5 +33,13 @@ public class ProductoCreateDTO {
 
     public void setStock(Integer stock) {
         this.stock = stock;
+    }
+
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
     }
 }

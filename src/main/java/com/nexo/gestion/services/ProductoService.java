@@ -1,6 +1,7 @@
 package com.nexo.gestion.services;
 
 import com.nexo.gestion.dto.ProductoCreateDTO;
+import com.nexo.gestion.dto.ProductoPatchDTO;
 import com.nexo.gestion.entity.Producto;
 import com.nexo.gestion.exceptions.ObjetoDuplicadoException;
 import com.nexo.gestion.exceptions.ObjetoNoEncontradoException;
@@ -39,6 +40,18 @@ public class ProductoService {
     public Producto buscarProductoPorId(Integer id){
         return productoRepository.findById(id).orElseThrow(()-> new ObjetoNoEncontradoException(String.valueOf(id)));
     }
+
+    public Producto patchProducto(Integer id, ProductoPatchDTO productoDTO){
+        Producto producto = productoRepository.findById(id).orElseThrow(()-> new ObjetoNoEncontradoException(String.valueOf(id)));
+
+        if (productoDTO.getStock() != null){producto.setStock(producto.getStock());}
+        if (productoDTO.getNombre() != null){producto.setNombre(productoDTO.getNombre());}
+        if (productoDTO.getPrecio_sugerido() != null){producto.setPrecio_sugerido(productoDTO.getPrecio_sugerido());}
+        if (productoDTO.getActivo() != null){producto.setActivo(productoDTO.getActivo());}
+
+        return productoRepository.save(producto);
+    }
+
 
 
 
