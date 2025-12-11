@@ -7,6 +7,7 @@ Este proyecto fue desarrollado aplicando buenas prácticas de diseño de softwar
 *  **Inyección de Dependencias**
 *  **Inversión de Control (implementada gracias a la Inyección de Dependencias)**
 *  **SRP – Principio de Responsabilidad Única**
+*  *  **Normalizacion sobre el modelado de la base de datos relacional**
 
 ---
 
