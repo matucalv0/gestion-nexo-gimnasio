@@ -2,6 +2,12 @@ package com.nexo.gestion.repository;
 
 import com.nexo.gestion.entity.Pago;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.math.BigDecimal;
 
 public interface PagoRepository extends JpaRepository<Pago, Integer> {
+    @Query(value = "SELECT SUM(D.SUBTOTAL) FROM DETALLE_PAGO D WHERE D.ID_PAGO = :id_pago",  nativeQuery = true)
+    BigDecimal sumarSubtotales(@Param("id_pago") Integer id_pago);
 }

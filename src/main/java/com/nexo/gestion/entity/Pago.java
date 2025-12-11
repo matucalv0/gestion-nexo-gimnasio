@@ -33,7 +33,7 @@ public class Pago {
     @JoinColumn(name = "id_mediopago")
     @JsonBackReference
     private MedioPago medioPago;
-    @OneToMany(mappedBy = "pago")
+    @OneToMany(mappedBy = "pago", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     List<DetallePago> detalles = new ArrayList<>();
 

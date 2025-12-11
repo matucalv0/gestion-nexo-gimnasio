@@ -17,14 +17,14 @@ public class DetallePago {
     private Integer cantidad;
     @Column(precision = 10, scale = 2)
     private BigDecimal precio_unitario;
-    @Column(precision = 10, scale = 2)
+    @Column(precision = 10, scale = 2, insertable = false, updatable = false)
     private BigDecimal subtotal;
     @ManyToOne
     @JoinColumn(name = "id_producto")
     @JsonBackReference
     private Producto producto;
     @ManyToOne
-    @JoinColumn(name = "socio_membresia")
+    @JoinColumn(name = "id_sm")
     @JsonBackReference
     private SocioMembresia socioMembresia;
 
@@ -46,7 +46,8 @@ public class DetallePago {
         this.id_detallepago = new DetallePagoId(pago.getId_pago(), numeroDetalle);
     }
 
-    @PrePersist
+
+
     public void calcularSubtotal(){
         if (cantidad == null){
             cantidad = 1;
