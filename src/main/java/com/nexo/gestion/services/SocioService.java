@@ -1,16 +1,20 @@
 package com.nexo.gestion.services;
 
+import com.nexo.gestion.dto.PagoCreateDTO;
 import com.nexo.gestion.dto.SocioCreateDTO;
 import com.nexo.gestion.dto.SocioPatchDTO;
 import com.nexo.gestion.entity.Membresia;
+import com.nexo.gestion.entity.Pago;
 import com.nexo.gestion.entity.Socio;
 import com.nexo.gestion.entity.SocioMembresia;
 import com.nexo.gestion.exceptions.ObjetoDuplicadoException;
 import com.nexo.gestion.exceptions.ObjetoNoEncontradoException;
 import com.nexo.gestion.repository.MembresiaRepository;
+import com.nexo.gestion.repository.PagoRepository;
 import com.nexo.gestion.repository.SocioMembresiaRepository;
 import com.nexo.gestion.repository.SocioRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,11 +24,13 @@ public class SocioService {
     private final SocioRepository socioRepository;
     private final MembresiaRepository membresiaRepository;
     private final SocioMembresiaRepository socioMembresiaRepository;
+    private final PagoRepository pagoRepository;
 
-    public SocioService(SocioRepository socioRepository, MembresiaRepository membresiaRepository, SocioMembresiaRepository socioMembresiaRepository){
+    public SocioService(PagoRepository pagoRepository, SocioRepository socioRepository, MembresiaRepository membresiaRepository, SocioMembresiaRepository socioMembresiaRepository){
         this.socioRepository = socioRepository;
         this.membresiaRepository = membresiaRepository;
         this.socioMembresiaRepository = socioMembresiaRepository;
+        this.pagoRepository = pagoRepository;
 
     }
 
@@ -74,8 +80,20 @@ public class SocioService {
         membresiaRepository.save(membresia);
 
         return socioMembresiaRepository.save(socioMembresia);
-
     }
+
+    public List<Pago> buscarPagosPorDni(String dni){
+        if (!socioRepository.existsById(dni)){
+            throw new ObjetoNoEncontradoException(dni);
+        }
+
+        return pagoRepository.buscarPagosPorSocio(dni);
+    }
+
+
+
+
+
 
 
 

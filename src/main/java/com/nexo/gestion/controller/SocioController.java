@@ -2,6 +2,7 @@ package com.nexo.gestion.controller;
 
 import com.nexo.gestion.dto.SocioCreateDTO;
 import com.nexo.gestion.dto.SocioPatchDTO;
+import com.nexo.gestion.entity.Pago;
 import com.nexo.gestion.entity.Socio;
 import com.nexo.gestion.entity.SocioMembresia;
 import com.nexo.gestion.services.SocioService;
@@ -27,9 +28,15 @@ public class SocioController {
     }
 
     @GetMapping("/{dni}")
-    public ResponseEntity<Socio> buscarPorId(@PathVariable String dni){
+    public ResponseEntity<Socio> buscarPorDni(@PathVariable String dni){
         Socio socio = socioService.buscarSocioPorDni(dni);
         return ResponseEntity.ok(socio);
+    }
+
+    @GetMapping("/{dni}/pagos")
+    public ResponseEntity<List<Pago>> buscarPagosPorDni(@PathVariable String dni){
+        List<Pago> pagos = socioService.buscarPagosPorDni(dni);
+        return ResponseEntity.ok(pagos);
     }
 
     @GetMapping
@@ -58,6 +65,7 @@ public class SocioController {
         SocioMembresia suscripcion = socioService.asignarMembresia(dni, id_membresia);
         return ResponseEntity.ok(suscripcion);
     }
+
 
 
 

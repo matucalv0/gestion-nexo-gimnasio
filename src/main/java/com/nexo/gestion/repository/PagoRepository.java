@@ -6,8 +6,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public interface PagoRepository extends JpaRepository<Pago, Integer> {
     @Query(value = "SELECT SUM(D.SUBTOTAL) FROM DETALLE_PAGO D WHERE D.ID_PAGO = :id_pago",  nativeQuery = true)
     BigDecimal sumarSubtotales(@Param("id_pago") Integer id_pago);
+    @Query(value = "SELECT * FROM PAGO P WHERE P.DNI_SOCIO = :dni", nativeQuery = true)
+    List<Pago> buscarPagosPorSocio(@Param("dni") String dni);
 }
