@@ -1,6 +1,7 @@
 package com.nexo.gestion.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
@@ -19,10 +20,12 @@ public class Rutina {
     @ManyToOne
     @JoinColumn(name = "dni_empleado")
     @JsonBackReference
+    @JsonIgnore
     private Empleado empleado;
     @ManyToOne
     @JoinColumn(name = "dni_socio")
     @JsonBackReference
+    @JsonIgnore
     private Socio socio;
     @OneToMany(mappedBy = "rutina")
     @JsonManagedReference

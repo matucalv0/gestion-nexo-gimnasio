@@ -1,6 +1,7 @@
 package com.nexo.gestion.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
@@ -24,14 +25,17 @@ public class Pago {
     @ManyToOne
     @JoinColumn(name = "dni_empleado")
     @JsonBackReference
+    @JsonIgnore
     private Empleado empleado;
     @ManyToOne
     @JoinColumn(name = "dni_socio")
     @JsonBackReference
+    @JsonIgnore
     private Socio socio;
     @ManyToOne
     @JoinColumn(name = "id_mediopago")
     @JsonBackReference
+    @JsonIgnore
     private MedioPago medioPago;
     @OneToMany(mappedBy = "pago", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference

@@ -5,19 +5,19 @@ import jakarta.persistence.Column;
 import java.math.BigDecimal;
 
 public class MembresiaCreateDTO {
-    private Integer id_membresia;
     private Integer duracion_dias;
     @Column(precision = 10, scale = 2)
     private BigDecimal precio_sugerido;
     private String nombre;
 
-    public Integer getId_membresia() {
-        return id_membresia;
+    public MembresiaCreateDTO(){};
+
+    public MembresiaCreateDTO(Integer duracion_dias, BigDecimal precio_sugerido, String nombre){
+        this.duracion_dias = duracion_dias;
+        this.precio_sugerido = precio_sugerido;
+        this.nombre = nombre;
     }
 
-    public void setId_membresia(Integer id_membresia) {
-        this.id_membresia = id_membresia;
-    }
 
     public Integer getDuracion_dias() {
         return duracion_dias;

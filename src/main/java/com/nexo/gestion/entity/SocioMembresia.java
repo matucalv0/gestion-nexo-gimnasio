@@ -1,6 +1,7 @@
 package com.nexo.gestion.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.springframework.cglib.core.Local;
 
@@ -20,10 +21,12 @@ public class SocioMembresia {
     @ManyToOne
     @JoinColumn(name = "dni_socio")
     @JsonBackReference
+    @JsonIgnore
     private Socio socio;
     @ManyToOne
     @JoinColumn(name = "id_membresia")
     @JsonBackReference
+    @JsonIgnore
     private Membresia membresia;
 
     public SocioMembresia(){}

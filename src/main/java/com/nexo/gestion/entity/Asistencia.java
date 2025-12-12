@@ -1,6 +1,7 @@
 package com.nexo.gestion.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -14,6 +15,7 @@ public class Asistencia {
     @MapsId("dniSocio")
     @JoinColumn(name = "dni")
     @JsonBackReference
+    @JsonIgnore
     private Socio socio;
 
     public Asistencia(){}

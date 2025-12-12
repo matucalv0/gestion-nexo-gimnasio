@@ -1,6 +1,7 @@
 package com.nexo.gestion.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -22,6 +23,7 @@ public class Ejercicio {
     GrupoMuscular grupoMuscular;
     @OneToMany(mappedBy = "ejercicio")
     @JsonManagedReference
+    @JsonIgnore
     List<EjercicioRutina> rutinas = new ArrayList<>();
 
     public Ejercicio(){}

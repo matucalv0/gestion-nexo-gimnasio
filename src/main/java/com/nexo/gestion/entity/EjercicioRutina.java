@@ -1,6 +1,7 @@
 package com.nexo.gestion.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -12,12 +13,14 @@ public class EjercicioRutina {
     @MapsId("idEjercicio")
     @JoinColumn(name = "id_ejercicio")
     @JsonBackReference
+    @JsonIgnore
     private Ejercicio ejercicio;
 
     @ManyToOne
     @MapsId("idRutina")
     @JoinColumn(name = "id_rutina")
     @JsonBackReference
+    @JsonIgnore
     private Rutina rutina;
 
 

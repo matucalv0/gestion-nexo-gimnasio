@@ -1,8 +1,6 @@
 package com.nexo.gestion.services;
 
-import com.nexo.gestion.dto.PagoCreateDTO;
-import com.nexo.gestion.dto.SocioCreateDTO;
-import com.nexo.gestion.dto.SocioPatchDTO;
+import com.nexo.gestion.dto.*;
 import com.nexo.gestion.entity.Membresia;
 import com.nexo.gestion.entity.Pago;
 import com.nexo.gestion.entity.Socio;
@@ -17,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -34,40 +33,81 @@ public class SocioService {
 
     }
 
-    public Socio registrarSocio(SocioCreateDTO socioDTO){
+    private SocioDTO convertirASocioDTO(Socio socio) {
+        return new SocioDTO(
+                socio.getDni(),
+                socio.getNombre(),
+                socio.getTelefono(),
+                socio.getEmail(),
+                socio.getFecha_nacimiento(),
+                socio.isActivo()
+        );
+    }
+
+    private SocioMembresiaDTO convertirASocioMembresiaDTO(SocioMembresia socioMembresia) {
+        return new SocioMembresiaDTO(
+                socioMembresia.getId_sm(),
+                socioMembresia.getFecha_inicio(),
+                socioMembresia.getFecha_hasta(),
+                socioMembresia.getPrecio()
+        );
+    }
+
+    private PagoDTO convertirAPagoDTO(Pago pago) {
+        return new PagoDTO(
+                pago.getId_pago(),
+                pago.getEstado(),
+                pago.getFecha(),
+                pago.getMonto()
+        );
+    }
+
+    public SocioDTO registrarSocio(SocioCreateDTO socioDTO){
         if (socioRepository.existsById(socioDTO.getDni())) {
             throw new ObjetoDuplicadoException(socioDTO.getDni());
         }
 
         Socio socio = new Socio(socioDTO.getDni(), socioDTO.getNombre(), socioDTO.getTelefono(), socioDTO.getEmail(), socioDTO.getFecha_nacimiento());
-        return socioRepository.save(socio);
+        Socio guardado = socioRepository.save(socio);
+        return convertirASocioDTO(guardado);
     }
 
-    public Socio bajaSocio(String dni){
+    public SocioDTO bajaSocio(String dni){
         Socio socio = socioRepository.findById(dni).orElseThrow(() -> new ObjetoNoEncontradoException("dni"));
         socio.setActivo(false);
-        return socioRepository.save(socio);
+        Socio guardado = socioRepository.save(socio);
+        return convertirASocioDTO(guardado);
     }
 
-    public Socio patchSocio(String dni, SocioPatchDTO socioPatch){
+    public SocioDTO patchSocio(String dni, SocioPatchDTO socioPatch){
         Socio socio = socioRepository.findById(dni).orElseThrow(() -> new ObjetoNoEncontradoException("dni"));
 
         if (socioPatch.getEmail() != null) { socio.setEmail(socioPatch.getEmail());}
         if (socioPatch.getTelefono() != null) { socio.setTelefono(socioPatch.getTelefono());}
         if (socioPatch.getActivo() != null) { socio.setActivo(socioPatch.getActivo());}
 
-        return socioRepository.save(socio);
+        Socio guardado = socioRepository.save(socio);
+        return convertirASocioDTO(guardado);
     }
 
-    public Socio buscarSocioPorDni(String dni){
-        return socioRepository.findById(dni).orElseThrow(() -> new ObjetoNoEncontradoException("dni"));
+    public SocioDTO buscarSocioPorDni(String dni){
+        Socio socio = socioRepository.findById(dni).orElseThrow(() -> new ObjetoNoEncontradoException("dni"));
+        return convertirASocioDTO(socio);
     }
 
-    public List<Socio> buscarSocios(){
-        return socioRepository.findAll();
+    public List<SocioDTO> buscarSocios(){
+        List<Socio> socios = socioRepository.findAll();
+        List<SocioDTO> sociosDTO = new ArrayList<>();
+
+        for (Socio socio: socios){
+            SocioDTO socioConvertido = convertirASocioDTO(socio);
+            sociosDTO.add(socioConvertido);
+        }
+
+        return sociosDTO;
     }
 
-    public SocioMembresia asignarMembresia(String dni, Integer idMembresia){
+    public SocioMembresiaDTO asignarMembresia(String dni, Integer idMembresia){
         Socio socio = socioRepository.findById(dni).orElseThrow(()-> new ObjetoNoEncontradoException(dni));
 
         Membresia membresia = membresiaRepository.findById(idMembresia).orElseThrow(() -> new ObjetoNoEncontradoException(String.valueOf(idMembresia)));
@@ -79,15 +119,23 @@ public class SocioService {
         membresia.agregarSocio(socioMembresia);
         membresiaRepository.save(membresia);
 
-        return socioMembresiaRepository.save(socioMembresia);
+        SocioMembresia guardada = socioMembresiaRepository.save(socioMembresia);
+        return convertirASocioMembresiaDTO(guardada);
     }
 
-    public List<Pago> buscarPagosPorDni(String dni){
+    public List<PagoDTO> buscarPagosPorDni(String dni){
         if (!socioRepository.existsById(dni)){
             throw new ObjetoNoEncontradoException(dni);
         }
 
-        return pagoRepository.buscarPagosPorSocio(dni);
+        List<PagoDTO> pagos = new ArrayList<>();
+
+        for (Pago pago: pagoRepository.buscarPagosPorSocio(dni)){
+            PagoDTO pagoConvertido = convertirAPagoDTO(pago);
+            pagos.add(pagoConvertido);
+        }
+
+        return pagos;
     }
 
 

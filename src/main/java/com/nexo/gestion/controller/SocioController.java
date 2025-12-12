@@ -1,7 +1,6 @@
 package com.nexo.gestion.controller;
 
-import com.nexo.gestion.dto.SocioCreateDTO;
-import com.nexo.gestion.dto.SocioPatchDTO;
+import com.nexo.gestion.dto.*;
 import com.nexo.gestion.entity.Pago;
 import com.nexo.gestion.entity.Socio;
 import com.nexo.gestion.entity.SocioMembresia;
@@ -22,47 +21,47 @@ public class SocioController {
     }
 
     @PostMapping
-    public ResponseEntity<Socio> altaSocio(@RequestBody SocioCreateDTO socioCreateDTO){
-        Socio socio = socioService.registrarSocio(socioCreateDTO);
+    public ResponseEntity<SocioDTO> altaSocio(@RequestBody SocioCreateDTO socioCreateDTO){
+        SocioDTO socio = socioService.registrarSocio(socioCreateDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(socio);
     }
 
     @GetMapping("/{dni}")
-    public ResponseEntity<Socio> buscarPorDni(@PathVariable String dni){
-        Socio socio = socioService.buscarSocioPorDni(dni);
+    public ResponseEntity<SocioDTO> buscarPorDni(@PathVariable String dni){
+        SocioDTO socio = socioService.buscarSocioPorDni(dni);
         return ResponseEntity.ok(socio);
     }
 
     @GetMapping("/{dni}/pagos")
-    public ResponseEntity<List<Pago>> buscarPagosPorDni(@PathVariable String dni){
-        List<Pago> pagos = socioService.buscarPagosPorDni(dni);
+    public ResponseEntity<List<PagoDTO>> buscarPagosPorDni(@PathVariable String dni){
+        List<PagoDTO> pagos = socioService.buscarPagosPorDni(dni);
         return ResponseEntity.ok(pagos);
     }
 
     @GetMapping
-    public ResponseEntity<List<Socio>> mostrarSocios(){
-        List<Socio> socios = socioService.buscarSocios();
+    public ResponseEntity<List<SocioDTO>> mostrarSocios(){
+        List<SocioDTO> socios = socioService.buscarSocios();
         return ResponseEntity.ok(socios);
 
     }
 
     @PatchMapping("/{dni}/baja")
-    public ResponseEntity<Socio> darDeBajaSocio(@PathVariable String dni){
-        Socio socio = socioService.bajaSocio(dni);
+    public ResponseEntity<SocioDTO> darDeBajaSocio(@PathVariable String dni){
+        SocioDTO socio = socioService.bajaSocio(dni);
         return ResponseEntity.ok(socio);
     }
 
 
 
     @PatchMapping("/{dni}")
-    public ResponseEntity<Socio> actualizar(@PathVariable String dni, @RequestBody SocioPatchDTO socioPatchDTO){
-        Socio socio = socioService.patchSocio(dni, socioPatchDTO);
+    public ResponseEntity<SocioDTO> actualizar(@PathVariable String dni, @RequestBody SocioPatchDTO socioPatchDTO){
+        SocioDTO socio = socioService.patchSocio(dni, socioPatchDTO);
         return ResponseEntity.ok(socio);
     }
 
     @PostMapping("/{dni}/membresias/{id_membresia}")
-    public ResponseEntity<SocioMembresia> crearMembresiaParaSocio(@PathVariable String dni, @PathVariable Integer id_membresia){
-        SocioMembresia suscripcion = socioService.asignarMembresia(dni, id_membresia);
+    public ResponseEntity<SocioMembresiaDTO> crearMembresiaParaSocio(@PathVariable String dni, @PathVariable Integer id_membresia){
+        SocioMembresiaDTO suscripcion = socioService.asignarMembresia(dni, id_membresia);
         return ResponseEntity.ok(suscripcion);
     }
 
