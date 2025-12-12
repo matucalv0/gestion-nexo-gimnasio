@@ -24,21 +24,18 @@ public class Pago {
     private BigDecimal monto;
     @ManyToOne
     @JoinColumn(name = "dni_empleado")
-    @JsonBackReference
-    @JsonIgnore
+
     private Empleado empleado;
     @ManyToOne
     @JoinColumn(name = "dni_socio")
-    @JsonBackReference
-    @JsonIgnore
+
     private Socio socio;
     @ManyToOne
     @JoinColumn(name = "id_mediopago")
-    @JsonBackReference
-    @JsonIgnore
+
     private MedioPago medioPago;
     @OneToMany(mappedBy = "pago", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+
     List<DetallePago> detalles = new ArrayList<>();
 
     public Pago(){}

@@ -18,7 +18,6 @@ public class Membresia {
     private String nombre;
     private boolean activo;
     @OneToMany(mappedBy = "membresia")
-    @JsonManagedReference
     List<SocioMembresia> socios = new ArrayList<>();
 
     public Membresia(){}

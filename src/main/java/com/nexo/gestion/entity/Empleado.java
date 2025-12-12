@@ -21,7 +21,7 @@ public class Empleado {
     private LocalDate fecha_nacimiento;
     @ManyToOne
     @JoinColumn(name = "id_puesto")
-    @JsonBackReference
+
     private Puesto puesto;
 
     public Empleado(){}

@@ -14,8 +14,6 @@ public class Asistencia {
     @ManyToOne
     @MapsId("dniSocio")
     @JoinColumn(name = "dni")
-    @JsonBackReference
-    @JsonIgnore
     private Socio socio;
 
     public Asistencia(){}

@@ -19,16 +19,14 @@ public class Rutina {
     private LocalDate fecha;
     @ManyToOne
     @JoinColumn(name = "dni_empleado")
-    @JsonBackReference
-    @JsonIgnore
+
     private Empleado empleado;
     @ManyToOne
     @JoinColumn(name = "dni_socio")
-    @JsonBackReference
-    @JsonIgnore
+
     private Socio socio;
     @OneToMany(mappedBy = "rutina")
-    @JsonManagedReference
+
     List<EjercicioRutina> ejercicios = new ArrayList<>();
 
     public Rutina(){}

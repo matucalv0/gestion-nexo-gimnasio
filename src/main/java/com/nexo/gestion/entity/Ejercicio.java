@@ -19,11 +19,8 @@ public class Ejercicio {
     private String descripcion;
     @ManyToOne
     @JoinColumn(name = "id_grupo")
-    @JsonBackReference
     GrupoMuscular grupoMuscular;
     @OneToMany(mappedBy = "ejercicio")
-    @JsonManagedReference
-    @JsonIgnore
     List<EjercicioRutina> rutinas = new ArrayList<>();
 
     public Ejercicio(){}

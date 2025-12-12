@@ -2,6 +2,7 @@ package com.nexo.gestion.services;
 
 import com.nexo.gestion.dto.DetallePagoCreateDTO;
 import com.nexo.gestion.dto.PagoCreateDTO;
+import com.nexo.gestion.dto.PagoDTO;
 import com.nexo.gestion.entity.*;
 import com.nexo.gestion.exceptions.ObjetoNoEncontradoException;
 import com.nexo.gestion.repository.*;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -35,8 +37,17 @@ public class PagoService {
         this.socioMembresiaRepository = socioMembresiaRepository;
     }
 
+    private PagoDTO convertirAPagoDTO(Pago pago) {
+        return new PagoDTO(
+                pago.getId_pago(),
+                pago.getEstado(),
+                pago.getFecha(),
+                pago.getMonto()
+        );
+    }
+
     @Transactional
-    public Pago crearPago(PagoCreateDTO pagoCreateDTO){
+    public PagoDTO crearPago(PagoCreateDTO pagoCreateDTO){
         Socio socio = null;  // si es a consumidor final, queda en null
         if (pagoCreateDTO.getDni_socio() != null){
             socio = socioRepository.findById(pagoCreateDTO.getDni_socio()).orElseThrow(()-> new ObjetoNoEncontradoException("dni_socio"));
@@ -97,11 +108,18 @@ public class PagoService {
         entityManager.flush();
         entityManager.refresh(pago);
 
-        return pago;
+        return convertirAPagoDTO(pago);
     }
 
-    public List<Pago> buscarPagos(){
-        return pagoRepository.findAll();
+    public List<PagoDTO> buscarPagos(){
+        List<PagoDTO> pagos = new ArrayList<>();
+
+        for (Pago pago: pagoRepository.findAll()){
+            PagoDTO pagoConvertido = convertirAPagoDTO(pago);
+            pagos.add(pagoConvertido);
+        }
+
+        return pagos;
     }
 
 

@@ -12,7 +12,6 @@ public class DetallePago {
     @ManyToOne
     @MapsId("idPago")
     @JoinColumn(name = "id_pago")
-    @JsonBackReference
     private Pago pago;
     private Integer cantidad;
     @Column(precision = 10, scale = 2)
@@ -21,11 +20,9 @@ public class DetallePago {
     private BigDecimal subtotal;
     @ManyToOne
     @JoinColumn(name = "id_producto")
-    @JsonBackReference
     private Producto producto;
     @ManyToOne
     @JoinColumn(name = "id_sm")
-    @JsonBackReference
     private SocioMembresia socioMembresia;
 
 

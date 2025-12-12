@@ -12,15 +12,13 @@ public class EjercicioRutina {
     @ManyToOne
     @MapsId("idEjercicio")
     @JoinColumn(name = "id_ejercicio")
-    @JsonBackReference
-    @JsonIgnore
+
     private Ejercicio ejercicio;
 
     @ManyToOne
     @MapsId("idRutina")
     @JoinColumn(name = "id_rutina")
-    @JsonBackReference
-    @JsonIgnore
+
     private Rutina rutina;
 
 

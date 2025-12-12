@@ -1,6 +1,7 @@
 package com.nexo.gestion.controller;
 
 import com.nexo.gestion.dto.PagoCreateDTO;
+import com.nexo.gestion.dto.PagoDTO;
 import com.nexo.gestion.entity.Pago;
 import com.nexo.gestion.services.PagoService;
 import org.springframework.http.HttpStatus;
@@ -20,14 +21,14 @@ public class PagoController {
     }
 
     @PostMapping
-    public ResponseEntity<Pago> altaPago(@RequestBody PagoCreateDTO pagoCreateDTO){
-        Pago pago = pagoService.crearPago(pagoCreateDTO);
+    public ResponseEntity<PagoDTO> altaPago(@RequestBody PagoCreateDTO pagoCreateDTO){
+        PagoDTO pago = pagoService.crearPago(pagoCreateDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(pago);
     }
     
     @GetMapping
-    public ResponseEntity<List<Pago>> mostrarPagos(){
-        List<Pago> pagos = pagoService.buscarPagos();
+    public ResponseEntity<List<PagoDTO>> mostrarPagos(){
+        List<PagoDTO> pagos = pagoService.buscarPagos();
         return ResponseEntity.ok(pagos);
     }
 

@@ -21,7 +21,7 @@ public class Socio {
     private LocalDate fecha_nacimiento;
     private boolean activo;
     @OneToMany(mappedBy = "socio")
-    @JsonManagedReference
+
     List<SocioMembresia> membresias = new ArrayList<>();
 
     public Socio(){}

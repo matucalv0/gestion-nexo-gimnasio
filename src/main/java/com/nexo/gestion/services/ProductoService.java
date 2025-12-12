@@ -1,12 +1,17 @@
 package com.nexo.gestion.services;
 
+import com.nexo.gestion.dto.PagoDTO;
 import com.nexo.gestion.dto.ProductoCreateDTO;
+import com.nexo.gestion.dto.ProductoDTO;
 import com.nexo.gestion.dto.ProductoPatchDTO;
+import com.nexo.gestion.entity.Pago;
 import com.nexo.gestion.entity.Producto;
 import com.nexo.gestion.exceptions.ObjetoDuplicadoException;
 import com.nexo.gestion.exceptions.ObjetoNoEncontradoException;
 import com.nexo.gestion.repository.ProductoRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -17,31 +22,49 @@ public class ProductoService {
         this.productoRepository = productoRepository;
     }
 
-    public Producto registrarProducto(ProductoCreateDTO productoCreateDTO) {
+    private ProductoDTO convertirAProductoDTO(Producto producto) {
+        return new ProductoDTO(
+                producto.getId_producto(),
+                producto.getNombre(),
+                producto.getPrecio_sugerido(),
+                producto.getStock(),
+                producto.isActivo()
+        );
+    }
+
+    public ProductoDTO registrarProducto(ProductoCreateDTO productoCreateDTO) {
         if (productoRepository.existsByNombre(productoCreateDTO.getNombre())) {
             throw new ObjetoDuplicadoException(productoCreateDTO.getNombre());
         }
 
         Producto producto = new Producto(productoCreateDTO.getNombre(), productoCreateDTO.getPrecio_sugerido(), productoCreateDTO.getStock());
 
-        return productoRepository.save(producto);
+        Producto guardado =  productoRepository.save(producto);
+        return convertirAProductoDTO(guardado);
     }
 
-    public Producto bajaProducto(Integer id){
+    public ProductoDTO bajaProducto(Integer id){
         Producto producto = productoRepository.findById(id).orElseThrow(()-> new ObjetoNoEncontradoException(String.valueOf(id)));
         producto.setActivo(false);
-        return productoRepository.save(producto);
+        Producto guardado = productoRepository.save(producto);
+        return convertirAProductoDTO(guardado);
     }
 
-    public List<Producto> buscarProductos(){
-        return productoRepository.findAll();
+    public List<ProductoDTO> buscarProductos(){
+        List<ProductoDTO> productos = new ArrayList<>();
+        for (Producto producto: productoRepository.findAll()){
+            ProductoDTO productoConvertido = convertirAProductoDTO(producto);
+            productos.add(productoConvertido);
+        }
+        return productos;
     }
 
-    public Producto buscarProductoPorId(Integer id){
-        return productoRepository.findById(id).orElseThrow(()-> new ObjetoNoEncontradoException(String.valueOf(id)));
+    public ProductoDTO buscarProductoPorId(Integer id){
+        Producto guardado =  productoRepository.findById(id).orElseThrow(()-> new ObjetoNoEncontradoException(String.valueOf(id)));
+        return convertirAProductoDTO(guardado);
     }
 
-    public Producto patchProducto(Integer id, ProductoPatchDTO productoDTO){
+    public ProductoDTO patchProducto(Integer id, ProductoPatchDTO productoDTO){
         Producto producto = productoRepository.findById(id).orElseThrow(()-> new ObjetoNoEncontradoException(String.valueOf(id)));
 
         if (productoDTO.getStock() != null){producto.setStock(producto.getStock());}
@@ -49,7 +72,8 @@ public class ProductoService {
         if (productoDTO.getPrecio_sugerido() != null){producto.setPrecio_sugerido(productoDTO.getPrecio_sugerido());}
         if (productoDTO.getActivo() != null){producto.setActivo(productoDTO.getActivo());}
 
-        return productoRepository.save(producto);
+        Producto guardado =  productoRepository.save(producto);
+        return convertirAProductoDTO(guardado);
     }
 
 

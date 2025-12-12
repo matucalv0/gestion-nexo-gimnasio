@@ -20,13 +20,11 @@ public class SocioMembresia {
     private BigDecimal precio;
     @ManyToOne
     @JoinColumn(name = "dni_socio")
-    @JsonBackReference
-    @JsonIgnore
+
     private Socio socio;
     @ManyToOne
     @JoinColumn(name = "id_membresia")
-    @JsonBackReference
-    @JsonIgnore
+
     private Membresia membresia;
 
     public SocioMembresia(){}

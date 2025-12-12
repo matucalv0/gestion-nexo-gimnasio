@@ -1,6 +1,7 @@
 package com.nexo.gestion.controller;
 
 import com.nexo.gestion.dto.ProductoCreateDTO;
+import com.nexo.gestion.dto.ProductoDTO;
 import com.nexo.gestion.dto.ProductoPatchDTO;
 import com.nexo.gestion.entity.Producto;
 import com.nexo.gestion.services.ProductoService;
@@ -21,32 +22,32 @@ public class ProductoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Producto>> mostrarProductos(){
-        List<Producto> productos = productoService.buscarProductos();
+    public ResponseEntity<List<ProductoDTO>> mostrarProductos(){
+        List<ProductoDTO> productos = productoService.buscarProductos();
         return ResponseEntity.ok(productos);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Producto> mostrarProductoPorId(@PathVariable Integer id){
-        Producto producto = productoService.buscarProductoPorId(id);
+    public ResponseEntity<ProductoDTO> mostrarProductoPorId(@PathVariable Integer id){
+        ProductoDTO producto = productoService.buscarProductoPorId(id);
         return ResponseEntity.ok(producto);
     }
 
     @PostMapping
-    public ResponseEntity<Producto> altaProducto(@RequestBody ProductoCreateDTO productoCreateDTO){
-        Producto producto = productoService.registrarProducto(productoCreateDTO);
+    public ResponseEntity<ProductoDTO> altaProducto(@RequestBody ProductoCreateDTO productoCreateDTO){
+        ProductoDTO producto = productoService.registrarProducto(productoCreateDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(producto);
     }
 
     @PatchMapping("/{id}/baja")
-    public ResponseEntity<Producto> bajaProducto(@PathVariable Integer id){
-        Producto producto = productoService.bajaProducto(id);
+    public ResponseEntity<ProductoDTO> bajaProducto(@PathVariable Integer id){
+        ProductoDTO producto = productoService.bajaProducto(id);
         return ResponseEntity.ok(producto);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Producto> patchProducto(@PathVariable Integer id, @RequestBody ProductoPatchDTO productoPatchDTO){
-        Producto producto = productoService.patchProducto(id, productoPatchDTO);
+    public ResponseEntity<ProductoDTO> patchProducto(@PathVariable Integer id, @RequestBody ProductoPatchDTO productoPatchDTO){
+        ProductoDTO producto = productoService.patchProducto(id, productoPatchDTO);
         return ResponseEntity.ok(producto);
     }
 
