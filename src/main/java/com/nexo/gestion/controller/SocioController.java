@@ -65,6 +65,12 @@ public class SocioController {
         return ResponseEntity.ok(suscripcion);
     }
 
+    @PostMapping("/{dni}/asistencias")
+    public ResponseEntity<AsistenciaSocioIdDTO> asistenciaSocio(@PathVariable String dni){
+        AsistenciaSocioIdDTO asistencia = socioService.registrarAsistencia(dni);
+        return ResponseEntity.ok(asistencia);
+    }
+
 
 
 

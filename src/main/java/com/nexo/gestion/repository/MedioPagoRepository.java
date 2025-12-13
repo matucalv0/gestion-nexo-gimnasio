@@ -4,4 +4,5 @@ import com.nexo.gestion.entity.MedioPago;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MedioPagoRepository extends JpaRepository<MedioPago, Integer> {
+    boolean existsByNombre(String nombre);
 }

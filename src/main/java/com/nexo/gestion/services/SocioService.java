@@ -1,16 +1,10 @@
 package com.nexo.gestion.services;
 
 import com.nexo.gestion.dto.*;
-import com.nexo.gestion.entity.Membresia;
-import com.nexo.gestion.entity.Pago;
-import com.nexo.gestion.entity.Socio;
-import com.nexo.gestion.entity.SocioMembresia;
+import com.nexo.gestion.entity.*;
 import com.nexo.gestion.exceptions.ObjetoDuplicadoException;
 import com.nexo.gestion.exceptions.ObjetoNoEncontradoException;
-import com.nexo.gestion.repository.MembresiaRepository;
-import com.nexo.gestion.repository.PagoRepository;
-import com.nexo.gestion.repository.SocioMembresiaRepository;
-import com.nexo.gestion.repository.SocioRepository;
+import com.nexo.gestion.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -24,13 +18,22 @@ public class SocioService {
     private final MembresiaRepository membresiaRepository;
     private final SocioMembresiaRepository socioMembresiaRepository;
     private final PagoRepository pagoRepository;
+    private final AsistenciaRepository asistenciaRepository;
 
-    public SocioService(PagoRepository pagoRepository, SocioRepository socioRepository, MembresiaRepository membresiaRepository, SocioMembresiaRepository socioMembresiaRepository){
+    public SocioService(AsistenciaRepository asistenciaRepository ,PagoRepository pagoRepository, SocioRepository socioRepository, MembresiaRepository membresiaRepository, SocioMembresiaRepository socioMembresiaRepository){
         this.socioRepository = socioRepository;
         this.membresiaRepository = membresiaRepository;
         this.socioMembresiaRepository = socioMembresiaRepository;
         this.pagoRepository = pagoRepository;
+        this.asistenciaRepository = asistenciaRepository;
 
+    }
+
+    private AsistenciaSocioIdDTO convertirAAsistenciaSocioIdDTO(AsistenciaSocioId a){
+        return new AsistenciaSocioIdDTO(
+                a.getDniSocio(),
+                a.getFecha_hora()
+        );
     }
 
     private SocioDTO convertirASocioDTO(Socio socio) {
@@ -136,6 +139,17 @@ public class SocioService {
         }
 
         return pagos;
+    }
+
+    public AsistenciaSocioIdDTO registrarAsistencia(String dni){
+        Socio socio = socioRepository.findById(dni).orElseThrow(()-> new ObjetoNoEncontradoException(dni));
+
+        Asistencia nuevaAsistencia = new Asistencia(socio);
+        Asistencia guardada = asistenciaRepository.save(nuevaAsistencia);
+        return convertirAAsistenciaSocioIdDTO(guardada.getId_asistencia());
+
+
+
     }
 
 
