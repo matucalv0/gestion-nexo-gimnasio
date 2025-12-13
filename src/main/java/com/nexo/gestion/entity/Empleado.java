@@ -19,9 +19,9 @@ public class Empleado {
     private String email;
     private LocalDate fecha_inicio;
     private LocalDate fecha_nacimiento;
+    private boolean activo;
     @ManyToOne
     @JoinColumn(name = "id_puesto")
-
     private Puesto puesto;
 
     public Empleado(){}
@@ -38,6 +38,15 @@ public class Empleado {
         this.email = email;
         this.fecha_nacimiento = fecha_nacimiento;
         this.puesto = puesto;
+        this.activo = true;
+    }
+
+    public Empleado(String dni, String nombre, String telefono, String email, LocalDate fecha_nacimiento){
+        this.dni = dni;
+        this.nombre = nombre;
+        this.telefono = telefono;
+        this.email = email;
+        this.fecha_nacimiento = fecha_nacimiento;
     }
 
     public String getDni() {
@@ -62,6 +71,14 @@ public class Empleado {
 
     public void setTelefono(String telefono) {
         this.telefono = telefono;
+    }
+
+    public boolean isActivo() {
+        return activo;
+    }
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
     }
 
     public String getEmail() {
