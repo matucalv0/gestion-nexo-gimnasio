@@ -21,7 +21,7 @@ Este proyecto fue desarrollado aplicando buenas prácticas de diseño de softwar
 *  **JWT**
 
 ---
-## 📄 Documentación de la API (Swagger)
+##  Documentación de la API (Swagger)
 
 La siguiente documentación muestra los principales controladores del sistema,
 incluyendo autenticación JWT, gestión de usuarios, socios, empleados, pagos y productos.
@@ -34,7 +34,7 @@ incluyendo autenticación JWT, gestión de usuarios, socios, empleados, pagos y 
 <img width="1335" height="889" alt="controllers2" src="https://github.com/user-attachments/assets/5c9bdc52-44c4-4b54-9b8f-f660c7e8bd87" />
 
 ---
-## 🔐 Autenticación y Seguridad
+##  Autenticación y Seguridad
 
 El sistema implementa autenticación basada en JWT con Spring Security.
 
