@@ -18,6 +18,7 @@ Este proyecto fue desarrollado aplicando buenas prácticas de diseño de softwar
 *  **JPA**
 *  **Hibernate**
 *  **PostgreSQL**
+*  **JWT**
 
 ---
 
