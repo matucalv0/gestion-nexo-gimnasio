@@ -4,6 +4,7 @@ import com.nexo.gestion.dto.PuestoDTO;
 import com.nexo.gestion.services.PuestoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,12 +18,14 @@ public class PuestoController {
         this.puestoService = puestoService;
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping
     public ResponseEntity<PuestoDTO> altaPuesto(@RequestBody PuestoDTO puestoDTO){
         PuestoDTO puesto = puestoService.registrarPuesto(puestoDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(puesto);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping
     public ResponseEntity<List<PuestoDTO>> mostrarPuestos(){
         List<PuestoDTO> puestos = puestoService.buscarPuestos();

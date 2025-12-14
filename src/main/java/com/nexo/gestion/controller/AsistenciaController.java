@@ -3,6 +3,7 @@ package com.nexo.gestion.controller;
 import com.nexo.gestion.dto.AsistenciaSocioIdDTO;
 import com.nexo.gestion.services.AsistenciaService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +19,7 @@ public class AsistenciaController {
         this.asistenciaService = asistenciaService;
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping
     public ResponseEntity<List<AsistenciaSocioIdDTO>> mostrarAsistencias(){
         List<AsistenciaSocioIdDTO> asistencias = asistenciaService.buscarAsistencias();

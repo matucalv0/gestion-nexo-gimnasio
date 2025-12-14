@@ -5,6 +5,7 @@ import com.nexo.gestion.dto.UsuarioResponseDTO;
 import com.nexo.gestion.services.UsuarioService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,12 +19,14 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @PostMapping
     public ResponseEntity<UsuarioResponseDTO> altaUsuario(@RequestBody UsuarioDTO usuarioDTO){
         UsuarioResponseDTO usuario = usuarioService.registrarUsuario(usuarioDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(usuario);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping
     public ResponseEntity<List<UsuarioResponseDTO>> mostrarUsuarios(){
         List<UsuarioResponseDTO> usuarios = usuarioService.buscarUsuarios();

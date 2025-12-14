@@ -6,6 +6,7 @@ import com.nexo.gestion.entity.Pago;
 import com.nexo.gestion.services.PagoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.function.EntityResponse;
 
@@ -20,12 +21,14 @@ public class PagoController {
         this.pagoService = pagoService;
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @PostMapping
     public ResponseEntity<PagoDTO> altaPago(@RequestBody PagoCreateDTO pagoCreateDTO){
         PagoDTO pago = pagoService.crearPago(pagoCreateDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(pago);
     }
-    
+
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping
     public ResponseEntity<List<PagoDTO>> mostrarPagos(){
         List<PagoDTO> pagos = pagoService.buscarPagos();
