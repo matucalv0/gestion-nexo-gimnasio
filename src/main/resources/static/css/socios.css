@@ -1,0 +1,44 @@
+.actions {
+  margin-bottom: 16px;
+}
+
+.actions input {
+  padding: 8px;
+  width: 260px;
+  border-radius: var(--radius);
+  border: 1px solid #ccc;
+}
+
+.tabla-container {
+  background-color: white;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background-color: var(--beige);
+}
+
+th, td {
+  padding: 12px;
+}
+
+tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+.estado-activo {
+  color: green;
+  font-weight: bold;
+}
+
+.estado-inactivo {
+  color: var(--orange);
+  font-weight: bold;
+}

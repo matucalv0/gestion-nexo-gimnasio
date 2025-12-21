@@ -1,0 +1,12 @@
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.dashboard button {
+  background-color: var(--blue);
+  height: 100px;
+  font-size: 16px;
+  letter-spacing: 0.5px;
+}

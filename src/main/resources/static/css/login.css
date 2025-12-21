@@ -1,0 +1,89 @@
+/* ===== Fondo ===== */
+.login-body {
+  min-height: 100vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-image: linear-gradient(
+      rgba(9, 25, 36, 0.85),
+      rgba(9, 25, 36, 0.85)
+    ),
+    url("../assets/nexofondo.jpg");
+
+  background-size: cover;
+  background-position: center;
+}
+
+/* ===== Card ===== */
+.login-card {
+  background-color: var(--beige);
+  padding: 48px 40px;
+  width: 340px;
+
+  border-radius: var(--radius);
+  text-align: center;
+
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+}
+
+/* ===== Logo ===== */
+.login-logo {
+  width: 140px;
+  margin-bottom: 20px;
+}
+
+/* ===== Texto ===== */
+.login-subtitle {
+  margin: 0 0 28px;
+  font-size: 13px;
+
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+
+  color: var(--black);
+  opacity: 0.85;
+}
+
+/* ===== Inputs ===== */
+.login-card input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 14px;
+
+  border-radius: var(--radius);
+  border: 1px solid #cfcfcf;
+
+  font-size: 14px;
+}
+
+/* ===== Botón ===== */
+.login-card button {
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px;
+
+  background-color: var(--black);
+  color: var(--beige);
+
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.login-card button:hover {
+  opacity: 0.9;
+}
+
+/* ===== Error ===== */
+.error {
+  margin-top: 14px;
+  color: var(--orange);
+  font-size: 14px;
+}
+
+
+
+
+

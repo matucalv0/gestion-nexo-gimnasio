@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Socios</title>
+
+  <link rel="stylesheet" href="../css/main.css" />
+  <link rel="stylesheet" href="../css/socios.css" />
+</head>
+<body>
+
+  <header class="header">
+    <h1>Socios</h1>
+
+    <div class="header-actions">
+      <button onclick="volverHome()">Home</button>
+      <button onclick="logout()">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <section class="actions">
+      <input
+        type="text"
+        id="busquedaInput"
+        placeholder="Buscar por DNI o nombre"
+      />
+      <button onclick="buscarSocios()">Buscar</button>
+    </section>
+
+    <section class="tabla-container">
+      <table id="tablaSocios">
+        <thead>
+          <tr>
+            <th>DNI</th>
+            <th>Nombre</th>
+            <th>Telefono</th>
+            <th>Acciones</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- filas dinámicas -->
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+
+  <script src="../js/auth.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/socios.js"></script>
+</body>
+</html>
