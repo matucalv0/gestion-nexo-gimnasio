@@ -18,3 +18,7 @@ function irAPagos() {
 function irAMembresias() {
   window.location.href = "membresias.html";
 }
+
+function irARegistrarAsistencia() {
+  window.location.href = "asistencia.html";
+}

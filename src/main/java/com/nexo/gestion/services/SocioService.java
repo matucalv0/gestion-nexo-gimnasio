@@ -172,7 +172,18 @@ public class SocioService {
         }
 
         return Optional.empty();
+    }
 
+    public List<SocioDTO> buscarSocios(String dniOrNombre) {
+        List<SocioDTO> socios = new ArrayList<>();
+
+        for (Socio socio: socioRepository.buscarPorNombreODni(dniOrNombre)){
+            SocioDTO socioDTO = convertirASocioDTO(socio);
+            socios.add(socioDTO);
+        }
+
+
+        return socios;
     }
 
 

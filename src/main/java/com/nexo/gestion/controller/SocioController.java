@@ -80,6 +80,12 @@ public class SocioController {
         return ResponseEntity.ok(asistencia);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<SocioDTO>> buscarSocioPorNombre(@RequestParam("q") String dniOrNombre){
+        List<SocioDTO> socios = socioService.buscarSocios(dniOrNombre);
+        return ResponseEntity.ok(socios);
+    }
+
 
 
 

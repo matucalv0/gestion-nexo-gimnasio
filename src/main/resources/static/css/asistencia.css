@@ -1,36 +1,175 @@
-.asistencia-container {
-  max-width: 400px;
-  margin: 80px auto;
-  text-align: center;
+/* ===== Body y contenedor ===== */
+body {
+  min-height: 100vh;
+  margin: 0;
+  background-image: linear-gradient(
+      rgba(9, 25, 36, 0.88),
+      rgba(9, 25, 36, 0.88)
+    ),
+    url("../assets/nexofondo.jpg");
+  background-size: cover;
+  background-position: center;
+  font-family: "Segoe UI", sans-serif;
+  color: var(--beige);
 }
 
-.asistencia-container input {
+.panel-container {
   width: 100%;
   padding: 16px;
-  font-size: 18px;
-  margin-bottom: 16px;
+  margin: 0 auto;
 }
 
-.asistencia-container button {
+.panel-card {
   width: 100%;
-  padding: 14px;
-  font-size: 16px;
+  max-width: 600px;
+  margin: 60px auto;
+  background-color: #1f2e38;
+  padding: 36px 40px;
+  border-radius: var(--radius);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+  box-sizing: border-box;
+  transition: transform 0.2s ease;
 }
 
-.resultado {
-  margin-top: 24px;
+.panel-card:hover {
+  transform: translateY(-2px);
+}
+
+/* ===== Header ===== */
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+.panel-header h1 {
+  margin: 0;
+  letter-spacing: 1.5px;
+  color: var(--beige);
+  font-size: 28px;
+}
+
+/* ===== Acciones ===== */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 0; /* eliminamos margen que empujaba el dropdown */
+  position: relative; /* para que el dropdown se posicione respecto al input */
+}
+
+.actions input {
+  flex: 1 1 150px;
+  min-width: 120px;
+  padding: 14px;
+  border-radius: var(--radius);
+  border: 1px solid #2f3e48;
+  background-color: #16222b;
+  color: var(--beige);
   font-size: 16px;
-  min-height: 40px;
+  transition: border 0.2s;
+  z-index: 1;
+}
+
+.actions input:focus {
+  outline: none;
+  border-color: var(--orange);
+  box-shadow: 0 0 8px rgba(255, 140, 0, 0.3);
+}
+
+.actions input::placeholder {
+  color: #9aa7b0;
+}
+
+.actions button {
+  padding: 14px 18px;
+  font-size: 15px;
+  border-radius: var(--radius);
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.actions button.primary {
+  background-color: var(--orange);
+  color: var(--black);
+}
+
+.actions button.primary:hover {
+  background-color: #f57c26;
+  transform: translateY(-1px);
+}
+
+/* ===== Dropdown de resultados ===== */
+.resultados-busqueda {
+  position: absolute;
+  top: 100%; /* justo debajo del input */
+  left: 0;
+  right: 0;
+  background-color: #16222b;
+  border: 1px solid #2f3e48;
+  border-radius: var(--radius);
+  max-height: 220px;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  margin-top: 4px;
+  z-index: 2;
+}
+
+.resultados-busqueda div {
+  padding: 12px 14px;
+  cursor: pointer;
+  color: var(--beige);
+  transition: background 0.2s, color 0.2s;
+}
+
+.resultados-busqueda div:hover {
+  background-color: #1a2a33;
+  color: var(--orange);
+}
+
+/* ===== Resultado de acción ===== */
+.resultado {
+  font-size: 16px;
+  min-height: 30px;
+  margin-top: 16px;
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  transition: all 0.2s;
+  word-break: break-word;
 }
 
 .resultado.ok {
-  color: green;
+  color: var(--green);
+  background-color: rgba(0, 128, 0, 0.1);
 }
 
 .resultado.warn {
   color: var(--orange);
+  background-color: rgba(255, 140, 0, 0.1);
 }
 
 .resultado.error {
-  color: red;
+  color: var(--red);
+  background-color: rgba(255, 0, 0, 0.1);
 }
+
+/* ===== Ajustes móviles ===== */
+@media (max-width: 768px) {
+  .panel-card {
+    padding: 24px 16px;
+    margin: 40px 16px;
+  }
+
+  .actions input,
+  .actions button {
+    flex: 1 1 100%;
+  }
+
+  .resultados-busqueda {
+    max-height: 180px;
+  }
+}
+
