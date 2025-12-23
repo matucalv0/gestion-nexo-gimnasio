@@ -54,6 +54,11 @@ public class SocioMembresia {
         );
     }
 
+    public boolean cubre(LocalDate fecha) {
+        return (fecha.isEqual(fecha_inicio) || fecha.isAfter(fecha_inicio))
+                && (fecha.isEqual(fecha_hasta) || fecha.isBefore(fecha_hasta));
+    }
+
     public Integer getId_sm() {
         return id_sm;
     }

@@ -5,6 +5,7 @@ import com.nexo.gestion.entity.Pago;
 import com.nexo.gestion.entity.Socio;
 import com.nexo.gestion.entity.SocioMembresia;
 import com.nexo.gestion.services.SocioService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,6 +22,7 @@ public class SocioController {
         this.socioService = socioService;
     }
 
+    @Valid
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<SocioDTO> altaSocio(@RequestBody SocioCreateDTO socioCreateDTO){

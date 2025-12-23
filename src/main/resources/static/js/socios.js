@@ -1,16 +1,64 @@
 checkAuth()
 
-const API_URL = "http://localhost:8080/socios";
+const API_URL = "/socios";
 const tablaBody = document.querySelector("#tablaSocios tbody");
 const busquedaInput = document.getElementById("busquedaInput");
 
 document.addEventListener("DOMContentLoaded", () => {
-  cargarSocios();
+  if (document.body.id === "sociosPage") {
+    cargarSocios();
+  }
 });
 
 
 function volverHome() {
   window.location.href = "home.html";
+}
+
+function registrarSocio(){
+ const form = document.getElementById("registrarSocioForm");
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  console.log("Se ejecutó el submit del formulario");
+
+  // Recolectar datos del formulario
+  const data = {
+    nombre: document.getElementById("fullname").value,
+    email: document.getElementById("email").value,
+    telefono: document.getElementById("telefono").value,
+    fechaNacimiento: document.getElementById("fechaNacimiento").value
+  };
+
+  try {
+    // Usar authFetch para enviar la información
+    const res = await authFetch("http://localhost:8080/socios", {
+      method: "POST",
+      body: JSON.stringify(data)
+    });
+    console.log(res.status, await res.text());
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      alert("Error al registrar socio: " + (errorData.message || res.statusText));
+      return;
+    }
+
+    const responseData = await res.json();
+    console.log("Socio registrado:", responseData);
+    alert("Socio registrado correctamente!");
+    form.reset(); // Limpiar el formulario
+  } catch (err) {
+    console.error(err);
+    alert("Error al enviar los datos");
+  }
+});
+
+}
+
+function mostrarAltaSocio(){
+  window.location.href = "registrar-socio.html";
+
 }
 
 function cargarSocios() {
@@ -43,7 +91,7 @@ function renderSocios(socios) {
       <td>${socio.dni}</td>
       <td>${socio.nombre}</td>
       <td>${socio.telefono}</td>
-      <td>${socio.mail}</td>
+      <td>${socio.email}</td>
       <td class="${socio.activo ? "estado-activo" : "estado-inactivo"}">
           ${socio.activo ? "Activo" : "Inactivo"}
       </td>

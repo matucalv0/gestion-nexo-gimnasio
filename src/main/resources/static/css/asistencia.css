@@ -1,0 +1,36 @@
+.asistencia-container {
+  max-width: 400px;
+  margin: 80px auto;
+  text-align: center;
+}
+
+.asistencia-container input {
+  width: 100%;
+  padding: 16px;
+  font-size: 18px;
+  margin-bottom: 16px;
+}
+
+.asistencia-container button {
+  width: 100%;
+  padding: 14px;
+  font-size: 16px;
+}
+
+.resultado {
+  margin-top: 24px;
+  font-size: 16px;
+  min-height: 40px;
+}
+
+.resultado.ok {
+  color: green;
+}
+
+.resultado.warn {
+  color: var(--orange);
+}
+
+.resultado.error {
+  color: red;
+}

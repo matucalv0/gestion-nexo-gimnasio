@@ -1,44 +1,128 @@
+/* ===== Contenedor ===== */
+body {
+  min-height: 100vh;
+  margin: 0;
+  background-image: linear-gradient(
+      rgba(9, 25, 36, 0.88),
+      rgba(9, 25, 36, 0.88)
+    ),
+    url("../assets/nexofondo.jpg");
+  background-size: cover;
+  background-position: center;
+  font-family: sans-serif;
+}
+
+
+.panel-container {
+  width: 100%;
+  padding: 16px;
+  margin: 0 auto;
+}
+
+/* ===== Card ===== */
+.panel-card {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  background-color: #1f2e38;
+  padding: 40px 48px;
+  border-radius: var(--radius);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+  box-sizing: border-box;
+}
+
+/* ===== Header ===== */
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.panel-header h1 {
+  margin: 0;
+  letter-spacing: 2px;
+  color: var(--beige);
+  font-size: 28px;
+}
+
+/* ===== Acciones ===== */
 .actions {
-  margin-bottom: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
 .actions input {
-  padding: 8px;
-  width: 260px;
-  border-radius: var(--radius);
-  border: 1px solid #ccc;
+  flex: 1 1 180px;
+  min-width: 120px;
 }
 
+.actions input::placeholder {
+  color: #9aa7b0;
+}
+
+.actions button {
+  padding: 12px 16px;
+  font-size: 14px;
+  border-radius: var(--radius);
+  font-weight: 600;
+  background-color: var(--black);
+  color: var(--beige);
+}
+
+.actions button.primary {
+  background-color: var(--orange);
+  color: var(--black);
+}
+
+/* ===== Tabla ===== */
 .tabla-container {
-  background-color: white;
-  border-radius: var(--radius);
-  overflow: hidden;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  width: 100%;
+  overflow-x: auto;
 }
 
-table {
+.tabla-container table {
   width: 100%;
+  min-width: 600px;
   border-collapse: collapse;
 }
 
-thead {
-  background-color: var(--beige);
+.tabla-container th,
+.tabla-container td {
+  padding: 12px 10px;
+  border-bottom: 1px solid #2f3e48;
 }
 
-th, td {
-  padding: 12px;
+.tabla-container th {
+  font-size: 12px;
+  color: #f0e6d8;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-tr:nth-child(even) {
-  background-color: #fafafa;
+.tabla-container td {
+  color: #d9d0c2;
 }
 
-.estado-activo {
-  color: green;
-  font-weight: bold;
+.tabla-container tr:hover {
+  background-color: #16222b;
 }
 
-.estado-inactivo {
-  color: var(--orange);
-  font-weight: bold;
+/* ===== Ajustes para móviles ===== */
+@media (max-width: 768px) {
+  .panel-card {
+    padding: 24px 16px;
+  }
+  .actions input {
+    min-width: 100px;
+  }
 }
+
+
+
+
+
+
+

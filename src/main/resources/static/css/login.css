@@ -7,8 +7,8 @@
   justify-content: center;
 
   background-image: linear-gradient(
-      rgba(9, 25, 36, 0.85),
-      rgba(9, 25, 36, 0.85)
+      rgba(9, 25, 36, 0.88),
+      rgba(9, 25, 36, 0.88)
     ),
     url("../assets/nexofondo.jpg");
 
@@ -18,32 +18,36 @@
 
 /* ===== Card ===== */
 .login-card {
-  background-color: var(--beige);
+  background-color: #1f2e38; /* MISMO color que panel */
+  color: var(--beige);
+
   padding: 48px 40px;
   width: 340px;
-
+  
   border-radius: var(--radius);
   text-align: center;
+  
 
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+  
 }
 
 /* ===== Logo ===== */
 .login-logo {
   width: 140px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 /* ===== Texto ===== */
 .login-subtitle {
   margin: 0 0 28px;
-  font-size: 13px;
+  font-size: 12px;
 
-  letter-spacing: 1.5px;
+  letter-spacing: 1.8px;
   text-transform: uppercase;
 
-  color: var(--black);
-  opacity: 0.85;
+  color: #d9d0c2;
+  opacity: 0.9;
 }
 
 /* ===== Inputs ===== */
@@ -53,23 +57,34 @@
   margin-bottom: 14px;
 
   border-radius: var(--radius);
-  border: 1px solid #cfcfcf;
+  border: 1px solid #2f3e48;
+
+  background-color: #16222b;
+  color: var(--beige);
 
   font-size: 14px;
+  min-height: 44px;
+}
+
+.login-card input::placeholder {
+  color: #9aa7b0;
 }
 
 /* ===== Botón ===== */
 .login-card button {
   width: 100%;
-  margin-top: 12px;
+  margin-top: 16px;
   padding: 12px;
 
-  background-color: var(--black);
-  color: var(--beige);
+  background-color: var(--orange);
+  color: var(--black);
 
   font-weight: 600;
-  letter-spacing: 1px;
+  letter-spacing: 1.2px;
   text-transform: uppercase;
+
+  border-radius: var(--radius);
+  min-height: 44px;
 }
 
 .login-card button:hover {
@@ -78,7 +93,7 @@
 
 /* ===== Error ===== */
 .error {
-  margin-top: 14px;
+  margin-top: 16px;
   color: var(--orange);
   font-size: 14px;
 }

@@ -2,30 +2,41 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Home - Gestión Gimnasio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEXO · Home</title>
+
   <link rel="stylesheet" href="css/main.css" />
   <link rel="stylesheet" href="css/home.css" />
 </head>
 <body>
 
-  <header class="header">
-  <h1>Nexo · Panel</h1>
-  <div class="header-actions">
-    <button onclick="logout()">Salir</button>
-  </div>
-</header>
+  <main class="panel-container">
+    <div class="panel-card">
 
-<main class="container">
-  <section class="dashboard">
-    <button onclick="irASocios()">Socios</button>
-    <button>Asistencias</button>
-    <button>Pagos</button>
-    <button>Membresías</button>
-  </section>
-</main>
+      <!-- Header -->
+      <header class="panel-header">
+        <h1>NEXO · PANEL</h1>
+        <div class="header-actions">
+          <button onclick="logout()">Salir</button>
+        </div>
+      </header>
 
+      <!-- Dashboard -->
+      <section class="dashboard">
+        <button class="dashboard-card" onclick="irASocios()">Socios</button>
+        <button class="dashboard-card">Asistencias</button>
+        <button class="dashboard-card">Pagos</button>
+        <button class="dashboard-card">Membresías</button>
+      </section>
 
-  <script src="../js/auth.js"></script>
-  <script src="../js/home.js"></script>
+    </div>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script src="js/home.js"></script>
+
 </body>
 </html>
+
+
+

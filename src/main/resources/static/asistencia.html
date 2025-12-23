@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEXO · Asistencia</title>
+
+  <link rel="stylesheet" href="../css/main.css" />
+  <link rel="stylesheet" href="../css/asistencia.css" />
+</head>
+<body>
+
+  <header class="header">
+    <h1>Registrar asistencia</h1>
+    <button onclick="volverHome()">Home</button>
+  </header>
+
+  <main class="container asistencia-container">
+
+    <input
+      type="text"
+      id="inputBusqueda"
+      placeholder="Ingrese dni"
+      autofocus
+    />
+
+    <button id="btnRegistrar">Registrar</button>
+
+    <div id="resultado" class="resultado"></div>
+
+  </main>
+
+  <script src="../js/auth.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/asistencia.js"></script>
+</body>
+</html>

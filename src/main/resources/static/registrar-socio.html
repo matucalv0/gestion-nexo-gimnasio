@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registrar socio · NEXO</title>
+
+  <link rel="stylesheet" href="../css/main.css" />
+  <link rel="stylesheet" href="../css/registrar-socio.css" />
+</head>
+<body id="registrarSocioPage">
+
+  <main class="panel-container">
+    <div class="panel-card">
+
+      <!-- Header -->
+      <div class="panel-header">
+        <h1>Registrar Socio</h1>
+        <div class="header-actions">
+          <button onclick="volverHome()">Home</button>
+          <button onclick="logout()">Cerrar sesión</button>
+        </div>
+      </div>
+
+      <!-- Formulario -->
+      <form id="registrarSocioForm" enctype="multipart/form-data">
+        
+        <label for="fullname" class="form-label">Nombre completo*</label>
+        <input type="text" id="fullname" name="fullname" class="form-input" placeholder="Ingrese el nombre completo" required />
+
+        <label for="email" class="form-label">Email*</label>
+        <input type="email" id="email" name="email" class="form-input" placeholder="Ingrese el email" required />
+
+        <label for="phone" class="form-label">Teléfono</label>
+        <input type="tel" id="telefono" name="phone" class="form-input" placeholder="Ingrese el teléfono" />
+
+        <label for="dni" class="form-label">DNI*</label>
+        <input type="text" id="dni" name="dni" class="form-input" placeholder="Ingrese DNI" required />
+
+
+        <label for="fechaNacimiento" class="form-label">Fecha de nacimiento*</label>
+        <input type="date" id="fechaNacimiento" name="fechaNacimiento" class="form-input" required />
+      
+
+
+        <button type="submit" class="form-btn">Registrar socio</button>
+
+      </form>
+    </div>
+  </main>
+
+  <script src="../js/auth.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/socios.js"></script>
+  <script src="../js/registrar-socio.js"></script>
+
+</body>
+</html>
+

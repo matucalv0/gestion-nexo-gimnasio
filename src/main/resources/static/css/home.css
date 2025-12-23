@@ -1,12 +1,106 @@
-.dashboard {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
+/* ===== Fondo global ===== */
+body {
+  min-height: 100vh;
+  margin: 0;
+  background-image: linear-gradient(
+      rgba(9, 25, 36, 0.88),
+      rgba(9, 25, 36, 0.88)
+    ),
+    url("../assets/nexofondo.jpg");
+  background-size: cover;
+  background-position: center;
+  font-family: sans-serif;
 }
 
-.dashboard button {
-  background-color: var(--blue);
-  height: 100px;
-  font-size: 16px;
-  letter-spacing: 0.5px;
+/* ===== Contenedor ===== */
+.panel-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 80px 16px 40px 16px;
 }
+
+/* ===== Card ===== */
+.panel-card {
+  width: 100%;
+  max-width: 1000px;
+  background-color: #1f2e38;
+  padding: 32px 40px;
+  border-radius: var(--radius);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+  box-sizing: border-box;
+}
+
+/* ===== Header ===== */
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 48px;
+}
+
+.panel-header h1 {
+  color: var(--beige);
+  letter-spacing: 3px;
+  font-size: 22px;
+}
+
+/* ===== Dashboard ===== */
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 32px;
+}
+
+.dashboard-card {
+  min-height: 140px;
+  background-color: #16222b;
+  border: 1px solid #2f3e48;
+  border-radius: var(--radius);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 18px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--beige);
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dashboard-card:hover {
+  background-color: #1f2e38;
+  transform: translateY(-2px);
+}
+
+.dashboard-card:active {
+  transform: translateY(0);
+  background-color: #22313c;
+}
+
+/* ===== Media queries ===== */
+@media (max-width: 768px) {
+
+  .panel-container {
+    padding-top: 40px;
+  }
+
+  .panel-card {
+    padding: 24px 20px;
+  }
+
+  .dashboard {
+    gap: 20px;
+  }
+
+  .dashboard-card {
+    min-height: 130px;
+    font-size: 16px;
+  }
+}
+
+
+

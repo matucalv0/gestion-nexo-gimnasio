@@ -2,50 +2,56 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Socios</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Socios · NEXO</title>
 
   <link rel="stylesheet" href="../css/main.css" />
   <link rel="stylesheet" href="../css/socios.css" />
 </head>
-<body>
+<body id="sociosPage">
 
-  <header class="header">
-    <h1>Socios</h1>
+  <main class="panel-container">
+    <div class="panel-card">
 
-    <div class="header-actions">
-      <button onclick="volverHome()">Home</button>
-      <button onclick="logout()">Cerrar sesión</button>
+      <!-- Header -->
+      <div class="panel-header">
+        <h1>Socios</h1>
+        <div class="header-actions">
+          <button onclick="volverHome()">Home</button>
+          <button onclick="logout()">Cerrar sesión</button>
+        </div>
+      </div>
+
+      <!-- Acciones -->
+      <section class="actions">
+        <input
+          type="text"
+          id="busquedaInput"
+          placeholder="Buscar por DNI o nombre"
+        />
+        <button onclick="buscarSocios()">Buscar</button>
+        <button class="primary" onclick="mostrarAltaSocio()">
+          + Nuevo socio
+        </button>
+      </section>
+
+      <!-- Tabla -->
+      <section class="tabla-container">
+        <table id="tablaSocios">
+          <thead>
+            <tr>
+              <th>DNI</th>
+              <th>Nombre</th>
+              <th>Teléfono</th>
+              <th>Email</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
     </div>
-  </header>
-
-  <main class="container">
-
-    <section class="actions">
-      <input
-        type="text"
-        id="busquedaInput"
-        placeholder="Buscar por DNI o nombre"
-      />
-      <button onclick="buscarSocios()">Buscar</button>
-    </section>
-
-    <section class="tabla-container">
-      <table id="tablaSocios">
-        <thead>
-          <tr>
-            <th>DNI</th>
-            <th>Nombre</th>
-            <th>Telefono</th>
-            <th>Acciones</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- filas dinámicas -->
-        </tbody>
-      </table>
-    </section>
-
   </main>
 
   <script src="../js/auth.js"></script>
@@ -53,3 +59,4 @@
   <script src="../js/socios.js"></script>
 </body>
 </html>
+
