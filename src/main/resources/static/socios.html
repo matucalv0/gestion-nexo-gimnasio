@@ -25,10 +25,13 @@
       <!-- Acciones -->
       <section class="actions">
         <input
-          type="text"
-          id="busquedaInput"
-          placeholder="Buscar por DNI o nombre"
-        />
+        type="text"
+        id="inputBusqueda"
+        name="busqueda"
+        autocomplete="off"
+        placeholder="Ingrese DNI o nombre"
+        autofocus
+    />
         <button onclick="buscarSocios()">Buscar</button>
         <button class="primary" onclick="mostrarAltaSocio()">
           + Nuevo socio

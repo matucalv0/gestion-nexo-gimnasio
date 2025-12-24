@@ -2,7 +2,9 @@ checkAuth()
 
 const API_URL = "/socios";
 const tablaBody = document.querySelector("#tablaSocios tbody");
-const busquedaInput = document.getElementById("busquedaInput");
+const busquedaInput = document.getElementById("inputBusqueda");
+busquedaInput.addEventListener("input", buscarSocios);
+
 
 document.addEventListener("DOMContentLoaded", () => {
   if (document.body.id === "sociosPage") {
@@ -32,7 +34,7 @@ form.addEventListener("submit", async (e) => {
 
   try {
     // Usar authFetch para enviar la información
-    const res = await authFetch("http://localhost:8080/socios", {
+    const res = await authFetch("/socios", {
       method: "POST",
       body: JSON.stringify(data)
     });
@@ -108,29 +110,23 @@ function renderSocios(socios) {
 function buscarSocios() {
   const valor = busquedaInput.value.trim();
 
-  if (valor === "") {
+  if (valor.length < 2) {
     cargarSocios();
     return;
   }
 
-  authFetch(`${API_URL}/${valor}`)
+  authFetch(`${API_URL}/search?q=${encodeURIComponent(valor)}`)
     .then(res => {
-      if (res.status === 404) return null;
+      if (!res.ok) return [];
       return res.json();
     })
     .then(data => {
-      if (Array.isArray(data)) {
-        renderSocios(data);
-      } else if (data) {
-        renderSocios([data]);
-      } else {
-        renderSocios([]);
-      }
+      renderSocios(data);
     })
     .catch(err => {
       console.error("Error en búsqueda", err);
-      alert("Error en búsqueda");
     });
 }
+
 
 

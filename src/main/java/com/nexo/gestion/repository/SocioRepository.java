@@ -11,4 +11,10 @@ public interface SocioRepository extends JpaRepository<Socio, String> {
     @Query("SELECT s FROM Socio s WHERE LOWER(s.nombre) LIKE LOWER(CONCAT('%', :query, '%')) " +
             "OR s.dni LIKE CONCAT('%', :query, '%')")
     List<Socio> buscarPorNombreODni(@Param("query") String query);
+
+    @Query(value = "SELECT count(*) FROM asistencia a join socio_membresia sc on sc.dni_socio = a.dni where (sc.id_sm = :id_sm) and " +
+            "(a.dni = :dni) and ((a.fecha_hora <= sc.fecha_hasta) and (a.fecha_hora >= sc.fecha_inicio))", nativeQuery = true)
+    Long diasAsistidos(@Param("id_sm") Integer id_sm, @Param("dni") String dni);
+
+
 }

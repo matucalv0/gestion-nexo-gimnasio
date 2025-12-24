@@ -156,6 +156,32 @@ body {
   background-color: rgba(255, 0, 0, 0.1);
 }
 
+.info-socio {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  background-color: #16222b;
+  color: var(--beige);
+  font-size: 15px;
+}
+
+.info-membresia {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  background-color: #16222b;
+  color: var(--beige);
+  font-size: 15px;
+}
+
+.info-socio:empty,
+.info-membresia:empty,
+.resultados-busqueda:empty {
+  display: none;
+}
+
+
+
 /* ===== Ajustes móviles ===== */
 @media (max-width: 768px) {
   .panel-card {

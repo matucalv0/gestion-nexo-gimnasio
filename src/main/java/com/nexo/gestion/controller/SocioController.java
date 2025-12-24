@@ -80,11 +80,28 @@ public class SocioController {
         return ResponseEntity.ok(asistencia);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping("/search")
     public ResponseEntity<List<SocioDTO>> buscarSocioPorNombre(@RequestParam("q") String dniOrNombre){
         List<SocioDTO> socios = socioService.buscarSocios(dniOrNombre);
         return ResponseEntity.ok(socios);
     }
+
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
+    @GetMapping("/{dni}/asistencias-disponibles")
+    public ResponseEntity<Integer> asistenciasDisponibles(@PathVariable String dni) {
+        int disponibles = socioService.asistenciasDisponibles(dni);
+        return ResponseEntity.ok(disponibles);
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
+    @GetMapping("/{dni}/membresia-vigente")
+    public ResponseEntity<MembresiaVigenteDTO> membresiaVigente(@PathVariable String dni){
+        MembresiaVigenteDTO membresia = socioService.membresiaVigente(dni);
+        return ResponseEntity.ok(membresia);
+    }
+
+
 
 
 

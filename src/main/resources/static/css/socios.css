@@ -57,7 +57,14 @@ body {
 .actions input {
   flex: 1 1 180px;
   min-width: 120px;
+  padding: 14px;
+  border-radius: var(--radius);
+  border: 1px solid #2f3e48;
+  background-color: #16222b;
+  color: var(--beige);
+  font-size: 16px;
 }
+
 
 .actions input::placeholder {
   color: #9aa7b0;
@@ -109,6 +116,19 @@ body {
 .tabla-container tr:hover {
   background-color: #16222b;
 }
+
+
+
+.input-busqueda:focus {
+  outline: none;
+  border-color: var(--orange);
+  box-shadow: 0 0 8px rgba(255, 140, 0, 0.3);
+}
+
+.input-busqueda::placeholder {
+  color: #9aa7b0;
+}
+
 
 /* ===== Ajustes para móviles ===== */
 @media (max-width: 768px) {

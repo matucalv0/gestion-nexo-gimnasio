@@ -53,7 +53,7 @@ public class Socio {
         membresia.setSocio(this);
     }
 
-    public boolean isActivo() {
+    public Boolean isActivo() {
         return activo;
     }
 
