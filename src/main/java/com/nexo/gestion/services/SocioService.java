@@ -14,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -190,19 +191,14 @@ public class SocioService {
         return Optional.empty();
     }
 
-    public MembresiaVigenteDTO membresiaVigente(String dni){
-        Socio socio = socioRepository.findById(dni).orElseThrow(()-> new ObjetoNoEncontradoException(dni));
-        LocalDate hoy = LocalDate.now();
-
-
-        for (SocioMembresia m : socio.getMembresias()) {
-            if (m.cubre(hoy)) {
-                return new MembresiaVigenteDTO(m.getMembresia().getNombre(), m.getFecha_hasta());
-            }
+    public MembresiaVigenteDTO membresiaVigente(String dni) {
+        if (!socioRepository.existsById(dni)) {
+            throw new ObjetoNoEncontradoException("Socio no encontrado");
         }
 
-        throw new MembresiaVencidaException();
+        return socioRepository.findMembresiaVigente(dni).orElseThrow(MembresiaVencidaException::new);
     }
+
 
     public List<SocioDTO> buscarSocios(String dniOrNombre) {
         List<SocioDTO> socios = new ArrayList<>();

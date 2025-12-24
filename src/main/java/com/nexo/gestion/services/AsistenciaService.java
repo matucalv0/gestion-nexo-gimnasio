@@ -1,8 +1,11 @@
 package com.nexo.gestion.services;
 
+import com.nexo.gestion.dto.AsistenciaDTO;
 import com.nexo.gestion.dto.AsistenciaSocioIdDTO;
+import com.nexo.gestion.dto.SocioDTO;
 import com.nexo.gestion.entity.Asistencia;
 import com.nexo.gestion.entity.AsistenciaSocioId;
+import com.nexo.gestion.entity.Socio;
 import com.nexo.gestion.repository.AsistenciaRepository;
 import org.springframework.stereotype.Service;
 
@@ -24,15 +27,40 @@ public class AsistenciaService {
         );
     }
 
-    public List<AsistenciaSocioIdDTO> buscarAsistencias(){
-        List<AsistenciaSocioIdDTO> asistencias = new ArrayList<>();
-        for (Asistencia asistencia: asistenciaRepository.findAll()){
-            AsistenciaSocioIdDTO asistenciaConvertida = convertirAAsistenciaSocioIdDTO(asistencia.getId_asistencia());
-            asistencias.add(asistenciaConvertida);
+    private AsistenciaDTO convertirAAsistenciaDTO(Asistencia a){
+        return new AsistenciaDTO(
+                a.getSocio().getNombre(),
+                a.getSocio().getDni(),
+                a.getId_asistencia().getFecha_hora()
+
+        );
+    }
+
+
+    public List<AsistenciaDTO> buscarAsistencias(){
+        List<AsistenciaDTO> asistencias = new ArrayList<>();
+        for (Asistencia asistencia: asistenciaRepository.findAllOrdenadoPorFecha()){
+            AsistenciaDTO asistenciaDTO = convertirAAsistenciaDTO(asistencia);
+            asistencias.add(asistenciaDTO);
         }
 
         return asistencias;
     }
+
+    public List<AsistenciaDTO> buscarAsistencia(String dniOrNombre) {
+        List<AsistenciaDTO> asistencias = new ArrayList<>();
+
+        for (Asistencia asistencia: asistenciaRepository.buscarPorNombreODni(dniOrNombre)){
+            AsistenciaDTO asistenciaDTO = convertirAAsistenciaDTO(asistencia);
+            asistencias.add(asistenciaDTO);
+        }
+
+        return asistencias;
+    }
+
+
+
+
 
 
 }

@@ -7,8 +7,8 @@ function irASocios() {
   window.location.href = "socios.html";
 }
 
-function registrarAsistencia() {
-  window.location.href = "asistencia.html";
+function irAAsistencias() {
+  window.location.href = "asistencias.html";
 }
 
 function irAPagos() {
