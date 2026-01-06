@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Asistencias · NEXO</title>
+  <link rel="stylesheet" href="../css/main.css" />
+  <link rel="stylesheet" href="../css/socios.css" />
+  <link rel="stylesheet" href="../css/asistencias.css" /> 
+</head>
+<body id="asistenciasPage">
+
+  <main class="panel-container">
+    <div class="panel-card">
+
+      <!-- Header -->
+      <div class="panel-header">
+        <h1>Asistencias</h1>
+        <div class="header-actions">
+          <button onclick="volverHome()">Home</button>
+          <button class="primary" onclick="irARegistro()">Registrar asistencia</button>
+        </div>
+      </div>
+
+      <!-- Buscador -->
+      <section class="actions">
+        <input
+          type="text"
+          id="inputBusqueda"
+          name="busqueda"
+          autocomplete="off"
+          placeholder="Buscar por DNI o nombre"
+        />
+        <button onclick="buscarAsistencias()">Buscar</button>
+      </section>
+
+      <!-- Tabla -->
+      <section class="tabla-container">
+        <table id="tablaAsistencias">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>DNI</th>
+              <th>Fecha / Hora</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+    </div>
+  </main>
+
+  <script src="../js/auth.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/asistencias.js"></script>
+</body>
+</html>
+

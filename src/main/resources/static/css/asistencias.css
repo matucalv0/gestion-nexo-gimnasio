@@ -1,0 +1,12 @@
+/* Ajustes específicos de Asistencias */
+#tablaAsistencias th {
+  min-width: 120px; /* Si necesitas ajustar anchos diferentes */
+}
+
+/* ===== Centrar contenido de la tabla ===== */
+.tabla-container table th,
+.tabla-container table td {
+  text-align: center; /* centro horizontal */
+  vertical-align: middle; /* centro vertical */
+}
+
