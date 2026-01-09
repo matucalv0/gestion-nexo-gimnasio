@@ -15,7 +15,7 @@ public class Ejercicio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id_ejercicio;
     private String nombre;
-    private String video;
+    private String video_url;
     private String descripcion;
     @ManyToOne
     @JoinColumn(name = "id_grupo")
@@ -35,7 +35,7 @@ public class Ejercicio {
     public String toString() {
         return "Ejercicio{" +
                 "descripcion='" + descripcion + '\'' +
-                ", video='" + video + '\'' +
+                ", video='" + video_url + '\'' +
                 ", nombre='" + nombre + '\'' +
                 ", id_ejercicio=" + id_ejercicio +
                 '}';
@@ -44,7 +44,7 @@ public class Ejercicio {
     public Ejercicio(String nombre, GrupoMuscular grupoMuscular, String video, String descripcion){
         this.nombre = nombre;
         this.grupoMuscular = grupoMuscular;
-        this.video = video;
+        this.video_url = video;
         this.descripcion = descripcion;
 
     }
@@ -75,11 +75,11 @@ public class Ejercicio {
     }
 
     public String getVideo() {
-        return video;
+        return video_url;
     }
 
     public void setVideo(String video) {
-        this.video = video;
+        this.video_url = video;
     }
 
     public String getDescripcion() {

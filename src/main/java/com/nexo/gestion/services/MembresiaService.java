@@ -25,13 +25,15 @@ public class MembresiaService {
                 membresia.getId_membresia(),
                 membresia.getDuracion_dias(),
                 membresia.getPrecio_sugerido(),
-                membresia.getNombre()
+                membresia.getNombre(),
+                membresia.getAsistencias_por_semana(),
+                membresia.isActivo()
         );
     }
 
 
     public MembresiaDTO registrarMembresia(MembresiaCreateDTO membresiaCreateDTO){
-        Membresia membresia = new Membresia(membresiaCreateDTO.getNombre(), membresiaCreateDTO.getDuracion_dias(), membresiaCreateDTO.getPrecio_sugerido());
+        Membresia membresia = new Membresia(membresiaCreateDTO.getNombre(), membresiaCreateDTO.getDuracion_dias(), membresiaCreateDTO.getPrecio_sugerido(), membresiaCreateDTO.getAsistencias_por_semana());
         Membresia guardada = membresiaRepository.save(membresia);
         return convertirAMembresiaDTO(guardada);
     }

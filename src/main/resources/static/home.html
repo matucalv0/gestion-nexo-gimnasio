@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="css/main.css" />
   <link rel="stylesheet" href="css/home.css" />
 </head>
-<body>
+<body id="homePage">
 
   <main class="panel-container">
     <div class="panel-card">
@@ -17,26 +17,25 @@
       <header class="panel-header">
         <h1>NEXO · PANEL</h1>
         <div class="header-actions">
-          <button onclick="logout()">Salir</button>
+          <button id="btnLogout">Salir</button>
         </div>
       </header>
 
       <!-- Dashboard -->
       <section class="dashboard">
-        <button class="dashboard-card" onclick="irASocios()">Socios</button>
-        <button class="dashboard-card" onclick="irAAsistencias()">Asistencias</button>
-        <button class="dashboard-card">Pagos</button>
-        <button class="dashboard-card">Membresías</button>
+        <button id="btnSocios" class="dashboard-card">Socios</button>
+        <button id="btnAsistencias" class="dashboard-card">Asistencias</button>
+        <button id="btnPagos" class="dashboard-card">Pagos</button>
+        <button id="btnMembresias" class="dashboard-card">Membresías</button>
       </section>
 
     </div>
   </main>
 
-  <script src="js/auth.js"></script>
-  <script src="js/home.js"></script>
-
+  <script type="module" src="js/pages/home.js"></script>
 </body>
 </html>
+
 
 
 

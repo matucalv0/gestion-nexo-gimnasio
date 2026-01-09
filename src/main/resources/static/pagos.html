@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pagos · NEXO</title>
+
+  <link rel="stylesheet" href="../css/main.css" />
+  <link rel="stylesheet" href="../css/socios.css" />
+</head>
+<body id="pagosPage">
+
+  <main class="panel-container">
+    <div class="panel-card">
+
+      <!-- Header -->
+      <div class="panel-header">
+        <h1>Pagos</h1>
+        <div class="header-actions">
+          <button id="btnHome">Home</button>
+          <button id="btnNuevoPago" class="primary">+ Nuevo pago</button>
+        </div>
+      </div>
+
+      <!-- Tabla -->
+      <section class="tabla-container">
+        <table id="tablaPagos">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Fecha</th>
+              <th>Estado</th>
+              <th>Monto</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+    </div>
+  </main>
+
+  <script type="module" src="../js/pages/pagos.js"></script>
+</body>
+</html>

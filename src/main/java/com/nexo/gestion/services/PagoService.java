@@ -6,17 +6,22 @@ import com.nexo.gestion.dto.PagoDTO;
 import com.nexo.gestion.entity.*;
 import com.nexo.gestion.exceptions.ObjetoNoEncontradoException;
 import com.nexo.gestion.repository.*;
+import io.jsonwebtoken.Jwt;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class PagoService {
+
     private final PagoRepository pagoRepository;
     private final DetallePagoRepository detallePagoRepository;
     private final SocioRepository socioRepository;
@@ -24,10 +29,19 @@ public class PagoService {
     private final MedioPagoRepository medioPagoRepository;
     private final ProductoRepository productoRepository;
     private final SocioMembresiaRepository socioMembresiaRepository;
+
     @PersistenceContext
     private EntityManager entityManager;
 
-    public PagoService(SocioMembresiaRepository socioMembresiaRepository, ProductoRepository productoRepository, MedioPagoRepository medioPagoRepository, PagoRepository pagoRepository, DetallePagoRepository detallePagoRepository, SocioRepository socioRepository, EmpleadoRepository empleadoRepository){
+    public PagoService(
+            PagoRepository pagoRepository,
+            DetallePagoRepository detallePagoRepository,
+            SocioRepository socioRepository,
+            EmpleadoRepository empleadoRepository,
+            MedioPagoRepository medioPagoRepository,
+            ProductoRepository productoRepository,
+            SocioMembresiaRepository socioMembresiaRepository
+    ) {
         this.pagoRepository = pagoRepository;
         this.detallePagoRepository = detallePagoRepository;
         this.socioRepository = socioRepository;
@@ -46,81 +60,157 @@ public class PagoService {
         );
     }
 
-    @Transactional
-    public PagoDTO crearPago(PagoCreateDTO pagoCreateDTO){
-        Socio socio = null;  // si es a consumidor final, queda en null
-        if (pagoCreateDTO.getDni_socio() != null){
-            socio = socioRepository.findById(pagoCreateDTO.getDni_socio()).orElseThrow(()-> new ObjetoNoEncontradoException("dni_socio"));
+    private Empleado obtenerEmpleadoAutenticado() {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new IllegalStateException("No hay usuario autenticado");
         }
 
-        Empleado empleado = empleadoRepository.findById(pagoCreateDTO.getDni_empleado()).orElseThrow(()-> new ObjetoNoEncontradoException("dni_empleado"));
-        MedioPago medioPago = medioPagoRepository.findById(pagoCreateDTO.getId_medioPago()).orElseThrow(()-> new ObjetoNoEncontradoException("id_mediopago"));
+        String dniEmpleado = auth.getName();
 
-        Pago pago = new Pago(pagoCreateDTO.getEstado(), socio, medioPago, empleado);
+        return empleadoRepository.findById(dniEmpleado)
+                .orElseThrow(() -> new ObjetoNoEncontradoException("empleado"));
+    }
+
+
+
+    private void renovarMembresia(SocioMembresia sm) {
+
+        Membresia membresia = sm.getMembresia();
+
+        LocalDate hoy = LocalDate.now();
+
+        LocalDate inicio;
+        if (sm.getFecha_hasta() != null && sm.getFecha_hasta().isAfter(hoy)) {
+            // todavía activa → se extiende
+            inicio = sm.getFecha_hasta().plusDays(1);
+        } else {
+            // vencida → se reinicia
+            inicio = hoy;
+        }
+
+        LocalDate vencimiento = inicio.plusDays(membresia.getDuracion_dias());
+
+        sm.setFecha_inicio(inicio);
+        sm.setFecha_hasta(vencimiento);
+        sm.setActiva(true);
+
+        socioMembresiaRepository.save(sm);
+    }
+
+    private void validarDetalle(DetallePagoCreateDTO dDTO, Socio socio) {
+
+        if (dDTO.getId_producto() != null && dDTO.getId_sm() != null) {
+            throw new IllegalArgumentException("Un detalle no puede tener producto y membresía a la vez");
+        }
+
+        if (dDTO.getId_producto() == null && dDTO.getId_sm() == null) {
+            throw new IllegalArgumentException("El detalle debe tener producto o membresía");
+        }
+
+        if (socio == null && dDTO.getId_sm() != null) {
+            throw new IllegalArgumentException("Consumidor final no puede pagar membresías");
+        }
+    }
+
+
+
+    @Transactional
+    public PagoDTO crearPago(PagoCreateDTO dto) {
+
+        Socio socio = null;
+        if (dto.getDni_socio() != null) {
+            socio = socioRepository.findById(dto.getDni_socio())
+                    .orElseThrow(() -> new ObjetoNoEncontradoException("dni_socio"));
+        }
+
+        Empleado empleado = obtenerEmpleadoAutenticado();
+
+        MedioPago medioPago = medioPagoRepository.findById(dto.getId_medioPago())
+                .orElseThrow(() -> new ObjetoNoEncontradoException("id_mediopago"));
+
+        Pago pago = new Pago(dto.getEstado(), socio, medioPago, empleado);
         pagoRepository.save(pago);
 
         int numero = 1;
 
+        for (DetallePagoCreateDTO dDTO : dto.getDetalles()) {
 
-        for (DetallePagoCreateDTO dDTO: pagoCreateDTO.getDetalles()){
-            DetallePago d = new DetallePago();
-            d.setPago(pago);
+            validarDetalle(dDTO, socio);
 
-            if (dDTO.getId_producto() != null && dDTO.getId_sm() != null) {
-                throw new IllegalArgumentException("Un detalle no puede tener producto y socioMembresia a la vez.");
-            }
-            if (dDTO.getId_producto() == null && dDTO.getId_sm() == null) {
-                throw new IllegalArgumentException("El detalle debe tener producto o socioMembresia.");
-            }
-            if (socio == null && dDTO.getId_sm() != null) {
-                throw new IllegalArgumentException(
-                        "Un pago a consumidor final no puede tener detalles de socioMembresia."
-                );
-            }
+            DetallePago detalle = new DetallePago();
+            detalle.setPago(pago);
+            detalle.setCantidad(dDTO.getCantidad());
+            detalle.setPrecio_unitario(dDTO.getPrecio_unitario());
+            detalle.setId_detallepago(new DetallePagoId(pago.getId_pago(), numero++));
 
             if (dDTO.getId_producto() != null) {
                 Producto p = productoRepository.findById(dDTO.getId_producto())
                         .orElseThrow(() -> new ObjetoNoEncontradoException("producto"));
-                d.setProducto(p);
+                detalle.setProducto(p);
             }
 
             if (dDTO.getId_sm() != null) {
                 SocioMembresia sm = socioMembresiaRepository.findById(dDTO.getId_sm())
                         .orElseThrow(() -> new ObjetoNoEncontradoException("socioMembresia"));
-                d.setSocioMembresia(sm);
+
+                if (!sm.getSocio().equals(socio)) {
+                    throw new IllegalArgumentException("La membresía no pertenece al socio del pago");
+                }
+
+                renovarMembresia(sm);
+                detalle.setSocioMembresia(sm);
             }
 
-            DetallePagoId id = new DetallePagoId(pago.getId_pago(), numero++);
-            d.setId_detallepago(id);
-            d.setCantidad(dDTO.getCantidad());
-            d.setPrecio_unitario(dDTO.getPrecio_unitario());
-
-            pago.agregarDetalle(d);
-
+            pago.agregarDetalle(detalle);
         }
 
-        BigDecimal sumaSubtotales = pagoRepository.sumarSubtotales(pago.getId_pago());
+        BigDecimal monto = pagoRepository.sumarSubtotales(pago.getId_pago());
+        pago.setMonto(monto);
 
-        pago.setMonto(sumaSubtotales);
-
-
-        pagoRepository.save(pago);
         entityManager.flush();
         entityManager.refresh(pago);
 
         return convertirAPagoDTO(pago);
     }
 
-    public List<PagoDTO> buscarPagos(){
-        List<PagoDTO> pagos = new ArrayList<>();
 
-        for (Pago pago: pagoRepository.findAll()){
-            PagoDTO pagoConvertido = convertirAPagoDTO(pago);
-            pagos.add(pagoConvertido);
-        }
 
-        return pagos;
+
+    @Transactional(readOnly = true)
+    public PagoDTO obtenerPago(Integer id) {
+        Pago pago = pagoRepository.findById(id)
+                .orElseThrow(() -> new ObjetoNoEncontradoException("pago"));
+        return convertirAPagoDTO(pago);
+    }
+
+    @Transactional(readOnly = true)
+    public List<PagoDTO> buscarPagos() {
+        return pagoRepository.findAll()
+                .stream()
+                .map(this::convertirAPagoDTO)
+                .toList();
     }
 
 
+
+    @Transactional
+    public void anularPago(Integer id) {
+        Pago pago = pagoRepository.findById(id)
+                .orElseThrow(() -> new ObjetoNoEncontradoException("pago"));
+
+        if (pago.getEstado() == EstadoPago.ANULADO) {
+            throw new IllegalStateException("El pago ya está anulado");
+        }
+
+        pago.setEstado(EstadoPago.ANULADO);
+
+
+        // revertir membresías / stock / caja
+
+        pagoRepository.save(pago);
+    }
 }
+

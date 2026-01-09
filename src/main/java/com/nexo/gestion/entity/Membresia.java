@@ -13,6 +13,7 @@ public class Membresia {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id_membresia;
     private Integer duracion_dias;
+    private Integer asistencias_por_semana;
     @Column(precision = 10, scale = 2)
     private BigDecimal precio_sugerido;
     private String nombre;
@@ -22,10 +23,11 @@ public class Membresia {
 
     public Membresia(){}
 
-    public Membresia(String nombre, Integer duracion_dias, BigDecimal precio_sugerido){
+    public Membresia(String nombre, Integer duracion_dias, BigDecimal precio_sugerido, Integer asistencias_por_semana){
         this.nombre = nombre;
         this.duracion_dias = duracion_dias;
         this.precio_sugerido = precio_sugerido;
+        this.asistencias_por_semana = asistencias_por_semana;
         this.activo = true;
     }
 
@@ -43,6 +45,14 @@ public class Membresia {
 
     public List<SocioMembresia> getSocios() {
         return socios;
+    }
+
+    public Integer getAsistencias_por_semana() {
+        return asistencias_por_semana;
+    }
+
+    public void setAsistencias_por_semana(Integer asistencias_por_semana) {
+        this.asistencias_por_semana = asistencias_por_semana;
     }
 
     public void agregarSocio(SocioMembresia socio) {

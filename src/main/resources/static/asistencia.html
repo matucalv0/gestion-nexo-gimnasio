@@ -17,42 +17,33 @@
       <div class="panel-header">
         <h1>Registrar asistencia</h1>
         <div class="header-actions">
-          <button onclick="volverHome()">Home</button>
+          <button id="btnHome">Home</button>
         </div>
       </div>
 
-
       <!-- Acciones -->
       <section class="actions">
-
-
         <input
-        type="text"
-        id="inputBusqueda"
-        name="busqueda"
-        autocomplete="off"
-        placeholder="Ingrese DNI o nombre"
-        autofocus
-    />
+          type="text"
+          id="inputBusqueda"
+          autocomplete="off"
+          placeholder="Ingrese DNI o nombre"
+          autofocus
+        />
 
-    <button id="btnRegistrar" class="primary">Registrar</button>
+        <button id="btnRegistrar" class="primary">Registrar</button>
 
-  <!-- Lista de coincidencias -->
-  <div id="resultadosBusqueda" class="resultados-busqueda"></div>
+        <div id="resultadosBusqueda" class="resultados-busqueda"></div>
+      </section>
 
-</section>
-
-<div id="resultado" class="resultado"></div>
-
-<div id="infoSocio" class="info-socio"></div>
-<div id="infoMembresia" class="info-membresia"></div>
-
+      <div id="resultado" class="resultado"></div>
+      <div id="infoSocio" class="info-socio"></div>
+      <div id="infoMembresia" class="info-membresia"></div>
 
     </div>
   </main>
 
-  <script src="../js/auth.js"></script>
-  <script src="../js/api.js"></script>
-  <script src="../js/asistencia.js"></script>
+  <script type="module" src="../js/pages/asistencia.js"></script>
 </body>
 </html>
+

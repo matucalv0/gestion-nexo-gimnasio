@@ -9,12 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PagoCreateDTO {
+
     private EstadoPago estado;
-    private BigDecimal monto;
-    private String dni_empleado;
-    private String dni_socio;
+    private String dni_socio; // opcional
     private Integer id_medioPago;
-    List<DetallePagoCreateDTO> detalles = new ArrayList<>();
+    private List<DetallePagoCreateDTO> detalles = new ArrayList<>();
 
     public EstadoPago getEstado() {
         return estado;
@@ -22,22 +21,6 @@ public class PagoCreateDTO {
 
     public void setEstado(EstadoPago estado) {
         this.estado = estado;
-    }
-
-    public BigDecimal getMonto() {
-        return monto;
-    }
-
-    public void setMonto(BigDecimal monto) {
-        this.monto = monto;
-    }
-
-    public String getDni_empleado() {
-        return dni_empleado;
-    }
-
-    public void setDni_empleado(String dni_empleado) {
-        this.dni_empleado = dni_empleado;
     }
 
     public String getDni_socio() {
@@ -64,3 +47,4 @@ public class PagoCreateDTO {
         this.detalles = detalles;
     }
 }
+

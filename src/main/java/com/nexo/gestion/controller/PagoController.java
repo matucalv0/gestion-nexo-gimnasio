@@ -15,27 +15,38 @@ import java.util.List;
 @RestController
 @RequestMapping("/pagos")
 public class PagoController {
+
     private final PagoService pagoService;
 
-    public PagoController(PagoService pagoService){
+    public PagoController(PagoService pagoService) {
         this.pagoService = pagoService;
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @PostMapping
-    public ResponseEntity<PagoDTO> altaPago(@RequestBody PagoCreateDTO pagoCreateDTO){
-        PagoDTO pago = pagoService.crearPago(pagoCreateDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(pago);
+    public ResponseEntity<PagoDTO> altaPago(@RequestBody PagoCreateDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(pagoService.crearPago(dto));
     }
+
 
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping
-    public ResponseEntity<List<PagoDTO>> mostrarPagos(){
-        List<PagoDTO> pagos = pagoService.buscarPagos();
-        return ResponseEntity.ok(pagos);
+    public ResponseEntity<List<PagoDTO>> mostrarPagos() {
+        return ResponseEntity.ok(pagoService.buscarPagos());
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
+    @GetMapping("/{id}")
+    public ResponseEntity<PagoDTO> obtenerPago(@PathVariable Integer id) {
+        return ResponseEntity.ok(pagoService.obtenerPago(id));
+    }
 
-
-
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PatchMapping("/{id}/anular")
+    public ResponseEntity<Void> anularPago(@PathVariable Integer id) {
+        pagoService.anularPago(id);
+        return ResponseEntity.noContent().build();
+    }
 }
+

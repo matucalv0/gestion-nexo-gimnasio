@@ -12,5 +12,7 @@ public record MembresiaDTO(
         @NotBlank
         BigDecimal precio_sugerido,
         @NotBlank
-        String nombre
+        String nombre,
+        Integer asistencias_por_semana,
+        boolean estado
 ) {}

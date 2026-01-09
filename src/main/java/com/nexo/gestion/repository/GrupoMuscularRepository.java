@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 
 public interface GrupoMuscularRepository extends JpaRepository<GrupoMuscular, Integer> {
+    boolean existsByNombre(String nombre);
 }

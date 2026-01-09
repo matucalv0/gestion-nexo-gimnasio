@@ -16,6 +16,7 @@ public class SocioMembresia {
     private Integer id_sm;
     private LocalDate fecha_inicio;
     private LocalDate fecha_hasta;
+    private boolean activa;
     @Column(precision = 10, scale = 2)
     private BigDecimal precio;
     @ManyToOne
@@ -33,12 +34,22 @@ public class SocioMembresia {
         this.precio = precio;
         this.socio = socio;
         this.membresia = membresia;
+        this.activa = true;
+    }
+
+    public boolean isActiva() {
+        return activa;
+    }
+
+    public void setActiva(boolean activa) {
+        this.activa = activa;
     }
 
     public SocioMembresia(Socio socio, Membresia membresia){
         this.precio = membresia.getPrecio_sugerido();
         this.socio = socio;
         this.membresia = membresia;
+        this.activa = true;
     }
 
     @PrePersist

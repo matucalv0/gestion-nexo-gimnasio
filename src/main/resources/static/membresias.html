@@ -3,48 +3,49 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Asistencias · NEXO</title>
+  <title>Membresías · NEXO</title>
 
   <link rel="stylesheet" href="../css/main.css" />
-  <link rel="stylesheet" href="../css/socios.css" />
-  <link rel="stylesheet" href="../css/asistencias.css" />
+  <link rel="stylesheet" href="../css/membresias.css" />
 </head>
-
-<body id="asistenciasPage">
+<body id="membresiasPage">
 
   <main class="panel-container">
     <div class="panel-card">
 
       <!-- Header -->
       <div class="panel-header">
-        <h1>Asistencias</h1>
+        <h1>Membresías</h1>
         <div class="header-actions">
           <button id="btnHome">Home</button>
-          <button id="btnRegistrar" class="primary">
-            Registrar asistencia
-          </button>
+          <button id="btnLogout">Cerrar sesión</button>
         </div>
       </div>
 
-      <!-- Buscador -->
+      <!-- Acciones -->
       <section class="actions">
         <input
           type="text"
           id="inputBusqueda"
           autocomplete="off"
-          placeholder="Buscar por DNI o nombre"
+          placeholder="Buscar por nombre"
         />
         <button id="btnBuscar">Buscar</button>
+        <button id="btnNuevaMembresia" class="primary">
+          + Nueva membresía
+        </button>
       </section>
 
       <!-- Tabla -->
       <section class="tabla-container">
-        <table id="tablaAsistencias">
+        <table id="tablaMembresias">
           <thead>
             <tr>
               <th>Nombre</th>
-              <th>DNI</th>
-              <th>Fecha / Hora</th>
+              <th>Duración (días)</th>
+              <th>Asistencias por semana</th>
+              <th>Precio</th>
+              <th>Estado</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -54,7 +55,8 @@
     </div>
   </main>
 
-  <!-- SOLO módulos -->
-  <script type="module" src="../js/pages/asistencias.js"></script>
+  <script src="../js/auth/auth.js"></script>
+  <script src="../js/api/api.js"></script>
+  <script type="module" src="../js/pages/membresias.js"></script>
 </body>
 </html>

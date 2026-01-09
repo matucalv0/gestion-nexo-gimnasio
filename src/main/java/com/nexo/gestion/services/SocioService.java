@@ -67,7 +67,9 @@ public class SocioService {
                 membresia.getId_membresia(),
                 membresia.getDuracion_dias(),
                 membresia.getPrecio_sugerido(),
-                membresia.getNombre()
+                membresia.getNombre(),
+                membresia.getAsistencias_por_semana(),
+                membresia.isActivo()
         );
     }
 

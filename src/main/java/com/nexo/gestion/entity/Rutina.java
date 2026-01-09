@@ -17,16 +17,16 @@ public class Rutina {
     private String descripcion;
     private String nombre;
     private LocalDate fecha;
+
     @ManyToOne
     @JoinColumn(name = "dni_empleado")
-
     private Empleado empleado;
+
     @ManyToOne
     @JoinColumn(name = "dni_socio")
-
     private Socio socio;
-    @OneToMany(mappedBy = "rutina")
 
+    @OneToMany(mappedBy = "rutina")
     List<EjercicioRutina> ejercicios = new ArrayList<>();
 
     public Rutina(){}

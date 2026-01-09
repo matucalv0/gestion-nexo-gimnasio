@@ -1,0 +1,31 @@
+.form-subtitle {
+  margin: 24px 0 8px;
+  color: var(--beige);
+  letter-spacing: 1px;
+}
+
+.tabla-detalle {
+  width: 100%;
+  margin: 16px 0;
+  border-collapse: collapse;
+}
+
+.tabla-detalle th,
+.tabla-detalle td {
+  padding: 10px;
+  border-bottom: 1px solid #2f3e48;
+  color: #d9d0c2;
+}
+
+.tabla-detalle th {
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.resultado.ok {
+  color: #6fcf97;
+}
+
+.resultado.warn {
+  color: #e57373;
+}

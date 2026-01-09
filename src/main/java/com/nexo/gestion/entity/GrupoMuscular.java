@@ -9,7 +9,7 @@ import jakarta.persistence.Id;
 public class GrupoMuscular {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer ig_grupo;
+    private Integer id_grupo;
     private String nombre;
 
     public GrupoMuscular(){}
@@ -18,12 +18,12 @@ public class GrupoMuscular {
         this.nombre = nombre;
     }
 
-    public Integer getIg_grupo() {
-        return ig_grupo;
+    public Integer getId_grupo() {
+        return id_grupo;
     }
 
-    public void setIg_grupo(Integer ig_grupo) {
-        this.ig_grupo = ig_grupo;
+    public void setId_grupo(Integer id_grupo) {
+        this.id_grupo = id_grupo;
     }
 
     public String getNombre() {

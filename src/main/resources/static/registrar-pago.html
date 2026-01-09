@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registrar pago · NEXO</title>
+
+  <link rel="stylesheet" href="../css/main.css" />
+  <link rel="stylesheet" href="../css/registrar-socio.css" />
+</head>
+
+<body id="registrarPagoPage">
+
+<main class="panel-container">
+  <div class="panel-card">
+
+    <!-- Header -->
+    <div class="panel-header">
+      <h1>Registrar pago</h1>
+      <div class="header-actions">
+        <button id="btnHome">Home</button>
+        <button id="btnLogout">Cerrar sesión</button>
+      </div>
+    </div>
+
+    <!-- Formulario -->
+    <form id="pagoForm" class="panel-form">
+
+      <label class="form-label">DNI socio (opcional)</label>
+      <input type="text" id="dniSocio" class="form-input" />
+
+      <label class="form-label">Medio de pago *</label>
+      <select id="medioPago" class="form-input" required></select>
+
+      <label class="form-label">Tipo de detalle *</label>
+      <select id="tipoDetalle" class="form-input">
+        <option value="PRODUCTO">Producto</option>
+        <option value="MEMBRESIA">Membresía</option>
+      </select>
+
+      <!-- Grupo Producto -->
+      <div id="productoGroup">
+        <label class="form-label">Producto *</label>
+        <select id="producto" class="form-input"></select>
+
+        <label class="form-label">Cantidad *</label>
+        <input type="number" id="cantidad" class="form-input" value="1" min="1" />
+      </div>
+
+      <!-- Grupo Membresía -->
+      <div id="membresiaGroup" style="display: none;">
+        <label class="form-label">Membresía *</label>
+        <select id="socioMembresia" class="form-input"></select>
+      </div>
+
+      <label class="form-label">Precio unitario</label>
+      <input type="number" id="precio" class="form-input" readonly />
+
+      <div class="form-actions">
+        <button type="button" id="btnAgregarDetalle" class="form-btn">
+          Agregar detalle
+        </button>
+
+        <button type="submit" class="form-btn primary">
+          Registrar pago
+        </button>
+      </div>
+
+    </form>
+
+    <!-- Tabla de detalles -->
+    <section class="tabla-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Descripción</th>
+            <th>Cantidad</th>
+            <th>Precio</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="detallesBody"></tbody>
+      </table>
+    </section>
+
+    <!-- Resultado -->
+    <div id="resultado" class="resultado"></div>
+
+  </div>
+</main>
+
+<script type="module" src="../js/pages/registrar-pago.js"></script>
+</body>
+</html>
+
+
+
+
+
