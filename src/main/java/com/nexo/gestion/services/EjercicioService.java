@@ -1,10 +1,8 @@
 package com.nexo.gestion.services;
 
 import com.nexo.gestion.dto.EjercicioDTO;
-import com.nexo.gestion.dto.ProductoDTO;
 import com.nexo.gestion.entity.Ejercicio;
 import com.nexo.gestion.entity.GrupoMuscular;
-import com.nexo.gestion.entity.Producto;
 import com.nexo.gestion.exceptions.ObjetoDuplicadoException;
 import com.nexo.gestion.exceptions.ObjetoNoEncontradoException;
 import com.nexo.gestion.repository.EjercicioRepository;
@@ -29,7 +27,7 @@ public class EjercicioService {
                 ejercicio.getNombre(),
                 ejercicio.getDescripcion(),
                 ejercicio.getVideo(),
-                ejercicio.getGrupoMuscular().getId_grupo()
+                ejercicio.getGrupoMuscular().getIdGrupo()
         );
     }
 

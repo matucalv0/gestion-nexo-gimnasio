@@ -1,15 +1,13 @@
 package com.nexo.gestion.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class Puesto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_puesto;
+    @Column(name = "id_puesto")
+    private Integer idPuesto;
     private String nombre;
 
     public Puesto(){}
@@ -25,12 +23,12 @@ public class Puesto {
                 '}';
     }
 
-    public Integer getId_puesto() {
-        return id_puesto;
+    public Integer getIdPuesto() {
+        return idPuesto;
     }
 
-    public void setId_puesto(Integer id_puesto) {
-        this.id_puesto = id_puesto;
+    public void setIdPuesto(Integer idPuesto) {
+        this.idPuesto = idPuesto;
     }
 
     public String getNombre() {

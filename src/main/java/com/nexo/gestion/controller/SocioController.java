@@ -22,10 +22,10 @@ public class SocioController {
         this.socioService = socioService;
     }
 
-    @Valid
+
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<SocioDTO> altaSocio(@RequestBody SocioCreateDTO socioCreateDTO){
+    public ResponseEntity<SocioDTO> altaSocio(@Valid @RequestBody SocioCreateDTO socioCreateDTO){
         SocioDTO socio = socioService.registrarSocio(socioCreateDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(socio);
     }
@@ -67,7 +67,7 @@ public class SocioController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
-    @PostMapping("/{dni}/membresias/{id_membresia}")
+    @PostMapping("/{dni}/membresias/{idMembresia}")
     public ResponseEntity<SocioMembresiaDTO> crearMembresiaParaSocio(@PathVariable String dni, @PathVariable Integer id_membresia){
         SocioMembresiaDTO suscripcion = socioService.asignarMembresia(dni, id_membresia);
         return ResponseEntity.ok(suscripcion);

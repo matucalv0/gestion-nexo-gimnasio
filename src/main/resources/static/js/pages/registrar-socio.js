@@ -1,5 +1,6 @@
 import { checkAuth, logout } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
+import { mostrarAlerta, limpiarAlertas } from "../ui/alerta.js";
 
 checkAuth();
 
@@ -7,16 +8,11 @@ const API_URL = "/socios";
 
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("registrarSocioForm");
-  const resultado = document.getElementById("resultado");
-
   const btnHome = document.getElementById("btnHome");
   const btnLogout = document.getElementById("btnLogout");
 
   /* ===== Navegación ===== */
-  btnHome.addEventListener("click", () => {
-    window.location.href = "home.html";
-  });
-
+  btnHome.addEventListener("click", () => window.location.href = "home.html");
   btnLogout.addEventListener("click", logout);
 
   /* ===== Submit ===== */
@@ -24,15 +20,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function registrarSocio(e) {
     e.preventDefault();
-    limpiarResultado();
 
-    const data = {
-      nombre: document.getElementById("fullname").value.trim(),
-      email: document.getElementById("email").value.trim(),
-      telefono: document.getElementById("telefono").value.trim(),
-      dni: document.getElementById("dni").value.trim(),
-      fechaNacimiento: document.getElementById("fechaNacimiento").value
-    };
+    limpiarErrores();
+    limpiarAlertas();
+
+    const data = obtenerDatosFormulario();
 
     try {
       const res = await authFetch(API_URL, {
@@ -40,27 +32,61 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify(data)
       });
 
+      const body = await res.json();
+
       if (!res.ok) {
-        const err = await res.json();
-        throw err.message || "Error al registrar socio";
+        await manejarErrores(res, body);
+        return;
       }
 
-      mostrarResultado("✔ Socio registrado correctamente", "ok");
+      mostrarAlerta({ mensaje: "Socio registrado correctamente", tipo: "success" });
+
       form.reset();
 
-    } catch (err) {
-      mostrarResultado(err, "warn");
+    } catch {
+      mostrarAlerta({ mensaje: "No se pudo conectar con el servidor", tipo: "danger" });
     }
   }
 
   /* ===== Helpers ===== */
-  function limpiarResultado() {
-    resultado.textContent = "";
-    resultado.className = "resultado";
+  function obtenerDatosFormulario() {
+    return {
+      nombre: form.nombre.value.trim(),
+      email: form.email.value.trim(),
+      telefono: form.telefono.value.trim(),
+      dni: form.dni.value.trim(),
+      fechaNacimiento: form.fechaNacimiento.value
+    };
   }
 
-  function mostrarResultado(texto, tipo) {
-    resultado.textContent = texto;
-    resultado.classList.add(tipo);
+  async function manejarErrores(res, body) {
+    if (res.status === 400 && typeof body === "object" && body.errors) {
+      mostrarErroresPorCampo(body.errors);
+      return;
+    }
+
+    mostrarAlerta({
+      mensaje: body.message || "Error al registrar socio",
+      tipo: res.status >= 500 ? "danger" : "warning"
+    });
+  }
+
+  function limpiarErrores() {
+    form.querySelectorAll(".error").forEach(span => span.textContent = "");
+  }
+
+  function mostrarErroresPorCampo(errors) {
+    Object.entries(errors).forEach(([campo, mensaje]) => {
+      const input = form.querySelector(`[name="${campo}"]`);
+      if (!input) return;
+      const span = input.nextElementSibling;
+      if (span && span.classList.contains("error")) span.textContent = mensaje;
+    });
   }
 });
+
+
+
+
+
+

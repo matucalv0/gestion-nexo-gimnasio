@@ -1,13 +1,11 @@
 package com.nexo.gestion.dto;
 
-import jakarta.persistence.Column;
-
 import java.math.BigDecimal;
 
 public record ProductoDTO(
-        Integer id_producto,
+        Integer idProducto,
         String nombre,
-        BigDecimal precio_sugerido,
+        BigDecimal precioSugerido,
         Integer stock,
         boolean activo
 ) {}

@@ -5,26 +5,26 @@ import jakarta.persistence.Column;
 import java.math.BigDecimal;
 
 public class MembresiaPatchDTO {
-    private Integer duracion_dias;
+    private Integer duracionDias;
     @Column(precision = 10, scale = 2)
-    private BigDecimal precio_sugerido;
+    private BigDecimal precioSugerido;
     private String nombre;
     private Boolean activo;
 
-    public Integer getDuracion_dias() {
-        return duracion_dias;
+    public Integer getDuracionDias() {
+        return duracionDias;
     }
 
-    public void setDuracion_dias(Integer duracion_dias) {
-        this.duracion_dias = duracion_dias;
+    public void setDuracionDias(Integer duracionDias) {
+        this.duracionDias = duracionDias;
     }
 
-    public BigDecimal getPrecio_sugerido() {
-        return precio_sugerido;
+    public BigDecimal getPrecioSugerido() {
+        return precioSugerido;
     }
 
-    public void setPrecio_sugerido(BigDecimal precio_sugerido) {
-        this.precio_sugerido = precio_sugerido;
+    public void setPrecioSugerido(BigDecimal precioSugerido) {
+        this.precioSugerido = precioSugerido;
     }
 
     public String getNombre() {

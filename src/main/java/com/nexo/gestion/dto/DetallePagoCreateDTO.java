@@ -6,9 +6,10 @@ import java.math.BigDecimal;
 
 public class DetallePagoCreateDTO {
     private Integer cantidad;
-    private BigDecimal precio_unitario;
-    private Integer id_producto;
-    private Integer id_sm;
+    private BigDecimal precioUnitario;
+    private Integer idProducto;
+    private Integer idSocio;
+    private Integer idMembresia;
 
 
     public Integer getCantidad() {
@@ -19,28 +20,36 @@ public class DetallePagoCreateDTO {
         this.cantidad = cantidad;
     }
 
-    public BigDecimal getPrecio_unitario() {
-        return precio_unitario;
+    public BigDecimal getPrecioUnitario() {
+        return precioUnitario;
     }
 
-    public void setPrecio_unitario(BigDecimal precio_unitario) {
-        this.precio_unitario = precio_unitario;
+    public void setPrecioUnitario(BigDecimal precioUnitario) {
+        this.precioUnitario = precioUnitario;
     }
 
 
-    public Integer getId_producto() {
-        return id_producto;
+    public Integer getIdProducto() {
+        return idProducto;
     }
 
-    public void setId_producto(Integer id_producto) {
-        this.id_producto = id_producto;
+    public void setIdProducto(Integer idProducto) {
+        this.idProducto = idProducto;
     }
 
-    public Integer getId_sm() {
-        return id_sm;
+    public Integer getIdSocio() {
+        return idSocio;
     }
 
-    public void setId_sm(Integer id_sm) {
-        this.id_sm = id_sm;
+    public Integer getIdMembresia() {
+        return idMembresia;
+    }
+
+    public void setIdMembresia(Integer idMembresia) {
+        this.idMembresia = idMembresia;
+    }
+
+    public void setIdSocio(Integer idSocio) {
+        this.idSocio = idSocio;
     }
 }

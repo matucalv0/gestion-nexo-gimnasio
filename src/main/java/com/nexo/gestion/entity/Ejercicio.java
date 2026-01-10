@@ -1,10 +1,6 @@
 package com.nexo.gestion.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import jakarta.persistence.criteria.CriteriaBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,9 +9,12 @@ import java.util.List;
 public class Ejercicio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_ejercicio;
+    @Column(name = "id_ejercicio")
+    private Integer idEjercicio;
+
     private String nombre;
-    private String video_url;
+    @Column(name = "video_url")
+    private String videoUrl;
     private String descripcion;
     @ManyToOne
     @JoinColumn(name = "id_grupo")
@@ -35,16 +34,16 @@ public class Ejercicio {
     public String toString() {
         return "Ejercicio{" +
                 "descripcion='" + descripcion + '\'' +
-                ", video='" + video_url + '\'' +
+                ", video='" + videoUrl + '\'' +
                 ", nombre='" + nombre + '\'' +
-                ", id_ejercicio=" + id_ejercicio +
+                ", id_ejercicio=" + idEjercicio +
                 '}';
     }
 
     public Ejercicio(String nombre, GrupoMuscular grupoMuscular, String video, String descripcion){
         this.nombre = nombre;
         this.grupoMuscular = grupoMuscular;
-        this.video_url = video;
+        this.videoUrl = video;
         this.descripcion = descripcion;
 
     }
@@ -58,12 +57,12 @@ public class Ejercicio {
         rutina.setEjercicio(this);
     }
 
-    public Integer getId_ejercicio() {
-        return id_ejercicio;
+    public Integer getIdEjercicio() {
+        return idEjercicio;
     }
 
-    public void setId_ejercicio(Integer id_ejercicio) {
-        this.id_ejercicio = id_ejercicio;
+    public void setIdEjercicio(Integer idEjercicio) {
+        this.idEjercicio = idEjercicio;
     }
 
     public String getNombre() {
@@ -75,11 +74,11 @@ public class Ejercicio {
     }
 
     public String getVideo() {
-        return video_url;
+        return videoUrl;
     }
 
     public void setVideo(String video) {
-        this.video_url = video;
+        this.videoUrl = video;
     }
 
     public String getDescripcion() {

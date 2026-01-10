@@ -1,6 +1,5 @@
 package com.nexo.gestion.dto;
 
-import com.nexo.gestion.entity.Puesto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
@@ -15,8 +14,8 @@ public record EmpleadoDTO(
         @Email
         String email,
         @NotBlank
-        LocalDate fecha_nacimiento,
+        LocalDate fechaNacimiento,
         Boolean activo,
-        Integer id_puesto
+        Integer idPuesto
 ) {}
 

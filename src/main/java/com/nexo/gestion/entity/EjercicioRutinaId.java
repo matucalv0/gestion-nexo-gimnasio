@@ -1,5 +1,6 @@
 package com.nexo.gestion.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
 import java.io.Serializable;
@@ -7,7 +8,9 @@ import java.util.Objects;
 
 @Embeddable
 public class EjercicioRutinaId implements Serializable {
+    @Column(name = "id_ejercicio")
     private Integer idEjercicio;
+    @Column(name = "id_rutina")
     private Integer idRutina;
 
     public EjercicioRutinaId(){}

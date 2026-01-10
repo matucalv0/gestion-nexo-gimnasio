@@ -1,31 +1,30 @@
 package com.nexo.gestion.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import org.springframework.cglib.core.Local;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Date;
 
 @Entity
 public class SocioMembresia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_sm;
-    private LocalDate fecha_inicio;
-    private LocalDate fecha_hasta;
-    private boolean activa;
+    @Column(name = "id_sm")
+    private Integer idSm;
+    @Column(name = "fecha_inicio")
+    private LocalDate fechaInicio;
+    @Column(name = "fecha_hasta")
+    private LocalDate fechaHasta;
+    private boolean activo;
     @Column(precision = 10, scale = 2)
     private BigDecimal precio;
+
     @ManyToOne
     @JoinColumn(name = "dni_socio")
-
     private Socio socio;
+
     @ManyToOne
     @JoinColumn(name = "id_membresia")
-
     private Membresia membresia;
 
     public SocioMembresia(){}
@@ -34,76 +33,84 @@ public class SocioMembresia {
         this.precio = precio;
         this.socio = socio;
         this.membresia = membresia;
-        this.activa = true;
+        this.activo = true;
     }
 
-    public boolean isActiva() {
-        return activa;
+    public SocioMembresia(Socio socio, Membresia membresia, LocalDate inicio, LocalDate vencimiento) {
+        this.precio = membresia.getPrecioSugerido();
+        this.socio = socio;
+        this.membresia = membresia;
+        this.fechaInicio = inicio;
+        this.fechaHasta = vencimiento;
+        this.activo = true;
     }
 
-    public void setActiva(boolean activa) {
-        this.activa = activa;
+    public boolean isActivo() {
+        return activo;
+    }
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
     }
 
     public SocioMembresia(Socio socio, Membresia membresia){
-        this.precio = membresia.getPrecio_sugerido();
+        this.precio = membresia.getPrecioSugerido();
         this.socio = socio;
         this.membresia = membresia;
-        this.activa = true;
+        this.activo = true;
     }
 
     @PrePersist
-    @PreUpdate
     public void inicializarFechas() {
-        if (this.fecha_inicio == null) {
-            this.fecha_inicio = LocalDate.now();
+        if (this.fechaInicio == null) {
+            this.fechaInicio = LocalDate.now();
         }
 
-
-        this.fecha_hasta = this.fecha_inicio.plusDays(
-                this.membresia.getDuracion_dias()
-        );
+        if (this.fechaHasta == null && this.membresia != null) {
+            this.fechaHasta = this.fechaInicio.plusDays(this.membresia.getDuracionDias());
+        }
     }
+
 
     public boolean cubre(LocalDate fecha) {
-        return (fecha.isEqual(fecha_inicio) || fecha.isAfter(fecha_inicio))
-                && (fecha.isEqual(fecha_hasta) || fecha.isBefore(fecha_hasta));
+        return (fecha.isEqual(fechaInicio) || fecha.isAfter(fechaInicio))
+                && (fecha.isEqual(fechaHasta) || fecha.isBefore(fechaHasta));
     }
 
-    public Integer getId_sm() {
-        return id_sm;
+    public Integer getIdSm() {
+        return idSm;
     }
 
-    public void setId_sm(Integer id_sm) {
-        this.id_sm = id_sm;
+    public void setIdSm(Integer idSm) {
+        this.idSm = idSm;
     }
 
-    public LocalDate getFecha_inicio() {
-        return fecha_inicio;
+    public LocalDate getFechaInicio() {
+        return fechaInicio;
     }
 
     @Override
     public String toString() {
         return "SocioMembresia{" +
-                "id_sm=" + id_sm +
-                ", fecha_inicio=" + fecha_inicio +
-                ", fecha_hasta=" + fecha_hasta +
+                "idSm=" + idSm +
+                ", fechaInicio=" + fechaInicio +
+                ", fechaHasta=" + fechaHasta +
                 ", precio=" + precio +
                 ", socio=" + socio +
                 ", membresia=" + membresia +
                 '}';
     }
 
-    public void setFecha_inicio(LocalDate fecha_inicio) {
-        this.fecha_inicio = fecha_inicio;
+    public void setFechaInicio(LocalDate fechaInicio) {
+        this.fechaInicio = fechaInicio;
     }
 
-    public LocalDate getFecha_hasta() {
-        return fecha_hasta;
+    public LocalDate getFechaHasta() {
+        return fechaHasta;
     }
 
-    public void setFecha_hasta(LocalDate fecha_hasta) {
-        this.fecha_hasta = fecha_hasta;
+    public void setFechaHasta(LocalDate fechaHasta) {
+        this.fechaHasta = fechaHasta;
     }
 
     public BigDecimal getPrecio() {

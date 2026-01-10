@@ -30,9 +30,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const data = {
       nombre: document.getElementById("nombre").value.trim(),
-      duracion_dias: Number(document.getElementById("duracion").value),
-      asistencias_por_semana: asistenciasInput ? Number(asistenciasInput) : null,
-      precio_sugerido: Number(document.getElementById("precio").value),
+      duracionDias: Number(document.getElementById("duracion").value),
+      asistenciasPorSemana: asistenciasInput ? Number(asistenciasInput) : null,
+      precioSugerido: Number(document.getElementById("precio").value),
     };
 
     try {

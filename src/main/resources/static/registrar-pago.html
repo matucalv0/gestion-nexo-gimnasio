@@ -1,100 +1,174 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Registrar pago · NEXO</title>
 
-  <link rel="stylesheet" href="../css/main.css" />
-  <link rel="stylesheet" href="../css/registrar-socio.css" />
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registrar Pago · NEXO</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --orange: #E9561E;
+      --beige: #ECD9BA;
+      --dark-bg: #1f2e38;
+      --input-bg: #16222b;
+      --input-border: #2f3e48;
+    }
+  </style>
 </head>
 
-<body id="registrarPagoPage">
+<body class="min-h-screen bg-cover bg-center relative" style="background-image: url('../assets/nexofondo.jpg');">
 
-<main class="panel-container">
-  <div class="panel-card">
+  <!-- Overlay oscuro -->
+  <div class="absolute inset-0 bg-black/60"></div>
 
-    <!-- Header -->
-    <div class="panel-header">
-      <h1>Registrar pago</h1>
-      <div class="header-actions">
-        <button id="btnHome">Home</button>
-        <button id="btnLogout">Cerrar sesión</button>
+  <main class="relative z-10 flex justify-center items-start min-h-screen p-6 pt-16">
+    <div class="w-full max-w-4xl">
+
+      <!-- Header -->
+      <header class="flex justify-between items-center mb-6">
+        <img src="../assets/nexologo.png" alt="NEXO" class="h-12">
+        <div class="flex gap-2">
+          <button id="btnHome"
+            class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">Home</button>
+          <button id="btnLogout"
+            class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">Cerrar sesión</button>
+        </div>
+      </header>
+
+      <!-- Alertas -->
+      <div id="alert-container" class="mb-4"></div>
+
+      <!-- Card -->
+      <div class="bg-[var(--dark-bg)] p-8 rounded-lg shadow-xl">
+
+        <h1 class="text-[var(--beige)] text-2xl font-bold tracking-wide mb-6">Registrar Pago</h1>
+
+        <!-- Formulario -->
+        <form id="pagoForm" class="space-y-4">
+
+          <!-- DNI socio -->
+          <div class="flex flex-col">
+            <label class="text-[var(--beige)] font-semibold mb-1">DNI socio (opcional)</label>
+            <input type="text" id="dniSocio"
+              class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)] focus:outline-none focus:ring-2 focus:ring-[var(--orange)]" />
+            <span class="error text-red-500 text-sm mt-1 block"></span>
+          </div>
+
+          <!-- Empleado -->
+          <div class="flex flex-col">
+            <label class="text-[var(--beige)] font-semibold mb-1">Empleado *</label>
+            <select id="empleado"
+              class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)] focus:outline-none focus:ring-2 focus:ring-[var(--orange)]"
+              required></select>
+            <span class="error text-red-500 text-sm mt-1 block"></span>
+          </div>
+
+          <!-- Medio de pago -->
+          <div class="flex flex-col">
+            <label class="text-[var(--beige)] font-semibold mb-1">Medio de pago *</label>
+            <select id="medioPago"
+              class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)] focus:outline-none focus:ring-2 focus:ring-[var(--orange)]"
+              required></select>
+            <span class="error text-red-500 text-sm mt-1 block"></span>
+          </div>
+
+          <!-- Tipo de detalle -->
+          <div class="flex flex-col">
+            <label class="text-[var(--beige)] font-semibold mb-1">Tipo de detalle *</label>
+            <select id="tipoDetalle"
+              class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)] focus:outline-none focus:ring-2 focus:ring-[var(--orange)]">
+              <option value="PRODUCTO">Producto</option>
+              <option value="MEMBRESIA">Membresía</option>
+            </select>
+          </div>
+
+          <!-- Producto -->
+          <div id="productoGroup" class="flex flex-col space-y-2">
+            <label class="text-[var(--beige)] font-semibold mb-1">Producto *</label>
+            <select id="producto"
+              class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)]"></select>
+
+            <!-- Cantidad + Precio en la misma línea -->
+            <div class="flex flex-row gap-4">
+              <div class="flex flex-col flex-1">
+                <label class="text-[var(--beige)] font-semibold mb-1">Cantidad *</label>
+                <input type="number" id="cantidad"
+                  class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)]"
+                  value="1" min="1" />
+              </div>
+
+              <div class="flex flex-col flex-1">
+                <label class="text-[var(--beige)] font-semibold mb-1">Precio unitario</label>
+                <input type="number" id="precio"
+                  class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)]"
+                  readonly />
+              </div>
+            </div>
+          </div>
+
+          <!-- Membresía -->
+          <div id="membresiaGroup" class="flex flex-col space-y-2 hidden">
+            <label class="text-[var(--beige)] font-semibold mb-1">Membresía *</label>
+            <select id="membresia"
+              class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)]"></select>
+
+            <div class="flex flex-row gap-4">
+              <div class="flex flex-col flex-1">
+                <label class="text-[var(--beige)] font-semibold mb-1">Cantidad *</label>
+                <input type="number" id="cantidadMembresia"
+                  class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)]"
+                  value="1" min="1" disabled />
+              </div>
+
+              <div class="flex flex-col flex-1">
+                <label class="text-[var(--beige)] font-semibold mb-1">Precio unitario</label>
+                <input type="number" id="precioMembresia"
+                  class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)]"
+                  readonly />
+              </div>
+            </div>
+          </div>
+
+          <!-- Botones -->
+          <div class="flex flex-row gap-4">
+            <button type="button" id="btnAgregarDetalle"
+              class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md flex-1">Agregar
+              detalle</button>
+            <button type="submit"
+              class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md flex-1">Registrar
+              pago</button>
+          </div>
+        </form>
+
+        <!-- Tabla de detalles -->
+        <section class="mt-6">
+          <div class="overflow-x-auto rounded-lg border border-gray-300 shadow-sm">
+            <table class="w-full text-sm text-left text-gray-800">
+              <thead class="bg-gray-100 border-b border-gray-300">
+                <tr>
+                  <th class="px-6 py-3 font-medium">Tipo</th>
+                  <th class="px-6 py-3 font-medium">Descripción</th>
+                  <th class="px-6 py-3 font-medium">Cantidad</th>
+                  <th class="px-6 py-3 font-medium">Precio</th>
+                  <th class="px-6 py-3 font-medium">Acción</th>
+                </tr>
+              </thead>
+              <tbody id="detallesBody">
+                <!-- Filas dinámicas -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
       </div>
+
     </div>
+  </main>
 
-    <!-- Formulario -->
-    <form id="pagoForm" class="panel-form">
-
-      <label class="form-label">DNI socio (opcional)</label>
-      <input type="text" id="dniSocio" class="form-input" />
-
-      <label class="form-label">Medio de pago *</label>
-      <select id="medioPago" class="form-input" required></select>
-
-      <label class="form-label">Tipo de detalle *</label>
-      <select id="tipoDetalle" class="form-input">
-        <option value="PRODUCTO">Producto</option>
-        <option value="MEMBRESIA">Membresía</option>
-      </select>
-
-      <!-- Grupo Producto -->
-      <div id="productoGroup">
-        <label class="form-label">Producto *</label>
-        <select id="producto" class="form-input"></select>
-
-        <label class="form-label">Cantidad *</label>
-        <input type="number" id="cantidad" class="form-input" value="1" min="1" />
-      </div>
-
-      <!-- Grupo Membresía -->
-      <div id="membresiaGroup" style="display: none;">
-        <label class="form-label">Membresía *</label>
-        <select id="socioMembresia" class="form-input"></select>
-      </div>
-
-      <label class="form-label">Precio unitario</label>
-      <input type="number" id="precio" class="form-input" readonly />
-
-      <div class="form-actions">
-        <button type="button" id="btnAgregarDetalle" class="form-btn">
-          Agregar detalle
-        </button>
-
-        <button type="submit" class="form-btn primary">
-          Registrar pago
-        </button>
-      </div>
-
-    </form>
-
-    <!-- Tabla de detalles -->
-    <section class="tabla-container">
-      <table>
-        <thead>
-          <tr>
-            <th>Tipo</th>
-            <th>Descripción</th>
-            <th>Cantidad</th>
-            <th>Precio</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="detallesBody"></tbody>
-      </table>
-    </section>
-
-    <!-- Resultado -->
-    <div id="resultado" class="resultado"></div>
-
-  </div>
-</main>
-
-<script type="module" src="../js/pages/registrar-pago.js"></script>
+  <script type="module" src="../js/pages/registrar-pago.js"></script>
 </body>
+
 </html>
-
-
-
-
 

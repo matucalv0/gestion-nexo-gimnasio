@@ -1,18 +1,15 @@
 package com.nexo.gestion.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
 public class EjercicioRutina {
     @EmbeddedId
-    private EjercicioRutinaId id_ejercicioRutina;
+    private EjercicioRutinaId idEjercicioRutina;
 
     @ManyToOne
     @MapsId("idEjercicio")
     @JoinColumn(name = "id_ejercicio")
-
     private Ejercicio ejercicio;
 
     @ManyToOne
@@ -25,17 +22,17 @@ public class EjercicioRutina {
     public EjercicioRutina(){}
 
     public EjercicioRutina(Ejercicio ejercicio, Rutina rutina){
-        this.id_ejercicioRutina = new EjercicioRutinaId(ejercicio.getId_ejercicio(), rutina.getId_rutina());
+        this.idEjercicioRutina = new EjercicioRutinaId(ejercicio.getIdEjercicio(), rutina.getIdRutina());
         this.rutina = rutina;
         this.ejercicio = ejercicio;
     }
 
-    public EjercicioRutinaId getId_ejercicioRutina() {
-        return id_ejercicioRutina;
+    public EjercicioRutinaId getIdEjercicioRutina() {
+        return idEjercicioRutina;
     }
 
-    public void setId_ejercicioRutina(EjercicioRutinaId id_ejercicioRutina) {
-        this.id_ejercicioRutina = id_ejercicioRutina;
+    public void setIdEjercicioRutina(EjercicioRutinaId idEjercicioRutina) {
+        this.idEjercicioRutina = idEjercicioRutina;
     }
 
     public Ejercicio getEjercicio() {
@@ -49,7 +46,7 @@ public class EjercicioRutina {
     @Override
     public String toString() {
         return "EjercicioRutina{" +
-                "id_ejercicioRutina=" + id_ejercicioRutina +
+                "id_ejercicioRutina=" + idEjercicioRutina +
                 ", ejercicio=" + ejercicio +
                 ", rutina=" + rutina +
                 '}';

@@ -1,13 +1,40 @@
 package com.nexo.gestion.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+
 import java.time.LocalDate;
 
 public class SocioCreateDTO {
+    @NotBlank(message = "El DNI es obligatorio")
+    @Pattern(
+            regexp = "\\d{7,8}",
+            message = "El DNI debe tener 7 u 8 dígitos numéricos"
+    )
     private String dni;
+
+    @NotBlank(message = "El nombre es obligatorio")
+    @Pattern(
+            regexp = "^[A-Za-zÁÉÍÓÚáéíóúÑñ ]{2,50}$",
+            message = "El nombre solo puede contener letras y espacios"
+    )
     private String nombre;
+
+    @NotBlank(message = "El teléfono es obligatorio")
+    @Pattern(
+            regexp = "\\d{8,15}",
+            message = "El teléfono debe ser numérico"
+    )
     private String telefono;
+
+    @NotBlank(message = "El email es obligatorio")
+    @Email(message = "Email inválido")
     private String email;
-    private LocalDate fecha_nacimiento;
+
+    @NotNull(message = "La fecha de nacimiento es obligatoria")
+    private LocalDate fechaNacimiento;
 
     public String getDni() {
         return dni;
@@ -41,11 +68,11 @@ public class SocioCreateDTO {
         this.email = email;
     }
 
-    public LocalDate getFecha_nacimiento() {
-        return fecha_nacimiento;
+    public LocalDate getFechaNacimiento() {
+        return fechaNacimiento;
     }
 
-    public void setFecha_nacimiento(LocalDate fecha_nacimiento) {
-        this.fecha_nacimiento = fecha_nacimiento;
+    public void setFechaNacimiento(LocalDate fechaNacimiento) {
+        this.fechaNacimiento = fechaNacimiento;
     }
 }

@@ -15,7 +15,7 @@ public interface AsistenciaRepository extends JpaRepository<Asistencia, Asistenc
     JOIN a.socio s
     WHERE LOWER(s.nombre) LIKE LOWER(CONCAT('%', :q, '%'))
        OR s.dni LIKE CONCAT('%', :q, '%')
-    ORDER BY a.id_asistencia.fecha_hora DESC
+    ORDER BY a.idAsistencia.fechaHora DESC
     """)
     List<Asistencia> buscarPorNombreODni(@Param("q") String q);
 

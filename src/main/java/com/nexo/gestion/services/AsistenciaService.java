@@ -2,10 +2,8 @@ package com.nexo.gestion.services;
 
 import com.nexo.gestion.dto.AsistenciaDTO;
 import com.nexo.gestion.dto.AsistenciaSocioIdDTO;
-import com.nexo.gestion.dto.SocioDTO;
 import com.nexo.gestion.entity.Asistencia;
 import com.nexo.gestion.entity.AsistenciaSocioId;
-import com.nexo.gestion.entity.Socio;
 import com.nexo.gestion.repository.AsistenciaRepository;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +21,7 @@ public class AsistenciaService {
     private AsistenciaSocioIdDTO convertirAAsistenciaSocioIdDTO(AsistenciaSocioId a){
         return new AsistenciaSocioIdDTO(
                 a.getDniSocio(),
-                a.getFecha_hora()
+                a.getFechaHora()
         );
     }
 
@@ -31,7 +29,7 @@ public class AsistenciaService {
         return new AsistenciaDTO(
                 a.getSocio().getNombre(),
                 a.getSocio().getDni(),
-                a.getId_asistencia().getFecha_hora()
+                a.getIdAsistencia().getFechaHora()
 
         );
     }

@@ -5,6 +5,6 @@ import java.time.LocalDateTime;
 public record AsistenciaDTO(
         String nombre,
         String dni,
-        LocalDateTime fecha_hora
+        LocalDateTime fechaHora
 ) {
 }

@@ -35,7 +35,7 @@ public class RutinaService {
                 ejercicio.getNombre(),
                 ejercicio.getDescripcion(),
                 ejercicio.getVideo(),
-                ejercicio.getGrupoMuscular().getId_grupo()
+                ejercicio.getGrupoMuscular().getIdGrupo()
         );
     }
 
@@ -75,7 +75,7 @@ public class RutinaService {
         Rutina rutina = rutinaRepository.findById(idRutina).orElseThrow(() -> new ObjetoNoEncontradoException("No se encontro la rutina " + idRutina));
         Ejercicio ejercicio = ejercicioRepository.findById(idEjercicio).orElseThrow(() -> new ObjetoNoEncontradoException("No se encontro el ejercicio " + idEjercicio));
 
-        ejercicioRutinaRepository.deleteById(new EjercicioRutinaId(ejercicio.getId_ejercicio(), rutina.getId_rutina()));
+        ejercicioRutinaRepository.deleteById(new EjercicioRutinaId(ejercicio.getIdEjercicio(), rutina.getIdRutina()));
         return convertirAEjercicioDTO(ejercicio);
 
 

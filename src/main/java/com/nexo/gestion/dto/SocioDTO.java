@@ -14,7 +14,7 @@ public record SocioDTO(
         @Email
         String email,
         @NotBlank
-        LocalDate fecha_nacimiento,
+        LocalDate fechaNacimiento,
         boolean activo
 )
 {}

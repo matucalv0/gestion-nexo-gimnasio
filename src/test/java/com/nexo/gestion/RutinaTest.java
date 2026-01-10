@@ -2,7 +2,6 @@ package com.nexo.gestion;
 
 import com.nexo.gestion.entity.*;
 import com.nexo.gestion.repository.*;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -39,7 +38,7 @@ public class RutinaTest {
         grupoMuscularRepository.save(pecho);
         Ejercicio ejercicio = new Ejercicio("Press plano", pecho);
         Ejercicio guardado = ejercicioRepository.save(ejercicio);
-        assertNotNull(guardado.getId_ejercicio());
+        assertNotNull(guardado.getIdEjercicio());
 
     }
 
@@ -54,7 +53,7 @@ public class RutinaTest {
         Rutina rutina = new Rutina("Musculacion", "muscular los musculos", empleado);
         Rutina guardado = rutinaRepository.save(rutina);
 
-        assertNotNull(guardado.getId_rutina());
+        assertNotNull(guardado.getIdRutina());
 
     }
     @Test
@@ -83,7 +82,7 @@ public class RutinaTest {
         System.out.println(guardado);
 
 
-        assertNotNull(guardado.getId_ejercicioRutina());
+        assertNotNull(guardado.getIdEjercicioRutina());
 
     }
 }

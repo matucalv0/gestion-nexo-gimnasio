@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 public class ProductoPatchDTO {
     private String nombre;
     @Column(precision = 10, scale = 2)
-    private BigDecimal precio_sugerido;
+    private BigDecimal precioSugerido;
     private Integer stock;
     private Boolean activo;
 
@@ -19,12 +19,12 @@ public class ProductoPatchDTO {
         this.nombre = nombre;
     }
 
-    public BigDecimal getPrecio_sugerido() {
-        return precio_sugerido;
+    public BigDecimal getPrecioSugerido() {
+        return precioSugerido;
     }
 
-    public void setPrecio_sugerido(BigDecimal precio_sugerido) {
-        this.precio_sugerido = precio_sugerido;
+    public void setPrecioSugerido(BigDecimal precioSugerido) {
+        this.precioSugerido = precioSugerido;
     }
 
     public Integer getStock() {

@@ -1,8 +1,6 @@
 package com.nexo.gestion.services;
 
-import com.nexo.gestion.dto.EmpleadoDTO;
 import com.nexo.gestion.dto.PuestoDTO;
-import com.nexo.gestion.entity.Empleado;
 import com.nexo.gestion.entity.Puesto;
 import com.nexo.gestion.exceptions.ObjetoDuplicadoException;
 import com.nexo.gestion.repository.PuestoRepository;
@@ -21,7 +19,7 @@ public class PuestoService {
 
     private PuestoDTO convertirAPuestoDTO(Puesto puesto) {
         return new PuestoDTO(
-                puesto.getId_puesto(),
+                puesto.getIdPuesto(),
                 puesto.getNombre()
         );
     }

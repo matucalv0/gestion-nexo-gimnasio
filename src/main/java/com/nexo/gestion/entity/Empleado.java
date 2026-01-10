@@ -1,14 +1,8 @@
 package com.nexo.gestion.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 public class Empleado {
@@ -17,9 +11,15 @@ public class Empleado {
     private String nombre;
     private String telefono;
     private String email;
-    private LocalDate fecha_inicio;
-    private LocalDate fecha_nacimiento;
+
+    @Column(name = "fecha_inicio")
+    private LocalDate fechaInicio;
+
+    @Column(name = "fecha_nacimiento")
+    private LocalDate fechaNacimiento;
+
     private boolean activo;
+
     @ManyToOne
     @JoinColumn(name = "id_puesto")
     private Puesto puesto;
@@ -31,22 +31,22 @@ public class Empleado {
         this.nombre = nombre;
     }
 
-    public Empleado(String dni, String nombre, String telefono, String email, LocalDate fecha_nacimiento, Puesto puesto){
+    public Empleado(String dni, String nombre, String telefono, String email, LocalDate fechaNacimiento, Puesto puesto){
         this.dni = dni;
         this.nombre = nombre;
         this.telefono = telefono;
         this.email = email;
-        this.fecha_nacimiento = fecha_nacimiento;
+        this.fechaNacimiento = fechaNacimiento;
         this.puesto = puesto;
         this.activo = true;
     }
 
-    public Empleado(String dni, String nombre, String telefono, String email, LocalDate fecha_nacimiento){
+    public Empleado(String dni, String nombre, String telefono, String email, LocalDate fechaNacimiento){
         this.dni = dni;
         this.nombre = nombre;
         this.telefono = telefono;
         this.email = email;
-        this.fecha_nacimiento = fecha_nacimiento;
+        this.fechaNacimiento = fechaNacimiento;
     }
 
     public String getDni() {
@@ -89,12 +89,12 @@ public class Empleado {
         this.email = email;
     }
 
-    public LocalDate getFecha_inicio() {
-        return fecha_inicio;
+    public LocalDate getFechaInicio() {
+        return fechaInicio;
     }
 
-    public void setFecha_inicio(LocalDate fecha_inicio) {
-        this.fecha_inicio = fecha_inicio;
+    public void setFechaInicio(LocalDate fechaInicio) {
+        this.fechaInicio = fechaInicio;
     }
 
     @Override
@@ -106,12 +106,12 @@ public class Empleado {
                 '}';
     }
 
-    public LocalDate getFecha_nacimiento() {
-        return fecha_nacimiento;
+    public LocalDate getFechaNacimiento() {
+        return fechaNacimiento;
     }
 
-    public void setFecha_nacimiento(LocalDate fecha_nacimiento) {
-        this.fecha_nacimiento = fecha_nacimiento;
+    public void setFechaNacimiento(LocalDate fechaNacimiento) {
+        this.fechaNacimiento = fechaNacimiento;
     }
 
     public Puesto getPuesto() {

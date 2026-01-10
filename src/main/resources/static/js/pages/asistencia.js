@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const data = await res.json();
-      const fecha = new Date(data.fecha_hora).toLocaleDateString("es-AR");
+      const fecha = new Date(data.fechaHora).toLocaleDateString("es-AR");
 
       mostrarResultado(`✔ Asistencia registrada (${fecha})`, "ok");
 

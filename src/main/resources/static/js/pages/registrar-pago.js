@@ -1,222 +1,169 @@
-import { checkAuth } from "../auth/auth.js";
+import { checkAuth, logout } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
+import { mostrarAlerta, limpiarAlertas } from "../ui/alerta.js";
 
 checkAuth();
-
-/* ================== STATE ================== */
 
 let detalles = [];
 let productosCache = [];
 let membresiasCache = [];
 
-/* ================== INIT ================== */
-
 document.addEventListener("DOMContentLoaded", async () => {
 
+  // Cargas iniciales
   await cargarMediosPago();
   await cargarProductos();
   await cargarMembresias();
+  await cargarEmpleados();
 
+  // Eventos
   tipoDetalle.addEventListener("change", onTipoDetalleChange);
   producto.addEventListener("change", cargarPrecioProducto);
-  socioMembresia.addEventListener("change", cargarPrecioMembresia);
-
+  membresia.addEventListener("change", cargarPrecioMembresia);
   btnAgregarDetalle.addEventListener("click", agregarDetalle);
   pagoForm.addEventListener("submit", registrarPago);
 
-  onTipoDetalleChange(); // estado inicial
+  btnHome.addEventListener("click", () => window.location.href = "home.html");
+  btnLogout.addEventListener("click", logout);
+
+  onTipoDetalleChange();
 });
 
 /* ================== CARGAS ================== */
-
 async function cargarMediosPago() {
   const res = await authFetch("/mediosdepago");
   const data = await res.json();
-
   medioPago.innerHTML = `<option value="">Seleccione...</option>`;
-
-  data.forEach(mp => {
-    medioPago.innerHTML += `
-      <option value="${mp.id_medioPago}">
-        ${mp.nombre}
-      </option>`;
-  });
+  data.forEach(mp => medioPago.innerHTML += `<option value="${mp.idMedioPago}">${mp.nombre}</option>`);
 }
 
 async function cargarProductos() {
   const res = await authFetch("/productos");
   productosCache = await res.json();
-
   producto.innerHTML = `<option value="">Seleccione...</option>`;
-
-  productosCache.forEach(p => {
-    producto.innerHTML += `
-      <option value="${p.id_producto}">
-        ${p.nombre}
-      </option>`;
-  });
+  productosCache.forEach(p => producto.innerHTML += `<option value="${p.idProducto}">${p.nombre}</option>`);
 }
 
 async function cargarMembresias() {
   const res = await authFetch("/membresias");
   membresiasCache = await res.json();
+  membresia.innerHTML = `<option value="">Seleccione...</option>`;
+  membresiasCache.forEach(m => membresia.innerHTML += `<option value="${m.idMembresia}">${m.nombre}</option>`);
+}
 
-  socioMembresia.innerHTML = `<option value="">Seleccione...</option>`;
-
-  membresiasCache.forEach(m => {
-    socioMembresia.innerHTML += `
-      <option value="${m.id_membresia}">
-        ${m.nombre}
-      </option>`;
+async function cargarEmpleados() {
+  const res = await authFetch("/empleados");
+  const data = await res.json();
+  empleado.innerHTML = `<option value="">Seleccione...</option>`;
+  data.forEach(e => {
+    if (e.activo) empleado.innerHTML += `<option value="${e.dni}">${e.nombre}</option>`;
   });
 }
 
 /* ================== TIPO DETALLE ================== */
-
 function onTipoDetalleChange() {
-  const tipo = tipoDetalle.value;
+  productoGroup.style.display = tipoDetalle.value === "PRODUCTO" ? "block" : "none";
+  membresiaGroup.style.display = tipoDetalle.value === "MEMBRESIA" ? "block" : "none";
 
-  productoGroup.style.display = tipo === "PRODUCTO" ? "block" : "none";
-  membresiaGroup.style.display = tipo === "MEMBRESIA" ? "block" : "none";
-
-  if (tipo === "MEMBRESIA") {
-    cantidad.value = 1;
-    cantidad.disabled = true;
-  } else {
-    cantidad.disabled = false;
-  }
-
+  cantidad.value = tipoDetalle.value === "MEMBRESIA" ? 1 : cantidad.value;
+  cantidad.disabled = tipoDetalle.value === "MEMBRESIA";
   precio.value = "";
 }
 
 /* ================== PRECIOS ================== */
-
 function cargarPrecioProducto() {
-  const id = Number(producto.value);
-  if (!id) return;
-
-  const p = productosCache.find(p => p.id_producto === id);
+  const p = productosCache.find(p => p.idProducto == producto.value);
   if (!p) return;
-
-  precio.value = p.precio ?? p.precio_sugerido ?? "";
+  precio.value = p.precio ?? p.precioSugerido ?? "";
 }
 
 function cargarPrecioMembresia() {
-  const id = Number(socioMembresia.value);
-  if (!id) return;
-
-  const m = membresiasCache.find(m => m.id_membresia === id);
+  const m = membresiasCache.find(m => m.idMembresia == membresia.value);
   if (!m) return;
-
-  precio.value = m.precio_sugerido;
+  precio.value = m.precioSugerido;
 }
 
 /* ================== DETALLES ================== */
-
 function agregarDetalle() {
   const tipo = tipoDetalle.value;
   const precioUnitario = Number(precio.value);
-
-  if (!precioUnitario || precioUnitario <= 0) {
-    alert("Seleccione un ítem válido");
-    return;
-  }
+  if (!precioUnitario || precioUnitario <= 0) return mostrarAlerta({ mensaje: "Seleccione un ítem válido", tipo: "danger" });
 
   let detalle;
-
   if (tipo === "PRODUCTO") {
-    if (!producto.value) {
-      alert("Seleccione un producto");
-      return;
-    }
-
-    detalle = {
-      id_producto: Number(producto.value),
-      cantidad: Number(cantidad.value),
-      precio_unitario: precioUnitario
-    };
+    if (!producto.value) return mostrarAlerta({ mensaje: "Seleccione un producto", tipo: "danger" });
+    detalle = { idProducto: Number(producto.value), cantidad: Number(cantidad.value), precioUnitario };
   } else {
-    if (!socioMembresia.value) {
-      alert("Seleccione una membresía");
-      return;
-    }
-
-    detalle = {
-      id_sm: Number(socioMembresia.value),
-      cantidad: 1,
-      precio_unitario: precioUnitario
-    };
+    if (!membresia.value) return mostrarAlerta({ mensaje: "Seleccione una membresía", tipo: "danger" });
+    detalle = { idSocio: dniSocio.value ? Number(dniSocio.value) : null, idMembresia: Number(membresia.value), cantidad: 1, precioUnitario };
   }
 
   detalles.push(detalle);
   renderDetalles();
 }
 
-/* ================== RENDER ================== */
-
 function renderDetalles() {
   detallesBody.innerHTML = "";
 
-  detalles.forEach((d, index) => {
+  detalles.forEach((d, i) => {
+    const tipo = d.idProducto ? "Producto" : "Membresía";
+    const desc = d.idProducto
+      ? productosCache.find(p => p.idProducto === d.idProducto)?.nombre ?? "Desconocido"
+      : membresiasCache.find(m => m.idMembresia === d.idMembresia)?.nombre ?? "Desconocido";
+
+    const rowBg = i % 2 === 0 ? "bg-white" : "bg-gray-50";
+
     detallesBody.innerHTML += `
-      <tr>
-        <td>${d.id_producto ? "Producto" : "Membresía"}</td>
-        <td>${d.id_producto ?? d.id_sm}</td>
-        <td>${d.cantidad}</td>
-        <td>$${d.precio_unitario}</td>
-        <td>
-          <button type="button" class="btn-icon" onclick="eliminarDetalle(${index})">
-            ❌
-          </button>
+      <tr class="${rowBg} border-b border-gray-200 hover:bg-gray-100">
+        <th scope="row" class="px-6 py-4 font-medium whitespace-nowrap text-gray-900">${tipo}</th>
+        <td class="px-6 py-4 text-gray-800">${desc}</td>
+        <td class="px-6 py-4 text-gray-800">${d.cantidad}</td>
+        <td class="px-6 py-4 text-gray-800">$${d.precioUnitario}</td>
+        <td class="px-6 py-4">
+          <button type="button" class="text-orange-600 font-medium hover:underline" onclick="eliminarDetalle(${i})">Eliminar</button>
         </td>
-      </tr>`;
+      </tr>
+    `;
   });
 }
 
-window.eliminarDetalle = index => {
-  detalles.splice(index, 1);
-  renderDetalles();
-};
+window.eliminarDetalle = i => { detalles.splice(i, 1); renderDetalles(); };
 
 /* ================== SUBMIT ================== */
-
 async function registrarPago(e) {
   e.preventDefault();
+  limpiarAlertas();
 
-  if (detalles.length === 0) {
-    alert("El pago debe tener al menos un detalle");
-    return;
-  }
-
-  if (!medioPago.value) {
-    alert("Seleccione un medio de pago");
-    return;
-  }
+  if (detalles.length === 0) return mostrarAlerta({ mensaje: "El pago debe tener al menos un detalle", tipo: "danger" });
+  if (!medioPago.value) return mostrarAlerta({ mensaje: "Seleccione un medio de pago", tipo: "danger" });
 
   const data = {
     estado: "PAGADO",
-    dni_socio: dniSocio.value.trim() || null,
-    id_medioPago: Number(medioPago.value),
+    dniSocio: dniSocio.value.trim() || null,
+    idMedioPago: Number(medioPago.value),
+    dniEmpleado: empleado.value,
     detalles
   };
 
-  const res = await authFetch("/pagos", {
-    method: "POST",
-    body: JSON.stringify(data)
-  });
+  try {
+    const res = await authFetch("/pagos", { method: "POST", body: JSON.stringify(data) });
+    if (!res.ok) {
+      const body = await res.text();
+      return mostrarAlerta({ mensaje: body || "Error al registrar pago", tipo: "danger" });
+    }
 
-  if (!res.ok) {
-    alert(await res.text());
-    return;
+    mostrarAlerta({ mensaje: "Pago registrado correctamente", tipo: "success" });
+    detalles = [];
+    renderDetalles();
+    pagoForm.reset();
+    onTipoDetalleChange();
+
+  } catch {
+    mostrarAlerta({ mensaje: "No se pudo conectar con el servidor", tipo: "danger" });
   }
-
-  alert("✔ Pago registrado correctamente");
-
-  detalles = [];
-  renderDetalles();
-  pagoForm.reset();
-  onTipoDetalleChange();
 }
+
+
 
 
 

@@ -1,14 +1,12 @@
 package com.nexo.gestion.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -18,7 +16,8 @@ public class Socio {
     private String nombre;
     private String telefono;
     private String email;
-    private LocalDate fecha_nacimiento;
+    @Column(name = "fecha_nacimiento")
+    private LocalDate fechaNacimiento;
     private boolean activo;
     @OneToMany(mappedBy = "socio")
 
@@ -31,12 +30,12 @@ public class Socio {
         this.nombre = nombre;
     }
 
-    public Socio(String dni, String nombre, String telefono, String email, LocalDate fecha_nacimiento){
+    public Socio(String dni, String nombre, String telefono, String email, LocalDate fechaNacimiento){
         this.dni = dni;
         this.nombre = nombre;
         this.telefono = telefono;
         this.email = email;
-        this.fecha_nacimiento = fecha_nacimiento;
+        this.fechaNacimiento = fechaNacimiento;
         this.activo = true;
     }
 
@@ -52,6 +51,7 @@ public class Socio {
         this.membresias.add(membresia);
         membresia.setSocio(this);
     }
+
 
     public Boolean isActivo() {
         return activo;
@@ -97,11 +97,11 @@ public class Socio {
         this.email = email;
     }
 
-    public LocalDate getFecha_nacimiento() {
-        return fecha_nacimiento;
+    public LocalDate getFechaNacimiento() {
+        return fechaNacimiento;
     }
 
-    public void setFecha_nacimiento(LocalDate fecha_nacimiento) {
-        this.fecha_nacimiento = fecha_nacimiento;
+    public void setFechaNacimiento(LocalDate fechaNacimiento) {
+        this.fechaNacimiento = fechaNacimiento;
     }
 }

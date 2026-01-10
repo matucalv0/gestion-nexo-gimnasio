@@ -63,9 +63,9 @@ function renderMembresias(tablaBody, membresias) {
 
     tr.innerHTML = `
       <td>${m.nombre}</td>
-      <td>${m.duracion_dias}</td>
-      <td>${m.asistencias_por_semana === null ? "Ilimitadas" : m.asistencias_por_semana}</td>
-      <td>$${m.precio_sugerido}</td>
+      <td>${m.duracionDias}</td>
+      <td>${m.asistenciasPorSemana === null ? "Ilimitadas" : m.asistenciasPorSemana}</td>
+      <td>$${m.precioSugerido}</td>
       <td>${m.estado ? "Activa" : "Inactiva"}</td>
     `;
 

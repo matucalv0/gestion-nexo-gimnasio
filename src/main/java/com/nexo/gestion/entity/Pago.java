@@ -1,41 +1,37 @@
 package com.nexo.gestion.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
 public class Pago {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_pago;
+    @Column(name = "id_pago")
+    private Integer idPago;
     @Enumerated(EnumType.STRING)
     private EstadoPago estado;
     private LocalDate fecha;
     @Column(precision = 10, scale = 2)
     private BigDecimal monto;
+
     @ManyToOne
     @JoinColumn(name = "dni_empleado")
-
     private Empleado empleado;
+
     @ManyToOne
     @JoinColumn(name = "dni_socio")
-
     private Socio socio;
+
     @ManyToOne
     @JoinColumn(name = "id_mediopago")
-
     private MedioPago medioPago;
-    @OneToMany(mappedBy = "pago", cascade = CascadeType.ALL, orphanRemoval = true)
 
+    @OneToMany(mappedBy = "pago", cascade = CascadeType.ALL, orphanRemoval = true)
     List<DetallePago> detalles = new ArrayList<>();
 
     public Pago(){}
@@ -73,12 +69,12 @@ public class Pago {
         this.fecha = LocalDate.now();
     }
 
-    public Integer getId_pago() {
-        return id_pago;
+    public Integer getIdPago() {
+        return idPago;
     }
 
-    public void setId_pago(Integer id_pago) {
-        this.id_pago = id_pago;
+    public void setIdPago(Integer idPago) {
+        this.idPago = idPago;
     }
 
     public EstadoPago getEstado() {
@@ -128,7 +124,7 @@ public class Pago {
     @Override
     public String toString() {
         return "Pago{" +
-                "id_pago=" + id_pago +
+                "idPago=" + idPago +
                 ", estado=" + estado +
                 ", fecha=" + fecha +
                 ", monto=" + monto +
@@ -137,7 +133,7 @@ public class Pago {
 
     public String toStringConDetalles(){
         return "Pago{" +
-                "id_pago=" + id_pago +
+                "idPago=" + idPago +
                 ", estado=" + estado +
                 ", fecha=" + fecha +
                 ", monto=" + monto +

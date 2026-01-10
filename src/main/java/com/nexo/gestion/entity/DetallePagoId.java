@@ -1,5 +1,6 @@
 package com.nexo.gestion.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
 import java.io.Serializable;
@@ -7,13 +8,17 @@ import java.util.Objects;
 
 @Embeddable
 public class DetallePagoId implements Serializable {
+
+    @Column(name = "id_pago")
     private Integer idPago;
+
+    @Column(name = "numero")
     private Integer numero;
 
     public DetallePagoId(){}
 
-    public DetallePagoId(Integer id_pago, Integer numero){
-        this.idPago = id_pago;
+    public DetallePagoId(Integer idPago, Integer numero){
+        this.idPago = idPago;
         this.numero = numero;
     }
 

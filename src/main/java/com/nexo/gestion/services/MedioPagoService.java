@@ -1,8 +1,6 @@
 package com.nexo.gestion.services;
 
-import com.nexo.gestion.dto.EmpleadoDTO;
 import com.nexo.gestion.dto.MedioPagoDTO;
-import com.nexo.gestion.entity.Empleado;
 import com.nexo.gestion.entity.MedioPago;
 import com.nexo.gestion.exceptions.ObjetoDuplicadoException;
 import com.nexo.gestion.repository.MedioPagoRepository;
@@ -21,7 +19,7 @@ public class MedioPagoService {
 
     private MedioPagoDTO convertirAMedioPagoDTO(MedioPago medioPago) {
         return new MedioPagoDTO(
-                medioPago.getId_medioPago(),
+                medioPago.getIdMedioPago(),
                 medioPago.getNombre()
         );
     }

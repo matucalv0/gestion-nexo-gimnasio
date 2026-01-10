@@ -5,77 +5,100 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Registrar socio · NEXO</title>
 
-  <link rel="stylesheet" href="../css/main.css" />
-  <link rel="stylesheet" href="../css/registrar-socio.css" />
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Flowbite -->
+  <script src="https://cdn.jsdelivr.net/npm/flowbite@1.8.5/dist/flowbite.min.js"></script>
+
+  <style>
+    /* Variables de marca */
+    :root {
+      --orange: #E9561E;
+      --beige: #ECD9BA;
+      --dark-bg: #1f2e38;
+      --input-bg: #16222b;
+      --input-border: #2f3e48;
+    }
+  </style>
 </head>
-<body id="registrarSocioPage">
+<body class="min-h-screen bg-cover bg-center relative" style="background-image: url('../assets/nexofondo.jpg');">
 
-  <main class="panel-container">
-    <div class="panel-card">
+  <!-- Overlay oscuro -->
+  <div class="absolute inset-0 bg-black/60"></div>
 
-      <!-- Header -->
-      <div class="panel-header">
-        <h1>Registrar socio</h1>
-        <div class="header-actions">
-          <button id="btnHome">Home</button>
-          <button id="btnLogout">Cerrar sesión</button>
+  <!-- Contenido -->
+  <main class="relative z-10 flex justify-center items-start min-h-screen p-6 pt-16">
+    <div class="w-full max-w-lg">
+
+      <!-- Header con logo y botones -->
+      <header class="flex justify-between items-center mb-8">
+        <img src="../assets/nexologo.png" alt="NEXO" class="h-12">
+        <div class="flex gap-2">
+          <button id="btnHome" class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">Home</button>
+          <button id="btnLogout" class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">Cerrar sesión</button>
         </div>
+      </header>
+
+      <div id="alert-container" class="mb-4"></div>
+
+
+      <!-- Card -->
+      <div class="bg-[var(--dark-bg)] p-8 rounded-lg shadow-xl">
+        <h1 class="text-[var(--beige)] text-2xl font-bold tracking-wide mb-6">Registrar socio</h1>
+
+        <!-- Formulario -->
+        <form id="registrarSocioForm" class="space-y-4" novalidate>
+
+          <div>
+            <label class="block mb-1 text-[var(--beige)] font-semibold">Nombre completo*</label>
+            <input type="text" name="nombre" placeholder="Ingrese el nombre completo"
+              class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)] focus:outline-none focus:ring-2 focus:ring-[var(--orange)]"/>
+            <span class="text-red-500 text-sm mt-1 block error"></span>
+          </div>
+
+          <div>
+            <label class="block mb-1 text-[var(--beige)] font-semibold">Email*</label>
+            <input type="email" name="email" placeholder="Ingrese su email"
+              class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)] focus:outline-none focus:ring-2 focus:ring-[var(--orange)]"/>
+            <span class="text-red-500 text-sm mt-1 block error"></span>
+          </div>
+
+          <div>
+            <label class="block mb-1 text-[var(--beige)] font-semibold">Teléfono</label>
+            <input type="tel" name="telefono" placeholder="Ingrese su teléfono"
+              class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)] focus:outline-none focus:ring-2 focus:ring-[var(--orange)]"/>
+            <span class="text-red-500 text-sm mt-1 block error"></span>
+          </div>
+
+          <div>
+            <label class="block mb-1 text-[var(--beige)] font-semibold">DNI*</label>
+            <input type="text" name="dni" placeholder="Ingrese su DNI"
+              class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)] focus:outline-none focus:ring-2 focus:ring-[var(--orange)]"/>
+            <span class="text-red-500 text-sm mt-1 block error"></span>
+          </div>
+
+          <div>
+            <label class="block mb-1 text-[var(--beige)] font-semibold">Fecha de nacimiento*</label>
+            <input type="date" name="fechaNacimiento"
+              class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)] focus:outline-none focus:ring-2 focus:ring-[var(--orange)]"/>
+            <span class="text-red-500 text-sm mt-1 block error"></span>
+          </div>
+
+          <button type="submit" class="w-full bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold py-3 rounded-md mt-4 transition-colors">
+            Registrar socio
+          </button>
+
+        </form>
       </div>
-
-      <!-- Formulario -->
-      <form id="registrarSocioForm">
-
-        <label class="form-label">Nombre completo*</label>
-        <input
-          type="text"
-          id="fullname"
-          class="form-input"
-          required
-        />
-
-        <label class="form-label">Email*</label>
-        <input
-          type="email"
-          id="email"
-          class="form-input"
-          required
-        />
-
-        <label class="form-label">Teléfono</label>
-        <input
-          type="tel"
-          id="telefono"
-          class="form-input"
-        />
-
-        <label class="form-label">DNI*</label>
-        <input
-          type="text"
-          id="dni"
-          class="form-input"
-          required
-        />
-
-        <label class="form-label">Fecha de nacimiento*</label>
-        <input
-          type="date"
-          id="fechaNacimiento"
-          class="form-input"
-          required
-        />
-
-        <button type="submit" class="form-btn primary">
-          Registrar socio
-        </button>
-      </form>
-
-      <div id="resultado" class="resultado"></div>
-
     </div>
   </main>
 
   <script type="module" src="../js/pages/registrar-socio.js"></script>
 </body>
 </html>
+
+
+
 
 

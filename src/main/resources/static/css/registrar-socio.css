@@ -1,4 +1,6 @@
+
 /* ===== Fondo global ===== */
+
 body {
   min-height: 100vh;
   margin: 0;
@@ -12,12 +14,24 @@ body {
   font-family: "Inter", sans-serif;
 }
 
+.error {
+  display: block;
+  color: #d92d20;
+  font-size: 0.85rem;
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+
+
 /* ===== Contenedor ===== */
 .panel-container {
   display: flex;
-  justify-content: center;
+  flex-direction: column;   /* ← CLAVE */
+  align-items: center;      /* centra horizontal */
   padding: 40px 16px;
 }
+
+
 
 /* ===== Card ===== */
 .panel-card {

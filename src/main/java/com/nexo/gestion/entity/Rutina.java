@@ -1,8 +1,5 @@
 package com.nexo.gestion.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -13,7 +10,8 @@ import java.util.List;
 public class Rutina {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_rutina;
+    @Column(name = "id_rutina")
+    private Integer idRutina;
     private String descripcion;
     private String nombre;
     private LocalDate fecha;
@@ -38,7 +36,7 @@ public class Rutina {
                 ", fecha=" + fecha +
                 ", nombre='" + nombre + '\'' +
                 ", descripcion='" + descripcion + '\'' +
-                ", id_rutina=" + id_rutina +
+                ", id_rutina=" + idRutina +
                 '}';
     }
 
@@ -55,8 +53,8 @@ public class Rutina {
         this.socio = socio;
     }
 
-    public Integer getId_rutina() {
-        return id_rutina;
+    public Integer getIdRutina() {
+        return idRutina;
     }
 
     public List<EjercicioRutina> getEjercicios() {
@@ -68,8 +66,8 @@ public class Rutina {
         ejercicio.setRutina(this);
     }
 
-    public void setId_rutina(Integer id_rutina) {
-        this.id_rutina = id_rutina;
+    public void setIdRutina(Integer idRutina) {
+        this.idRutina = idRutina;
     }
 
     public String getDescripcion() {

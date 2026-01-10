@@ -42,8 +42,8 @@ function renderPagos(tablaBody, pagos) {
   pagos.forEach(p => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${p.id_pago}</td>
-      <td>${new Date(p.fecha).toLocaleString("es-AR")}</td>
+      <td>${p.idPago}</td>
+      <td>${p.fecha}</td>
       <td>${p.estado}</td>
       <td>$ ${p.monto}</td>
     `;

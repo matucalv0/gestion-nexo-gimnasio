@@ -9,13 +9,13 @@ import java.util.Objects;
 @Embeddable
 public class AsistenciaSocioId implements Serializable {
     private String dniSocio;
-    private LocalDateTime fecha_hora;
+    private LocalDateTime fechaHora;
 
     public AsistenciaSocioId(){}
 
-    public AsistenciaSocioId(String dni, LocalDateTime fecha_hora){
+    public AsistenciaSocioId(String dni, LocalDateTime fechaHora){
         this.dniSocio = dni;
-        this.fecha_hora = fecha_hora;
+        this.fechaHora = fechaHora;
     }
 
     public String getDniSocio() {
@@ -31,27 +31,27 @@ public class AsistenciaSocioId implements Serializable {
         if (this == o) return true;
         if (!(o instanceof AsistenciaSocioId that)) return false;
         return Objects.equals(dniSocio, that.dniSocio) &&
-                Objects.equals(fecha_hora, that.fecha_hora);
+                Objects.equals(fechaHora, that.fechaHora);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(dniSocio, fecha_hora);
+        return Objects.hash(dniSocio, fechaHora);
     }
 
-    public LocalDateTime getFecha_hora() {
-        return fecha_hora;
+    public LocalDateTime getFechaHora() {
+        return fechaHora;
     }
 
-    public void setFecha_hora(LocalDateTime fecha_hora) {
-        this.fecha_hora = fecha_hora;
+    public void setFechaHora(LocalDateTime fechaHora) {
+        this.fechaHora = fechaHora;
     }
 
     @Override
     public String toString() {
         return "AsistenciaSocioId{" +
                 "dniSocio='" + dniSocio + '\'' +
-                ", fecha_hora=" + fecha_hora +
+                ", fechaHora=" + fechaHora +
                 '}';
     }
 }

@@ -1,6 +1,5 @@
 package com.nexo.gestion.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -11,28 +10,37 @@ import java.util.List;
 public class Membresia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_membresia;
-    private Integer duracion_dias;
-    private Integer asistencias_por_semana;
-    @Column(precision = 10, scale = 2)
-    private BigDecimal precio_sugerido;
+
+    @Column(name = "id_membresia")
+    private Integer idMembresia;
+
+    @Column(name = "duracion_dias")
+    private Integer duracionDias;
+
+    @Column(name = "asistencias_por_semana")
+    private Integer asistenciasPorSemana;
+
+    @Column(precision = 10, scale = 2, name = "precio_sugerido")
+    private BigDecimal precioSugerido;
+
     private String nombre;
     private boolean activo;
+
     @OneToMany(mappedBy = "membresia")
     List<SocioMembresia> socios = new ArrayList<>();
 
     public Membresia(){}
 
-    public Membresia(String nombre, Integer duracion_dias, BigDecimal precio_sugerido, Integer asistencias_por_semana){
+    public Membresia(String nombre, Integer duracionDias, BigDecimal precioSugerido, Integer asistenciasPorSemana){
         this.nombre = nombre;
-        this.duracion_dias = duracion_dias;
-        this.precio_sugerido = precio_sugerido;
-        this.asistencias_por_semana = asistencias_por_semana;
+        this.duracionDias = duracionDias;
+        this.precioSugerido = precioSugerido;
+        this.asistenciasPorSemana = asistenciasPorSemana;
         this.activo = true;
     }
 
-    public Integer getId_membresia() {
-        return id_membresia;
+    public Integer getIdMembresia() {
+        return idMembresia;
     }
 
     public boolean isActivo() {
@@ -47,12 +55,12 @@ public class Membresia {
         return socios;
     }
 
-    public Integer getAsistencias_por_semana() {
-        return asistencias_por_semana;
+    public Integer getAsistenciasPorSemana() {
+        return asistenciasPorSemana;
     }
 
-    public void setAsistencias_por_semana(Integer asistencias_por_semana) {
-        this.asistencias_por_semana = asistencias_por_semana;
+    public void setAsistenciasPorSemana(Integer asistenciasPorSemana) {
+        this.asistenciasPorSemana = asistenciasPorSemana;
     }
 
     public void agregarSocio(SocioMembresia socio) {
@@ -60,20 +68,20 @@ public class Membresia {
         socio.setMembresia(this);
     }
 
-    public void setId_membresia(Integer id_membresia) {
-        this.id_membresia = id_membresia;
+    public void setIdMembresia(Integer idMembresia) {
+        this.idMembresia = idMembresia;
     }
 
-    public Integer getDuracion_dias() {
-        return duracion_dias;
+    public Integer getDuracionDias() {
+        return duracionDias;
     }
 
-    public void setDuracion_dias(Integer duracion_dias) {
-        this.duracion_dias = duracion_dias;
+    public void setDuracionDias(Integer duracionDias) {
+        this.duracionDias = duracionDias;
     }
 
-    public BigDecimal getPrecio_sugerido() {
-        return precio_sugerido;
+    public BigDecimal getPrecioSugerido() {
+        return precioSugerido;
     }
 
     @Override
@@ -83,8 +91,8 @@ public class Membresia {
                 '}';
     }
 
-    public void setPrecio_sugerido(BigDecimal precio_sugerido) {
-        this.precio_sugerido = precio_sugerido;
+    public void setPrecioSugerido(BigDecimal precioSugerido) {
+        this.precioSugerido = precioSugerido;
     }
 
     public String getNombre() {

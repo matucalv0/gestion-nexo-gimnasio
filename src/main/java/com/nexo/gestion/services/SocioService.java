@@ -7,14 +7,10 @@ import com.nexo.gestion.exceptions.ObjetoDuplicadoException;
 import com.nexo.gestion.exceptions.ObjetoNoEncontradoException;
 import com.nexo.gestion.exceptions.SocioInactivoException;
 import com.nexo.gestion.repository.*;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,7 +34,7 @@ public class SocioService {
     private AsistenciaSocioIdDTO convertirAAsistenciaSocioIdDTO(AsistenciaSocioId a) {
         return new AsistenciaSocioIdDTO(
                 a.getDniSocio(),
-                a.getFecha_hora()
+                a.getFechaHora()
         );
     }
 
@@ -48,34 +44,34 @@ public class SocioService {
                 socio.getNombre(),
                 socio.getTelefono(),
                 socio.getEmail(),
-                socio.getFecha_nacimiento(),
+                socio.getFechaNacimiento(),
                 socio.isActivo()
         );
     }
 
     private SocioMembresiaDTO convertirASocioMembresiaDTO(SocioMembresia socioMembresia) {
         return new SocioMembresiaDTO(
-                socioMembresia.getId_sm(),
-                socioMembresia.getFecha_inicio(),
-                socioMembresia.getFecha_hasta(),
+                socioMembresia.getIdSm(),
+                socioMembresia.getFechaInicio(),
+                socioMembresia.getFechaHasta(),
                 socioMembresia.getPrecio()
         );
     }
 
     private MembresiaDTO convertirAMembresiaDTO(Membresia membresia) {
         return new MembresiaDTO(
-                membresia.getId_membresia(),
-                membresia.getDuracion_dias(),
-                membresia.getPrecio_sugerido(),
+                membresia.getIdMembresia(),
+                membresia.getDuracionDias(),
+                membresia.getPrecioSugerido(),
                 membresia.getNombre(),
-                membresia.getAsistencias_por_semana(),
+                membresia.getAsistenciasPorSemana(),
                 membresia.isActivo()
         );
     }
 
     private PagoDTO convertirAPagoDTO(Pago pago) {
         return new PagoDTO(
-                pago.getId_pago(),
+                pago.getIdPago(),
                 pago.getEstado(),
                 pago.getFecha(),
                 pago.getMonto()
@@ -88,7 +84,7 @@ public class SocioService {
             throw new ObjetoDuplicadoException(socioDTO.getDni());
         }
 
-        Socio socio = new Socio(socioDTO.getDni(), socioDTO.getNombre(), socioDTO.getTelefono(), socioDTO.getEmail(), socioDTO.getFecha_nacimiento());
+        Socio socio = new Socio(socioDTO.getDni(), socioDTO.getNombre(), socioDTO.getTelefono(), socioDTO.getEmail(), socioDTO.getFechaNacimiento());
         Socio guardado = socioRepository.save(socio);
         return convertirASocioDTO(guardado);
     }
@@ -139,7 +135,7 @@ public class SocioService {
 
         Membresia membresia = membresiaRepository.findById(idMembresia).orElseThrow(() -> new ObjetoNoEncontradoException(String.valueOf(idMembresia)));
 
-        SocioMembresia socioMembresia = new SocioMembresia(membresia.getPrecio_sugerido(), socio, membresia);
+        SocioMembresia socioMembresia = new SocioMembresia(membresia.getPrecioSugerido(), socio, membresia);
 
         socio.agregarMembresia(socioMembresia);
         socioRepository.save(socio);
@@ -178,7 +174,7 @@ public class SocioService {
 
         Asistencia nuevaAsistencia = new Asistencia(socio);
         Asistencia guardada = asistenciaRepository.save(nuevaAsistencia);
-        return convertirAAsistenciaSocioIdDTO(guardada.getId_asistencia());
+        return convertirAAsistenciaSocioIdDTO(guardada.getIdAsistencia());
     }
 
     public Optional<SocioMembresia> membresiaVigente(Socio socio) {
@@ -194,12 +190,11 @@ public class SocioService {
     }
 
     public MembresiaVigenteDTO membresiaVigente(String dni) {
-        if (!socioRepository.existsById(dni)) {
-            throw new ObjetoNoEncontradoException("Socio no encontrado");
-        }
-
-        return socioRepository.findMembresiaVigente(dni).orElseThrow(MembresiaVencidaException::new);
+        List<MembresiaVigenteDTO> vigentes = socioRepository.findMembresiasVigentes(dni);
+        if (vigentes.isEmpty()) throw new MembresiaVencidaException();
+        return vigentes.get(0);
     }
+
 
 
     public List<SocioDTO> buscarSocios(String dniOrNombre) {
@@ -219,9 +214,9 @@ public class SocioService {
 
         SocioMembresia membresiaActual = membresiaVigente(socio).orElseThrow(MembresiaVencidaException::new);
 
-        Long cantidadDiasAsistidos = socioRepository.diasAsistidos(membresiaActual.getId_sm(), socio.getDni());
+        Long cantidadDiasAsistidos = socioRepository.diasAsistidos(membresiaActual.getIdSm(), socio.getDni());
 
-        return Math.toIntExact(membresiaActual.getMembresia().getDuracion_dias() - cantidadDiasAsistidos);
+        return Math.toIntExact(membresiaActual.getMembresia().getDuracionDias() - cantidadDiasAsistidos);
 
     }
 

@@ -1,10 +1,8 @@
 package com.nexo.gestion.services;
 
-import com.nexo.gestion.dto.PagoDTO;
 import com.nexo.gestion.dto.ProductoCreateDTO;
 import com.nexo.gestion.dto.ProductoDTO;
 import com.nexo.gestion.dto.ProductoPatchDTO;
-import com.nexo.gestion.entity.Pago;
 import com.nexo.gestion.entity.Producto;
 import com.nexo.gestion.exceptions.ObjetoDuplicadoException;
 import com.nexo.gestion.exceptions.ObjetoNoEncontradoException;
@@ -24,9 +22,9 @@ public class ProductoService {
 
     private ProductoDTO convertirAProductoDTO(Producto producto) {
         return new ProductoDTO(
-                producto.getId_producto(),
+                producto.getIdProducto(),
                 producto.getNombre(),
-                producto.getPrecio_sugerido(),
+                producto.getPrecioSugerido(),
                 producto.getStock(),
                 producto.isActivo()
         );
@@ -37,7 +35,7 @@ public class ProductoService {
             throw new ObjetoDuplicadoException(productoCreateDTO.getNombre());
         }
 
-        Producto producto = new Producto(productoCreateDTO.getNombre(), productoCreateDTO.getPrecio_sugerido(), productoCreateDTO.getStock());
+        Producto producto = new Producto(productoCreateDTO.getNombre(), productoCreateDTO.getPrecioSugerido(), productoCreateDTO.getStock());
 
         Producto guardado =  productoRepository.save(producto);
         return convertirAProductoDTO(guardado);
@@ -69,7 +67,7 @@ public class ProductoService {
 
         if (productoDTO.getStock() != null){producto.setStock(producto.getStock());}
         if (productoDTO.getNombre() != null){producto.setNombre(productoDTO.getNombre());}
-        if (productoDTO.getPrecio_sugerido() != null){producto.setPrecio_sugerido(productoDTO.getPrecio_sugerido());}
+        if (productoDTO.getPrecioSugerido() != null){producto.setPrecioSugerido(productoDTO.getPrecioSugerido());}
         if (productoDTO.getActivo() != null){producto.setActivo(productoDTO.getActivo());}
 
         Producto guardado =  productoRepository.save(producto);

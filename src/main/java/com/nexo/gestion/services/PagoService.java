@@ -1,22 +1,19 @@
 package com.nexo.gestion.services;
 
 import com.nexo.gestion.dto.DetallePagoCreateDTO;
+import com.nexo.gestion.dto.MembresiaVigenteDTO;
 import com.nexo.gestion.dto.PagoCreateDTO;
 import com.nexo.gestion.dto.PagoDTO;
 import com.nexo.gestion.entity.*;
 import com.nexo.gestion.exceptions.ObjetoNoEncontradoException;
 import com.nexo.gestion.repository.*;
-import io.jsonwebtoken.Jwt;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -29,11 +26,13 @@ public class PagoService {
     private final MedioPagoRepository medioPagoRepository;
     private final ProductoRepository productoRepository;
     private final SocioMembresiaRepository socioMembresiaRepository;
+    private final MembresiaRepository membresiaRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
 
     public PagoService(
+            MembresiaRepository membresiaRepository,
             PagoRepository pagoRepository,
             DetallePagoRepository detallePagoRepository,
             SocioRepository socioRepository,
@@ -49,70 +48,38 @@ public class PagoService {
         this.medioPagoRepository = medioPagoRepository;
         this.productoRepository = productoRepository;
         this.socioMembresiaRepository = socioMembresiaRepository;
+        this.membresiaRepository = membresiaRepository;
     }
 
     private PagoDTO convertirAPagoDTO(Pago pago) {
         return new PagoDTO(
-                pago.getId_pago(),
+                pago.getIdPago(),
                 pago.getEstado(),
                 pago.getFecha(),
                 pago.getMonto()
         );
     }
 
-    private Empleado obtenerEmpleadoAutenticado() {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if (auth == null || !auth.isAuthenticated()) {
-            throw new IllegalStateException("No hay usuario autenticado");
+    private SocioMembresia renovarMembresia(Socio socio, Membresia membresia) {
+        if (!socioRepository.existsById(socio.getDni())){
+            throw new ObjetoNoEncontradoException("No existe el socio con el dni: " + socio.getDni());
         }
-
-        String dniEmpleado = auth.getName();
-
-        return empleadoRepository.findById(dniEmpleado)
-                .orElseThrow(() -> new ObjetoNoEncontradoException("empleado"));
-    }
-
-
-
-    private void renovarMembresia(SocioMembresia sm) {
-
-        Membresia membresia = sm.getMembresia();
-
-        LocalDate hoy = LocalDate.now();
 
         LocalDate inicio;
-        if (sm.getFecha_hasta() != null && sm.getFecha_hasta().isAfter(hoy)) {
-            // todavía activa → se extiende
-            inicio = sm.getFecha_hasta().plusDays(1);
+
+        if (socioRepository.existsMembresiaActiva(socio.getDni())){
+            List<MembresiaVigenteDTO> vigentes = socioRepository.findMembresiasVigentes(socio.getDni());
+            MembresiaVigenteDTO actual = vigentes.get(0);
+            inicio = actual.vencimiento().plusDays(1);
         } else {
-            // vencida → se reinicia
-            inicio = hoy;
+            inicio = LocalDate.now();
         }
 
-        LocalDate vencimiento = inicio.plusDays(membresia.getDuracion_dias());
-
-        sm.setFecha_inicio(inicio);
-        sm.setFecha_hasta(vencimiento);
-        sm.setActiva(true);
-
-        socioMembresiaRepository.save(sm);
-    }
-
-    private void validarDetalle(DetallePagoCreateDTO dDTO, Socio socio) {
-
-        if (dDTO.getId_producto() != null && dDTO.getId_sm() != null) {
-            throw new IllegalArgumentException("Un detalle no puede tener producto y membresía a la vez");
-        }
-
-        if (dDTO.getId_producto() == null && dDTO.getId_sm() == null) {
-            throw new IllegalArgumentException("El detalle debe tener producto o membresía");
-        }
-
-        if (socio == null && dDTO.getId_sm() != null) {
-            throw new IllegalArgumentException("Consumidor final no puede pagar membresías");
-        }
+        LocalDate vencimiento = inicio.plusDays(membresia.getDuracionDias());
+        SocioMembresia nuevaSuscripcion = new SocioMembresia(socio, membresia, inicio, vencimiento);
+        return socioMembresiaRepository.save(nuevaSuscripcion);
     }
 
 
@@ -121,14 +88,14 @@ public class PagoService {
     public PagoDTO crearPago(PagoCreateDTO dto) {
 
         Socio socio = null;
-        if (dto.getDni_socio() != null) {
-            socio = socioRepository.findById(dto.getDni_socio())
+        if (dto.getDniSocio() != null) {
+            socio = socioRepository.findById(dto.getDniSocio())
                     .orElseThrow(() -> new ObjetoNoEncontradoException("dni_socio"));
         }
 
-        Empleado empleado = obtenerEmpleadoAutenticado();
+        Empleado empleado = empleadoRepository.findById(dto.getDniEmpleado()).orElseThrow(() -> new ObjetoNoEncontradoException("No se encontró el empleado con el dni " + dto.getDniEmpleado()));
 
-        MedioPago medioPago = medioPagoRepository.findById(dto.getId_medioPago())
+        MedioPago medioPago = medioPagoRepository.findById(dto.getIdMedioPago())
                 .orElseThrow(() -> new ObjetoNoEncontradoException("id_mediopago"));
 
         Pago pago = new Pago(dto.getEstado(), socio, medioPago, empleado);
@@ -138,36 +105,35 @@ public class PagoService {
 
         for (DetallePagoCreateDTO dDTO : dto.getDetalles()) {
 
-            validarDetalle(dDTO, socio);
-
             DetallePago detalle = new DetallePago();
             detalle.setPago(pago);
             detalle.setCantidad(dDTO.getCantidad());
-            detalle.setPrecio_unitario(dDTO.getPrecio_unitario());
-            detalle.setId_detallepago(new DetallePagoId(pago.getId_pago(), numero++));
+            detalle.setPrecioUnitario(dDTO.getPrecioUnitario());
+            detalle.setIdDetallePago(new DetallePagoId(pago.getIdPago(), numero++));
 
-            if (dDTO.getId_producto() != null) {
-                Producto p = productoRepository.findById(dDTO.getId_producto())
+            if (dDTO.getIdProducto() != null) {
+                Producto p = productoRepository.findById(dDTO.getIdProducto())
                         .orElseThrow(() -> new ObjetoNoEncontradoException("producto"));
                 detalle.setProducto(p);
             }
 
-            if (dDTO.getId_sm() != null) {
-                SocioMembresia sm = socioMembresiaRepository.findById(dDTO.getId_sm())
-                        .orElseThrow(() -> new ObjetoNoEncontradoException("socioMembresia"));
-
-                if (!sm.getSocio().equals(socio)) {
-                    throw new IllegalArgumentException("La membresía no pertenece al socio del pago");
+            if (dDTO.getIdMembresia() != null) {
+                if (socio == null){
+                    throw new ObjetoNoEncontradoException("dni del socio");
                 }
 
-                renovarMembresia(sm);
-                detalle.setSocioMembresia(sm);
+                Membresia membresia = membresiaRepository.findById(dDTO.getIdMembresia())
+                        .orElseThrow(() -> new ObjetoNoEncontradoException("membresia"));
+
+                SocioMembresia nuevaSuscripcion = renovarMembresia(socio, membresia);
+                socio.setActivo(true);
+                detalle.setSocioMembresia(nuevaSuscripcion);
             }
 
             pago.agregarDetalle(detalle);
         }
 
-        BigDecimal monto = pagoRepository.sumarSubtotales(pago.getId_pago());
+        BigDecimal monto = pagoRepository.sumarSubtotales(pago.getIdPago());
         pago.setMonto(monto);
 
         entityManager.flush();

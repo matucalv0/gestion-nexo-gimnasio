@@ -1,7 +1,5 @@
 package com.nexo.gestion.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -9,7 +7,7 @@ import java.time.LocalDateTime;
 @Entity
 public class Asistencia {
     @EmbeddedId
-    private AsistenciaSocioId id_asistencia;
+    private AsistenciaSocioId idAsistencia;
 
     @ManyToOne
     @MapsId("dniSocio")
@@ -20,15 +18,15 @@ public class Asistencia {
 
     public Asistencia(Socio socio){
         this.socio = socio;
-        this.id_asistencia = new AsistenciaSocioId(socio.getDni(), LocalDateTime.now());
+        this.idAsistencia = new AsistenciaSocioId(socio.getDni(), LocalDateTime.now());
     }
 
-    public AsistenciaSocioId getId_asistencia() {
-        return id_asistencia;
+    public AsistenciaSocioId getIdAsistencia() {
+        return idAsistencia;
     }
 
-    public void setId_asistencia(AsistenciaSocioId id_asistencia) {
-        this.id_asistencia = id_asistencia;
+    public void setIdAsistencia(AsistenciaSocioId idAsistencia) {
+        this.idAsistencia = idAsistencia;
     }
 
     public Socio getSocio() {
@@ -42,7 +40,7 @@ public class Asistencia {
     @Override
     public String toString() {
         return "Asistencia{" +
-                "id_asistencia=" + id_asistencia +
+                "id_asistencia=" + idAsistencia +
                 ", socio=" + socio +
                 '}';
     }

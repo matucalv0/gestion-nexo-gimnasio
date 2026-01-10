@@ -2,17 +2,26 @@ package com.nexo.gestion.dto;
 
 
 import com.nexo.gestion.entity.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PagoCreateDTO {
-
+    @NotBlank
     private EstadoPago estado;
-    private String dni_socio; // opcional
-    private Integer id_medioPago;
+    @Pattern(
+            regexp = "\\d{7,8}",
+            message = "El DNI debe tener 7 u 8 dígitos numéricos"
+    )
+    private String dniSocio; // opcional
+    @NotBlank
+    private Integer idMedioPago;
+    @NotBlank
+    private String dniEmpleado;
+    @NotBlank
     private List<DetallePagoCreateDTO> detalles = new ArrayList<>();
 
     public EstadoPago getEstado() {
@@ -23,20 +32,28 @@ public class PagoCreateDTO {
         this.estado = estado;
     }
 
-    public String getDni_socio() {
-        return dni_socio;
+    public String getDniEmpleado() {
+        return dniEmpleado;
     }
 
-    public void setDni_socio(String dni_socio) {
-        this.dni_socio = dni_socio;
+    public void setDniEmpleado(String dniEmpleado) {
+        this.dniEmpleado = dniEmpleado;
     }
 
-    public Integer getId_medioPago() {
-        return id_medioPago;
+    public String getDniSocio() {
+        return dniSocio;
     }
 
-    public void setId_medioPago(Integer id_medioPago) {
-        this.id_medioPago = id_medioPago;
+    public void setDniSocio(String dniSocio) {
+        this.dniSocio = dniSocio;
+    }
+
+    public Integer getIdMedioPago() {
+        return idMedioPago;
+    }
+
+    public void setIdMedioPago(Integer idMedioPago) {
+        this.idMedioPago = idMedioPago;
     }
 
     public List<DetallePagoCreateDTO> getDetalles() {

@@ -7,7 +7,7 @@ public class SocioResponseDTO {
     private String nombre;
     private String telefono;
     private String email;
-    private LocalDate fecha_nacimiento;
+    private LocalDate fechaNacimiento;
     private boolean activo;
 
     public String getDni() {
@@ -42,12 +42,12 @@ public class SocioResponseDTO {
         this.email = email;
     }
 
-    public LocalDate getFecha_nacimiento() {
-        return fecha_nacimiento;
+    public LocalDate getFechaNacimiento() {
+        return fechaNacimiento;
     }
 
-    public void setFecha_nacimiento(LocalDate fecha_nacimiento) {
-        this.fecha_nacimiento = fecha_nacimiento;
+    public void setFechaNacimiento(LocalDate fechaNacimiento) {
+        this.fechaNacimiento = fechaNacimiento;
     }
 
     public boolean isActivo() {

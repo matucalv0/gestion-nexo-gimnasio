@@ -1,6 +1,5 @@
 package com.nexo.gestion.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -8,14 +7,14 @@ import java.math.BigDecimal;
 @Entity
 public class DetallePago {
     @EmbeddedId
-    private DetallePagoId id_detallepago;
+    private DetallePagoId idDetallePago;
     @ManyToOne
     @MapsId("idPago")
     @JoinColumn(name = "id_pago")
     private Pago pago;
     private Integer cantidad;
-    @Column(precision = 10, scale = 2)
-    private BigDecimal precio_unitario;
+    @Column(precision = 10, scale = 2, name = "precio_unitario")
+    private BigDecimal precioUnitario;
     @Column(precision = 10, scale = 2, insertable = false, updatable = false)
     private BigDecimal subtotal;
     @ManyToOne
@@ -28,19 +27,19 @@ public class DetallePago {
 
     public DetallePago(){}
 
-    public DetallePago(Integer numeroDetalle, Producto producto, Pago pago, Integer cantidad, BigDecimal precio_unitario){
+    public DetallePago(Integer numeroDetalle, Producto producto, Pago pago, Integer cantidad, BigDecimal precioUnitario){
         this.producto = producto;
         this.pago = pago;
         this.cantidad = cantidad;
-        this.precio_unitario = precio_unitario;
-        this.id_detallepago = new DetallePagoId(pago.getId_pago(), numeroDetalle);
+        this.precioUnitario = precioUnitario;
+        this.idDetallePago = new DetallePagoId(pago.getIdPago(), numeroDetalle);
     }
 
-    public DetallePago(Integer numeroDetalle, SocioMembresia socioMembresia, Pago pago, BigDecimal precio_unitario){
+    public DetallePago(Integer numeroDetalle, SocioMembresia socioMembresia, Pago pago, BigDecimal precioUnitario){
         this.socioMembresia = socioMembresia;
         this.pago = pago;
-        this.precio_unitario = precio_unitario;
-        this.id_detallepago = new DetallePagoId(pago.getId_pago(), numeroDetalle);
+        this.precioUnitario = precioUnitario;
+        this.idDetallePago = new DetallePagoId(pago.getIdPago(), numeroDetalle);
     }
 
 
@@ -49,16 +48,16 @@ public class DetallePago {
         if (cantidad == null){
             cantidad = 1;
         }
-        subtotal = precio_unitario.multiply(BigDecimal.valueOf(cantidad));
+        subtotal = precioUnitario.multiply(BigDecimal.valueOf(cantidad));
     }
 
 
-    public DetallePagoId getId_detallepago() {
-        return id_detallepago;
+    public DetallePagoId getIdDetallePago() {
+        return idDetallePago;
     }
 
-    public void setId_detallepago(DetallePagoId id_detallepago) {
-        this.id_detallepago = id_detallepago;
+    public void setIdDetallePago(DetallePagoId idDetallePago) {
+        this.idDetallePago = idDetallePago;
     }
 
     public Pago getPago() {
@@ -76,9 +75,9 @@ public class DetallePago {
     @Override
     public String toString() {
         return "DetallePago{" +
-                "id_detallepago=" + id_detallepago +
+                "id_detallepago=" + idDetallePago +
                 ", cantidad=" + cantidad +
-                ", precio_unitario=" + precio_unitario +
+                ", precio_unitario=" + precioUnitario +
                 ", subtotal=" + subtotal +
                 '}';
     }
@@ -87,12 +86,12 @@ public class DetallePago {
         this.cantidad = cantidad;
     }
 
-    public BigDecimal getPrecio_unitario() {
-        return precio_unitario;
+    public BigDecimal getPrecioUnitario() {
+        return precioUnitario;
     }
 
-    public void setPrecio_unitario(BigDecimal precio_unitario) {
-        this.precio_unitario = precio_unitario;
+    public void setPrecioUnitario(BigDecimal precioUnitario) {
+        this.precioUnitario = precioUnitario;
     }
 
     public BigDecimal getSubtotal() {

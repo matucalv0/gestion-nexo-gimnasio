@@ -2,7 +2,6 @@ package com.nexo.gestion;
 
 import com.nexo.gestion.entity.*;
 import com.nexo.gestion.repository.*;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -52,7 +51,7 @@ public class PagoTest {
         Pago pago = new Pago(EstadoPago.PAGADO, BigDecimal.valueOf(34000), socio, medioPago, empleado);
         Pago guardado = pagoRepository.save(pago);
 
-        assertNotNull(guardado.getId_pago());
+        assertNotNull(guardado.getIdPago());
     }
 
     @Test
@@ -75,7 +74,7 @@ public class PagoTest {
         productoRepository.save(agua);
 
 
-        Pago pago = new Pago(EstadoPago.PAGADO, membresia.getPrecio_sugerido(), socio, medioPago, empleado); //doy de alta el pago
+        Pago pago = new Pago(EstadoPago.PAGADO, membresia.getPrecioSugerido(), socio, medioPago, empleado); //doy de alta el pago
         pagoRepository.save(pago);
 
 
@@ -91,7 +90,7 @@ public class PagoTest {
         DetallePago detalle1 = new DetallePago(1, suscripcion, pago, suscripcion.getPrecio());
         pago.agregarDetalle(detalle1);
         DetallePago guardado = detallePagoRepository.save(detalle1);
-        DetallePago detalle2 = new DetallePago(2, agua, pago, 2, agua.getPrecio_sugerido());
+        DetallePago detalle2 = new DetallePago(2, agua, pago, 2, agua.getPrecioSugerido());
         pago.agregarDetalle(detalle2);
         DetallePago guardado2 = detallePagoRepository.save(detalle2);
         pagoRepository.save(pago);
@@ -107,8 +106,8 @@ public class PagoTest {
 
         System.out.println(pago.toStringConDetalles());
 
-        assertNotNull(guardado.getId_detallepago());
-        assertNotNull(guardado2.getId_detallepago());
+        assertNotNull(guardado.getIdDetallePago());
+        assertNotNull(guardado2.getIdDetallePago());
 
 
     }

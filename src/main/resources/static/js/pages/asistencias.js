@@ -74,7 +74,7 @@ function renderAsistencias(tablaBody, asistencias) {
     tr.innerHTML = `
       <td>${a.nombre}</td>
       <td>${a.dni}</td>
-      <td>${a.fecha_hora}</td>
+      <td>${a.fechaHora}</td>
     `;
 
     tablaBody.appendChild(tr);

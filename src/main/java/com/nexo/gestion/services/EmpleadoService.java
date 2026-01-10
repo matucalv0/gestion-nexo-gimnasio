@@ -1,7 +1,6 @@
 package com.nexo.gestion.services;
 
 import com.nexo.gestion.dto.EmpleadoDTO;
-import com.nexo.gestion.dto.PuestoDTO;
 import com.nexo.gestion.entity.Empleado;
 import com.nexo.gestion.entity.Puesto;
 
@@ -30,9 +29,9 @@ public class EmpleadoService {
                 empleado.getNombre(),
                 empleado.getTelefono(),
                 empleado.getEmail(),
-                empleado.getFecha_nacimiento(),
+                empleado.getFechaNacimiento(),
                 empleado.isActivo(),
-                empleado.getPuesto().getId_puesto()
+                empleado.getPuesto().getIdPuesto()
         );
     }
 
@@ -41,9 +40,9 @@ public class EmpleadoService {
             throw new ObjetoNoEncontradoException(empleadoDTO.dni());
         }
 
-        Puesto puesto = puestoRepository.findById(empleadoDTO.id_puesto()).orElseThrow(()-> new ObjetoNoEncontradoException(String.valueOf(empleadoDTO.id_puesto())));
+        Puesto puesto = puestoRepository.findById(empleadoDTO.idPuesto()).orElseThrow(()-> new ObjetoNoEncontradoException(String.valueOf(empleadoDTO.idPuesto())));
 
-        Empleado empleado = new Empleado(empleadoDTO.dni(), empleadoDTO.nombre(), empleadoDTO.telefono(), empleadoDTO.email(), empleadoDTO.fecha_nacimiento(), puesto);
+        Empleado empleado = new Empleado(empleadoDTO.dni(), empleadoDTO.nombre(), empleadoDTO.telefono(), empleadoDTO.email(), empleadoDTO.fechaNacimiento(), puesto);
         Empleado guardado = empleadoRepository.save(empleado);
         return convertirAEmpleadoDTO(guardado);
     }
@@ -62,8 +61,8 @@ public class EmpleadoService {
         if (empleadoDTO.email() != null) { empleado.setEmail(empleadoDTO.email());}
         if (empleadoDTO.telefono() != null) { empleado.setTelefono(empleadoDTO.telefono());}
         if (empleadoDTO.activo() != null) { empleado.setActivo(empleadoDTO.activo());}
-        if (empleadoDTO.id_puesto() != null) {
-            Puesto puesto = puestoRepository.findById(empleadoDTO.id_puesto()).orElseThrow(()-> new ObjetoNoEncontradoException(String.valueOf(empleadoDTO.id_puesto())));
+        if (empleadoDTO.idPuesto() != null) {
+            Puesto puesto = puestoRepository.findById(empleadoDTO.idPuesto()).orElseThrow(()-> new ObjetoNoEncontradoException(String.valueOf(empleadoDTO.idPuesto())));
             empleado.setPuesto(puesto);
         }
 

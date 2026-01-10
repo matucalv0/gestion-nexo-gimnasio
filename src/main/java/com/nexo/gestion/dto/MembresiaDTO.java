@@ -6,13 +6,13 @@ import jakarta.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 
 public record MembresiaDTO(
-        Integer id_membresia,
+        Integer idMembresia,
         @NotBlank
-        Integer duracion_dias,
+        Integer duracionDias,
         @NotBlank
-        BigDecimal precio_sugerido,
+        BigDecimal precioSugerido,
         @NotBlank
         String nombre,
-        Integer asistencias_por_semana,
+        Integer asistenciasPorSemana,
         boolean estado
 ) {}

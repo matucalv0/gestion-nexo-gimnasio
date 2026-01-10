@@ -5,44 +5,44 @@ import jakarta.persistence.Column;
 import java.math.BigDecimal;
 
 public class MembresiaCreateDTO {
-    private Integer duracion_dias;
+    private Integer duracionDias;
     @Column(precision = 10, scale = 2)
-    private BigDecimal precio_sugerido;
+    private BigDecimal precioSugerido;
     private String nombre;
-    private Integer asistencias_por_semana;
+    private Integer asistenciasPorSemana;
 
     public MembresiaCreateDTO(){};
 
-    public MembresiaCreateDTO(Integer duracion_dias, BigDecimal precio_sugerido, String nombre, Integer asistencias_por_semana){
-        this.duracion_dias = duracion_dias;
-        this.precio_sugerido = precio_sugerido;
+    public MembresiaCreateDTO(Integer duracionDias, BigDecimal precioSugerido, String nombre, Integer asistenciasPorSemana){
+        this.duracionDias = duracionDias;
+        this.precioSugerido = precioSugerido;
         this.nombre = nombre;
-        this.asistencias_por_semana = asistencias_por_semana;
+        this.asistenciasPorSemana = asistenciasPorSemana;
     }
 
 
-    public Integer getDuracion_dias() {
-        return duracion_dias;
+    public Integer getDuracionDias() {
+        return duracionDias;
     }
 
-    public void setDuracion_dias(Integer duracion_dias) {
-        this.duracion_dias = duracion_dias;
+    public void setDuracionDias(Integer duracionDias) {
+        this.duracionDias = duracionDias;
     }
 
-    public Integer getAsistencias_por_semana() {
-        return asistencias_por_semana;
+    public Integer getAsistenciasPorSemana() {
+        return asistenciasPorSemana;
     }
 
-    public void setAsistencias_por_semana(Integer asistencias_por_semana) {
-        this.asistencias_por_semana = asistencias_por_semana;
+    public void setAsistenciasPorSemana(Integer asistenciasPorSemana) {
+        this.asistenciasPorSemana = asistenciasPorSemana;
     }
 
-    public BigDecimal getPrecio_sugerido() {
-        return precio_sugerido;
+    public BigDecimal getPrecioSugerido() {
+        return precioSugerido;
     }
 
-    public void setPrecio_sugerido(BigDecimal precio_sugerido) {
-        this.precio_sugerido = precio_sugerido;
+    public void setPrecioSugerido(BigDecimal precioSugerido) {
+        this.precioSugerido = precioSugerido;
     }
 
     public String getNombre() {

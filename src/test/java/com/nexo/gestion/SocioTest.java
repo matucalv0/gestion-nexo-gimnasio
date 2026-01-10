@@ -8,7 +8,6 @@ import com.nexo.gestion.repository.AsistenciaRepository;
 import com.nexo.gestion.repository.MembresiaRepository;
 import com.nexo.gestion.repository.SocioMembresiaRepository;
 import com.nexo.gestion.repository.SocioRepository;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -48,7 +47,7 @@ public class SocioTest {
     public void verificarQueSeGuardaMembresia(){
         Membresia membresia1 = new Membresia("Estandar", 30, BigDecimal.valueOf(30000.00));
         Membresia guardado = membresiaRepository.save(membresia1);
-        assertNotNull(guardado.getId_membresia());
+        assertNotNull(guardado.getIdMembresia());
 
     }
 
@@ -73,12 +72,12 @@ public class SocioTest {
         SocioMembresia guardado = socioMembresiaRepository.save(nuevaSuscripcion);
 
 
-        assertNotNull(guardado.getId_sm());
-        assertEquals(guardado.getFecha_hasta(), guardado.getFecha_inicio().plusDays(30)); //verifico cálculo de fecha_hasta
+        assertNotNull(guardado.getIdSm());
+        assertEquals(guardado.getFechaHasta(), guardado.getFechaInicio().plusDays(30)); //verifico cálculo de fechaHasta
         System.out.println(guardado.getSocio().getNombre());
         System.out.println(guardado.getMembresia().getNombre());
-        System.out.println(guardado.getFecha_inicio());
-        System.out.println(guardado.getFecha_hasta());
+        System.out.println(guardado.getFechaInicio());
+        System.out.println(guardado.getFechaHasta());
     }
 
     @Test
@@ -91,8 +90,8 @@ public class SocioTest {
         Asistencia guardado = asistenciaRepository.save(nuevaAsistencia);
 
 
-        System.out.println(guardado.getId_asistencia());
-        assertNotNull(guardado.getId_asistencia());
+        System.out.println(guardado.getIdAsistencia());
+        assertNotNull(guardado.getIdAsistencia());
 
     }
 

@@ -4,7 +4,6 @@ import com.nexo.gestion.dto.MembresiaCreateDTO;
 import com.nexo.gestion.dto.MembresiaDTO;
 import com.nexo.gestion.dto.MembresiaPatchDTO;
 import com.nexo.gestion.entity.Membresia;
-import com.nexo.gestion.exceptions.ObjetoDuplicadoException;
 import com.nexo.gestion.exceptions.ObjetoNoEncontradoException;
 import com.nexo.gestion.repository.MembresiaRepository;
 import org.springframework.stereotype.Service;
@@ -22,18 +21,18 @@ public class MembresiaService {
 
     private MembresiaDTO convertirAMembresiaDTO(Membresia membresia) {
         return new MembresiaDTO(
-                membresia.getId_membresia(),
-                membresia.getDuracion_dias(),
-                membresia.getPrecio_sugerido(),
+                membresia.getIdMembresia(),
+                membresia.getDuracionDias(),
+                membresia.getPrecioSugerido(),
                 membresia.getNombre(),
-                membresia.getAsistencias_por_semana(),
+                membresia.getAsistenciasPorSemana(),
                 membresia.isActivo()
         );
     }
 
 
     public MembresiaDTO registrarMembresia(MembresiaCreateDTO membresiaCreateDTO){
-        Membresia membresia = new Membresia(membresiaCreateDTO.getNombre(), membresiaCreateDTO.getDuracion_dias(), membresiaCreateDTO.getPrecio_sugerido(), membresiaCreateDTO.getAsistencias_por_semana());
+        Membresia membresia = new Membresia(membresiaCreateDTO.getNombre(), membresiaCreateDTO.getDuracionDias(), membresiaCreateDTO.getPrecioSugerido(), membresiaCreateDTO.getAsistenciasPorSemana());
         Membresia guardada = membresiaRepository.save(membresia);
         return convertirAMembresiaDTO(guardada);
     }
@@ -49,9 +48,9 @@ public class MembresiaService {
         Membresia membresia = membresiaRepository.findById(id).orElseThrow(()-> new ObjetoNoEncontradoException(String.valueOf(id)));
 
         if (membresiaPatchDTO.getActivo() != null){membresia.setActivo(membresiaPatchDTO.getActivo());}
-        if (membresiaPatchDTO.getDuracion_dias() != null) {membresia.setDuracion_dias(membresiaPatchDTO.getDuracion_dias());}
+        if (membresiaPatchDTO.getDuracionDias() != null) {membresia.setDuracionDias(membresiaPatchDTO.getDuracionDias());}
         if (membresiaPatchDTO.getNombre() != null){membresia.setNombre(membresiaPatchDTO.getNombre());}
-        if (membresiaPatchDTO.getPrecio_sugerido() != null){membresia.setPrecio_sugerido(membresiaPatchDTO.getPrecio_sugerido());}
+        if (membresiaPatchDTO.getPrecioSugerido() != null){membresia.setPrecioSugerido(membresiaPatchDTO.getPrecioSugerido());}
 
         Membresia guardada = membresiaRepository.save(membresia);
         return convertirAMembresiaDTO(guardada);

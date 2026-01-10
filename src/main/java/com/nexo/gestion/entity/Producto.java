@@ -8,24 +8,25 @@ import java.math.BigDecimal;
 public class Producto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_producto;
+    @Column(name = "id_producto")
+    private Integer idProducto;
     private String nombre;
-    @Column(precision = 10, scale = 2)
-    private BigDecimal precio_sugerido;
+    @Column(precision = 10, scale = 2, name = "precio_sugerido")
+    private BigDecimal precioSugerido;
     private Integer stock;
     private boolean activo;
 
     public Producto(){}
 
-    public Producto(String nombre, BigDecimal precio_sugerido, Integer stock){
+    public Producto(String nombre, BigDecimal precioSugerido, Integer stock){
         this.nombre = nombre;
-        this.precio_sugerido = precio_sugerido;
+        this.precioSugerido = precioSugerido;
         this.stock = stock;
         this.activo = true;
     }
 
-    public Integer getId_producto() {
-        return id_producto;
+    public Integer getIdProducto() {
+        return idProducto;
     }
 
     public boolean isActivo() {
@@ -44,12 +45,12 @@ public class Producto {
         this.nombre = nombre;
     }
 
-    public BigDecimal getPrecio_sugerido() {
-        return precio_sugerido;
+    public BigDecimal getPrecioSugerido() {
+        return precioSugerido;
     }
 
-    public void setPrecio_sugerido(BigDecimal precio_sugerido) {
-        this.precio_sugerido = precio_sugerido;
+    public void setPrecioSugerido(BigDecimal precioSugerido) {
+        this.precioSugerido = precioSugerido;
     }
 
     public Integer getStock() {
@@ -60,7 +61,7 @@ public class Producto {
         this.stock = stock;
     }
 
-    public void setId_producto(Integer id_producto) {
-        this.id_producto = id_producto;
+    public void setIdProducto(Integer idProducto) {
+        this.idProducto = idProducto;
     }
 }
