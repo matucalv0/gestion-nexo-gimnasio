@@ -6,33 +6,22 @@ checkAuth();
 const API_URL = "/membresias";
 
 document.addEventListener("DOMContentLoaded", () => {
-  const tablaBody = document.querySelector("#tablaMembresias tbody");
-  const inputBusqueda = document.getElementById("inputBusqueda");
+  const tablaBody = document.getElementById("tablaMembresiasBody");
 
-  const btnHome = document.getElementById("btnHome");
-  const btnLogout = document.getElementById("btnLogout");
-  const btnBuscar = document.getElementById("btnBuscar");
-  const btnNueva = document.getElementById("btnNuevaMembresia");
+
+  document.getElementById("btnHome")
+    .addEventListener("click", () => window.location.href = "home.html");
+
+  document.getElementById("btnLogout")
+    .addEventListener("click", logout);
+
+  document.getElementById("btnNuevaMembresia")
+    .addEventListener("click", () => {
+      window.location.href = "registrar-membresia.html";
+    });
+
 
   cargarMembresias(tablaBody);
-
-  btnHome.addEventListener("click", () => {
-    window.location.href = "home.html";
-  });
-
-  btnLogout.addEventListener("click", logout);
-
-  btnNueva.addEventListener("click", () => {
-    window.location.href = "registrar-membresia.html";
-  });
-
-  btnBuscar.addEventListener("click", () => {
-    buscarMembresias(tablaBody, inputBusqueda.value);
-  });
-
-  inputBusqueda.addEventListener("input", () => {
-    buscarMembresias(tablaBody, inputBusqueda.value);
-  });
 });
 
 async function cargarMembresias(tablaBody) {
@@ -52,7 +41,9 @@ function renderMembresias(tablaBody, membresias) {
   if (!membresias?.length) {
     tablaBody.innerHTML = `
       <tr>
-        <td colspan="5">No hay membresías</td>
+        <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+          No hay membresías registradas
+        </td>
       </tr>
     `;
     return;
@@ -60,32 +51,23 @@ function renderMembresias(tablaBody, membresias) {
 
   membresias.forEach(m => {
     const tr = document.createElement("tr");
-
+    tr.classList.add("border-b", "border-gray-300", "hover:bg-gray-100"); // ← aquí
+  
     tr.innerHTML = `
-      <td>${m.nombre}</td>
-      <td>${m.duracionDias}</td>
-      <td>${m.asistenciasPorSemana === null ? "Ilimitadas" : m.asistenciasPorSemana}</td>
-      <td>$${m.precioSugerido}</td>
-      <td>${m.estado ? "Activa" : "Inactiva"}</td>
+      <td class="px-6 py-4">${m.nombre}</td>
+      <td class="px-6 py-4">${m.duracionDias} días</td>
+      <td class="px-6 py-4">
+        ${m.asistenciasPorSemana === null ? "Ilimitadas" : m.asistenciasPorSemana}
+      </td>
+      <td class="px-6 py-4">$ ${m.precioSugerido}</td>
+      <td class="px-6 py-4">${m.tipoMembresia}</td>
+      <td class="px-6 py-4">
+        ${m.estado ? "Activa" : "Inactiva"}
+      </td>
     `;
-
+  
     tablaBody.appendChild(tr);
   });
 }
 
-async function buscarMembresias(tablaBody, valor) {
-  if (valor.trim().length < 2) {
-    cargarMembresias(tablaBody);
-    return;
-  }
 
-  try {
-    const res = await authFetch(
-      `${API_URL}/search?q=${encodeURIComponent(valor)}`
-    );
-    const data = await res.json();
-    renderMembresias(tablaBody, data);
-  } catch (err) {
-    console.error("Error en búsqueda", err);
-  }
-}

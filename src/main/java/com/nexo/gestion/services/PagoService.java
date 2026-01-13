@@ -67,17 +67,15 @@ public class PagoService {
             throw new ObjetoNoEncontradoException("No existe el socio con el dni: " + socio.getDni());
         }
 
-        LocalDate inicio;
+        LocalDate ultimoVencimiento =
+                socioMembresiaRepository.findUltimoVencimientoVigente(socio.getDni());
 
-        if (socioRepository.existsMembresiaActiva(socio.getDni())){
-            List<MembresiaVigenteDTO> vigentes = socioRepository.findMembresiasVigentes(socio.getDni());
-            MembresiaVigenteDTO actual = vigentes.get(0);
-            inicio = actual.vencimiento().plusDays(1);
-        } else {
-            inicio = LocalDate.now();
-        }
+        LocalDate inicio = (ultimoVencimiento != null)
+                ? ultimoVencimiento.plusDays(1)
+                : LocalDate.now();
 
         LocalDate vencimiento = inicio.plusDays(membresia.getDuracionDias());
+
         SocioMembresia nuevaSuscripcion = new SocioMembresia(socio, membresia, inicio, vencimiento);
         return socioMembresiaRepository.save(nuevaSuscripcion);
     }
@@ -133,11 +131,12 @@ public class PagoService {
             pago.agregarDetalle(detalle);
         }
 
-        BigDecimal monto = pagoRepository.sumarSubtotales(pago.getIdPago());
+        BigDecimal monto = dto.getDetalles().stream()
+                .map(d -> d.getPrecioUnitario().multiply(BigDecimal.valueOf(d.getCantidad())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
         pago.setMonto(monto);
 
-        entityManager.flush();
-        entityManager.refresh(pago);
 
         return convertirAPagoDTO(pago);
     }

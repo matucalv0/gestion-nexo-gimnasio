@@ -1,5 +1,6 @@
 package com.nexo.gestion.exceptions;
 
+import com.nexo.gestion.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -14,63 +15,69 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> manejarValidaciones(
+    public ResponseEntity<ErrorResponse> manejarValidaciones(
             MethodArgumentNotValidException ex) {
 
-        Map<String, String> errores = new HashMap<>();
+        String mensaje = ex.getBindingResult()
+                .getFieldErrors()
+                .get(0)
+                .getDefaultMessage();
 
-        ex.getBindingResult().getFieldErrors()
-                .forEach(e -> errores.put(e.getField(), e.getDefaultMessage()));
-
-        return ResponseEntity.badRequest().body(errores);
+        return ResponseEntity
+                .badRequest()
+                .body(new ErrorResponse(mensaje));
     }
 
     @ExceptionHandler(SocioInactivoException.class)
-    public ResponseEntity<String> socioInactivo(SocioInactivoException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    public ResponseEntity<ErrorResponse> socioInactivo(SocioInactivoException e) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse(e.getMessage()));
     }
 
     @ExceptionHandler(MembresiaVencidaException.class)
-    public ResponseEntity<String> membresiaVencida(MembresiaVencidaException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    public ResponseEntity<ErrorResponse> membresiaVencida(MembresiaVencidaException e) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse(e.getMessage()));
     }
 
-
     @ExceptionHandler(ObjetoNoEncontradoException.class)
-    public ResponseEntity<String> manejarNoEncontrado(ObjetoNoEncontradoException ex) {
+    public ResponseEntity<ErrorResponse> manejarNoEncontrado(ObjetoNoEncontradoException ex) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(ex.getMessage());
+                .body(new ErrorResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(ObjetoDuplicadoException.class)
-    public ResponseEntity<String> manejarDuplicado(ObjetoDuplicadoException ex) {
+    public ResponseEntity<ErrorResponse> manejarDuplicado(ObjetoDuplicadoException ex) {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
-                .body(ex.getMessage());
+                .body(new ErrorResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<String> manejarEstadoInvalido(IllegalStateException ex) {
+    public ResponseEntity<ErrorResponse> manejarEstadoInvalido(IllegalStateException ex) {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
-                .body(ex.getMessage());
+                .body(new ErrorResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<String> manejarResponseStatus(ResponseStatusException ex) {
+    public ResponseEntity<ErrorResponse> manejarResponseStatus(ResponseStatusException ex) {
         return ResponseEntity
                 .status(ex.getStatusCode())
-                .body(ex.getReason());
+                .body(new ErrorResponse(ex.getReason()));
     }
 
     // SOLO para errores realmente inesperados
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<String> manejarRuntime(RuntimeException ex) {
+    public ResponseEntity<ErrorResponse> manejarRuntime(RuntimeException ex) {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Error interno del servidor");
+                .body(new ErrorResponse("Error interno del servidor"));
     }
 }
+
 
 

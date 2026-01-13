@@ -11,6 +11,5 @@ public record UsuarioDTO(
         String password,
         @NotBlank
         Rol rol,
-        @NotBlank
         String dni
 ) {}

@@ -1,5 +1,6 @@
 import { checkAuth } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
+import { mostrarAlerta, limpiarAlertas } from "../ui/alerta.js";
 
 checkAuth();
 
@@ -9,8 +10,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const input = document.getElementById("inputBusqueda");
   const btnRegistrar = document.getElementById("btnRegistrar");
   const btnHome = document.getElementById("btnHome");
-
-  const resultado = document.getElementById("resultado");
   const resultadosBusqueda = document.getElementById("resultadosBusqueda");
   const infoSocio = document.getElementById("infoSocio");
   const infoMembresia = document.getElementById("infoMembresia");
@@ -25,59 +24,71 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ===== Eventos ===== */
   btnRegistrar.addEventListener("click", registrar);
+
   input.addEventListener("keydown", e => {
     if (e.key === "Enter") registrar();
   });
 
-  input.addEventListener("input", () =>
-    buscarSocios(input, resultadosBusqueda)
-  );
+  input.addEventListener("input", () => {
+    buscarSocios(input.value);
+  });
 
   /* ===== Buscar socios ===== */
-  async function buscarSocios(input, contenedor) {
-    const valor = input.value.trim();
-    contenedor.innerHTML = "";
+  async function buscarSocios(valor) {
+    resultadosBusqueda.innerHTML = "";
     socioSeleccionado = null;
 
-    if (!valor) return;
+    if (!valor.trim()) return;
 
     try {
       const res = await authFetch(
-        `${API_SOCIOS}/search?q=${encodeURIComponent(valor)}`
+        `${API_SOCIOS}/search?q=${encodeURIComponent(valor.trim())}`
       );
-      const data = await res.json();
+      const socios = await res.json();
 
-      data.forEach(socio => {
-        const div = document.createElement("div");
-        div.textContent = `${socio.nombre} - ${socio.dni}`;
+      socios.forEach(socio => {
+        const item = document.createElement("div");
+        item.className =
+          "px-4 py-2 cursor-pointer hover:bg-gray-200 text-gray-800";
+        item.textContent = `${socio.nombre} - ${socio.dni}`;
 
-        div.addEventListener("click", async () => {
+        item.addEventListener("click", async () => {
           socioSeleccionado = socio;
-          input.value = div.textContent;
-          contenedor.innerHTML = "";
+          input.value = item.textContent;
+          resultadosBusqueda.innerHTML = "";
 
-          await mostrarInfoSocio(socio);
-          await mostrarInfoMembresia(socio);
+          await cargarInfoSocio(socio);
+          await cargarInfoMembresia(socio);
         });
 
-        contenedor.appendChild(div);
+        resultadosBusqueda.appendChild(item);
       });
     } catch (err) {
-      console.error("Error buscando socios", err);
+      console.error(err);
+      mostrarAlerta({
+        mensaje: "Error al buscar socios",
+        tipo: "danger"
+      });
     }
   }
 
   /* ===== Registrar asistencia ===== */
   async function registrar() {
-    limpiarResultado();
+    limpiarAlertas();
 
     if (!socioSeleccionado) {
-      mostrarResultado("Seleccione un socio primero", "warn");
+      mostrarAlerta({
+        mensaje: "Seleccione un socio primero",
+        tipo: "warning"
+      });
       return;
     }
 
     if (asistenciasDisponibles !== null && asistenciasDisponibles <= 0) {
-      mostrarResultado("No quedan asistencias disponibles", "warn");
+      mostrarAlerta({
+        mensaje: "No quedan asistencias disponibles",
+        tipo: "warning"
+      });
       return;
     }
 
@@ -88,43 +99,49 @@ document.addEventListener("DOMContentLoaded", () => {
       );
 
       if (!res.ok) {
-        const msg = await res.text();
-        throw msg || "Error al registrar asistencia";
+        let mensaje = "Error al registrar asistencia";
+        try {
+          const body = await res.json();
+          mensaje = body.message || mensaje;
+        } catch {}
+        throw new Error(mensaje);
       }
 
       const data = await res.json();
       const fecha = new Date(data.fechaHora).toLocaleDateString("es-AR");
 
-      mostrarResultado(`✔ Asistencia registrada (${fecha})`, "ok");
+      mostrarAlerta({
+        mensaje: `Asistencia registrada para ${socioSeleccionado.nombre} - (${fecha})`,
+        tipo: "success"
+      });
 
-      await mostrarInfoSocio(socioSeleccionado);
-      await mostrarInfoMembresia(socioSeleccionado);
+      await cargarInfoSocio(socioSeleccionado);
+      await cargarInfoMembresia(socioSeleccionado);
 
-      input.value = "";
-      socioSeleccionado = null;
-      resultadosBusqueda.innerHTML = "";
-
+      resetFormulario();
     } catch (err) {
-      mostrarResultado(err, "warn");
+      mostrarAlerta({
+        mensaje: err.message || "No se pudo registrar la asistencia",
+        tipo: "danger"
+      });
     }
   }
 
   /* ===== Info socio ===== */
-  async function mostrarInfoSocio(socio) {
+  async function cargarInfoSocio(socio) {
+    infoSocio.classList.remove("hidden");
     infoSocio.textContent = "Cargando información...";
 
     try {
       const res = await authFetch(
         `${API_SOCIOS}/${socio.dni}/asistencias-disponibles`
       );
-      const disponibles = await res.json();
-
-      asistenciasDisponibles = disponibles;
+      asistenciasDisponibles = await res.json();
 
       infoSocio.innerHTML = `
         <strong>${socio.nombre}</strong><br>
         DNI: ${socio.dni}<br>
-        Asistencias disponibles: <strong>${disponibles}</strong>
+        Asistencias disponibles: <strong>${asistenciasDisponibles}</strong>
       `;
     } catch {
       infoSocio.textContent = "Error al cargar datos del socio";
@@ -132,7 +149,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* ===== Info membresía ===== */
-  async function mostrarInfoMembresia(socio) {
+  async function cargarInfoMembresia(socio) {
+    infoMembresia.classList.remove("hidden");
     infoMembresia.textContent = "Cargando información...";
 
     try {
@@ -140,34 +158,26 @@ document.addEventListener("DOMContentLoaded", () => {
         `${API_SOCIOS}/${socio.dni}/membresia-vigente`
       );
 
-      if (!res.ok) {
-        const msg = await res.text();
-        throw msg;
-      }
+      if (!res.ok) throw new Error();
 
       const membresia = await res.json();
 
       infoMembresia.innerHTML = `
-        <strong>Membresía activa</strong><br>
+        <strong>Plan activo</strong><br>
         Tipo: ${membresia.tipo}<br>
-        Vence: ${new Date(membresia.vencimiento)
-          .toLocaleDateString("es-AR")}
+        Vence: ${new Date(membresia.vencimiento).toLocaleDateString("es-AR")}
       `;
-    } catch (err) {
-      infoMembresia.textContent =
-        err || "No se pudo obtener la membresía";
+    } catch {
+      infoMembresia.textContent = "El socio no tiene ningun plan activo";
     }
   }
 
-  /* ===== Helpers ===== */
-  function limpiarResultado() {
-    resultado.textContent = "";
-    resultado.className = "resultado";
-  }
-
-  function mostrarResultado(texto, tipo) {
-    resultado.textContent = texto;
-    resultado.classList.add(tipo);
+  /* ===== Reset ===== */
+  function resetFormulario() {
+    input.value = "";
+    socioSeleccionado = null;
+    resultadosBusqueda.innerHTML = "";
+    infoSocio.classList.add("hidden");
+    infoMembresia.classList.add("hidden");
   }
 });
-

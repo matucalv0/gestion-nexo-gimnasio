@@ -3,28 +3,20 @@ import { checkAuth, logout } from "../auth/auth.js";
 checkAuth();
 
 document.addEventListener("DOMContentLoaded", () => {
-  const btnLogout = document.getElementById("btnLogout");
-  const btnSocios = document.getElementById("btnSocios");
-  const btnAsistencias = document.getElementById("btnAsistencias");
-  const btnPagos = document.getElementById("btnPagos");
-  const btnMembresias = document.getElementById("btnMembresias");
+  const go = page => window.location.href = page;
 
-  btnLogout.addEventListener("click", logout);
+  document.getElementById("btnLogout").addEventListener("click", logout);
 
-  btnSocios.addEventListener("click", () => {
-    window.location.href = "socios.html";
-  });
+  document.getElementById("btnSocios").onclick = () => go("socios.html");
+  document.getElementById("btnAsistencias").onclick = () => go("asistencias.html");
+  document.getElementById("btnPagos").onclick = () => go("pagos.html");
+  document.getElementById("btnMembresias").onclick = () => go("membresias.html");
 
-  btnAsistencias.addEventListener("click", () => {
-    window.location.href = "asistencias.html";
-  });
-
-  btnPagos.addEventListener("click", () => {
-    window.location.href = "pagos.html";
-  });
-
-  btnMembresias.addEventListener("click", () => {
-    window.location.href = "membresias.html";
-  });
+  // Accesos rápidos
+  document.getElementById("quickAsistencia").onclick = () => go("asistencia.html");
+  document.getElementById("quickSocio").onclick = () => go("registrar-socio.html");
+  document.getElementById("quickPago").onclick = () => go("registrar-pago.html");
 });
+
+
 

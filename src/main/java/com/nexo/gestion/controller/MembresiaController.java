@@ -5,6 +5,7 @@ import com.nexo.gestion.dto.MembresiaDTO;
 import com.nexo.gestion.dto.MembresiaPatchDTO;
 import com.nexo.gestion.entity.Membresia;
 import com.nexo.gestion.services.MembresiaService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,7 +24,7 @@ public class MembresiaController {
 
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<MembresiaDTO> altaMembresia(@RequestBody MembresiaCreateDTO membresiaCreateDTO){
+    public ResponseEntity<MembresiaDTO> altaMembresia(@Valid @RequestBody MembresiaCreateDTO membresiaCreateDTO){
         MembresiaDTO membresia = membresiaService.registrarMembresia(membresiaCreateDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(membresia);
     }

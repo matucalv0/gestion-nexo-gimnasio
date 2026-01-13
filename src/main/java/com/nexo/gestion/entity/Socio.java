@@ -18,7 +18,7 @@ public class Socio {
     private String email;
     @Column(name = "fecha_nacimiento")
     private LocalDate fechaNacimiento;
-    private boolean activo;
+    private boolean activo = false;
     @OneToMany(mappedBy = "socio")
 
     List<SocioMembresia> membresias = new ArrayList<>();
@@ -36,7 +36,6 @@ public class Socio {
         this.telefono = telefono;
         this.email = email;
         this.fechaNacimiento = fechaNacimiento;
-        this.activo = true;
     }
 
     public String getDni() {

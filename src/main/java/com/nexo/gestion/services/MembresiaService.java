@@ -25,6 +25,7 @@ public class MembresiaService {
                 membresia.getDuracionDias(),
                 membresia.getPrecioSugerido(),
                 membresia.getNombre(),
+                membresia.getTipoMembresia(),
                 membresia.getAsistenciasPorSemana(),
                 membresia.isActivo()
         );
@@ -32,7 +33,7 @@ public class MembresiaService {
 
 
     public MembresiaDTO registrarMembresia(MembresiaCreateDTO membresiaCreateDTO){
-        Membresia membresia = new Membresia(membresiaCreateDTO.getNombre(), membresiaCreateDTO.getDuracionDias(), membresiaCreateDTO.getPrecioSugerido(), membresiaCreateDTO.getAsistenciasPorSemana());
+        Membresia membresia = new Membresia(membresiaCreateDTO.getNombre(), membresiaCreateDTO.getDuracionDias(), membresiaCreateDTO.getPrecioSugerido(), membresiaCreateDTO.getAsistenciasPorSemana(), membresiaCreateDTO.getTipoMembresia());
         Membresia guardada = membresiaRepository.save(membresia);
         return convertirAMembresiaDTO(guardada);
     }
@@ -62,7 +63,7 @@ public class MembresiaService {
     }
 
     public List<MembresiaDTO> mostrarMembresias(){
-        List<Membresia> membresias = membresiaRepository.findAll();
+        List<Membresia> membresias = membresiaRepository.findAllByOrderByNombreAsc();
         List<MembresiaDTO> membresiasDTO = new ArrayList<>();
 
         for (Membresia membresia: membresias){

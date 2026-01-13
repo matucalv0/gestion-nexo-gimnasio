@@ -17,6 +17,10 @@ public class Membresia {
     @Column(name = "duracion_dias")
     private Integer duracionDias;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_membresia")
+    private TipoMembresia tipoMembresia;
+
     @Column(name = "asistencias_por_semana")
     private Integer asistenciasPorSemana;
 
@@ -26,17 +30,28 @@ public class Membresia {
     private String nombre;
     private boolean activo;
 
+    //agregar constraint en la bd, nombre y tipoMembresia
+
     @OneToMany(mappedBy = "membresia")
     List<SocioMembresia> socios = new ArrayList<>();
 
     public Membresia(){}
 
-    public Membresia(String nombre, Integer duracionDias, BigDecimal precioSugerido, Integer asistenciasPorSemana){
+    public Membresia(String nombre, Integer duracionDias, BigDecimal precioSugerido, Integer asistenciasPorSemana, TipoMembresia tipoMembresia){
         this.nombre = nombre;
         this.duracionDias = duracionDias;
         this.precioSugerido = precioSugerido;
         this.asistenciasPorSemana = asistenciasPorSemana;
         this.activo = true;
+        this.tipoMembresia = tipoMembresia;
+    }
+
+    public TipoMembresia getTipoMembresia() {
+        return tipoMembresia;
+    }
+
+    public void setTipoMembresia(TipoMembresia tipoMembresia) {
+        this.tipoMembresia = tipoMembresia;
     }
 
     public Integer getIdMembresia() {

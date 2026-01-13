@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,6 +22,7 @@ public interface SocioRepository extends JpaRepository<Socio, String> {
     @Query("""
    SELECT new com.nexo.gestion.dto.MembresiaVigenteDTO(
        m.nombre,
+       m.tipoMembresia,
        sm.fechaHasta
    )
    FROM SocioMembresia sm
@@ -38,6 +40,20 @@ public interface SocioRepository extends JpaRepository<Socio, String> {
    AND CURRENT_DATE BETWEEN sm.fechaInicio AND sm.fechaHasta
 """)
     boolean existsMembresiaActiva(@Param("dni") String dni);
+
+    @Query(
+            value = """
+  SELECT COUNT(*)
+  FROM asistencia a
+  WHERE a.fecha_hora >= CURRENT_DATE
+    AND a.fecha_hora < CURRENT_DATE + INTERVAL '1 day'
+    AND a.dni = :dni
+  """,
+            nativeQuery = true
+    )
+    Long asististenciasHoy(@Param("dni") String dni);
+
+
 
 
 

@@ -6,7 +6,7 @@ checkAuth();
 const API_URL = "/socios";
 
 document.addEventListener("DOMContentLoaded", () => {
-  const tablaBody = document.querySelector("#tablaSocios tbody");
+  const tablaBody = document.getElementById("tablaSociosBody");
   const busquedaInput = document.getElementById("inputBusqueda");
 
   const btnHome = document.getElementById("btnHome");
@@ -65,7 +65,9 @@ function renderSocios(tablaBody, socios) {
   if (!Array.isArray(socios) || socios.length === 0) {
     tablaBody.innerHTML = `
       <tr>
-        <td colspan="6">No hay socios</td>
+        <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+          No hay socios
+        </td>
       </tr>
     `;
     return;
@@ -73,27 +75,33 @@ function renderSocios(tablaBody, socios) {
 
   socios.forEach(socio => {
     const tr = document.createElement("tr");
+    tr.className = "border-b hover:bg-gray-100";
 
     tr.innerHTML = `
-      <td>${socio.dni}</td>
-      <td>${socio.nombre}</td>
-      <td>${socio.telefono}</td>
-      <td>${socio.email}</td>
-      <td class="${socio.activo ? "estado-activo" : "estado-inactivo"}">
+      <td class="px-6 py-4">${socio.dni}</td>
+      <td class="px-6 py-4">${socio.nombre}</td>
+      <td class="px-6 py-4">${socio.telefono ?? "-"}</td>
+      <td class="px-6 py-4">${socio.email}</td>
+      <td class="px-6 py-4 font-semibold ${
+        socio.activo ? "text-green-600" : "text-red-600"
+      }">
         ${socio.activo ? "Activo" : "Inactivo"}
       </td>
-      <td>
-        <button class="btn-ver">Ver</button>
+      <td class="px-6 py-4">
+        <button class="text-orange-600 font-medium hover:underline">
+          Ver
+        </button>
       </td>
     `;
 
-    tr.querySelector(".btn-ver").addEventListener("click", () => {
+    tr.querySelector("button").addEventListener("click", () => {
       verDetalle(socio.dni);
     });
 
     tablaBody.appendChild(tr);
   });
 }
+
 
 async function buscarSocios(tablaBody, valor) {
   const texto = valor.trim();

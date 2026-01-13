@@ -7,6 +7,7 @@ import com.nexo.gestion.exceptions.ObjetoDuplicadoException;
 import com.nexo.gestion.exceptions.ObjetoNoEncontradoException;
 import com.nexo.gestion.exceptions.SocioInactivoException;
 import com.nexo.gestion.repository.*;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -64,6 +65,7 @@ public class SocioService {
                 membresia.getDuracionDias(),
                 membresia.getPrecioSugerido(),
                 membresia.getNombre(),
+                membresia.getTipoMembresia(),
                 membresia.getAsistenciasPorSemana(),
                 membresia.isActivo()
         );
@@ -78,7 +80,7 @@ public class SocioService {
         );
     }
 
-
+    @Transactional
     public SocioDTO registrarSocio(SocioCreateDTO socioDTO) {
         if (socioRepository.existsById(socioDTO.getDni())) {
             throw new ObjetoDuplicadoException(socioDTO.getDni());
@@ -130,6 +132,7 @@ public class SocioService {
         return sociosDTO;
     }
 
+    @Transactional
     public SocioMembresiaDTO asignarMembresia(String dni, Integer idMembresia) {
         Socio socio = socioRepository.findById(dni).orElseThrow(() -> new ObjetoNoEncontradoException(dni));
 
@@ -212,13 +215,25 @@ public class SocioService {
     public int asistenciasDisponibles(String dni){
         Socio socio = socioRepository.findById(dni).orElseThrow(() -> new ObjetoNoEncontradoException(dni));
 
-        SocioMembresia membresiaActual = membresiaVigente(socio).orElseThrow(MembresiaVencidaException::new);
+        Optional<SocioMembresia> membresiaOpt = membresiaVigente(socio);
+
+        if (membresiaOpt.isEmpty()) {
+            return 0;
+        }
+
+        SocioMembresia membresiaActual = membresiaOpt.get();
 
         Long cantidadDiasAsistidos = socioRepository.diasAsistidos(membresiaActual.getIdSm(), socio.getDni());
 
-        return Math.toIntExact(membresiaActual.getMembresia().getDuracionDias() - cantidadDiasAsistidos);
+        Integer cantidadAsistenciasMes = membresiaActual.getMembresia().getAsistenciasPorSemana() * (membresiaActual.getMembresia().getDuracionDias() / 7);
 
+        return Math.toIntExact(cantidadAsistenciasMes - cantidadDiasAsistidos);
     }
+
+    private boolean socioAsistioHoy(String dni){
+        return socioRepository.asististenciasHoy(dni) > 0;
+    }
+
 
 
 }

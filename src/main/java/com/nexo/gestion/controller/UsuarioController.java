@@ -19,7 +19,6 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @PostMapping
     public ResponseEntity<UsuarioResponseDTO> altaUsuario(@RequestBody UsuarioDTO usuarioDTO){
         UsuarioResponseDTO usuario = usuarioService.registrarUsuario(usuarioDTO);
