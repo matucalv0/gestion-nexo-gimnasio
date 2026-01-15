@@ -75,7 +75,8 @@ public class AsistenciaTest {
         socioMembresiaRepository.save(suscripcionGuardada);
 
         assertThrows(MembresiaVencidaException.class, () -> socioService.registrarAsistencia(socioGuardado.dni()));
-
     }
+
+
 
 }

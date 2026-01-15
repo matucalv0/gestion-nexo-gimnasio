@@ -91,15 +91,18 @@ public class SocioController {
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping("/{dni}/asistencias-disponibles")
     public Map<String, Integer> asistenciasDisponibles(@PathVariable String dni) {
-        int disponibles = Math.max(socioService.asistenciasDisponibles(dni), 0 );
-        return Map.of("disponibles", disponibles);
+        return Map.of(
+                "disponibles",
+                socioService.asistenciasDisponibles(dni)
+        );
     }
+
 
 
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping("/{dni}/membresia-vigente")
     public ResponseEntity<MembresiaVigenteDTO> membresiaVigente(@PathVariable String dni){
-        MembresiaVigenteDTO membresia = socioService.membresiaVigente(dni);
+        MembresiaVigenteDTO membresia = socioService.membresiaVigenteSocio(dni);
         return ResponseEntity.ok(membresia);
     }
 

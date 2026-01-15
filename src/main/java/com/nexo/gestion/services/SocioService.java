@@ -200,12 +200,6 @@ public class SocioService {
     }
 
 
-    public MembresiaVigenteDTO membresiaVigente(String dni) {
-        List<MembresiaVigenteDTO> vigentes = socioRepository.findMembresiasVigentes(dni);
-        if (vigentes.isEmpty()) throw new MembresiaVencidaException();
-        return vigentes.get(0);
-    }
-
 
 
     public List<SocioDTO> buscarSocios(String dniOrNombre) {
@@ -240,6 +234,15 @@ public class SocioService {
 
 
         return Math.toIntExact(Math.max(cantidadAsistenciasMes - diasAsistidos, 0));
+    }
+
+    public MembresiaVigenteDTO membresiaVigenteSocio(String dni){
+        Socio socio = socioRepository.findById(dni).orElseThrow(() -> new ObjetoNoEncontradoException("No existe ningun socio con el dni " + dni));
+
+        SocioMembresia suscripcionActiva = membresiaVigente(socio);
+
+        return new MembresiaVigenteDTO(suscripcionActiva.getMembresia().getNombre(), suscripcionActiva.getMembresia().getTipoMembresia(), suscripcionActiva.getFechaHasta());
+
     }
 
     private boolean socioAsistioHoy(String dni){
