@@ -26,7 +26,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws ServletException, IOException {
+
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -35,18 +40,36 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         String token = authHeader.substring(7);
-        String username = jwtService.extraerUsername(token);
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        try {
+            String username = jwtService.extraerUsername(token);
 
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            if (username != null &&
+                    SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            if (jwtService.esTokenValido(token, userDetails)) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                UserDetails userDetails =
+                        userDetailsService.loadUserByUsername(username);
+
+                if (jwtService.esTokenValido(token, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetails,
+                                    null,
+                                    userDetails.getAuthorities()
+                            );
+
+                    SecurityContextHolder.getContext()
+                            .setAuthentication(authToken);
+                }
             }
+
+        } catch (Exception e) {
+            // Token inválido / vencido → no autenticar y seguir
+            filterChain.doFilter(request, response);
+            return;
         }
 
         filterChain.doFilter(request, response);
     }
+
 }

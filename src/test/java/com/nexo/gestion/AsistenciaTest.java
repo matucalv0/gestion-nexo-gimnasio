@@ -4,6 +4,7 @@ import com.nexo.gestion.dto.*;
 import com.nexo.gestion.entity.*;
 import com.nexo.gestion.exceptions.MembresiaVencidaException;
 import com.nexo.gestion.exceptions.SocioInactivoException;
+import com.nexo.gestion.exceptions.SocioSinAsistenciasDisponiblesException;
 import com.nexo.gestion.repository.AsistenciaRepository;
 import com.nexo.gestion.repository.SocioMembresiaRepository;
 import com.nexo.gestion.services.MembresiaService;
@@ -76,6 +77,45 @@ public class AsistenciaTest {
 
         assertThrows(MembresiaVencidaException.class, () -> socioService.registrarAsistencia(socioGuardado.dni()));
     }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void verificarQueNoSeRegistraLaAsistenciaSiElSocioYaCumplioElTotalMensual(){
+        Socio socio = new Socio("78452365", "Eduardo", "11478523211", "edu@gmail.com", LocalDate.of(1986,1,28));
+        SocioDTO socioGuardado = socioService.registrarSocio(new SocioCreateDTO(socio.getDni(), socio.getNombre(), socio.getTelefono(), socio.getEmail(), socio.getFechaNacimiento()));
+        Membresia membresia = new Membresia("plan basico", 28, new BigDecimal(50000), 2, TipoMembresia.MUSCULACION);
+        MembresiaDTO guardada = membresiaService.registrarMembresia(new MembresiaCreateDTO(membresia.getDuracionDias(), membresia.getPrecioSugerido(), membresia.getNombre(), membresia.getAsistenciasPorSemana(), membresia.getTipoMembresia()));
+
+        socioService.asignarMembresia(socioGuardado.dni(), guardada.idMembresia());
+
+        for (int i = 0; i <= 7; i++) {
+            socioService.registrarAsistencia(socioGuardado.dni());  //registro 8 asistencias
+        }
+
+        assertThrows(SocioSinAsistenciasDisponiblesException.class, () -> socioService.registrarAsistencia(socioGuardado.dni()));
+
+    }
+
+
+    @Test
+    @Transactional
+    @Rollback
+    void noPermiteRegistrarMasAsistenciasCuandoLlegaACero() {
+        Socio socio = new Socio("78452365", "Eduardo", "11478523211", "edu@gmail.com", LocalDate.of(1986,1,28));
+        SocioDTO socioGuardado = socioService.registrarSocio(new SocioCreateDTO(socio.getDni(), socio.getNombre(), socio.getTelefono(), socio.getEmail(), socio.getFechaNacimiento()));
+        Membresia membresia = new Membresia("plan basico", 28, new BigDecimal(50000), 2, TipoMembresia.MUSCULACION);
+        MembresiaDTO guardada = membresiaService.registrarMembresia(new MembresiaCreateDTO(membresia.getDuracionDias(), membresia.getPrecioSugerido(), membresia.getNombre(), membresia.getAsistenciasPorSemana(), membresia.getTipoMembresia()));
+
+        socioService.asignarMembresia(socioGuardado.dni(), guardada.idMembresia());
+
+        while (socioService.asistenciasDisponibles(socioGuardado.dni()) > 0) {
+            socioService.registrarAsistencia(socioGuardado.dni());
+        }
+
+        assertThrows(SocioSinAsistenciasDisponiblesException.class, () -> socioService.registrarAsistencia(socioGuardado.dni()));
+    }
+
 
 
 

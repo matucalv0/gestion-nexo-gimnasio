@@ -35,6 +35,13 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(e.getMessage()));
     }
 
+    @ExceptionHandler(SocioSinAsistenciasDisponiblesException.class)
+    public ResponseEntity<ErrorResponse> socioInactivo(SocioSinAsistenciasDisponiblesException e) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse(e.getMessage()));
+    }
+
     @ExceptionHandler(MembresiaVencidaException.class)
     public ResponseEntity<ErrorResponse> membresiaVencida(MembresiaVencidaException e) {
         return ResponseEntity

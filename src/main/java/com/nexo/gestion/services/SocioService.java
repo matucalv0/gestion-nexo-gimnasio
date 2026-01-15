@@ -2,10 +2,7 @@ package com.nexo.gestion.services;
 
 import com.nexo.gestion.dto.*;
 import com.nexo.gestion.entity.*;
-import com.nexo.gestion.exceptions.MembresiaVencidaException;
-import com.nexo.gestion.exceptions.ObjetoDuplicadoException;
-import com.nexo.gestion.exceptions.ObjetoNoEncontradoException;
-import com.nexo.gestion.exceptions.SocioInactivoException;
+import com.nexo.gestion.exceptions.*;
 import com.nexo.gestion.repository.*;
 import com.nexo.gestion.repository.AsistenciaRepository;
 import jakarta.transaction.Transactional;
@@ -172,12 +169,17 @@ public class SocioService {
     public AsistenciaSocioIdDTO registrarAsistencia(String dni) {
         Socio socio = socioRepository.findById(dni).orElseThrow(() -> new ObjetoNoEncontradoException(dni));
 
-        if (!Boolean.TRUE.equals(socio.isActivo())) {
+        if (!socio.isActivo()) {
             throw new SocioInactivoException();
+        }
+
+        if (asistenciasDisponibles(dni) == 0){
+            throw new SocioSinAsistenciasDisponiblesException();
         }
 
 
         SocioMembresia membresia = membresiaVigente(socio);
+
 
 
         Asistencia nuevaAsistencia = new Asistencia(socio);
