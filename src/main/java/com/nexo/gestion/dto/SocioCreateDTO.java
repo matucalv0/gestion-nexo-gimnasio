@@ -29,6 +29,14 @@ public class SocioCreateDTO {
     )
     private String telefono;
 
+    public SocioCreateDTO(String dni, String nombre, String telefono, String email, LocalDate fechaNacimiento) {
+        this.dni = dni;
+        this.nombre = nombre;
+        this.telefono = telefono;
+        this.email = email;
+        this.fechaNacimiento = fechaNacimiento;
+    }
+
     @NotBlank(message = "El email es obligatorio")
     @Email(message = "Email inválido")
     private String email;

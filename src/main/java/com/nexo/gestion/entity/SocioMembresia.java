@@ -36,12 +36,22 @@ public class SocioMembresia {
         this.activo = true;
     }
 
+
     public SocioMembresia(Socio socio, Membresia membresia, LocalDate inicio, LocalDate vencimiento) {
         this.precio = membresia.getPrecioSugerido();
         this.socio = socio;
         this.membresia = membresia;
         this.fechaInicio = inicio;
         this.fechaHasta = vencimiento;
+        this.activo = true;
+    }
+
+    public SocioMembresia(Socio socio, Membresia membresia){
+        this.precio = membresia.getPrecioSugerido();
+        this.socio = socio;
+        this.membresia = membresia;
+        this.fechaInicio = LocalDate.now();
+        this.fechaHasta = fechaInicio.plusDays(membresia.getDuracionDias());
         this.activo = true;
     }
 
@@ -53,29 +63,15 @@ public class SocioMembresia {
         this.activo = activo;
     }
 
-    public SocioMembresia(Socio socio, Membresia membresia){
-        this.precio = membresia.getPrecioSugerido();
-        this.socio = socio;
-        this.membresia = membresia;
-        this.activo = true;
-    }
-
-    @PrePersist
-    public void inicializarFechas() {
-        if (this.fechaInicio == null) {
-            this.fechaInicio = LocalDate.now();
-        }
-
-        if (this.fechaHasta == null && this.membresia != null) {
-            this.fechaHasta = this.fechaInicio.plusDays(this.membresia.getDuracionDias());
-        }
-    }
-
 
     public boolean cubre(LocalDate fecha) {
-        return (fecha.isEqual(fechaInicio) || fecha.isAfter(fechaInicio))
-                && (fecha.isEqual(fechaHasta) || fecha.isBefore(fechaHasta));
+        if (fecha == null || fechaInicio == null || fechaHasta == null) {
+            return false;
+        }
+
+        return (fecha.isEqual(fechaInicio) || fecha.isAfter(fechaInicio)) && (fecha.isEqual(fechaHasta) || fecha.isBefore(fechaHasta));
     }
+
 
     public Integer getIdSm() {
         return idSm;

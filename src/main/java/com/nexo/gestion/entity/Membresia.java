@@ -37,6 +37,12 @@ public class Membresia {
 
     public Membresia(){}
 
+    public Membresia(String nombre, Integer duracionDias, BigDecimal precioSugerido){
+        this.nombre = nombre;
+        this.duracionDias = duracionDias;
+        this.precioSugerido = precioSugerido;
+    }
+
     public Membresia(String nombre, Integer duracionDias, BigDecimal precioSugerido, Integer asistenciasPorSemana, TipoMembresia tipoMembresia){
         this.nombre = nombre;
         this.duracionDias = duracionDias;

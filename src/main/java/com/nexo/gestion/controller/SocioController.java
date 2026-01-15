@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/socios")
@@ -89,10 +90,11 @@ public class SocioController {
 
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping("/{dni}/asistencias-disponibles")
-    public ResponseEntity<Integer> asistenciasDisponibles(@PathVariable String dni) {
-        int disponibles = socioService.asistenciasDisponibles(dni);
-        return ResponseEntity.ok(disponibles);
+    public Map<String, Integer> asistenciasDisponibles(@PathVariable String dni) {
+        int disponibles = Math.max(socioService.asistenciasDisponibles(dni), 0 );
+        return Map.of("disponibles", disponibles);
     }
+
 
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping("/{dni}/membresia-vigente")

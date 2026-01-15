@@ -129,24 +129,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ===== Info socio ===== */
   async function cargarInfoSocio(socio) {
-    infoSocio.classList.remove("hidden");
-    infoSocio.textContent = "Cargando información...";
+  infoSocio.classList.remove("hidden");
+  infoSocio.textContent = "Cargando información...";
 
-    try {
-      const res = await authFetch(
-        `${API_SOCIOS}/${socio.dni}/asistencias-disponibles`
-      );
-      asistenciasDisponibles = await res.json();
+  try {
+    const res = await authFetch(`${API_SOCIOS}/${socio.dni}/asistencias-disponibles`);
+    const data = await res.json();
 
-      infoSocio.innerHTML = `
-        <strong>${socio.nombre}</strong><br>
-        DNI: ${socio.dni}<br>
-        Asistencias disponibles: <strong>${asistenciasDisponibles}</strong>
-      `;
-    } catch {
-      infoSocio.textContent = "Error al cargar datos del socio";
-    }
+    // data.disponibles siempre existe porque el backend lo envía así
+    asistenciasDisponibles = data.disponibles;
+
+    infoSocio.innerHTML = `
+      <strong>${socio.nombre}</strong><br>
+      DNI: ${socio.dni}<br>
+      Asistencias disponibles: <strong>${asistenciasDisponibles}</strong>
+    `;
+  } catch (err) {
+    console.error(err);
+    infoSocio.textContent = "Error al cargar datos del socio";
   }
+}
+
+
 
   /* ===== Info membresía ===== */
   async function cargarInfoMembresia(socio) {

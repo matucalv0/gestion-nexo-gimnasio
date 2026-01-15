@@ -7,6 +7,7 @@ import com.nexo.gestion.exceptions.ObjetoDuplicadoException;
 import com.nexo.gestion.exceptions.ObjetoNoEncontradoException;
 import com.nexo.gestion.exceptions.SocioInactivoException;
 import com.nexo.gestion.repository.*;
+import com.nexo.gestion.repository.AsistenciaRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -83,7 +84,11 @@ public class SocioService {
     @Transactional
     public SocioDTO registrarSocio(SocioCreateDTO socioDTO) {
         if (socioRepository.existsById(socioDTO.getDni())) {
-            throw new ObjetoDuplicadoException(socioDTO.getDni());
+            throw new ObjetoDuplicadoException("El dni " + socioDTO.getDni() + " ");
+        }
+
+        if (socioRepository.existsByEmail(socioDTO.getEmail())){
+            throw new ObjetoDuplicadoException("El email " + socioDTO.getEmail() + " ");
         }
 
         Socio socio = new Socio(socioDTO.getDni(), socioDTO.getNombre(), socioDTO.getTelefono(), socioDTO.getEmail(), socioDTO.getFechaNacimiento());
@@ -138,14 +143,14 @@ public class SocioService {
 
         Membresia membresia = membresiaRepository.findById(idMembresia).orElseThrow(() -> new ObjetoNoEncontradoException(String.valueOf(idMembresia)));
 
-        SocioMembresia socioMembresia = new SocioMembresia(membresia.getPrecioSugerido(), socio, membresia);
+        SocioMembresia socioMembresia = new SocioMembresia(socio, membresia);
 
         socio.agregarMembresia(socioMembresia);
-        socioRepository.save(socio);
         membresia.agregarSocio(socioMembresia);
-        membresiaRepository.save(membresia);
 
         SocioMembresia guardada = socioMembresiaRepository.save(socioMembresia);
+        socio.setActivo(true);
+
         return convertirASocioMembresiaDTO(guardada);
     }
 
@@ -172,7 +177,7 @@ public class SocioService {
         }
 
 
-        SocioMembresia membresia = membresiaVigente(socio).orElseThrow(MembresiaVencidaException::new);
+        SocioMembresia membresia = membresiaVigente(socio);
 
 
         Asistencia nuevaAsistencia = new Asistencia(socio);
@@ -180,17 +185,20 @@ public class SocioService {
         return convertirAAsistenciaSocioIdDTO(guardada.getIdAsistencia());
     }
 
-    public Optional<SocioMembresia> membresiaVigente(Socio socio) {
+    public SocioMembresia membresiaVigente(Socio socio) {
         LocalDate hoy = LocalDate.now();
 
-        for (SocioMembresia m : socio.getMembresias()) {
-            if (m.cubre(hoy)) {
-                return Optional.of(m);
-            }
+        SocioMembresia socioMembresia = socioMembresiaRepository
+                .findActivaBySocio(socio.getDni())
+                .orElseThrow(MembresiaVencidaException::new);
+
+        if (!socioMembresia.cubre(hoy)) {
+            throw new MembresiaVencidaException();
         }
 
-        return Optional.empty();
+        return socioMembresia;
     }
+
 
     public MembresiaVigenteDTO membresiaVigente(String dni) {
         List<MembresiaVigenteDTO> vigentes = socioRepository.findMembresiasVigentes(dni);
@@ -213,21 +221,25 @@ public class SocioService {
     }
 
     public int asistenciasDisponibles(String dni){
-        Socio socio = socioRepository.findById(dni).orElseThrow(() -> new ObjetoNoEncontradoException(dni));
+        Socio socio = socioRepository.findById(dni)
+                .orElseThrow(() -> new ObjetoNoEncontradoException(dni));
 
-        Optional<SocioMembresia> membresiaOpt = membresiaVigente(socio);
+        SocioMembresia membresiaActual = membresiaVigente(socio);
 
-        if (membresiaOpt.isEmpty()) {
-            return 0;
-        }
 
-        SocioMembresia membresiaActual = membresiaOpt.get();
+        int asistenciasPorSemana = Optional.ofNullable(membresiaActual.getMembresia().getAsistenciasPorSemana()).orElse(0);
+        int duracionDias = Optional.ofNullable(membresiaActual.getMembresia().getDuracionDias()).orElse(0);
 
-        Long cantidadDiasAsistidos = socioRepository.diasAsistidos(membresiaActual.getIdSm(), socio.getDni());
+        long diasAsistidos = Optional.ofNullable(
+                socioRepository.diasAsistidos(membresiaActual.getIdSm(), socio.getDni())
+        ).orElse(0L);
 
-        Integer cantidadAsistenciasMes = membresiaActual.getMembresia().getAsistenciasPorSemana() * (membresiaActual.getMembresia().getDuracionDias() / 7);
+        int cantidadAsistenciasMes = (int) Math.round(asistenciasPorSemana * (duracionDias / 7.0));
 
-        return Math.toIntExact(cantidadAsistenciasMes - cantidadDiasAsistidos);
+
+
+
+        return Math.toIntExact(Math.max(cantidadAsistenciasMes - diasAsistidos, 0));
     }
 
     private boolean socioAsistioHoy(String dni){

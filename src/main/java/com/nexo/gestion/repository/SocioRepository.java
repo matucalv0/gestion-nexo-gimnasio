@@ -54,14 +54,5 @@ public interface SocioRepository extends JpaRepository<Socio, String> {
     Long asististenciasHoy(@Param("dni") String dni);
 
 
-
-
-
-
-
-
-
-
-
-
+    boolean existsByEmail(String email);
 }
