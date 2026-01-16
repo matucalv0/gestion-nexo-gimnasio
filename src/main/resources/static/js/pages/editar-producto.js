@@ -1,0 +1,101 @@
+import { checkAuth, logout } from "../auth/auth.js";
+import { authFetch } from "../api/api.js";
+import { mostrarAlerta, limpiarAlertas } from "../ui/alerta.js";
+
+checkAuth();
+
+const API_URL = "/productos";
+
+document.addEventListener("DOMContentLoaded", async () => {
+  const form = document.getElementById("editarProductoForm");
+  const btnHome = document.getElementById("btnHome");
+  const btnLogout = document.getElementById("btnLogout");
+
+  btnHome.addEventListener("click", () => window.location.href = "productos.html");
+  btnLogout.addEventListener("click", logout);
+
+  const params = new URLSearchParams(window.location.search);
+  const idProducto = params.get("id");
+
+  if (!idProducto) {
+    mostrarAlerta({ mensaje: "Producto inválido", tipo: "danger" });
+    return;
+  }
+
+  await cargarProducto(idProducto);
+
+  form.addEventListener("submit", (e) => editarProducto(e, idProducto));
+
+  /* ===== Funciones ===== */
+
+  async function cargarProducto(id) {
+    try {
+      const res = await authFetch(`${API_URL}/${id}`);
+      const producto = await res.json();
+
+      form.nombre.value = producto.nombre;
+      form.precioSugerido.value = producto.precioSugerido;
+      form.stock.value = producto.stock;
+
+    } catch {
+      mostrarAlerta({ mensaje: "Error al cargar producto", tipo: "danger" });
+    }
+  }
+
+  async function editarProducto(e, id) {
+    e.preventDefault();
+
+    limpiarErrores();
+    limpiarAlertas();
+
+    const data = {
+      nombre: form.nombre.value.trim(),
+      precioSugerido: Number(form.precioSugerido.value),
+      stock: Number(form.stock.value)
+    };
+
+    try {
+      const res = await authFetch(`${API_URL}/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(data)
+      });
+
+      const body = await res.json();
+
+      if (!res.ok) {
+        manejarErrores(res, body);
+        return;
+      }
+
+      mostrarAlerta({ mensaje: "Producto actualizado correctamente", tipo: "success" });
+
+    } catch {
+      mostrarAlerta({ mensaje: "No se pudo conectar con el servidor", tipo: "danger" });
+    }
+  }
+
+  function manejarErrores(res, body) {
+    if (res.status === 400 && body?.errors) {
+      mostrarErroresPorCampo(body.errors);
+      return;
+    }
+
+    mostrarAlerta({
+      mensaje: body.message || "Error al editar producto",
+      tipo: res.status >= 500 ? "danger" : "warning"
+    });
+  }
+
+  function limpiarErrores() {
+    form.querySelectorAll(".error").forEach(e => e.textContent = "");
+  }
+
+  function mostrarErroresPorCampo(errors) {
+    Object.entries(errors).forEach(([campo, mensaje]) => {
+      const input = form.querySelector(`[name="${campo}"]`);
+      if (!input) return;
+      const span = input.nextElementSibling;
+      if (span) span.textContent = mensaje;
+    });
+  }
+});

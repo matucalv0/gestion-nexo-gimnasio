@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Editar producto · NEXO</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Flowbite -->
+  <script src="https://cdn.jsdelivr.net/npm/flowbite@1.8.5/dist/flowbite.min.js"></script>
+
+  <style>
+    :root {
+      --orange: #E9561E;
+      --beige: #ECD9BA;
+      --dark-bg: #1f2e38;
+      --input-bg: #16222b;
+      --input-border: #2f3e48;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen bg-cover bg-center relative" style="background-image: url('../assets/nexofondo.jpg');">
+
+  <div class="absolute inset-0 bg-black/60"></div>
+
+  <main class="relative z-10 flex justify-center items-start min-h-screen p-6 pt-16">
+    <div class="w-full max-w-lg">
+
+      <header class="flex justify-between items-center mb-8">
+        <img src="../assets/nexologo.png" alt="NEXO" class="h-12">
+        <div class="flex gap-2">
+          <button id="btnHome" class="bg-[var(--orange)] px-4 py-2 rounded-md font-semibold">
+            Home
+          </button>
+          <button id="btnLogout" class="bg-[var(--orange)] px-4 py-2 rounded-md font-semibold">
+            Cerrar sesión
+          </button>
+        </div>
+      </header>
+
+      <div id="alert-container" class="mb-4"></div>
+
+      <div class="bg-[var(--dark-bg)] p-8 rounded-lg shadow-xl">
+        <h1 class="text-[var(--beige)] text-2xl font-bold mb-6">
+          Editar producto
+        </h1>
+
+        <form id="editarProductoForm" class="space-y-4" novalidate>
+
+          <div>
+            <label class="block text-[var(--beige)] font-semibold mb-1">Nombre*</label>
+            <input type="text" name="nombre"
+              class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)]" />
+            <span class="error text-red-500 text-sm"></span>
+          </div>
+
+          <div>
+            <label class="block text-[var(--beige)] font-semibold mb-1">Precio sugerido*</label>
+            <input type="number" name="precioSugerido" step="0.01"
+              class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)]" />
+            <span class="error text-red-500 text-sm"></span>
+          </div>
+
+          <div>
+            <label class="block text-[var(--beige)] font-semibold mb-1">Stock*</label>
+            <input type="number" name="stock"
+              class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)]" />
+            <span class="error text-red-500 text-sm"></span>
+          </div>
+
+          <button type="submit"
+            class="w-full bg-[var(--orange)] py-3 rounded-md font-semibold">
+            Guardar cambios
+          </button>
+
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="../js/pages/editar-producto.js"></script>
+</body>
+</html>
+

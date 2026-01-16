@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Productos · NEXO</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    :root {
+      --orange: #E9561E;
+      --beige: #ECD9BA;
+      --dark-bg: #1f2e38;
+      --input-bg: #16222b;
+      --input-border: #2f3e48;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen bg-cover bg-center relative"
+      style="background-image: url('../assets/nexofondo.jpg');">
+
+  <!-- Overlay -->
+  <div class="absolute inset-0 bg-black/60"></div>
+
+  <main class="relative z-10 flex justify-center items-start min-h-screen p-6 pt-16">
+    <div class="w-full max-w-5xl">
+
+      <!-- Header -->
+      <header class="flex justify-between items-center mb-8">
+        <img src="../assets/nexologo.png" alt="NEXO" class="h-12">
+        <div class="flex gap-2">
+          <button id="btnHome"
+            class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">
+            Home
+          </button>
+          <button id="btnLogout"
+            class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">
+            Cerrar sesión
+          </button>
+        </div>
+      </header>
+
+      <!-- Card -->
+      <div class="bg-[var(--dark-bg)] p-8 rounded-lg shadow-xl">
+
+        <!-- Título -->
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-2xl font-bold text-[var(--beige)]">Productos</h1>
+          <button id="btnNuevoProducto"
+            class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">
+            Nuevo producto
+          </button>
+        </div>
+
+        <!-- Buscador -->
+        <div class="flex gap-3 mb-6">
+          <input
+            type="text"
+            id="inputBusqueda"
+            placeholder="Buscar por nombre o código"
+            class="flex-1 px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)]
+                   text-[var(--beige)] focus:outline-none focus:ring-2 focus:ring-[var(--orange)]"
+          />
+          <button id="btnBuscar"
+            class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-6 rounded-md">
+            Buscar
+          </button>
+        </div>
+
+        <!-- Tabla -->
+        <div class="overflow-x-auto rounded-lg border border-gray-300">
+          <table class="w-full text-sm text-left text-gray-800">
+            <thead class="bg-gray-100 border-b border-gray-300">
+              <tr>
+                <th class="px-6 py-3">Código</th>
+                <th class="px-6 py-3">Nombre</th>
+                <th class="px-6 py-3">Precio</th>
+                <th class="px-6 py-3">Stock</th>
+                <th class="px-6 py-3">Acción</th>
+              </tr>
+            </thead>
+            <tbody id="tablaProductosBody" class="bg-white">
+              <!-- filas dinámicas -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="../js/pages/productos.js"></script>
+</body>
+</html>
