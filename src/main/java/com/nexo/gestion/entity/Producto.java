@@ -25,6 +25,10 @@ public class Producto {
         this.activo = true;
     }
 
+    public void restarStock(Integer cantidad){
+        this.stock -= cantidad;
+    }
+
     public Integer getIdProducto() {
         return idProducto;
     }

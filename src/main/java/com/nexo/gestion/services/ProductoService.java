@@ -65,7 +65,7 @@ public class ProductoService {
     public ProductoDTO patchProducto(Integer id, ProductoPatchDTO productoDTO){
         Producto producto = productoRepository.findById(id).orElseThrow(()-> new ObjetoNoEncontradoException(String.valueOf(id)));
 
-        if (productoDTO.getStock() != null){producto.setStock(producto.getStock());}
+        if (productoDTO.getStock() != null){producto.setStock(productoDTO.getStock());}
         if (productoDTO.getNombre() != null){producto.setNombre(productoDTO.getNombre());}
         if (productoDTO.getPrecioSugerido() != null){producto.setPrecioSugerido(productoDTO.getPrecioSugerido());}
         if (productoDTO.getActivo() != null){producto.setActivo(productoDTO.getActivo());}

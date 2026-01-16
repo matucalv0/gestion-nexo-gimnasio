@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("btnAsistencias").onclick = () => go("asistencias.html");
   document.getElementById("btnPagos").onclick = () => go("pagos.html");
   document.getElementById("btnMembresias").onclick = () => go("membresias.html");
+  document.getElementById("btnProductos").onclick = () => go("productos.html");
 
   // Accesos rápidos
   document.getElementById("quickAsistencia").onclick = () => go("asistencia.html");

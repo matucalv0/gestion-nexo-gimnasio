@@ -20,7 +20,6 @@ import java.util.List;
 public class PagoService {
 
     private final PagoRepository pagoRepository;
-    private final DetallePagoRepository detallePagoRepository;
     private final SocioRepository socioRepository;
     private final EmpleadoRepository empleadoRepository;
     private final MedioPagoRepository medioPagoRepository;
@@ -42,7 +41,6 @@ public class PagoService {
             SocioMembresiaRepository socioMembresiaRepository
     ) {
         this.pagoRepository = pagoRepository;
-        this.detallePagoRepository = detallePagoRepository;
         this.socioRepository = socioRepository;
         this.empleadoRepository = empleadoRepository;
         this.medioPagoRepository = medioPagoRepository;
@@ -59,8 +57,6 @@ public class PagoService {
                 pago.getMonto()
         );
     }
-
-
 
     private SocioMembresia renovarMembresia(Socio socio, Membresia membresia) {
         if (!socioRepository.existsById(socio.getDni())){
@@ -113,6 +109,9 @@ public class PagoService {
                 Producto p = productoRepository.findById(dDTO.getIdProducto())
                         .orElseThrow(() -> new ObjetoNoEncontradoException("producto"));
                 detalle.setProducto(p);
+                p.restarStock(dDTO.getCantidad());
+                productoRepository.save(p);
+
             }
 
             if (dDTO.getIdMembresia() != null) {

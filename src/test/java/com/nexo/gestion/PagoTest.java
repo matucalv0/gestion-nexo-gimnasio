@@ -77,8 +77,6 @@ public class PagoTest {
         Pago pago = new Pago(EstadoPago.PAGADO, membresia.getPrecioSugerido(), socio, medioPago, empleado); //doy de alta el pago
         pagoRepository.save(pago);
 
-
-
         SocioMembresia suscripcion = new SocioMembresia(socio, membresia);
         socio.agregarMembresia(suscripcion);
         membresia.agregarSocio(suscripcion);
@@ -108,7 +106,6 @@ public class PagoTest {
 
         assertNotNull(guardado.getIdDetallePago());
         assertNotNull(guardado2.getIdDetallePago());
-
 
     }
 
