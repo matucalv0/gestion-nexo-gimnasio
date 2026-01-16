@@ -5,6 +5,7 @@ import com.nexo.gestion.dto.ProductoDTO;
 import com.nexo.gestion.dto.ProductoPatchDTO;
 import com.nexo.gestion.entity.Producto;
 import com.nexo.gestion.services.ProductoService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +39,7 @@ public class ProductoController {
 
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<ProductoDTO> altaProducto(@RequestBody ProductoCreateDTO productoCreateDTO){
+    public ResponseEntity<ProductoDTO> altaProducto(@Valid @RequestBody ProductoCreateDTO productoCreateDTO){
         ProductoDTO producto = productoService.registrarProducto(productoCreateDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(producto);
     }

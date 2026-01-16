@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Ficha de socio · NEXO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="min-h-screen bg-cover bg-center relative" style="background-image: url('../assets/nexofondo.jpg');">
+
+    <div class="absolute inset-0 bg-black/60"></div>
+
+    <main class="relative z-10 max-w-4xl mx-auto p-6 pt-16">
+
+
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-8">
+            <h1 class="text-2xl font-bold text-[#ECD9BA]">Ficha del socio</h1>
+            <button id="btnVolver" class="bg-[#E9561E] px-4 py-2 rounded font-semibold">
+                Volver
+            </button>
+        </header>
+
+        <!-- Card -->
+        <div class="bg-[#1f2e38] rounded-lg p-6 shadow-xl text-[#ECD9BA]">
+
+            <!-- Info principal -->
+            <div class="grid grid-cols-2 gap-6 mb-6">
+                <div>
+                    <p class="text-sm text-gray-400">Nombre</p>
+                    <p id="nombre" class="text-lg font-semibold"></p>
+                </div>
+
+                <div>
+                    <p class="text-sm text-gray-400">DNI</p>
+                    <p id="dni" class="text-lg"></p>
+                </div>
+
+                <div>
+                    <p class="text-sm text-gray-400">Teléfono</p>
+                    <p id="telefono"></p>
+                </div>
+
+                <div>
+                    <p class="text-sm text-gray-400">Email</p>
+                    <p id="email"></p>
+                </div>
+
+                <div>
+                    <p class="text-sm text-gray-400">Estado</p>
+                    <p id="estado" class="font-semibold"></p>
+                </div>
+            </div>
+
+            <!-- Acciones -->
+            <div class="flex gap-3">
+                <button id="btnEditar" class="bg-[#E9561E] px-4 py-2 rounded font-semibold">
+                    Editar socio
+                </button>
+                <button id="btnRegistrarPago" class="bg-gray-600 px-4 py-2 rounded font-semibold">
+                    Registrar pago
+                </button>
+            </div>
+
+
+            <!-- Membresía -->
+            <div class="border-t border-gray-600 pt-6 mt-6">
+                <h2 class="text-lg font-semibold mb-4">Membresía vigente</h2>
+
+                <!-- Alertas -->
+                <div id="alert-container" class="mb-4"></div>
+
+                <div id="membresiaContainer" class="grid grid-cols-2 gap-6">
+                    <p class="text-gray-400 col-span-2">Cargando membresía...</p>
+                </div>
+            </div>
+
+        </div>
+
+
+    </main>
+
+    <script type="module" src="../js/pages/socio-detalle.js"></script>
+</body>
+
+</html>

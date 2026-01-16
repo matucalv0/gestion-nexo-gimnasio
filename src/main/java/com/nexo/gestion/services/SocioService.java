@@ -103,6 +103,14 @@ public class SocioService {
     public SocioDTO patchSocio(String dni, SocioPatchDTO socioPatch) {
         Socio socio = socioRepository.findById(dni).orElseThrow(() -> new ObjetoNoEncontradoException("dni"));
 
+        if (socioPatch.getDni() != null){
+            socio.setDni(socioPatch.getDni());
+        }
+
+        if (socioPatch.getNombre() != null){
+            socio.setNombre(socioPatch.getNombre());
+        }
+
         if (socioPatch.getEmail() != null) {
             socio.setEmail(socioPatch.getEmail());
         }

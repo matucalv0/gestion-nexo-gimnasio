@@ -62,7 +62,7 @@ public class SocioController {
 
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @PatchMapping("/{dni}")
-    public ResponseEntity<SocioDTO> actualizar(@PathVariable String dni, @RequestBody SocioPatchDTO socioPatchDTO){
+    public ResponseEntity<SocioDTO> actualizar(@PathVariable String dni, @Valid @RequestBody SocioPatchDTO socioPatchDTO){
         SocioDTO socio = socioService.patchSocio(dni, socioPatchDTO);
         return ResponseEntity.ok(socio);
     }
