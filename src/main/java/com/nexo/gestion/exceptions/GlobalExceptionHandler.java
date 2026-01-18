@@ -49,6 +49,13 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(e.getMessage()));
     }
 
+    @ExceptionHandler(MasDeUnaMembresiaEnDetalleException.class)
+    public ResponseEntity<ErrorResponse> masDeUnaMembresiaEnDetalle(MasDeUnaMembresiaEnDetalleException e) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse(e.getMessage()));
+    }
+
     @ExceptionHandler(ObjetoNoEncontradoException.class)
     public ResponseEntity<ErrorResponse> manejarNoEncontrado(ObjetoNoEncontradoException ex) {
         return ResponseEntity

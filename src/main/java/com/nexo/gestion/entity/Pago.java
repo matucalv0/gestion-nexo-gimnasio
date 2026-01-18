@@ -45,6 +45,7 @@ public class Pago {
         this.fecha = LocalDate.now();
     }
 
+
     public List<DetallePago> getDetalles() {
         return detalles;
     }
@@ -67,6 +68,17 @@ public class Pago {
         this.medioPago = medioPago;
         this.empleado = empleado;
         this.fecha = LocalDate.now();
+    }
+
+    public boolean hayMasDeUnaMembresiaEnDetalle(){
+        int contador = 0;
+        for (DetallePago d: detalles){
+            if (d.esMembresia()){
+                contador++;
+            }
+        }
+
+        return contador > 1;
     }
 
     public Integer getIdPago() {

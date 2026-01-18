@@ -169,12 +169,14 @@ document.addEventListener("DOMContentLoaded", () => {
       infoMembresia.innerHTML = `
         <strong>Plan activo</strong><br>
         Tipo: ${membresia.tipo}<br>
-        Vence: ${new Date(membresia.vencimiento).toLocaleDateString("es-AR")}
+        Vence: ${membresia.vencimiento}
       `;
     } catch {
       infoMembresia.textContent = "El socio no tiene ningun plan activo";
     }
   }
+
+
 
   /* ===== Reset ===== */
   function resetFormulario() {

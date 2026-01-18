@@ -8,8 +8,18 @@ public class DetallePagoCreateDTO {
     private Integer cantidad;
     private BigDecimal precioUnitario;
     private Integer idProducto;
-    private Integer idSocio;
+    private String idSocio;
     private Integer idMembresia;
+
+    public DetallePagoCreateDTO(){}
+
+    public DetallePagoCreateDTO(Integer cantidad, BigDecimal precioUnitario, Integer idProducto, String idSocio, Integer idMembresia) {
+        this.cantidad = cantidad;
+        this.precioUnitario = precioUnitario;
+        this.idProducto = idProducto;
+        this.idSocio = idSocio;
+        this.idMembresia = idMembresia;
+    }
 
 
     public Integer getCantidad() {
@@ -37,7 +47,7 @@ public class DetallePagoCreateDTO {
         this.idProducto = idProducto;
     }
 
-    public Integer getIdSocio() {
+    public String getIdSocio() {
         return idSocio;
     }
 
@@ -49,7 +59,7 @@ public class DetallePagoCreateDTO {
         this.idMembresia = idMembresia;
     }
 
-    public void setIdSocio(Integer idSocio) {
+    public void setIdSocio(String idSocio) {
         this.idSocio = idSocio;
     }
 }

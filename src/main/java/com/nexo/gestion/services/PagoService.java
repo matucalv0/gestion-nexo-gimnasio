@@ -1,10 +1,8 @@
 package com.nexo.gestion.services;
 
-import com.nexo.gestion.dto.DetallePagoCreateDTO;
-import com.nexo.gestion.dto.MembresiaVigenteDTO;
-import com.nexo.gestion.dto.PagoCreateDTO;
-import com.nexo.gestion.dto.PagoDTO;
+import com.nexo.gestion.dto.*;
 import com.nexo.gestion.entity.*;
+import com.nexo.gestion.exceptions.MasDeUnaMembresiaEnDetalleException;
 import com.nexo.gestion.exceptions.ObjetoNoEncontradoException;
 import com.nexo.gestion.repository.*;
 import jakarta.persistence.EntityManager;
@@ -14,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -49,12 +48,43 @@ public class PagoService {
         this.membresiaRepository = membresiaRepository;
     }
 
+    private DetallePagoDTO convertirDetallePagoADTO(DetallePago detallePago) {
+
+        Integer idProducto = null;
+        Integer idMembresia = null;
+
+        if (detallePago.getProducto() != null) {
+            idProducto = detallePago.getProducto().getIdProducto();
+        } else if (detallePago.getSocioMembresia() != null) {
+            idMembresia = detallePago.getSocioMembresia()
+                    .getMembresia()
+                    .getIdMembresia();
+        }
+
+        return new DetallePagoDTO(
+                detallePago.getCantidad(),
+                detallePago.getPrecioUnitario(),
+                idProducto,
+                idMembresia
+        );
+    }
+
+
     private PagoDTO convertirAPagoDTO(Pago pago) {
+        List<DetallePago> detalle = pago.getDetalles();
+        List<DetallePagoDTO> detalleDTO = new ArrayList<>();
+
+        for (DetallePago d: detalle){
+            detalleDTO.add(convertirDetallePagoADTO(d));
+
+        }
+
         return new PagoDTO(
                 pago.getIdPago(),
                 pago.getEstado(),
                 pago.getFecha(),
-                pago.getMonto()
+                pago.getMonto(),
+                detalleDTO
         );
     }
 
@@ -128,6 +158,12 @@ public class PagoService {
             }
 
             pago.agregarDetalle(detalle);
+
+
+        }
+
+        if (pago.hayMasDeUnaMembresiaEnDetalle()){
+            throw new MasDeUnaMembresiaEnDetalleException();
         }
 
         BigDecimal monto = dto.getDetalles().stream()

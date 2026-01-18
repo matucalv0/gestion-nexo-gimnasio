@@ -69,12 +69,43 @@ public class SocioService {
         );
     }
 
+    private DetallePagoDTO convertirDetallePagoADTO(DetallePago detallePago) {
+
+        Integer idProducto = null;
+        Integer idMembresia = null;
+
+        if (detallePago.getProducto() != null) {
+            idProducto = detallePago.getProducto().getIdProducto();
+        } else if (detallePago.getSocioMembresia() != null) {
+            idMembresia = detallePago.getSocioMembresia()
+                    .getMembresia()
+                    .getIdMembresia();
+        }
+
+        return new DetallePagoDTO(
+                detallePago.getCantidad(),
+                detallePago.getPrecioUnitario(),
+                idProducto,
+                idMembresia
+        );
+    }
+
+
     private PagoDTO convertirAPagoDTO(Pago pago) {
+        List<DetallePago> detalle = pago.getDetalles();
+        List<DetallePagoDTO> detalleDTO = new ArrayList<>();
+
+        for (DetallePago d: detalle){
+            detalleDTO.add(convertirDetallePagoADTO(d));
+
+        }
+
         return new PagoDTO(
                 pago.getIdPago(),
                 pago.getEstado(),
                 pago.getFecha(),
-                pago.getMonto()
+                pago.getMonto(),
+                detalleDTO
         );
     }
 

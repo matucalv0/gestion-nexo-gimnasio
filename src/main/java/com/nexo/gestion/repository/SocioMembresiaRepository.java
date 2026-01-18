@@ -29,5 +29,14 @@ AND sm.fechaHasta >= CURRENT_DATE
     Optional<SocioMembresia> findActivaBySocio(String dni);
 
 
+    @Query("""
+SELECT MAX(sm.fechaHasta)
+FROM SocioMembresia sm
+WHERE sm.socio.dni = :dni
+AND sm.fechaHasta >= CURRENT_DATE
+""")
+    LocalDate findUltimoVencimiento(String dni);
+
+
 
 }

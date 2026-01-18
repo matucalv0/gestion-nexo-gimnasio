@@ -6,4 +6,8 @@ public record MedioPagoDTO(
         Integer idMedioPago,
         @NotBlank
         String nombre
-) {}
+) {
+    public MedioPagoDTO(String nombre) {
+        this(null, nombre);
+    }
+}

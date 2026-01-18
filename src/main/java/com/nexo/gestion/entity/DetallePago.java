@@ -42,6 +42,14 @@ public class DetallePago {
         this.idDetallePago = new DetallePagoId(pago.getIdPago(), numeroDetalle);
     }
 
+    public boolean esMembresia(){
+        return this.socioMembresia != null;
+    }
+
+    public boolean esProducto(){
+        return this.producto != null;
+    }
+
 
 
     public void calcularSubtotal(){

@@ -6,4 +6,9 @@ public record PuestoDTO(
         Integer idPuesto,
         @NotBlank
         String nombre
-) {}
+) {
+    public PuestoDTO(String nombre){
+        this(null, nombre);
+
+    }
+}

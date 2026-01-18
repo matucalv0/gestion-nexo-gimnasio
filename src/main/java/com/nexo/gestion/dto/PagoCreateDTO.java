@@ -28,6 +28,14 @@ public class PagoCreateDTO {
         return estado;
     }
 
+    public PagoCreateDTO(EstadoPago estado,String dniSocio, Integer idMedioPago, String dniEmpleado, List<DetallePagoCreateDTO> detalles) {
+        this.detalles = detalles;
+        this.dniEmpleado = dniEmpleado;
+        this.idMedioPago = idMedioPago;
+        this.dniSocio = dniSocio;
+        this.estado = estado;
+    }
+
     public void setEstado(EstadoPago estado) {
         this.estado = estado;
     }
