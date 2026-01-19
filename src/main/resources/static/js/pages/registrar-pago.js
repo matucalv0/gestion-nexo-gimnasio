@@ -5,51 +5,82 @@ import { renderTabla } from "../ui/tabla.js";
 
 checkAuth();
 
+/* ================== STATE ================== */
 let detalles = [];
 let productosCache = [];
 let membresiasCache = [];
+let socioSeleccionado = null;
 
+/* ================== INIT ================== */
 document.addEventListener("DOMContentLoaded", async () => {
 
-  // Cargas iniciales
   await cargarMediosPago();
-  await cargarProductos();
   await cargarMembresias();
+  await cargarProductos();
   await cargarEmpleados();
 
-  // Eventos
+  const params = new URLSearchParams(window.location.search);
+  const dniFromFicha = params.get("dni");
+  const esCuota = params.get("cuota") === "true";
+
+
   tipoDetalle.addEventListener("change", onTipoDetalleChange);
   producto.addEventListener("change", cargarPrecioProducto);
   membresia.addEventListener("change", cargarPrecioMembresia);
   btnAgregarDetalle.addEventListener("click", agregarDetalle);
   pagoForm.addEventListener("submit", registrarPago);
 
+  buscarSocio.addEventListener("input", buscarSocioHandler);
+
   btnHome.addEventListener("click", () => window.location.href = "home.html");
   btnLogout.addEventListener("click", logout);
 
   onTipoDetalleChange();
+
+  /* ===== FLUJO CUOTA DESDE FICHA ===== */
+  if (dniFromFicha && esCuota) {
+    await preseleccionarSocioDesdeFicha(dniFromFicha);
+  }
+
 });
+
+async function preseleccionarSocioDesdeFicha(dni) {
+  const res = await authFetch(`/socios/${dni}`);
+  if (!res.ok) return;
+
+  socioSeleccionado = await res.json();
+  buscarSocio.value = `${socioSeleccionado.nombre} (${socioSeleccionado.dni})`;
+  buscarSocio.disabled = true;
+}
+
+
 
 /* ================== CARGAS ================== */
 async function cargarMediosPago() {
   const res = await authFetch("/mediosdepago");
   const data = await res.json();
   medioPago.innerHTML = `<option value="">Seleccione...</option>`;
-  data.forEach(mp => medioPago.innerHTML += `<option value="${mp.idMedioPago}">${mp.nombre}</option>`);
+  data.forEach(mp =>
+    medioPago.innerHTML += `<option value="${mp.idMedioPago}">${mp.nombre}</option>`
+  );
 }
 
 async function cargarProductos() {
   const res = await authFetch("/productos");
   productosCache = await res.json();
   producto.innerHTML = `<option value="">Seleccione...</option>`;
-  productosCache.forEach(p => producto.innerHTML += `<option value="${p.idProducto}">${p.nombre}</option>`);
+  productosCache.forEach(p =>
+    producto.innerHTML += `<option value="${p.idProducto}">${p.nombre}</option>`
+  );
 }
 
 async function cargarMembresias() {
   const res = await authFetch("/membresias");
   membresiasCache = await res.json();
   membresia.innerHTML = `<option value="">Seleccione...</option>`;
-  membresiasCache.forEach(m => membresia.innerHTML += `<option value="${m.idMembresia}">${m.nombre}</option>`);
+  membresiasCache.forEach(m =>
+    membresia.innerHTML += `<option value="${m.idMembresia}">${m.nombre}</option>`
+  );
 }
 
 async function cargarEmpleados() {
@@ -57,16 +88,53 @@ async function cargarEmpleados() {
   const data = await res.json();
   empleado.innerHTML = `<option value="">Seleccione...</option>`;
   data.forEach(e => {
-    if (e.activo) empleado.innerHTML += `<option value="${e.dni}">${e.nombre}</option>`;
+    if (e.activo)
+      empleado.innerHTML += `<option value="${e.dni}">${e.nombre}</option>`;
   });
+}
+
+/* ================== BUSCAR SOCIO ================== */
+async function buscarSocioHandler() {
+  const q = buscarSocio.value.trim();
+
+  socioSeleccionado = null;
+
+  if (q.length < 2) {
+    resultadosSocio.classList.add("hidden");
+    resultadosSocio.innerHTML = "";
+    return;
+  }
+
+  const res = await authFetch(`/socios/search?q=${encodeURIComponent(q)}`);
+  const socios = await res.json();
+
+  resultadosSocio.innerHTML = "";
+
+  socios.forEach(s => {
+    const li = document.createElement("li");
+    li.className =
+      "px-4 py-2 cursor-pointer hover:bg-gray-700 text-[var(--beige)]";
+    li.textContent = `${s.nombre} (${s.dni})`;
+
+    li.addEventListener("click", () => {
+      socioSeleccionado = s;
+      buscarSocio.value = `${s.nombre} (${s.dni})`;
+      resultadosSocio.classList.add("hidden");
+    });
+
+    resultadosSocio.appendChild(li);
+  });
+
+  resultadosSocio.classList.toggle("hidden", socios.length === 0);
 }
 
 /* ================== TIPO DETALLE ================== */
 function onTipoDetalleChange() {
-  productoGroup.style.display = tipoDetalle.value === "PRODUCTO" ? "block" : "none";
-  membresiaGroup.style.display = tipoDetalle.value === "MEMBRESIA" ? "block" : "none";
+  productoGroup.style.display =
+    tipoDetalle.value === "PRODUCTO" ? "block" : "none";
+  membresiaGroup.style.display =
+    tipoDetalle.value === "MEMBRESIA" ? "block" : "none";
 
-  // Reset precios y cantidades según tipo
   cantidad.value = tipoDetalle.value === "MEMBRESIA" ? 1 : cantidad.value;
   cantidad.disabled = tipoDetalle.value === "MEMBRESIA";
 
@@ -88,24 +156,38 @@ function cargarPrecioMembresia() {
 /* ================== DETALLES ================== */
 function agregarDetalle() {
   const tipo = tipoDetalle.value;
-
   let precioUnitario;
+
   if (tipo === "PRODUCTO") {
-    if (!producto.value) return mostrarAlerta({ mensaje: "Seleccione un producto", tipo: "danger" });
+    if (!producto.value)
+      return mostrarAlerta({ mensaje: "Seleccione un producto", tipo: "danger" });
     precioUnitario = Number(precio.value);
   } else {
-    if (!membresia.value) return mostrarAlerta({ mensaje: "Seleccione una membresía", tipo: "danger" });
+    if (!membresia.value)
+      return mostrarAlerta({ mensaje: "Seleccione una membresía", tipo: "danger" });
     precioUnitario = Number(precioMembresia.value);
   }
 
   if (!precioUnitario || precioUnitario <= 0)
-    return mostrarAlerta({ mensaje: "El ítem seleccionado no tiene precio", tipo: "danger" });
+    return mostrarAlerta({
+      mensaje: "El ítem seleccionado no tiene precio",
+      tipo: "danger"
+    });
 
   let detalle;
   if (tipo === "PRODUCTO") {
-    detalle = { idProducto: Number(producto.value), cantidad: Number(cantidad.value), precioUnitario };
+    detalle = {
+      idProducto: Number(producto.value),
+      cantidad: Number(cantidad.value),
+      precioUnitario
+    };
   } else {
-    detalle = { idSocio: dniSocio.value ? Number(dniSocio.value) : null, idMembresia: Number(membresia.value), cantidad: 1, precioUnitario };
+    detalle = {
+      idSocio: socioSeleccionado ? socioSeleccionado.dni : null,
+      idMembresia: Number(membresia.value),
+      cantidad: 1,
+      precioUnitario
+    };
   }
 
   detalles.push(detalle);
@@ -117,10 +199,13 @@ function renderDetalles() {
     detallesBody,
     detalles,
     [
-      d => d.idProducto ? "Producto" : "Membresía",
-      d => d.idProducto
-            ? productosCache.find(p => p.idProducto === d.idProducto)?.nombre ?? "Desconocido"
-            : membresiasCache.find(m => m.idMembresia === d.idMembresia)?.nombre ?? "Desconocido",
+      d => (d.idProducto ? "Producto" : "Membresía"),
+      d =>
+        d.idProducto
+          ? productosCache.find(p => p.idProducto === d.idProducto)?.nombre ??
+          "Desconocido"
+          : membresiasCache.find(m => m.idMembresia === d.idMembresia)?.nombre ??
+          "Desconocido",
       d => d.cantidad,
       d => `$${d.precioUnitario}`
     ],
@@ -129,47 +214,81 @@ function renderDetalles() {
       btn.type = "button";
       btn.className = "text-orange-600 font-medium hover:underline";
       btn.textContent = "Eliminar";
-      btn.addEventListener("click", () => { detalles.splice(i,1); renderDetalles(); });
+      btn.addEventListener("click", () => {
+        detalles.splice(i, 1);
+        renderDetalles();
+      });
       return btn;
     }
   );
 }
-
-window.eliminarDetalle = i => { detalles.splice(i, 1); renderDetalles(); };
 
 /* ================== SUBMIT ================== */
 async function registrarPago(e) {
   e.preventDefault();
   limpiarAlertas();
 
-  if (detalles.length === 0) return mostrarAlerta({ mensaje: "El pago debe tener al menos un detalle", tipo: "danger" });
-  if (!medioPago.value) return mostrarAlerta({ mensaje: "Seleccione un medio de pago", tipo: "danger" });
+  if (detalles.length === 0)
+    return mostrarAlerta({
+      mensaje: "El pago debe tener al menos un detalle",
+      tipo: "danger"
+    });
+
+  if (!medioPago.value)
+    return mostrarAlerta({
+      mensaje: "Seleccione un medio de pago",
+      tipo: "danger"
+    });
 
   const data = {
     estado: "PAGADO",
-    dniSocio: dniSocio.value.trim() || null,
+    dniSocio: socioSeleccionado ? socioSeleccionado.dni : null,
     idMedioPago: Number(medioPago.value),
     dniEmpleado: empleado.value,
     detalles
   };
 
   try {
-    const res = await authFetch("/pagos", { method: "POST", body: JSON.stringify(data) });
+    const res = await authFetch("/pagos", {
+      method: "POST",
+      body: JSON.stringify(data)
+    });
+
     if (!res.ok) {
-      const body = await res.text();
-      return mostrarAlerta({ mensaje: body || "Error al registrar pago", tipo: "danger" });
+      let mensaje = "Error al registrar pago";
+
+      try {
+        const error = await res.json();
+        mensaje = error.message || mensaje;
+      } catch { }
+
+      return mostrarAlerta({ mensaje, tipo: "danger" }); // ⬅️ RETURN CLAVE
     }
 
-    mostrarAlerta({ mensaje: "Pago registrado correctamente", tipo: "success" });
+    // ✅ SOLO SI SALIÓ BIEN
+    mostrarAlerta({
+      mensaje: "Pago registrado correctamente",
+      tipo: "success"
+    });
+
     detalles = [];
+    socioSeleccionado = null;
+    buscarSocio.value = "";
+    resultadosSocio.innerHTML = "";
+    resultadosSocio.classList.add("hidden");
+
     renderDetalles();
     pagoForm.reset();
     onTipoDetalleChange();
 
   } catch {
-    mostrarAlerta({ mensaje: "No se pudo conectar con el servidor", tipo: "danger" });
+    mostrarAlerta({
+      mensaje: "No se pudo conectar con el servidor",
+      tipo: "danger"
+    });
   }
 }
+
 
 
 

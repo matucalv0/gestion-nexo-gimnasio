@@ -212,6 +212,10 @@ public class SocioService {
             throw new SocioInactivoException();
         }
 
+        if (asistenciaRepository.socioVinoHoy(socio.getDni())){
+            throw new AsistenciaDiariaException();
+        }
+
         if (asistenciasDisponibles(dni) == 0){
             throw new SocioSinAsistenciasDisponiblesException();
         }
@@ -226,7 +230,7 @@ public class SocioService {
         return convertirAAsistenciaSocioIdDTO(guardada.getIdAsistencia());
     }
 
-    public SocioMembresia membresiaVigente(Socio socio) {
+    private SocioMembresia membresiaVigente(Socio socio) {
         LocalDate hoy = LocalDate.now();
 
         SocioMembresia socioMembresia = socioMembresiaRepository

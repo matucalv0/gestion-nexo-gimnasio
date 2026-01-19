@@ -4,18 +4,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registrar Pago · NEXO</title>
+  <link rel="icon" type="image/png" href="../assets/nexologo.png" />
+  <title>NEXO · REGISTRAR PAGO</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    :root {
-      --orange: #E9561E;
-      --beige: #ECD9BA;
-      --dark-bg: #1f2e38;
-      --input-bg: #16222b;
-      --input-border: #2f3e48;
-    }
-  </style>
+  
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="preload" as="image" href="../assets/nexofondo.jpg">
+
 </head>
 
 <body class="min-h-screen bg-cover bg-center relative" style="background-image: url('../assets/nexofondo.jpg');">
@@ -33,7 +29,8 @@
           <button id="btnHome"
             class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">Home</button>
           <button id="btnLogout"
-            class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">Cerrar sesión</button>
+            class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">Cerrar
+            sesión</button>
         </div>
       </header>
 
@@ -48,17 +45,22 @@
         <!-- Formulario -->
         <form id="pagoForm" class="space-y-4">
 
-          <!-- DNI socio -->
-          <div class="flex flex-col">
-            <label class="text-[var(--beige)] font-semibold mb-1">DNI socio (opcional)</label>
-            <input type="text" id="dniSocio"
+          <!-- Buscar socio -->
+          <div class="flex flex-col relative">
+            <label class="text-[var(--beige)] font-semibold mb-1">Socio</label>
+            <input type="text" id="buscarSocio" placeholder="Buscar por nombre o DNI" autocomplete="off"
               class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)] focus:outline-none focus:ring-2 focus:ring-[var(--orange)]" />
-            <span class="error text-red-500 text-sm mt-1 block"></span>
+
+            <!-- Resultados -->
+            <ul id="resultadosSocio"
+              class="absolute top-full left-0 right-0 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-md mt-1 max-h-48 overflow-y-auto hidden z-50">
+            </ul>
           </div>
+
 
           <!-- Empleado -->
           <div class="flex flex-col">
-            <label class="text-[var(--beige)] font-semibold mb-1">Empleado *</label>
+            <label class="text-[var(--beige)] font-semibold mb-1">Empleado</label>
             <select id="empleado"
               class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)] focus:outline-none focus:ring-2 focus:ring-[var(--orange)]"
               required></select>
@@ -67,7 +69,7 @@
 
           <!-- Medio de pago -->
           <div class="flex flex-col">
-            <label class="text-[var(--beige)] font-semibold mb-1">Medio de pago *</label>
+            <label class="text-[var(--beige)] font-semibold mb-1">Medio de pago</label>
             <select id="medioPago"
               class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)] focus:outline-none focus:ring-2 focus:ring-[var(--orange)]"
               required></select>
@@ -76,24 +78,24 @@
 
           <!-- Tipo de detalle -->
           <div class="flex flex-col">
-            <label class="text-[var(--beige)] font-semibold mb-1">Tipo de detalle *</label>
+            <label class="text-[var(--beige)] font-semibold mb-1">Ítem</label>
             <select id="tipoDetalle"
               class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)] focus:outline-none focus:ring-2 focus:ring-[var(--orange)]">
-              <option value="PRODUCTO">Producto</option>
               <option value="MEMBRESIA">Membresía</option>
+              <option value="PRODUCTO">Producto</option>
             </select>
           </div>
 
           <!-- Producto -->
           <div id="productoGroup" class="flex flex-col space-y-2">
-            <label class="text-[var(--beige)] font-semibold mb-1">Producto *</label>
+            <label class="text-[var(--beige)] font-semibold mb-1">Producto</label>
             <select id="producto"
               class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)]"></select>
 
             <!-- Cantidad + Precio en la misma línea -->
             <div class="flex flex-row gap-4">
               <div class="flex flex-col flex-1">
-                <label class="text-[var(--beige)] font-semibold mb-1">Cantidad *</label>
+                <label class="text-[var(--beige)] font-semibold mb-1">Cantidad</label>
                 <input type="number" id="cantidad"
                   class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)]"
                   value="1" min="1" />
@@ -110,13 +112,13 @@
 
           <!-- Membresía -->
           <div id="membresiaGroup" class="flex flex-col space-y-2 hidden">
-            <label class="text-[var(--beige)] font-semibold mb-1">Membresía *</label>
+            <label class="text-[var(--beige)] font-semibold mb-1">Membresía</label>
             <select id="membresia"
               class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)]"></select>
 
             <div class="flex flex-row gap-4">
               <div class="flex flex-col flex-1">
-                <label class="text-[var(--beige)] font-semibold mb-1">Cantidad *</label>
+                <label class="text-[var(--beige)] font-semibold mb-1">Cantidad</label>
                 <input type="number" id="cantidadMembresia"
                   class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)]"
                   value="1" min="1" disabled />
@@ -171,4 +173,3 @@
 </body>
 
 </html>
-

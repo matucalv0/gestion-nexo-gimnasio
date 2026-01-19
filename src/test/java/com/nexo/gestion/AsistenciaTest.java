@@ -2,6 +2,7 @@ package com.nexo.gestion;
 
 import com.nexo.gestion.dto.*;
 import com.nexo.gestion.entity.*;
+import com.nexo.gestion.exceptions.AsistenciaDiariaException;
 import com.nexo.gestion.exceptions.MembresiaVencidaException;
 import com.nexo.gestion.exceptions.SocioInactivoException;
 import com.nexo.gestion.exceptions.SocioSinAsistenciasDisponiblesException;
@@ -101,7 +102,7 @@ public class AsistenciaTest {
     @Test
     @Transactional
     @Rollback
-    void noPermiteRegistrarMasAsistenciasCuandoLlegaACero() {
+    public void noPermiteRegistrarMasAsistenciasCuandoLlegaACero() {
         Socio socio = new Socio("78452365", "Eduardo", "11478523211", "edu@gmail.com", LocalDate.of(1986,1,28));
         SocioDTO socioGuardado = socioService.registrarSocio(new SocioCreateDTO(socio.getDni(), socio.getNombre(), socio.getTelefono(), socio.getEmail(), socio.getFechaNacimiento()));
         Membresia membresia = new Membresia("plan basico", 28, new BigDecimal(50000), 2, TipoMembresia.MUSCULACION);
@@ -114,6 +115,23 @@ public class AsistenciaTest {
         }
 
         assertThrows(SocioSinAsistenciasDisponiblesException.class, () -> socioService.registrarAsistencia(socioGuardado.dni()));
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void verificarQueNoPermiteRegistrarMasDeUnaAsistenciaEnUnMismoDia(){
+        Socio socio = new Socio("78452365", "Eduardo", "11478523211", "edu@gmail.com", LocalDate.of(1986,1,28));
+        SocioDTO socioGuardado = socioService.registrarSocio(new SocioCreateDTO(socio.getDni(), socio.getNombre(), socio.getTelefono(), socio.getEmail(), socio.getFechaNacimiento()));
+        Membresia membresia = new Membresia("plan basico", 28, new BigDecimal(50000), 2, TipoMembresia.MUSCULACION);
+        MembresiaDTO guardada = membresiaService.registrarMembresia(new MembresiaCreateDTO(membresia.getDuracionDias(), membresia.getPrecioSugerido(), membresia.getNombre(), membresia.getAsistenciasPorSemana(), membresia.getTipoMembresia()));
+
+        socioService.asignarMembresia(socioGuardado.dni(), guardada.idMembresia());
+
+        socioService.registrarAsistencia(socioGuardado.dni());  //registro una asistencia
+
+        assertThrows(AsistenciaDiariaException.class, () -> socioService.registrarAsistencia(socioGuardado.dni()));
+
     }
 
 

@@ -1,14 +1,14 @@
 package com.nexo.gestion.controller;
 
+import com.nexo.gestion.dto.PagoPorFechaDTO;
 import com.nexo.gestion.dto.PagoCreateDTO;
 import com.nexo.gestion.dto.PagoDTO;
-import com.nexo.gestion.entity.Pago;
+import com.nexo.gestion.dto.PagoPorMesDTO;
 import com.nexo.gestion.services.PagoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.function.EntityResponse;
 
 import java.util.List;
 
@@ -48,5 +48,24 @@ public class PagoController {
         pagoService.anularPago(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @GetMapping("/estadisticas/recaudado-por-dia")
+    public ResponseEntity<List<PagoPorFechaDTO>> totalRecaudadoPorDia(){
+        return ResponseEntity.ok(pagoService.recaudadoPorDia());
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @GetMapping("/estadisticas/recaudado-ultima-semana")
+    public ResponseEntity<List<PagoPorFechaDTO>> totalRecaudadoUltimaSemana(){
+        return ResponseEntity.ok(pagoService.recaudadoUltimaSemana());
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @GetMapping("/estadisticas/recaudado-meses")
+    public ResponseEntity<List<PagoPorMesDTO>> totalRecaudadoMeses(){
+        return ResponseEntity.ok(pagoService.recaudadoMeses());
+    }
+
 }
 

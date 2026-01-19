@@ -22,4 +22,16 @@ public interface AsistenciaRepository extends JpaRepository<Asistencia, Asistenc
     @Query(value = "SELECT * FROM ASISTENCIA ORDER BY FECHA_HORA DESC", nativeQuery = true)
     List<Asistencia> findAllOrdenadoPorFecha();
 
+
+    @Query(value = """
+    SELECT EXISTS (
+        SELECT 1
+        FROM asistencia a
+        WHERE a.fecha_hora::date = CURRENT_DATE
+          AND a.dni = :dni
+    )
+    """, nativeQuery = true)
+    boolean socioVinoHoy(@Param("dni") String dni);
+
+
 }

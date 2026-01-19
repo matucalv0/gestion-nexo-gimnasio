@@ -49,6 +49,20 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(e.getMessage()));
     }
 
+    @ExceptionHandler(CantidadCeroDetalle.class)
+    public ResponseEntity<ErrorResponse> cantidadDetalleCero(CantidadCeroDetalle e) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(AsistenciaDiariaException.class)
+    public ResponseEntity<ErrorResponse> asistenciaDiaria(AsistenciaDiariaException e) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse(e.getMessage()));
+    }
+
     @ExceptionHandler(MasDeUnaMembresiaEnDetalleException.class)
     public ResponseEntity<ErrorResponse> masDeUnaMembresiaEnDetalle(MasDeUnaMembresiaEnDetalleException e) {
         return ResponseEntity

@@ -1,93 +1,29 @@
-/* ===============================
-   Variables de marca NEXO
-================================ */
 :root {
-  --black: #181818;
-  --blue: #091924;
-  --beige: #ECD9BA;
-  --orange: #E9561E;
-
-  --bg: #f4f5f7;
-  --text: #181818;
-  --radius: 6px;
+      --orange: #E9561E;
+      --beige: #ECD9BA;
+      --dark-bg: #1f2e38;
+      --input-bg: #16222b;
+      --input-border: #2f3e48;
 }
 
-/* ===============================
-   Reset básico
-================================ */
-* {
-  box-sizing: border-box;
-}
 
+/* main.css */
 body {
-  margin: 0;
-  background-color: var(--bg);
-  color: var(--text);
-  font-family: system-ui, Arial, sans-serif;
+  background-image: url("../assets/nexofondo.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  
+  /* Esto le dice al navegador: "No animes este fondo, mantenlo fijo" */
+  view-transition-name: main-background; 
 }
 
-/* ===============================
-   Header común
-================================ */
-.header {
-  background-color: var(--black);
-  color: var(--beige);
-  padding: 16px 24px;
-
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.header h1 {
-  margin: 0;
-  font-size: 18px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
-
-.header-actions button {
-  margin-left: 8px;
-}
-
-/* ===============================
-   Botones
-================================ */
-button {
-  background-color: var(--orange);
-  color: white;
-  border: none;
-  padding: 8px 14px;
-  border-radius: var(--radius);
-  cursor: pointer;
-  font-weight: 500;
-}
-
-button.secondary {
-  background-color: var(--blue);
-}
-
-button:hover {
-  opacity: 0.9;
-}
-
-/* ===============================
-   Contenedores
-================================ */
-.container {
-  padding: 24px;
-}
-
-.panel-wrapper {
-  width: 100%;
-  max-width: 520px; /* el mismo ancho que la card */
-  margin: 0 auto;
-}
-
-#alert-container {
-  width: 100%;
-  max-width: 600px; /* mismo ancho que panel-card */
-  margin-bottom: 16px;
+/* Evita que el fondo parpadee durante la transición */
+::view-transition-old(main-background),
+::view-transition-new(main-background) {
+  animation: none;
+  mix-blend-mode: normal;
 }
 
 

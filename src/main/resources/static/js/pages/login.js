@@ -32,6 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       window.location.href = "/home.html";
 
+
     } catch (err) {
       errorText.textContent = err.message;
     }

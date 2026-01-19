@@ -2,6 +2,7 @@ package com.nexo.gestion.services;
 
 import com.nexo.gestion.dto.*;
 import com.nexo.gestion.entity.*;
+import com.nexo.gestion.exceptions.CantidadCeroDetalle;
 import com.nexo.gestion.exceptions.MasDeUnaMembresiaEnDetalleException;
 import com.nexo.gestion.exceptions.ObjetoNoEncontradoException;
 import com.nexo.gestion.repository.*;
@@ -14,6 +15,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PagoService {
@@ -129,6 +131,10 @@ public class PagoService {
 
         for (DetallePagoCreateDTO dDTO : dto.getDetalles()) {
 
+            if (dDTO.getCantidad() == 0){
+                throw new CantidadCeroDetalle();
+            }
+
             DetallePago detalle = new DetallePago();
             detalle.setPago(pago);
             detalle.setCantidad(dDTO.getCantidad());
@@ -211,6 +217,31 @@ public class PagoService {
         // revertir membresías / stock / caja
 
         pagoRepository.save(pago);
+    }
+
+    public List<PagoPorFechaDTO> recaudadoPorDia() {
+        return pagoRepository.totalPagosPorFecha();
+    }
+
+    public List<PagoPorFechaDTO> recaudadoUltimaSemana() {
+        List<Object[]> pagos = pagoRepository.totalPagosUltimaSemana();
+        return pagos.stream().map(r -> new PagoPorFechaDTO(
+                        ((java.sql.Date) r[0]).toLocalDate(),
+                        (BigDecimal) r[1]
+                ))
+                .collect(Collectors.toList());
+    }
+
+    public List<PagoPorMesDTO> recaudadoMeses() {
+        List<Object[]> pagos = pagoRepository.totalPagosPorMes();
+
+        return pagos.stream()
+                .map(r -> new PagoPorMesDTO(
+                        ((Number) r[0]).intValue(), // anio
+                        ((Number) r[1]).intValue(), // mes
+                        ((BigDecimal) r[2]) // total
+                ))
+                .collect(Collectors.toList());
     }
 }
 
