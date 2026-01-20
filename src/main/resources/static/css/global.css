@@ -1,0 +1,11 @@
+html, body {
+  min-height: 100%;
+}
+
+body {
+  background-image: url("../assets/nexofondo.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}

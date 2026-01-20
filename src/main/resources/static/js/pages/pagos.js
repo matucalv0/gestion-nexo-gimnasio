@@ -173,46 +173,95 @@ async function cargarRecaudado(filtro = "7dias") {
         datasets: [{
           label: "Recaudado",
           data: totals,
-          borderColor: "var(--orange)",
-          backgroundColor: "rgba(233,86,30,0.3)",
+
+          borderColor: "#c7c7c7",
+          backgroundColor: "rgba(199,199,199,0.15)",
           fill: true,
           tension: 0.3,
-          pointBackgroundColor: "var(--orange)",
-          pointBorderColor: "#fff",
+
+          pointRadius: 3,
           pointHoverRadius: 6,
-          pointRadius: 4,
+          pointBackgroundColor: "#c7c7c7",
+          pointHoverBackgroundColor: "#ECD9BA",
+          pointBorderColor: "#ffffff",
+          pointHoverBorderWidth: 2,
         }]
       },
       options: {
         responsive: true,
+
+        interaction: {
+          mode: "index",
+          intersect: false
+        },
+
         plugins: {
           legend: { display: false },
+
           title: {
             display: true,
-            text: filtro === "7dias" ? "Recaudado últimos 7 días" : "Recaudado por mes",
-            color: "var(--beige)"
+            text: filtro === "7dias"
+              ? "Recaudado últimos 7 días"
+              : "Recaudado por mes",
+            color: "#ECD9BA",
+            font: {
+              size: 16,
+              weight: "bold"
+            },
+            padding: {
+              top: 8,
+              bottom: 16
+            }
           },
+
           tooltip: {
-            mode: 'index',
+            enabled: true,
+            mode: "index",
             intersect: false,
-            backgroundColor: "var(--dark-bg)",
-            titleColor: "var(--beige)",
-            bodyColor: "var(--beige)",
+
+            backgroundColor: "rgba(15,15,15,0.95)",
+            borderColor: "rgba(255,255,255,0.15)",
+            borderWidth: 1,
+
+            titleColor: "#ECD9BA",
+            bodyColor: "#ECD9BA",
+
+            titleFont: {
+              size: 13,
+              weight: "bold"
+            },
+            bodyFont: {
+              size: 12
+            },
+
+            padding: 10,
+            cornerRadius: 6,
+            displayColors: false
           }
         },
+
         scales: {
           y: {
             beginAtZero: true,
-            ticks: { color: "var(--beige)" },
-            grid: { color: "rgba(255,255,255,0.1)" }
+            ticks: {
+              color: "#e5e5e5"
+            },
+            grid: {
+              color: "rgba(255,255,255,0.08)"
+            }
           },
           x: {
-            ticks: { color: "var(--beige)" },
-            grid: { color: "rgba(255,255,255,0.1)" }
+            ticks: {
+              color: "#e5e5e5"
+            },
+            grid: {
+              drawOnChartArea: false // clave: limpia visualmente el gráfico
+            }
           }
         }
       }
     });
+
 
   } catch (err) {
     console.error("Error al cargar estadística de recaudado:", err);
