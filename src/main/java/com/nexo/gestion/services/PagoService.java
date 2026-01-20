@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -194,7 +195,7 @@ public class PagoService {
 
     @Transactional(readOnly = true)
     public List<PagoDTO> buscarPagos() {
-        return pagoRepository.findAll()
+        return pagoRepository.findAllByOrderByFechaDesc()
                 .stream()
                 .map(this::convertirAPagoDTO)
                 .toList();
@@ -243,5 +244,60 @@ public class PagoService {
                 ))
                 .collect(Collectors.toList());
     }
+
+
+    public BigDecimal recaudadoHoy() {
+        BigDecimal total = pagoRepository.totalRecaudadoHoy();
+        return total != null ? total : BigDecimal.ZERO;
+    }
+
+    public BigDecimal recaudadoSemana() {
+        BigDecimal total = pagoRepository.totalRecaudadoSemana();
+        return total != null ? total : BigDecimal.ZERO;
+    }
+
+    public BigDecimal recaudadoMes() {
+        BigDecimal total = pagoRepository.totalRecaudadoMes();
+        return total != null ? total : BigDecimal.ZERO;
+    }
+
+    public RecaudacionProductosMembresiasMesDTO recaudadoMesProductosPlanes() {
+        return new RecaudacionProductosMembresiasMesDTO(
+                pagoRepository.totalRecaudadoMesProductos(),
+                pagoRepository.totalRecaudadoMesPlanes()
+        );
+    }
+
+    public ProductoMasVendidoMesDTO productoMasVendidoEnELMes() {
+        List<Object[]> result = pagoRepository.productoMasVendidoEnELMes();
+
+        if (result.isEmpty()) {
+            return new ProductoMasVendidoMesDTO("Sin ventas", 0);
+        }
+
+        Object[] row = result.get(0);
+
+        return new ProductoMasVendidoMesDTO(
+                (String) row[0],
+                ((Number) row[1]).intValue()
+        );
+    }
+
+
+    public PlanMasVendidoMesDTO planMasVendidoEnELMes() {
+        List<Object[]> result = pagoRepository.planMasVendidoMensual();
+
+        if (result.isEmpty()) {
+            return new PlanMasVendidoMesDTO("Sin ventas", 0);
+        }
+
+        Object[] row = result.get(0);
+
+        return new PlanMasVendidoMesDTO(
+                (String) row[0],
+                ((Number) row[1]).intValue()
+        );
+    }
+
 }
 

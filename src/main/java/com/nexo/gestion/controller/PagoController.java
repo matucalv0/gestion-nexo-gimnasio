@@ -1,15 +1,13 @@
 package com.nexo.gestion.controller;
 
-import com.nexo.gestion.dto.PagoPorFechaDTO;
-import com.nexo.gestion.dto.PagoCreateDTO;
-import com.nexo.gestion.dto.PagoDTO;
-import com.nexo.gestion.dto.PagoPorMesDTO;
+import com.nexo.gestion.dto.*;
 import com.nexo.gestion.services.PagoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -66,6 +64,44 @@ public class PagoController {
     public ResponseEntity<List<PagoPorMesDTO>> totalRecaudadoMeses(){
         return ResponseEntity.ok(pagoService.recaudadoMeses());
     }
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @GetMapping("/estadisticas/recaudado-hoy")
+    public ResponseEntity<BigDecimal> totalRecaudadoHoy(){
+        return ResponseEntity.ok(pagoService.recaudadoHoy());
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @GetMapping("/estadisticas/recaudado-semana")
+    public ResponseEntity<BigDecimal> totalRecaudadoSemana(){
+        return ResponseEntity.ok(pagoService.recaudadoSemana());
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @GetMapping("/estadisticas/recaudado-mes")
+    public ResponseEntity<BigDecimal> totalRecaudadoMes(){
+        return ResponseEntity.ok(pagoService.recaudadoMes());
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @GetMapping("/estadisticas/recaudado-productos-planes")
+    public ResponseEntity<RecaudacionProductosMembresiasMesDTO> totalRecaudadoProductosPlanes(){
+        return ResponseEntity.ok(pagoService.recaudadoMesProductosPlanes());
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @GetMapping("/estadisticas/producto-mas-vendido-mes")
+    public ResponseEntity<ProductoMasVendidoMesDTO> productoMasVendidoMes(){
+        return ResponseEntity.ok(pagoService.productoMasVendidoEnELMes());
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @GetMapping("/estadisticas/plan-mas-vendido-mes")
+    public ResponseEntity<PlanMasVendidoMesDTO> planMasVendidoMes(){
+        return ResponseEntity.ok(pagoService.planMasVendidoEnELMes());
+    }
+
+
 
 }
 

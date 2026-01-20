@@ -7,105 +7,209 @@
   <link rel="icon" type="image/png" href="../assets/nexologo.png" />
   <title>NEXO · PAGOS</title>
 
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Estilos propios -->
   <link rel="stylesheet" href="../css/main.css">
+
+  <!-- Preload fondo -->
   <link rel="preload" as="image" href="../assets/nexofondo.jpg">
 </head>
 
-<body class="min-h-screen bg-cover bg-center relative" style="background-image: url('../assets/nexofondo.jpg');">
+<body class="min-h-screen bg-cover bg-center relative text-gray-300"
+  style="background-image: url('../assets/nexofondo.jpg');">
 
   <!-- Overlay -->
-  <div class="absolute inset-0 bg-black/80"></div>
+  <div class="absolute inset-0 bg-black/80 z-0"></div>
 
-
+  <!-- CONTENIDO -->
   <main class="relative z-10 flex justify-center min-h-screen p-6 pt-16">
 
     <div class="w-full max-w-7xl">
 
-      <!-- HEADER igual al home -->
-      <header class="flex justify-between items-center mb-6">
-        <img src="../assets/nexologo.png" alt="NEXO" class="h-12">
-        <button id="btnHome"
-          class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">
+      <!-- HEADER -->
+      <header class="flex justify-between items-center mb-8 bg-[#121212]
+               px-6 py-4 rounded-xl border border-[var(--input-border)]
+               shadow-xl">
+        <div class="flex items-center gap-4">
+          <img src="../assets/nexologo.png" alt="NEXO" class="h-10">
+          <h1 class="text-xl font-bold tracking-wide text-[var(--beige)]">
+            Pagos
+          </h1>
+        </div>
+
+        <button id="btnHome" class="bg-[var(--orange)] hover:bg-orange-600
+                 text-black font-semibold px-4 py-2 rounded-md">
           Home
         </button>
       </header>
 
-      <!-- Contenedor card + estadísticas -->
+      <!-- LAYOUT PRINCIPAL -->
       <div class="flex flex-col lg:flex-row gap-6">
 
-        <!-- CARD: Tabla de pagos -->
-        <div class="flex-1 bg-[var(--dark-bg)] p-6 rounded-lg shadow-xl">
-          <div class="flex justify-between items-center mb-4">
-            <h1 class="text-2xl font-bold text-[var(--beige)]">Pagos</h1>
-            <button id="btnNuevoPago"
-              class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">
-              Nuevo pago
-            </button>
+        <!-- PANEL IZQUIERDO -->
+        <section class="flex-1 flex flex-col gap-6">
+
+          <!-- KPIs -->
+          <div class="bg-[#121212] p-6 rounded-xl
+                      border border-[var(--input-border)]
+                      shadow-2xl">
+            <h2 class="text-sm font-semibold text-[var(--beige)]
+                       mb-4 tracking-wide">
+              Estado de recaudación
+            </h2>
+
+            <div class="grid grid-cols-3 gap-4">
+              <div class="border border-[var(--input-border)]
+                          rounded-lg p-4 hover:border-[var(--orange)]
+                          transition">
+                <p class="text-xs text-gray-400">Hoy</p>
+                <p id="kpiDia" class="text-2xl font-bold text-[var(--beige)]">
+                  $0
+                </p>
+              </div>
+
+              <div class="border border-[var(--input-border)]
+                          rounded-lg p-4 hover:border-[var(--orange)]
+                          transition">
+                <p class="text-xs text-gray-400">Semana actual</p>
+                <p id="kpiSemana" class="text-2xl font-bold text-[var(--beige)]">
+                  $0
+                </p>
+              </div>
+
+              <div class="border border-[var(--input-border)]
+                          rounded-lg p-4 hover:border-[var(--orange)]
+                          transition">
+                <p class="text-xs text-gray-400">Mes actual</p>
+                <p id="kpiMes" class="text-2xl font-bold text-[var(--beige)]">
+                  $0
+                </p>
+              </div>
+            </div>
           </div>
 
-          <!-- Tabla de pagos -->
-          <div class="overflow-x-auto rounded-lg border border-gray-300">
-            <table class="w-full text-sm text-left text-gray-800">
-              <thead class="bg-gray-100 border-b border-gray-300">
-                <tr>
-                  <th class="px-6 py-3">Fecha</th>
-                  <th class="px-6 py-3">Estado</th>
-                  <th class="px-6 py-3">Monto</th>
-                  <th class="px-6 py-3">Acción</th>
-                </tr>
-              </thead>
-              <tbody id="tablaPagosBody" class="bg-white">
-                <!-- filas dinámicas -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-
-
-
-
-        <!-- DASHBOARD de estadísticas -->
-        <!-- DASHBOARD de estadísticas -->
-        <div class="lg:w-1/3 flex flex-col gap-6">
-
-          <div class="bg-[var(--dark-bg)] p-6 rounded-lg shadow-xl">
-
-            <!-- Header -->
+          <!-- EVOLUCIÓN -->
+          <div class="bg-[#121212] p-6 rounded-xl
+                      border border-[var(--input-border)]
+                      shadow-2xl">
             <div class="flex items-center justify-between mb-4">
-              <h2 class="text-[var(--beige)] text-xl font-bold">
-                Recaudado
+              <h2 class="text-lg font-bold tracking-wide
+                         text-[var(--beige)]">
+                Evolución de recaudación
               </h2>
 
               <select id="filtroRecaudado" class="bg-transparent border border-[var(--input-border)]
-         text-gray-300 text-sm rounded-md px-3 py-1
-         focus:outline-none focus:border-[var(--orange)]
-         transition">
-
+                       text-gray-300 text-sm rounded-md px-3 py-1
+                       focus:outline-none focus:border-[var(--orange)]
+                       transition">
                 <option value="7dias">Últimos 7 días</option>
                 <option value="meses">Por mes</option>
               </select>
             </div>
 
-            <!-- Gráfico -->
-            <div class="border border-[var(--input-border)] rounded-md p-3">
+            <div class="border border-[var(--input-border)]
+                        rounded-lg p-3">
               <canvas id="pagosDiaChart" class="w-full h-64"></canvas>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- PANEL DERECHO -->
+        <aside class="lg:w-1/3 flex flex-col gap-6">
+
+          <!-- DONUT -->
+          <div class="bg-[#121212] p-6 rounded-xl
+                      border border-[var(--input-border)]
+                      shadow-2xl">
+            <h2 class="text-sm font-semibold text-[var(--beige)]
+                       mb-4 tracking-wide">
+              Distribución de ingresos mensual
+            </h2>
+
+            <div class="bg-black/60 border border-[var(--input-border)]
+                        rounded-lg p-4 flex justify-center">
+              <canvas id="donutIngresos" class="w-56 h-56"></canvas>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+
+            <!-- Producto más vendido -->
+            <div class="bg-[#121212] p-6 rounded-xl
+                      border border-[var(--input-border)]
+                      shadow-2xl">
+
+              <p class="text-xs text-gray-400">Producto más vendido</p>
+              <p id="productoMasVendidoNombre" class="text-lg font-bold text-[var(--beige)] truncate">
+                —
+              </p>
+              <p id="productoMasVendidoTotal" class="text-xs text-gray-400">
+                —
+              </p>
+            </div>
+
+            <!-- Membresía más vendida -->
+            <div class="bg-[#121212] p-6 rounded-xl
+                      border border-[var(--input-border)]
+                      shadow-2xl">
+
+              <p class="text-xs text-gray-400">Plan más demandado</p>
+              <p id="planMasVendidoNombre" class="text-lg font-bold text-[var(--beige)] truncate">
+                —
+              </p>
+              <p id="planMasVendidoTotal" class="text-xs text-gray-400">
+                —
+              </p>
             </div>
 
           </div>
 
-        </div>
 
 
+
+        </aside>
 
       </div>
-    </div>
 
+      <!-- TABLA DE PAGOS (FULL WIDTH) -->
+      <section class="mt-6 bg-[#121212] p-6 rounded-xl border border-[var(--input-border)] shadow-2xl">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-bold text-[var(--beige)]">
+            Listado de pagos
+          </h2>
+
+          <button id="btnNuevoPago" class="bg-[var(--orange)] hover:bg-orange-600
+             text-black font-semibold px-4 py-2 rounded-md">
+            Nuevo pago
+          </button>
+        </div>
+
+        <div class="overflow-x-auto rounded-lg
+              border border-[var(--input-border)]">
+          <table class="w-full min-w-[900px] text-sm text-gray-300">
+            <thead class="bg-[#1a1a1a]">
+              <tr>
+                <th class="px-6 py-3">Fecha</th>
+                <th class="px-6 py-3">Estado</th>
+                <th class="px-6 py-3">Monto</th>
+                <th class="px-6 py-3">Acción</th>
+              </tr>
+            </thead>
+            <tbody id="tablaPagosBody" class="bg-[#121212]">
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
   </main>
 
-  <script type="module" src="../js/pages/pagos.js"></script>
+  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script type="module" src="../js/pages/pagos.js"></script>
 </body>
 
 </html>
