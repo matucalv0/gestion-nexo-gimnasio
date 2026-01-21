@@ -1,9 +1,9 @@
 package com.nexo.gestion.security;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -13,11 +13,18 @@ import java.util.Date;
 
 @Service
 public class JwtService {
-    private static final String SECRET =
-            "clave_super_secreta_de_32_bytes_minimo_123456";
+
+    private final String secret;
+    private final long expiration;
+
+    public JwtService(@Value("${jwt.secret}") String secret,
+                      @Value("${jwt.expiration}") long expiration) {
+        this.secret = secret;
+        this.expiration = expiration;
+    }
 
     private Key getKey() {
-        return Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
+        return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
     public String generarToken(UserDetails userDetails) {
@@ -25,9 +32,7 @@ public class JwtService {
                 .setSubject(userDetails.getUsername())
                 .claim("roles", userDetails.getAuthorities())
                 .setIssuedAt(new Date())
-                .setExpiration(
-                        new Date(System.currentTimeMillis() + 1000 * 60 * 60)
-                ) // 1 hora
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -38,8 +43,7 @@ public class JwtService {
 
     public boolean esTokenValido(String token, UserDetails userDetails) {
         String username = extraerUsername(token);
-        return username.equals(userDetails.getUsername())
-                && !tokenExpirado(token);
+        return username.equals(userDetails.getUsername()) && !tokenExpirado(token);
     }
 
     private boolean tokenExpirado(String token) {
@@ -55,6 +59,4 @@ public class JwtService {
                 .parseClaimsJws(token)
                 .getBody();
     }
-
-
 }

@@ -19,8 +19,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-    private final AuthService authService;
 
+    private final AuthService authService;
 
     public AuthController(AuthService authService) {
         this.authService = authService;
@@ -30,12 +30,5 @@ public class AuthController {
     public ResponseEntity<Map<String, String>> login(@RequestBody UsuarioLoginDTO usuarioLoginDTO) {
         String token = authService.login(usuarioLoginDTO);
         return ResponseEntity.ok(Map.of("token", token));
-
-
-
-
-
-
     }
-
 }

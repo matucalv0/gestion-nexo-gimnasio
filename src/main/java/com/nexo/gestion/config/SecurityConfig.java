@@ -8,7 +8,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -17,6 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter) throws Exception {
         http
@@ -30,22 +30,38 @@ public class SecurityConfig {
                         })
                 )
                 .authorizeHttpRequests(auth -> auth
-                        //.requestMatchers(
-                          //      "/auth/**",
-                            //    "/usuarios/**",
-                              //  "/swagger-ui/**",
-                                //"/v3/api-docs/**", "/static/**", "/js/**", "/index.html", "/api/**"
-                        .anyRequest().permitAll()
-                        //.anyRequest().authenticated()
+                        .requestMatchers(
+                                "/login.html",
+                                "/home.html",
+                                "/socios.html",
+                                "/asistencias.html",
+                                "/pagos.html",
+                                "/membresias.html",
+                                "/editar-producto.html",
+                                "/editar-membresia.html",
+                                "/editar-socio.html",
+                                "/productos.html",
+                                "/registrar-producto.html",
+                                "/registrar-membresia.html",
+                                "/socio-detalle.html",
+                                "/registrar-socio.html",
+                                "/registrar-pago.html",
+                                "/asistencia.html",
+                                "/auth/login",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/css/**",
+                                "/js/**",
+                                "/assets/**",
+                                "/favicon.ico"
+                        ).permitAll()
+                        .anyRequest().authenticated()
                 )
-                .addFilterBefore(
-                        jwtAuthFilter,
-                        UsernamePasswordAuthenticationFilter.class
-                );
+
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -53,9 +69,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration config) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
-
 }
+
