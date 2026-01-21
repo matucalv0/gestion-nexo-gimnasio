@@ -74,11 +74,11 @@ function renderPagos(tablaBody, pagos) {
     `;
 
     tr.innerHTML = `
-  <td class="px-6 py-4 whitespace-nowrap text-sm">
+  <td class="px-6 py-4 whitespace-nowrap text-sm text-left">
     ${p.fecha}
   </td>
 
-  <td class="px-6 py-4 whitespace-nowrap">
+  <td class="px-6 py-4 whitespace-nowrap text-left">
     <span class="
       inline-block
       px-3 py-1
@@ -94,14 +94,14 @@ function renderPagos(tablaBody, pagos) {
   <td class="
     px-6 py-4
     whitespace-nowrap
-    text-right
     font-semibold
     text-[var(--beige)]
+    text-left
   ">
     $ ${p.monto}
   </td>
 
-  <td class="px-6 py-4 whitespace-nowrap">
+  <td class="px-6 py-4 whitespace-nowrap text-left">
     <button
       class="text-[var(--orange)] font-semibold hover:underline"
       data-index="${index}">
@@ -135,10 +135,6 @@ function renderPagos(tablaBody, pagos) {
     </div>
   </td>
 `;
-
-
-
-
     tablaBody.appendChild(trDetalle);
   });
 

@@ -3,85 +3,103 @@
 
 <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NEXO · FICHA SOCIO</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" type="image/png" href="../assets/nexologo.png" />
 
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../css/main.css">
     <link rel="preload" as="image" href="../assets/nexofondo.jpg">
 </head>
 
-<body class="min-h-screen bg-cover bg-center relative" style="background-image: url('../assets/nexofondo.jpg');">
+<body class="min-h-screen bg-cover bg-center relative text-gray-300"
+    style="background-image: url('../assets/nexofondo.jpg');">
 
-    <div class="absolute inset-0 bg-black/80"></div>
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-black/80 z-0"></div>
 
-    <main class="relative z-10 max-w-4xl mx-auto p-6 pt-16">
+    <main class="relative z-10 flex justify-center min-h-screen p-6 pt-16">
+        <div class="w-full max-w-7xl">
 
+            <!-- HEADER -->
+            <header
+                class="flex justify-between items-center mb-8 bg-[#121212] px-6 py-4 rounded-xl border border-[var(--input-border)] shadow-xl">
+                <div class="flex items-center gap-4">
+                    <img src="../assets/nexologo.png" alt="NEXO" class="h-10">
+                    <h1 class="text-xl font-bold tracking-wide text-[var(--beige)]">Ficha del socio</h1>
+                </div>
+                <button id="btnVolver"
+                    class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">
+                    Volver
+                </button>
+            </header>
 
-        <!-- Header -->
-        <header class="flex justify-between items-center mb-8">
-            <h1 class="text-2xl font-bold text-[#ECD9BA]">Ficha del socio</h1>
-            <button id="btnVolver" class="bg-[#E9561E] px-4 py-2 rounded font-semibold">
-                Volver
-            </button>
-        </header>
+            <!-- KPIS PRINCIPALES -->
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-6">
 
-        <!-- Card -->
-        <div class="bg-[#1f2e38] rounded-lg p-6 shadow-xl text-[#ECD9BA]">
-
-            <!-- Info principal -->
-            <div class="grid grid-cols-2 gap-6 mb-6">
-                <div>
-                    <p class="text-sm text-gray-400">Nombre</p>
-                    <p id="nombre" class="text-lg font-semibold"></p>
+                <!-- Estado del socio -->
+                <div id="kpiEstado"
+                    class="border border-[var(--input-border)] bg-[#121212] rounded-lg p-4 hover:border-[var(--orange)] transition">
+                    <p class="text-xs text-gray-400">Estado</p>
+                    <p class="text-lg font-bold text-[var(--beige)]">Cargando...</p>
                 </div>
 
-                <div>
-                    <p class="text-sm text-gray-400">DNI</p>
-                    <p id="dni" class="text-lg"></p>
+                <!-- Membresía vigente -->
+                <div id="kpiMembresia"
+                    class="border border-[var(--input-border)] bg-[#121212] rounded-lg p-4 hover:border-[var(--orange)] transition">
+                    <p class="text-xs text-gray-400">Membresía</p>
+                    <p class="text-lg font-bold text-[var(--beige)]">Cargando...</p>
                 </div>
 
-                <div>
-                    <p class="text-sm text-gray-400">Teléfono</p>
-                    <p id="telefono"></p>
+                <!-- Vencimiento -->
+                <div id="kpiVencimiento"
+                    class="border border-[var(--input-border)] bg-[#121212] rounded-lg p-4 hover:border-[var(--orange)] transition">
+                    <p class="text-xs text-gray-400">Vence en</p>
+                    <p class="text-lg font-bold text-[var(--beige)]">Cargando...</p>
                 </div>
 
-                <div>
-                    <p class="text-sm text-gray-400">Email</p>
-                    <p id="email"></p>
+                <!-- Visitas de la semana -->
+                <div id="kpiVisitas"
+                    class="border border-[var(--input-border)] bg-[#121212] rounded-lg p-4 hover:border-[var(--orange)] transition">
+                    <p class="text-xs text-gray-400">Asistencias esta semana</p>
+                    <p class="text-lg font-bold text-[var(--beige)]">Cargando...</p>
                 </div>
 
-                <div>
-                    <p class="text-sm text-gray-400">Estado</p>
-                    <p id="estado" class="font-semibold"></p>
-                </div>
             </div>
 
-            <!-- Acciones -->
-            <div class="flex gap-3">
-                <button id="btnEditar" class="bg-[#E9561E] px-4 py-2 rounded font-semibold">
-                    Editar socio
-                </button>
-                <button id="btnRegistrarPago" class="bg-gray-600 px-4 py-2 rounded font-semibold">
-                    Registrar pago
-                </button>
-            </div>
+            <!-- DETALLE SOCIO -->
+            <div class="bg-[#121212] p-6 rounded-xl border border-[var(--input-border)] shadow-2xl">
 
-
-            <!-- Membresía -->
-            <div class="border-t border-gray-600 pt-6 mt-6">
-                <h2 class="text-lg font-semibold mb-4">Membresía vigente</h2>
-
-                <!-- Alertas -->
-                <div id="alert-container" class="mb-4"></div>
-
-                <div id="membresiaContainer" class="grid grid-cols-2 gap-6">
-                    <p class="text-gray-400 col-span-2">Cargando membresía...</p>
+                <!-- Info Socio -->
+                <div id="infoSocio" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <!-- Cards con datos completos se generarán dinámicamente -->
                 </div>
+
+                <!-- ACCIONES -->
+                <div class="flex gap-3 mb-6">
+                    <button id="btnEditar"
+                        class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">
+                        Editar socio
+                    </button>
+                    <button id="btnRegistrarPago"
+                        class="bg-[#1a1a1a] hover:bg-gray-700 text-[var(--beige)] font-semibold px-4 py-2 rounded-md border border-[var(--input-border)]">
+                        Registrar pago
+                    </button>
+                </div>
+
+                <!-- MEMBRESÍA DETALLE -->
+                <div class="mt-6">
+                    <h2 class="text-lg font-bold text-[var(--beige)] mb-4">Membresía vigente</h2>
+                    <div id="alert-container" class="mb-4"></div>
+                    <div id="membresiaContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Cards se generarán dinámicamente -->
+                    </div>
+                </div>
+
             </div>
 
         </div>
-
-
     </main>
 
     <script type="module" src="../js/pages/socio-detalle.js"></script>

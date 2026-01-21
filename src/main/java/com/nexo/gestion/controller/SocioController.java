@@ -106,6 +106,11 @@ public class SocioController {
         return ResponseEntity.ok(membresia);
     }
 
+    @GetMapping("/dias-para-vencer-membresiavigente")
+    public ResponseEntity<Integer> diasParaVencerMembresiaVigente(@RequestParam("q") String dni){
+        return ResponseEntity.ok(socioService.diasParaVencimientoMembresiaVigente(dni));
+    }
+
 
 
 

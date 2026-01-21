@@ -1,8 +1,6 @@
 package com.nexo.gestion.controller;
 
-import com.nexo.gestion.dto.AsistenciaDTO;
-import com.nexo.gestion.dto.AsistenciaSocioIdDTO;
-import com.nexo.gestion.dto.SocioDTO;
+import com.nexo.gestion.dto.*;
 import com.nexo.gestion.services.AsistenciaService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,6 +33,21 @@ public class AsistenciaController {
     public ResponseEntity<List<AsistenciaDTO>> buscarAsistenciaPorNombreODNI(@RequestParam("q") String dniOrNombre){
         List<AsistenciaDTO> asistencias = asistenciaService.buscarAsistencia(dniOrNombre);
         return ResponseEntity.ok(asistencias);
+    }
+
+    @GetMapping("estadisticas/semana-actual")
+    public ResponseEntity<Integer> cantidadAsistenciasSemanaActual(@RequestParam("q") String dni){
+        return ResponseEntity.ok(asistenciaService.asistenciasTotalesSemana(dni));
+    }
+
+    @GetMapping("estadisticas/mes")
+    public ResponseEntity<EstadisticasAsistenciasMensualDTO> estadisticasMensuales(){
+        return ResponseEntity.ok(asistenciaService.estadisticasMensualesAsistencias());
+    }
+
+    @GetMapping("estadisticas")
+    public ResponseEntity<List<AsistenciasPorDiaDTO>> asistenciasPorDia(@RequestParam("mes") String mes){
+        return ResponseEntity.ok(asistenciaService.totalAsistenciasPorDia(mes));
     }
 
 

@@ -41,4 +41,24 @@ AND sm.fechaHasta >= CURRENT_DATE
 
 
     List<SocioMembresia> findBySocioDniOrderByFechaInicioAsc(@NotBlank String dni);
+
+
+    @Query(value = """
+            SELECT SM.FECHA_HASTA - CURRENT_DATE FROM SOCIO_MEMBRESIA SM
+            WHERE SM.ID_SM = :id_sm  AND SM.DNI_SOCIO = :dni
+            """, nativeQuery = true)
+
+    Integer cantidadDiasParaVencimiento(@Param("dni") String dni, @Param("id_sm") Integer idMembresiaVigente);
+
+    @Query(value = """
+        SELECT COUNT(DISTINCT sm.dni_socio)
+        FROM socio_membresia sm
+        WHERE sm.fecha_inicio <  CURRENT_DATE + INTERVAL '1 day'
+          AND (sm.fecha_hasta IS NULL\s
+               OR sm.fecha_hasta >= date_trunc('month', CURRENT_DATE));
+        
+        """, nativeQuery = true)
+
+    Integer sociosActivosEnElMesActual();
+
 }

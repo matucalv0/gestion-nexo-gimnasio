@@ -55,4 +55,5 @@ public interface SocioRepository extends JpaRepository<Socio, String> {
 
 
     boolean existsByEmail(String email);
+
 }

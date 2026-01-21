@@ -295,5 +295,13 @@ public class SocioService {
     }
 
 
+    public Integer diasParaVencimientoMembresiaVigente(String dni) {
+        Socio socio = socioRepository.findById(dni).orElseThrow(() -> new ObjetoNoEncontradoException("No existe ningun socio con el dni " + dni));
 
+        Integer idMembresiaVigente = membresiaVigente(socio).getIdSm();
+
+        Integer dias = socioMembresiaRepository.cantidadDiasParaVencimiento(dni, idMembresiaVigente);
+
+        return socioMembresiaRepository.cantidadDiasParaVencimiento(dni, idMembresiaVigente);
+    }
 }

@@ -4,30 +4,34 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/png" href="../assets/nexologo.png" />
-
   <title>NEXO · PANEL</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-
   <link rel="stylesheet" href="../css/main.css">
   <link rel="preload" as="image" href="../assets/nexofondo.jpg">
-
 </head>
 
-<body class="min-h-screen bg-cover bg-center relative"
-      style="background-image: url('assets/nexofondo.jpg');">
+<body class="min-h-screen bg-cover bg-center relative text-gray-300"
+      style="background-image: url('../assets/nexofondo.jpg');">
 
   <!-- Overlay -->
-  <div class="absolute inset-0 bg-black/80"></div>
+  <div class="absolute inset-0 bg-black/80 z-0"></div>
 
   <main class="relative z-10 flex justify-center items-start min-h-screen p-6 pt-16">
-    <div class="w-full max-w-5xl">
+    <div class="w-full max-w-7xl">
 
-      <!-- Header -->
-      <header class="flex justify-between items-center mb-6">
-        <img src="assets/nexologo.png" alt="NEXO" class="h-12">
-        <button id="btnLogout"
-          class="bg-[var(--orange)] hover:bg-orange-600
+      <!-- HEADER -->
+      <header class="flex justify-between items-center mb-8 bg-[#121212]
+               px-6 py-4 rounded-xl border border-[var(--input-border)]
+               shadow-xl">
+        <div class="flex items-center gap-4">
+          <img src="../assets/nexologo.png" alt="NEXO" class="h-10">
+          <h1 class="text-xl font-bold tracking-wide text-[var(--beige)]">
+            Panel
+          </h1>
+        </div>
+
+        <button id="btnLogout" class="bg-[var(--orange)] hover:bg-orange-600
                  text-black font-semibold px-4 py-2 rounded-md">
           Cerrar sesión
         </button>
@@ -35,81 +39,72 @@
 
       <!-- ATAJOS -->
       <section class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <button id="quickAsistencia"
-          class="bg-[var(--orange)] hover:bg-orange-600
-                 text-black font-bold py-4 rounded-md">
+        <button id="quickAsistencia" class="bg-[var(--orange)] hover:bg-orange-600
+                 text-black font-bold py-4 rounded-md transition">
           Registrar asistencia
         </button>
 
-        <button id="quickSocio"
-          class="bg-[var(--input-bg)] border border-[var(--input-border)]
-                 hover:border-[var(--orange)]
-                 text-[var(--beige)] font-semibold py-4 rounded-md transition">
+        <button id="quickSocio" class="bg-[#121212] border border-[var(--input-border)]
+                 hover:border-[var(--orange)] text-[var(--beige)]
+                 font-semibold py-4 rounded-md transition">
           Nuevo socio
         </button>
 
-        <button id="quickPago"
-          class="bg-[var(--input-bg)] border border-[var(--input-border)]
-                 hover:border-[var(--orange)]
-                 text-[var(--beige)] font-semibold py-4 rounded-md transition">
+        <button id="quickPago" class="bg-[#121212] border border-[var(--input-border)]
+                 hover:border-[var(--orange)] text-[var(--beige)]
+                 font-semibold py-4 rounded-md transition">
           Nuevo pago
         </button>
       </section>
 
-      <!-- CARD -->
-      <div class="bg-[var(--dark-bg)] p-8 rounded-lg shadow-xl">
+      <!-- CARD PRINCIPAL -->
+      <div class="bg-[#121212] p-8 rounded-xl border border-[var(--input-border)] shadow-2xl">
 
         <h1 class="text-2xl font-bold text-[var(--beige)] mb-6 tracking-wide">
           Gestión
         </h1>
 
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-6">
-          <button id="btnSocios"
-            class="bg-[var(--input-bg)] border border-[var(--input-border)]
-                   hover:border-[var(--orange)]
-                   text-[var(--beige)] py-6 rounded-md font-semibold transition">
+          <button id="btnSocios" class="bg-[#1a1a1a] border border-[var(--input-border)]
+                 hover:border-[var(--orange)] text-[var(--beige)]
+                 py-6 rounded-md font-semibold transition">
             Socios
           </button>
 
-          <button id="btnAsistencias"
-            class="bg-[var(--input-bg)] border border-[var(--input-border)]
-                   hover:border-[var(--orange)]
-                   text-[var(--beige)] py-6 rounded-md font-semibold transition">
+          <button id="btnAsistencias" class="bg-[#1a1a1a] border border-[var(--input-border)]
+                 hover:border-[var(--orange)] text-[var(--beige)]
+                 py-6 rounded-md font-semibold transition">
             Asistencias
           </button>
 
-          <button id="btnPagos"
-            class="bg-[var(--input-bg)] border border-[var(--input-border)]
-                   hover:border-[var(--orange)]
-                   text-[var(--beige)] py-6 rounded-md font-semibold transition">
+          <button id="btnPagos" class="bg-[#1a1a1a] border border-[var(--input-border)]
+                 hover:border-[var(--orange)] text-[var(--beige)]
+                 py-6 rounded-md font-semibold transition">
             Pagos
           </button>
 
-          <button id="btnMembresias"
-            class="bg-[var(--input-bg)] border border-[var(--input-border)]
-                   hover:border-[var(--orange)]
-                   text-[var(--beige)] py-6 rounded-md font-semibold transition">
+          <button id="btnMembresias" class="bg-[#1a1a1a] border border-[var(--input-border)]
+                 hover:border-[var(--orange)] text-[var(--beige)]
+                 py-6 rounded-md font-semibold transition">
             Planes
           </button>
 
-          <button id="btnProductos"
-            class="bg-[var(--input-bg)] border border-[var(--input-border)]
-                   hover:border-[var(--orange)]
-                   text-[var(--beige)] py-6 rounded-md font-semibold transition">
+          <button id="btnProductos" class="bg-[#1a1a1a] border border-[var(--input-border)]
+                 hover:border-[var(--orange)] text-[var(--beige)]
+                 py-6 rounded-md font-semibold transition">
             Productos
           </button>
-
-          
-
         </div>
 
       </div>
+
     </div>
   </main>
 
   <script type="module" src="js/pages/home.js"></script>
 </body>
 </html>
+
 
 
 

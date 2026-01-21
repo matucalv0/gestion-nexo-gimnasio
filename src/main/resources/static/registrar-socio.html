@@ -6,91 +6,95 @@
   <link rel="icon" type="image/png" href="../assets/nexologo.png" />
   <title>NEXO · REGISTRAR SOCIO</title>
 
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Flowbite -->
-  <script src="https://cdn.jsdelivr.net/npm/flowbite@1.8.5/dist/flowbite.min.js"></script>
-
   <link rel="stylesheet" href="../css/main.css">
   <link rel="preload" as="image" href="../assets/nexofondo.jpg">
-  
 </head>
-<body class="min-h-screen bg-cover bg-center relative" style="background-image: url('../assets/nexofondo.jpg');">
+<body class="min-h-screen bg-cover bg-center relative text-gray-300" style="background-image: url('../assets/nexofondo.jpg');">
 
-  <!-- Overlay oscuro -->
-  <div class="absolute inset-0 bg-black/80"></div>
+  <div class="absolute inset-0 bg-black/80 z-0"></div>
 
-  <!-- Contenido -->
   <main class="relative z-10 flex justify-center items-start min-h-screen p-6 pt-16">
-    <div class="w-full max-w-lg">
+    <div class="w-full max-w-7xl">
 
-      <!-- Header con logo y botones -->
-      <header class="flex justify-between items-center mb-8">
-        <img src="../assets/nexologo.png" alt="NEXO" class="h-12">
+      <!-- Header -->
+      <header class="flex justify-between items-center mb-8 bg-[#121212] px-6 py-4 rounded-xl border border-[var(--input-border)] shadow-xl">
+        <div class="flex items-center gap-4">
+          <img src="../assets/nexologo.png" alt="NEXO" class="h-10">
+          <h1 class="text-xl font-bold tracking-wide text-[var(--beige)]">Registrar Socio</h1>
+        </div>
         <div class="flex gap-2">
           <button id="btnHome" class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">Home</button>
           <button id="btnLogout" class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">Cerrar sesión</button>
         </div>
       </header>
 
+      <!-- Alerta -->
       <div id="alert-container" class="mb-4"></div>
 
-
       <!-- Card -->
-      <div class="bg-[var(--dark-bg)] p-8 rounded-lg shadow-xl">
-        <h1 class="text-[var(--beige)] text-2xl font-bold tracking-wide mb-6">Registrar socio</h1>
-
-        <!-- Formulario -->
-        <form id="registrarSocioForm" class="space-y-4" novalidate>
+      <div class="bg-[#121212] p-6 rounded-xl border border-[var(--input-border)] shadow-2xl">
+        <form id="registrarSocioForm" class="space-y-4">
 
           <div>
-            <label class="block mb-1 text-[var(--beige)] font-semibold">Nombre completo*</label>
-            <input type="text" name="nombre" placeholder="Ingrese el nombre completo"
-              class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)] focus:outline-none focus:ring-2 focus:ring-[var(--orange)]"/>
+            <label class="block mb-1 text-[var(--beige)] font-semibold" for="nombre">Nombre completo*</label>
+            <input id="nombre" name="nombre" type="text" placeholder="Ingrese el nombre completo"
+              class="w-full px-4 py-3 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)]
+                     focus:outline-none focus:border-[var(--orange)]"/>
             <span class="text-red-500 text-sm mt-1 block error"></span>
           </div>
 
           <div>
-            <label class="block mb-1 text-[var(--beige)] font-semibold">Email*</label>
-            <input type="email" name="email" placeholder="Ingrese su email"
-              class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)] focus:outline-none focus:ring-2 focus:ring-[var(--orange)]"/>
+            <label class="block mb-1 text-[var(--beige)] font-semibold" for="dni">DNI*</label>
+            <input id="dni" name="dni" type="text" placeholder="Ingrese su DNI"
+              class="w-full px-4 py-3 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)]
+                     focus:outline-none focus:border-[var(--orange)]"/>
             <span class="text-red-500 text-sm mt-1 block error"></span>
           </div>
 
           <div>
-            <label class="block mb-1 text-[var(--beige)] font-semibold">Teléfono*</label>
-            <input type="tel" name="telefono" placeholder="Ingrese su teléfono"
-              class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)] focus:outline-none focus:ring-2 focus:ring-[var(--orange)]"/>
+            <label class="block mb-1 text-[var(--beige)] font-semibold" for="telefono">Teléfono*</label>
+            <input id="telefono" name="telefono" type="tel" placeholder="Ingrese su teléfono"
+              class="w-full px-4 py-3 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)]
+                     focus:outline-none focus:border-[var(--orange)]"/>
             <span class="text-red-500 text-sm mt-1 block error"></span>
           </div>
 
           <div>
-            <label class="block mb-1 text-[var(--beige)] font-semibold">DNI*</label>
-            <input type="text" name="dni" placeholder="Ingrese su DNI"
-              class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)] focus:outline-none focus:ring-2 focus:ring-[var(--orange)]"/>
+            <label class="block mb-1 text-[var(--beige)] font-semibold" for="email">Email*</label>
+            <input id="email" name="email" type="email" placeholder="Ingrese su email"
+              class="w-full px-4 py-3 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)]
+                     focus:outline-none focus:border-[var(--orange)]"/>
             <span class="text-red-500 text-sm mt-1 block error"></span>
           </div>
 
           <div>
-            <label class="block mb-1 text-[var(--beige)] font-semibold">Fecha de nacimiento*</label>
-            <input type="date" name="fechaNacimiento"
-              class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)] focus:outline-none focus:ring-2 focus:ring-[var(--orange)]"/>
+            <label class="block mb-1 text-[var(--beige)] font-semibold" for="fechaNacimiento">Fecha de nacimiento*</label>
+            <input id="fechaNacimiento" name="fechaNacimiento" type="date"
+              class="w-full px-4 py-3 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)]
+                     focus:outline-none focus:border-[var(--orange)]"/>
             <span class="text-red-500 text-sm mt-1 block error"></span>
           </div>
 
-          <button type="submit" class="w-full bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold py-3 rounded-md mt-4 transition-colors">
+          <button type="submit" id="btnRegistrar"
+            class="w-full bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold py-3 rounded-md mt-4 transition-all">
             Registrar socio
           </button>
 
         </form>
       </div>
+
     </div>
   </main>
 
   <script type="module" src="../js/pages/registrar-socio.js"></script>
 </body>
 </html>
+
+
+
+
+
 
 
 

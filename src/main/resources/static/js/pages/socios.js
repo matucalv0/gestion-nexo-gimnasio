@@ -59,18 +59,18 @@ function renderSocios(tablaBody, socios) {
 
   socios.forEach(s => {
     const tr = document.createElement("tr");
-    tr.className = "border-b hover:bg-gray-100";
+    tr.className = "border-b border-[var(--input-border)] hover:bg-[#1a1a1a] transition";
 
     tr.innerHTML = `
       <td class="px-6 py-4">${s.dni}</td>
       <td class="px-6 py-4">${s.nombre}</td>
       <td class="px-6 py-4">${s.telefono ?? "-"}</td>
       <td class="px-6 py-4">${s.email ?? "-"}</td>
-      <td class="px-6 py-4 font-semibold ${s.activo ? "text-green-600" : "text-red-600"}">
+      <td class="px-6 py-4 font-semibold ${s.activo ? "text-[var(--orange)]" : "text-gray-500"}">
         ${s.activo ? "Activo" : "Inactivo"}
       </td>
       <td class="px-6 py-4">
-        <button class="text-orange-600 font-medium hover:underline">
+        <button class="text-[var(--orange)] font-medium hover:underline transition">
           Ver
         </button>
       </td>
@@ -83,6 +83,7 @@ function renderSocios(tablaBody, socios) {
     tablaBody.appendChild(tr);
   });
 }
+
 
 async function buscarSocios(tablaBody, texto) {
   const q = texto.trim();

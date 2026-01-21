@@ -7,88 +7,91 @@
   <title>NEXO · SOCIOS</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-
   <link rel="stylesheet" href="../css/main.css">
   <link rel="preload" as="image" href="../assets/nexofondo.jpg">
-  
-  
 </head>
 
-<body class="min-h-screen bg-cover bg-center relative"
+<body class="min-h-screen bg-cover bg-center relative text-gray-300"
       style="background-image: url('../assets/nexofondo.jpg');">
 
   <!-- Overlay -->
-  <div class="absolute inset-0 bg-black/80"></div>
+  <div class="absolute inset-0 bg-black/80 z-0"></div>
 
   <main class="relative z-10 flex justify-center items-start min-h-screen p-6 pt-16">
-    <div class="w-full max-w-5xl">
+    <div class="w-full max-w-7xl">
 
-      <!-- Header -->
-      <header class="flex justify-between items-center mb-8">
-        <img src="../assets/nexologo.png" alt="NEXO" class="h-12">
+      <!-- HEADER -->
+      <header class="flex justify-between items-center mb-8 bg-[#121212]
+               px-6 py-4 rounded-xl border border-[var(--input-border)]
+               shadow-xl">
+        <div class="flex items-center gap-4">
+          <img src="../assets/nexologo.png" alt="NEXO" class="h-10">
+          <h1 class="text-xl font-bold tracking-wide text-[var(--beige)]">
+            Socios
+          </h1>
+        </div>
         <div class="flex gap-2">
-          <button id="btnHome"
-            class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">
+          <button id="btnHome" class="bg-[var(--orange)] hover:bg-orange-600
+                   text-black font-semibold px-4 py-2 rounded-md">
             Home
           </button>
-          <button id="btnLogout"
-            class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">
+          <button id="btnLogout" class="bg-[var(--orange)] hover:bg-orange-600
+                   text-black font-semibold px-4 py-2 rounded-md">
             Cerrar sesión
           </button>
         </div>
       </header>
 
-      <!-- Card -->
-      <div class="bg-[var(--dark-bg)] p-8 rounded-lg shadow-xl">
+      <!-- CARD PRINCIPAL -->
+      <div class="bg-[#121212] p-6 rounded-xl border border-[var(--input-border)]
+                  shadow-2xl">
 
-        <!-- Título -->
+        <!-- Título y botón -->
         <div class="flex justify-between items-center mb-6">
-          <h1 class="text-2xl font-bold text-[var(--beige)]">Socios</h1>
-          <button id="btnNuevoSocio"
-            class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">
+          <h2 class="text-2xl font-bold text-[var(--beige)]">Gestión de Socios</h2>
+          <button id="btnNuevoSocio" class="bg-[var(--orange)] hover:bg-orange-600
+                   text-black font-semibold px-4 py-2 rounded-md">
             Nuevo socio
           </button>
         </div>
 
         <!-- Buscador -->
         <div class="flex gap-3 mb-6">
-          <input
-            type="text"
-            id="inputBusqueda"
-            placeholder="Buscar por DNI o nombre"
-            class="flex-1 px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)]
-                   text-[var(--beige)] focus:outline-none focus:ring-2 focus:ring-[var(--orange)]"
-          />
-          <button id="btnBuscar"
-            class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-6 rounded-md">
+          <input type="text" id="inputBusqueda" placeholder="Buscar por DNI o nombre"
+                 class="flex-1 px-4 py-3 rounded-md bg-[#1a1a1a] border border-[var(--input-border)]
+                        text-[var(--beige)] focus:outline-none focus:ring-2 focus:ring-[var(--orange)]" />
+          <button id="btnBuscar" class="bg-[var(--orange)] hover:bg-orange-600
+                   text-black font-semibold px-6 rounded-md">
             Buscar
           </button>
         </div>
 
         <!-- Tabla -->
-        <div class="overflow-x-auto rounded-lg border border-gray-300">
-          <table class="w-full text-sm text-left text-gray-800">
-            <thead class="bg-gray-100 border-b border-gray-300">
+        <div class="overflow-x-auto rounded-lg border border-[var(--input-border)]">
+          <table class="w-full text-sm text-[var(--beige)]">
+            <thead class="bg-[#1a1a1a] border-b border-[var(--input-border)]">
               <tr>
-                <th class="px-6 py-3">DNI</th>
-                <th class="px-6 py-3">Nombre</th>
-                <th class="px-6 py-3">Teléfono</th>
-                <th class="px-6 py-3">Email</th>
-                <th class="px-6 py-3">Estado</th>
-                <th class="px-6 py-3">Acción</th>
+                <th class="px-6 py-3 text-left">DNI</th>
+                <th class="px-6 py-3 text-left">Nombre</th>
+                <th class="px-6 py-3 text-left">Teléfono</th>
+                <th class="px-6 py-3 text-left">Email</th>
+                <th class="px-6 py-3 text-left">Estado</th>
+                <th class="px-6 py-3 text-left">Acción</th>
               </tr>
             </thead>
-            <tbody id="tablaSociosBody" class="bg-white">
-              <!-- filas dinámicas -->
+            <tbody id="tablaSociosBody" class="bg-[#121212]">
+              <!-- Filas dinámicas -->
             </tbody>
           </table>
         </div>
 
       </div>
+
     </div>
   </main>
 
   <script type="module" src="../js/pages/socios.js"></script>
 </body>
 </html>
+
 
