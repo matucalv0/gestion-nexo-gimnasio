@@ -52,6 +52,7 @@ public class MembresiaService {
         if (membresiaPatchDTO.getDuracionDias() != null) {membresia.setDuracionDias(membresiaPatchDTO.getDuracionDias());}
         if (membresiaPatchDTO.getNombre() != null){membresia.setNombre(membresiaPatchDTO.getNombre());}
         if (membresiaPatchDTO.getPrecioSugerido() != null){membresia.setPrecioSugerido(membresiaPatchDTO.getPrecioSugerido());}
+        if (membresiaPatchDTO.getTipoMembresia() != null){membresia.setTipoMembresia(membresiaPatchDTO.getTipoMembresia());}
 
         Membresia guardada = membresiaRepository.save(membresia);
         return convertirAMembresiaDTO(guardada);

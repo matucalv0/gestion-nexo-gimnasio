@@ -10,14 +10,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   const form = document.getElementById("editarSocioForm");
   const btnVolver = document.getElementById("btnVolver");
 
-  if (btnVolver) {
-    btnVolver.addEventListener("click", () => {
-      window.location.href = "socios.html";
-    });
-  }
 
   const params = new URLSearchParams(window.location.search);
   const dni = params.get("dni");
+
+  if (btnVolver) {
+    btnVolver.addEventListener("click", () => {
+      window.location.href = `socio-detalle.html?dni=${dni}`
+    });
+  }
 
   if (!dni) {
     mostrarAlerta({ mensaje: "Socio inválido", tipo: "danger" });

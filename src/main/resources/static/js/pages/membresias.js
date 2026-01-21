@@ -8,30 +8,38 @@ const API_URL = "/membresias";
 document.addEventListener("DOMContentLoaded", () => {
   const tablaBody = document.getElementById("tablaMembresiasBody");
 
-
+  // Botones Home y Logout
   document.getElementById("btnHome")
     .addEventListener("click", () => window.location.href = "home.html");
 
   document.getElementById("btnLogout")
     .addEventListener("click", logout);
 
+  // Botón Nueva Membresía
   document.getElementById("btnNuevaMembresia")
     .addEventListener("click", () => {
       window.location.href = "registrar-membresia.html";
     });
 
-
+  // Cargar membresías
   cargarMembresias(tablaBody);
 });
 
 async function cargarMembresias(tablaBody) {
   try {
     const res = await authFetch(API_URL);
-    const data = await res.json();
-    renderMembresias(tablaBody, data);
+    if (!res.ok) throw new Error("Error al cargar membresías");
+    const membresias = await res.json();
+    renderMembresias(tablaBody, membresias);
   } catch (err) {
     console.error(err);
-    alert("Error al cargar membresías");
+    tablaBody.innerHTML = `
+      <tr>
+        <td colspan="7" class="px-6 py-4 text-center text-gray-500">
+          No se pudieron cargar las membresías
+        </td>
+      </tr>
+    `;
   }
 }
 
@@ -41,7 +49,7 @@ function renderMembresias(tablaBody, membresias) {
   if (!membresias?.length) {
     tablaBody.innerHTML = `
       <tr>
-        <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+        <td colspan="7" class="px-6 py-4 text-center text-gray-500">
           No hay membresías registradas
         </td>
       </tr>
@@ -51,23 +59,33 @@ function renderMembresias(tablaBody, membresias) {
 
   membresias.forEach(m => {
     const tr = document.createElement("tr");
-    tr.classList.add("border-b", "border-gray-300", "hover:bg-gray-100"); // ← aquí
-  
+
+    // Solo borde inferior y hover
+    tr.classList.add("border-b", "border-[var(--input-border)]", "hover:bg-[#1a1a1a]");
+
     tr.innerHTML = `
       <td class="px-6 py-4">${m.nombre}</td>
       <td class="px-6 py-4">${m.duracionDias} días</td>
-      <td class="px-6 py-4">
-        ${m.asistenciasPorSemana === null ? "Ilimitadas" : m.asistenciasPorSemana}
-      </td>
-      <td class="px-6 py-4">$ ${m.precioSugerido}</td>
+      <td class="px-6 py-4">${m.asistenciasPorSemana === null ? "Ilimitadas" : m.asistenciasPorSemana}</td>
+      <td class="px-6 py-4">$${m.precioSugerido}</td>
       <td class="px-6 py-4">${m.tipoMembresia}</td>
+      <td class="px-6 py-4">${m.estado ? "Activa" : "Inactiva"}</td>
       <td class="px-6 py-4">
-        ${m.estado ? "Activa" : "Inactiva"}
+        <button class="editarMembresia text-[var(--orange)] font-medium hover:underline transition">Editar</button>
       </td>
     `;
-  
+
+    // Evento click para editar
+    tr.querySelector(".editarMembresia").addEventListener("click", () => {
+      window.location.href = `editar-membresia.html?id=${m.idMembresia}`;
+    });
+
     tablaBody.appendChild(tr);
   });
 }
+
+
+
+
 
 

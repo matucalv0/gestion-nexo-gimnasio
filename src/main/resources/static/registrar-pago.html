@@ -8,147 +8,158 @@
   <title>NEXO · REGISTRAR PAGO</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-  
   <link rel="stylesheet" href="../css/main.css">
   <link rel="preload" as="image" href="../assets/nexofondo.jpg">
-
 </head>
 
-<body class="min-h-screen bg-cover bg-center relative" style="background-image: url('../assets/nexofondo.jpg');">
+<body class="min-h-screen bg-cover bg-center relative text-gray-300"
+  style="background-image: url('../assets/nexofondo.jpg');">
 
-  <!-- Overlay oscuro -->
-  <div class="absolute inset-0 bg-black/80"></div>
+  <!-- Overlay -->
+  <div class="absolute inset-0 bg-black/80 z-0"></div>
 
   <main class="relative z-10 flex justify-center items-start min-h-screen p-6 pt-16">
     <div class="w-full max-w-4xl">
 
-      <!-- Header -->
-      <header class="flex justify-between items-center mb-6">
-        <img src="../assets/nexologo.png" alt="NEXO" class="h-12">
+      <!-- HEADER -->
+      <header class="flex justify-between items-center mb-8 bg-[#121212]
+                px-6 py-4 rounded-xl border border-[var(--input-border)]
+                shadow-xl">
+        <div class="flex items-center gap-4">
+          <img src="../assets/nexologo.png" alt="NEXO" class="h-10">
+          <h1 class="text-xl font-bold tracking-wide text-[var(--beige)]">
+            Registrar Pago
+          </h1>
+        </div>
+
         <div class="flex gap-2">
           <button id="btnHome"
-            class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">Home</button>
+            class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">
+            Home
+          </button>
           <button id="btnLogout"
-            class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">Cerrar
-            sesión</button>
+            class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">
+            Cerrar sesión
+          </button>
         </div>
       </header>
 
       <!-- Alertas -->
       <div id="alert-container" class="mb-4"></div>
 
-      <!-- Card -->
-      <div class="bg-[var(--dark-bg)] p-8 rounded-lg shadow-xl">
+      <!-- CARD PRINCIPAL -->
+      <div class="bg-[#121212] p-6 rounded-xl border border-[var(--input-border)]
+                shadow-2xl">
 
-        <h1 class="text-[var(--beige)] text-2xl font-bold tracking-wide mb-6">Registrar Pago</h1>
+        <h1 class="text-[var(--beige)] text-2xl font-bold tracking-wide mb-6">
+          Registrar Pago
+        </h1>
 
-        <!-- Formulario -->
+        <!-- FORMULARIO -->
         <form id="pagoForm" class="space-y-4">
 
-          <!-- Buscar socio -->
+          <!-- BUSCAR SOCIO -->
           <div class="flex flex-col relative">
             <label class="text-[var(--beige)] font-semibold mb-1">Socio</label>
-            <input type="text" id="buscarSocio" placeholder="Buscar por nombre o DNI" autocomplete="off"
-              class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)] focus:outline-none focus:ring-2 focus:ring-[var(--orange)]" />
+            <input type="text" id="buscarSocio" placeholder="Buscar por nombre o DNI" autocomplete="off" class="w-full px-4 py-3 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)]
+                     focus:outline-none focus:border-[var(--orange)] transition" />
 
-            <!-- Resultados -->
             <ul id="resultadosSocio"
-              class="absolute top-full left-0 right-0 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-md mt-1 max-h-48 overflow-y-auto hidden z-50">
+              class="absolute top-full left-0 right-0 bg-[#121212] border border-[var(--input-border)] rounded-md mt-1 max-h-48 overflow-y-auto hidden z-50 text-[var(--beige)]">
             </ul>
           </div>
 
-
-          <!-- Empleado -->
+          <!-- EMPLEADO -->
           <div class="flex flex-col">
             <label class="text-[var(--beige)] font-semibold mb-1">Empleado</label>
-            <select id="empleado"
-              class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)] focus:outline-none focus:ring-2 focus:ring-[var(--orange)]"
-              required></select>
+            <select id="empleado" class="w-full px-4 py-3 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)]
+                     focus:outline-none focus:border-[var(--orange)] transition" required></select>
             <span class="error text-red-500 text-sm mt-1 block"></span>
           </div>
 
-          <!-- Medio de pago -->
+          <!-- MEDIO DE PAGO -->
           <div class="flex flex-col">
             <label class="text-[var(--beige)] font-semibold mb-1">Medio de pago</label>
-            <select id="medioPago"
-              class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)] focus:outline-none focus:ring-2 focus:ring-[var(--orange)]"
-              required></select>
+            <select id="medioPago" class="w-full px-4 py-3 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)]
+                     focus:outline-none focus:border-[var(--orange)] transition" required></select>
             <span class="error text-red-500 text-sm mt-1 block"></span>
           </div>
 
-          <!-- Tipo de detalle -->
+          <!-- TIPO DE DETALLE -->
           <div class="flex flex-col">
             <label class="text-[var(--beige)] font-semibold mb-1">Ítem</label>
-            <select id="tipoDetalle"
-              class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)] focus:outline-none focus:ring-2 focus:ring-[var(--orange)]">
+            <select id="tipoDetalle" class="w-full px-4 py-3 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)]
+                     focus:outline-none focus:border-[var(--orange)] transition">
               <option value="MEMBRESIA">Membresía</option>
               <option value="PRODUCTO">Producto</option>
             </select>
           </div>
 
-          <!-- Producto -->
+          <!-- PRODUCTO -->
           <div id="productoGroup" class="flex flex-col space-y-2">
             <label class="text-[var(--beige)] font-semibold mb-1">Producto</label>
             <select id="producto"
-              class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)]"></select>
+              class="w-full px-4 py-3 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)]"></select>
 
-            <!-- Cantidad + Precio en la misma línea -->
             <div class="flex flex-row gap-4">
               <div class="flex flex-col flex-1">
                 <label class="text-[var(--beige)] font-semibold mb-1">Cantidad</label>
                 <input type="number" id="cantidad"
-                  class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)]"
+                  class="w-full px-4 py-3 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)]"
                   value="1" min="1" />
               </div>
 
               <div class="flex flex-col flex-1">
                 <label class="text-[var(--beige)] font-semibold mb-1">Precio unitario</label>
                 <input type="number" id="precio"
-                  class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)]"
+                  class="w-full px-4 py-3 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)]"
                   readonly />
               </div>
             </div>
           </div>
 
-          <!-- Membresía -->
+          <!-- MEMBRESÍA -->
           <div id="membresiaGroup" class="flex flex-col space-y-2 hidden">
             <label class="text-[var(--beige)] font-semibold mb-1">Membresía</label>
             <select id="membresia"
-              class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)]"></select>
+              class="w-full px-4 py-3 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)]"></select>
 
             <div class="flex flex-row gap-4">
               <div class="flex flex-col flex-1">
                 <label class="text-[var(--beige)] font-semibold mb-1">Cantidad</label>
                 <input type="number" id="cantidadMembresia"
-                  class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)]"
+                  class="w-full px-4 py-3 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)]"
                   value="1" min="1" disabled />
               </div>
 
               <div class="flex flex-col flex-1">
                 <label class="text-[var(--beige)] font-semibold mb-1">Precio unitario</label>
                 <input type="number" id="precioMembresia"
-                  class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--beige)]"
+                  class="w-full px-4 py-3 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)]"
                   readonly />
               </div>
             </div>
           </div>
 
-          <!-- Botones -->
+          <!-- BOTONES -->
           <div class="flex flex-row gap-4">
             <button type="button" id="btnAgregarDetalle"
-              class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md flex-1">Agregar
-              detalle</button>
+              class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md flex-1">
+              Agregar detalle
+            </button>
             <button type="submit"
-              class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md flex-1">Registrar
-              pago</button>
+              class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md flex-1">
+              Registrar pago
+            </button>
           </div>
+
         </form>
 
-        <!-- Tabla de detalles -->
+        <!-- TABLA DE DETALLES -->
         <section class="mt-6">
-          <div class="overflow-x-auto rounded-lg border border-gray-300 shadow-sm">
-            <table class="w-full text-sm text-left text-gray-800">
-              <thead class="bg-gray-100 border-b border-gray-300">
+          <div class="overflow-x-auto rounded-xl border border-[var(--input-border)] shadow-2xl">
+            <table class="w-full text-sm text-left text-[var(--beige)]">
+              <thead class="bg-[#1a1a1a] border-b border-[var(--input-border)]">
                 <tr>
                   <th class="px-6 py-3 font-medium">Tipo</th>
                   <th class="px-6 py-3 font-medium">Descripción</th>
@@ -157,7 +168,7 @@
                   <th class="px-6 py-3 font-medium">Acción</th>
                 </tr>
               </thead>
-              <tbody id="detallesBody">
+              <tbody id="detallesBody" class="bg-[#121212]">
                 <!-- Filas dinámicas -->
               </tbody>
             </table>
@@ -165,7 +176,6 @@
         </section>
 
       </div>
-
     </div>
   </main>
 

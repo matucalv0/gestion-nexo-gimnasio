@@ -75,8 +75,14 @@ public class ProductoService {
     }
 
 
+    public List<ProductoDTO> buscarProductoPorIdOCodigo(String idOrNombre) {
+        List<ProductoDTO> productos = new ArrayList<>();
 
 
+        for (Producto p: productoRepository.buscarPorNombreOCodigo(idOrNombre)){
+            productos.add(new ProductoDTO(p.getIdProducto(), p.getNombre(), p.getPrecioSugerido(), p.getStock(), p.isActivo()));
+        }
 
-
+        return productos;
+    }
 }

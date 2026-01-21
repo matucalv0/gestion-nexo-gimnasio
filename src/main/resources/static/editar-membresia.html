@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="../assets/nexologo.png" />
+    <title>NEXO · EDITAR PLAN</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="preload" as="image" href="../assets/nexofondo.jpg">
+</head>
+
+<body class="min-h-screen bg-cover bg-center relative text-gray-300"
+    style="background-image: url('../assets/nexofondo.jpg');">
+
+    <!-- Overlay oscuro -->
+    <div class="absolute inset-0 bg-black/80 z-0"></div>
+
+    <main class="relative z-10 flex justify-center items-start min-h-screen p-6 pt-16">
+        <div class="w-full max-w-lg">
+
+            <!-- HEADER -->
+            <header
+                class="flex justify-between items-center mb-8 bg-[#121212] px-6 py-4 rounded-xl border border-[var(--input-border)] shadow-xl">
+                <h1 class="text-xl font-bold tracking-wide text-[var(--beige)]">Editar plan</h1>
+                <div class="flex gap-2">
+                    <button id="btnHome"
+                        class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">
+                        Volver
+                    </button>
+                    <button id="btnLogout"
+                        class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">
+                        Cerrar sesión
+                    </button>
+                </div>
+            </header>
+
+            <!-- ALERTAS -->
+            <div id="alert-container" class="mb-4"></div>
+
+            <!-- CARD PRINCIPAL -->
+            <div class="bg-[#121212] p-6 rounded-xl border border-[var(--input-border)] shadow-2xl">
+                <form id="editarMembresiaForm" class="space-y-4">
+
+                    <div>
+                        <label class="block mb-1 text-[var(--beige)] font-semibold">Nombre*</label>
+                        <input type="text" name="nombre" class="w-full px-4 py-3 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)]
+                          focus:outline-none focus:border-[var(--orange)] transition" />
+                        <span class="error text-red-500 text-sm mt-1 block"></span>
+                    </div>
+
+                    <div>
+                        <label class="block mb-1 text-[var(--beige)] font-semibold">Tipo*</label>
+                        <select name="tipoMembresia" class="w-full px-4 py-3 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)]
+                          focus:outline-none focus:border-[var(--orange)] transition">
+                            <option value="MUSCULACION">Musculación</option>
+                            <option value="FUNCIONAL">Funcional</option>
+                            <option value="MIXTA">Mixta</option>
+                        </select>
+                        <span class="error text-red-500 text-sm mt-1 block"></span>
+                    </div>
+
+                    <div>
+                        <label class="block mb-1 text-[var(--beige)] font-semibold">Duración (días)*</label>
+                        <input type="number" name="duracionDias" class="w-full px-4 py-3 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)]
+                          focus:outline-none focus:border-[var(--orange)] transition" />
+                        <span class="error text-red-500 text-sm mt-1 block"></span>
+                    </div>
+
+                    <div>
+                        <label class="block mb-1 text-[var(--beige)] font-semibold">Asistencias por semana</label>
+                        <input type="number" name="asistenciasPorSemana" class="w-full px-4 py-3 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)]
+                          focus:outline-none focus:border-[var(--orange)] transition" />
+                        <span class="error text-red-500 text-sm mt-1 block"></span>
+                    </div>
+
+                    <div>
+                        <label class="block mb-1 text-[var(--beige)] font-semibold">Precio*</label>
+                        <input type="number" step="0.01" name="precioSugerido" class="w-full px-4 py-3 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)]
+                          focus:outline-none focus:border-[var(--orange)] transition" />
+                        <span class="error text-red-500 text-sm mt-1 block"></span>
+                    </div>
+
+                    <button type="submit"
+                        class="w-full bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold py-3 rounded-md transition-colors">
+                        Guardar cambios
+                    </button>
+
+                </form>
+            </div>
+
+        </div>
+    </main>
+
+    <script type="module" src="../js/pages/editar-membresia.js"></script>
+</body>
+
+</html>

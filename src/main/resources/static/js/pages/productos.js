@@ -58,19 +58,19 @@ function renderProductos(tablaBody, productos) {
 
   productos.forEach(producto => {
     const tr = document.createElement("tr");
-    tr.className = "border-b hover:bg-gray-100";
+
+    // Estilo oscuro para filas y hover
+    tr.className = "border-b border-[var(--input-border)] hover:bg-[#1a1a1a] transition-colors";
 
     tr.innerHTML = `
-      <td class="px-6 py-4">${producto.idProducto}</td>
-      <td class="px-6 py-4">${producto.nombre}</td>
-      <td class="px-6 py-4">$${producto.precioSugerido?.toFixed(2) ?? "-"}</td>
-      <td class="px-6 py-4">${producto.stock ?? 0}</td>
-      <td class="px-6 py-4">
-        <button class="text-orange-600 font-medium hover:underline">Editar</button>
-      </td>
-    `;
-
-    console.log(producto);
+    <td class="px-6 py-4">${producto.idProducto}</td>
+    <td class="px-6 py-4">${producto.nombre}</td>
+    <td class="px-6 py-4">$${producto.precioSugerido?.toFixed(2) ?? "-"}</td>
+    <td class="px-6 py-4">${producto.stock ?? 0}</td>
+    <td class="px-6 py-4">
+      <button class="text-[var(--orange)] font-medium hover:underline transition">Editar</button>
+    </td>
+  `;
 
     tr.querySelector("button").addEventListener("click", () => {
       editarProducto(producto.idProducto);
@@ -78,6 +78,7 @@ function renderProductos(tablaBody, productos) {
 
     tablaBody.appendChild(tr);
   });
+
 }
 
 async function buscarProductos(tablaBody, valor) {

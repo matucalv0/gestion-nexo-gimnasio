@@ -61,4 +61,17 @@ AND sm.fechaHasta >= CURRENT_DATE
 
     Integer sociosActivosEnElMesActual();
 
+    @Query(value = """
+        SELECT EXISTS (
+            SELECT 1
+            FROM socio_membresia sm
+            WHERE sm.dni_socio = :dni
+              AND sm.fecha_inicio < CURRENT_DATE + INTERVAL '1 day'
+              AND (sm.fecha_hasta IS NULL
+                   OR sm.fecha_hasta >= date_trunc('month', CURRENT_DATE))
+        )
+        """, nativeQuery = true)
+    Boolean estaActivoEnElMesActual(@Param("dni") String dni);
+
+
 }

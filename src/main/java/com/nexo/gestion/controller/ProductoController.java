@@ -3,6 +3,7 @@ package com.nexo.gestion.controller;
 import com.nexo.gestion.dto.ProductoCreateDTO;
 import com.nexo.gestion.dto.ProductoDTO;
 import com.nexo.gestion.dto.ProductoPatchDTO;
+import com.nexo.gestion.dto.SocioDTO;
 import com.nexo.gestion.entity.Producto;
 import com.nexo.gestion.services.ProductoService;
 import jakarta.validation.Valid;
@@ -56,6 +57,13 @@ public class ProductoController {
     public ResponseEntity<ProductoDTO> patchProducto(@PathVariable Integer id, @RequestBody ProductoPatchDTO productoPatchDTO){
         ProductoDTO producto = productoService.patchProducto(id, productoPatchDTO);
         return ResponseEntity.ok(producto);
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
+    @GetMapping("/search")
+    public ResponseEntity<List<ProductoDTO>> buscarSocioPorNombre(@RequestParam("q") String idOrNombre){
+        List<ProductoDTO> productos = productoService.buscarProductoPorIdOCodigo(idOrNombre);
+        return ResponseEntity.ok(productos);
     }
 
 

@@ -7,70 +7,84 @@
   <link rel="icon" type="image/png" href="../assets/nexologo.png" />
   <title>NEXO · REGISTRAR ASISTENCIA</title>
 
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
+  <!-- Estilos propios -->
   <link rel="stylesheet" href="../css/main.css">
+
+  <!-- Preload fondo -->
   <link rel="preload" as="image" href="../assets/nexofondo.jpg">
-  
 </head>
 
-<body class="min-h-screen bg-cover bg-center relative" style="background-image: url('../assets/nexofondo.jpg');">
+<body class="min-h-screen bg-cover bg-center relative text-gray-300"
+  style="background-image: url('../assets/nexofondo.jpg');">
 
-  <div class="absolute inset-0 bg-black/80"></div>
+  <!-- Overlay -->
+  <div class="absolute inset-0 bg-black/80 z-0"></div>
 
+  <!-- CONTENIDO -->
   <main class="relative z-10 flex justify-center items-start min-h-screen p-6 pt-16">
     <div class="w-full max-w-xl">
 
-      <!-- Header -->
-      <header class="flex justify-between items-center mb-8">
-        <img src="../assets/nexologo.png" alt="NEXO" class="h-12">
-        <button id="btnHome"
-          class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">
+      <!-- HEADER -->
+      <header class="flex justify-between items-center mb-8 bg-[#121212]
+               px-6 py-4 rounded-xl border border-[var(--input-border)]
+               shadow-xl">
+        <div class="flex items-center gap-4">
+          <img src="../assets/nexologo.png" alt="NEXO" class="h-10">
+          <h1 class="text-xl font-bold tracking-wide text-[var(--beige)]">
+            Registrar asistencia
+          </h1>
+        </div>
+
+        <button id="btnHome" class="bg-[var(--orange)] hover:bg-orange-600
+                 text-black font-semibold px-4 py-2 rounded-md">
           Home
         </button>
       </header>
 
-      <!-- Card -->
-      <div class="bg-[var(--dark-bg)] p-8 rounded-lg shadow-xl relative">
-
-        <h1 class="text-2xl font-bold text-[var(--beige)] mb-6">
-          Registrar asistencia
-        </h1>
+      <!-- CARD PRINCIPAL -->
+      <div class="bg-[#121212] p-6 rounded-xl border border-[var(--input-border)]
+                  shadow-2xl">
 
         <!-- Buscador -->
         <div class="relative mb-4">
-          <input type="text" id="inputBusqueda" placeholder="Ingrese DNI o nombre" autocomplete="off" autofocus class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)]
+          <input type="text" id="inputBusqueda" placeholder="Ingrese DNI o nombre" autocomplete="off" autofocus class="w-full px-4 py-3 rounded-md bg-[#1a1a1a]
                    border border-[var(--input-border)]
                    text-[var(--beige)]
-                   focus:outline-none focus:ring-2 focus:ring-[var(--orange)]" />
+                   focus:outline-none focus:border-[var(--orange)]
+                   transition" />
 
           <!-- Resultados -->
-          <div id="resultadosBusqueda" class="absolute w-full mt-1 bg-white rounded-md shadow-lg z-20 overflow-hidden">
+          <div id="resultadosBusqueda" class="absolute w-full mt-1 bg-[#121212] border border-[var(--input-border)] 
+    rounded-md shadow-lg z-20 overflow-hidden text-[var(--beige)] hidden">
           </div>
+
+
         </div>
 
-        <!-- Botón -->
-        <button id="btnRegistrar" class="w-full bg-[var(--orange)] hover:bg-orange-600
+        <!-- Botón Registrar -->
+        <button id="btnRegistrarAsistencia" class="w-full bg-[var(--orange)] hover:bg-orange-600
                  text-black font-semibold py-3 rounded-md mb-4">
           Registrar asistencia
         </button>
 
-        <!-- Resultado -->
+        <!-- Alertas -->
         <div id="alert-container" class="mb-4"></div>
 
-
         <!-- Info socio -->
-        <div id="infoSocio" class="hidden bg-gray-100 text-gray-800 p-4 rounded-md mb-3 text-sm">
+        <div id="infoSocio" class="hidden bg-[#1a1a1a] text-[var(--beige)] p-4 rounded-md mb-3 text-sm">
         </div>
 
-        <div id="infoMembresia" class="hidden bg-gray-100 text-gray-800 p-4 rounded-md text-sm">
+        <div id="infoMembresia" class="hidden bg-[#1a1a1a] text-[var(--beige)] p-4 rounded-md text-sm">
         </div>
-
 
       </div>
     </div>
   </main>
 
+  <!-- Scripts -->
   <script type="module" src="../js/pages/asistencia.js"></script>
 </body>
 

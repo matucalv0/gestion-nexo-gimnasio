@@ -8,11 +8,11 @@ const API_URL = "/productos";
 
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("registrarProductoForm");
-  const btnHome = document.getElementById("btnHome");
+  const btnHome = document.getElementById("btnVolver");
   const btnLogout = document.getElementById("btnLogout");
 
   /* ===== Navegación ===== */
-  btnHome.addEventListener("click", () => window.location.href = "home.html");
+  btnHome.addEventListener("click", () => window.location.href = "productos.html");
   btnLogout.addEventListener("click", logout);
 
   /* ===== Submit ===== */

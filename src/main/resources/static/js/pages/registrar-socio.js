@@ -8,11 +8,11 @@ const API_URL = "/socios";
 
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("registrarSocioForm");
-  const btnHome = document.getElementById("btnHome");
+  const btnHome = document.getElementById("btnVolver");
   const btnLogout = document.getElementById("btnLogout");
 
   /* ===== Navegación ===== */
-  btnHome.addEventListener("click", () => window.location.href = "home.html");
+  btnHome.addEventListener("click", () => window.location.href = "socios.html");
   btnLogout.addEventListener("click", logout);
 
   /* ===== Submit ===== */

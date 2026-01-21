@@ -2,106 +2,80 @@
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/png" href="../assets/nexologo.png" />
-    <title>NEXO · EDITAR SOCIO</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="../assets/nexologo.png" />
+  <title>NEXO · EDITAR SOCIO</title>
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Flowbite -->
-    <script src="https://cdn.jsdelivr.net/npm/flowbite@1.8.5/dist/flowbite.min.js"></script>
-
-    <link rel="stylesheet" href="../css/main.css">
-    <link rel="preload" as="image" href="../assets/nexofondo.jpg">
-    
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="preload" as="image" href="../assets/nexofondo.jpg">
 </head>
 
-<body class="min-h-screen bg-cover bg-center relative" style="background-image: url('../assets/nexofondo.jpg');">
+<body class="min-h-screen bg-cover bg-center relative text-gray-300"
+  style="background-image: url('../assets/nexofondo.jpg');">
 
-    <!-- Overlay oscuro -->
-    <div class="absolute inset-0 bg-black/80"></div>
+  <!-- Overlay oscuro -->
+  <div class="absolute inset-0 bg-black/80 z-0"></div>
 
-    <!-- Contenido -->
-    <main class="relative z-10 flex justify-center items-start min-h-screen p-6 pt-16">
-        <div class="w-full max-w-lg">
+  <!-- Contenido -->
+  <main class="relative z-10 flex justify-center items-start min-h-screen p-6 pt-16">
+    <div class="w-full max-w-lg">
 
-            <!-- Header con logo y botones -->
-            <header class="flex justify-between items-center mb-8">
-                <img src="../assets/nexologo.png" alt="NEXO" class="h-12">
-                <button id="btnVolver" class="bg-[#E9561E] px-4 py-2 rounded font-semibold">
-                    Volver
-                </button>
-            </header>
+      <!-- HEADER -->
+      <header
+        class="flex justify-between items-center mb-8 bg-[#121212] px-6 py-4 rounded-xl border border-[var(--input-border)] shadow-xl">
+        <h1 class="text-xl font-bold tracking-wide text-[var(--beige)]">Editar socio</h1>
+        <button id="btnVolver"
+          class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">
+          Volver
+        </button>
+      </header>
 
-            <div id="alert-container" class="mb-4"></div>
+      <!-- ALERTAS -->
+      <div id="alert-container" class="mb-4"></div>
 
+      <!-- CARD PRINCIPAL -->
+      <div class="bg-[#121212] p-6 rounded-xl border border-[var(--input-border)] shadow-2xl">
+        <form id="editarSocioForm" class="space-y-4">
 
-            <!-- Card -->
-            <div class="bg-[var(--dark-bg)] p-8 rounded-lg shadow-xl">
-                <h1 class="text-[var(--beige)] text-2xl font-bold tracking-wide mb-6">Editar socio</h1>
+          <!-- NOMBRE -->
+          <div>
+            <label class="block mb-1 text-[var(--beige)] font-semibold">Nombre</label>
+            <input name="nombre" type="text" class="w-full px-4 py-3 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)]
+                                      focus:outline-none focus:border-[var(--orange)] transition" />
+            <span class="error text-red-500 text-sm mt-1 block"></span>
+          </div>
 
-                <form id="editarSocioForm" class="space-y-5">
+          <!-- TELÉFONO -->
+          <div>
+            <label class="block mb-1 text-[var(--beige)] font-semibold">Teléfono</label>
+            <input name="telefono" type="text" class="w-full px-4 py-3 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)]
+                                      focus:outline-none focus:border-[var(--orange)] transition" />
+            <span class="error text-red-500 text-sm mt-1 block"></span>
+          </div>
 
-                    <div>
-                      <label class="block mb-1 text-[var(--beige)] font-semibold">
-                        Nombre
-                      </label>
-                      <input
-                        name="nombre"
-                        type="text"
-                        class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)]
-                               border border-[var(--input-border)]
-                               text-[var(--beige)]
-                               focus:outline-none focus:ring-2 focus:ring-[var(--orange)]"
-                      />
-                      <span class="error text-red-500 text-sm mt-1 block"></span>
-                    </div>
-                  
-                    <div>
-                      <label class="block mb-1 text-[var(--beige)] font-semibold">
-                        Teléfono
-                      </label>
-                      <input
-                        name="telefono"
-                        type="text"
-                        class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)]
-                               border border-[var(--input-border)]
-                               text-[var(--beige)]
-                               focus:outline-none focus:ring-2 focus:ring-[var(--orange)]"
-                      />
-                      <span class="error text-red-500 text-sm mt-1 block"></span>
-                    </div>
-                  
-                    <div>
-                      <label class="block mb-1 text-[var(--beige)] font-semibold">
-                        Email
-                      </label>
-                      <input
-                        name="email"
-                        type="email"
-                        class="w-full px-4 py-3 rounded-md bg-[var(--input-bg)]
-                               border border-[var(--input-border)]
-                               text-[var(--beige)]
-                               focus:outline-none focus:ring-2 focus:ring-[var(--orange)]"
-                      />
-                      <span class="error text-red-500 text-sm mt-1 block"></span>
-                    </div>
-                  
-                    <button
-                      type="submit"
-                      class="w-full bg-[var(--orange)] hover:bg-orange-600
-                             text-black font-semibold py-3 rounded-md transition-colors"
-                    >
-                      Guardar cambios
-                    </button>
-                  
-                  </form>
-                  
+          <!-- EMAIL -->
+          <div>
+            <label class="block mb-1 text-[var(--beige)] font-semibold">Email</label>
+            <input name="email" type="email" class="w-full px-4 py-3 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)]
+                                      focus:outline-none focus:border-[var(--orange)] transition" />
+            <span class="error text-red-500 text-sm mt-1 block"></span>
+          </div>
 
+          <!-- BOTÓN -->
+          <button type="submit"
+            class="w-full bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold py-3 rounded-md transition-colors">
+            Guardar cambios
+          </button>
+        </form>
+      </div>
+    </div>
+  </main>
 
-                <script type="module" src="../js/pages/editar-socio.js"></script>
+  <script type="module" src="../js/pages/editar-socio.js"></script>
 </body>
 
 </html>

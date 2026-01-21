@@ -22,6 +22,8 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("btnVolver").addEventListener("click", () => window.location.href = "socios.html");
     document.getElementById("btnEditar").addEventListener("click", () => window.location.href = `editar-socio.html?dni=${dni}`);
     document.getElementById("btnRegistrarPago").addEventListener("click", () => window.location.href = `registrar-pago.html?dni=${dni}&cuota=true`);
+    document.getElementById("btnRegistrarAsistencia").addEventListener("click", () => {window.location.href = `asistencia.html?dni=${dni}&asistencia=true`;});
+
 });
 
 async function cargarKPIs(dni) {
@@ -29,9 +31,12 @@ async function cargarKPIs(dni) {
         const resSocio = await authFetch(`${API_URL}/${dni}`);
         const socio = await resSocio.json();
 
+        const activoRes = await authFetch(`${API_URL}/activo-mes?dni=${dni}`);
+        const activo = await activoRes.json();
+
         const estadoEl = document.getElementById("kpiEstado").querySelector("p:nth-child(2)");
-        estadoEl.textContent = socio.activo ? "Activo" : "Inactivo";
-        estadoEl.className = `text-lg font-bold ${socio.activo ? 'text-green-500' : 'text-red-500'}`;
+        estadoEl.textContent = activo ? "Activo" : "Inactivo";
+        estadoEl.className = `text-lg font-bold ${activo ? 'text-green-500' : 'text-red-500'}`;
 
         const resVisitas = await authFetch(`/asistencias/estadisticas/semana-actual?q=${dni}`);
         const visitas = await resVisitas.json();
@@ -130,14 +135,18 @@ async function cargarSocio(dni) {
 
     try {
         const res = await authFetch(`${API_URL}/${dni}`);
+        const activoRes = await authFetch(`${API_URL}/activo-mes?dni=${dni}`);
         const socio = await res.json();
+        const activo = await activoRes.json();
+
+
+
 
         const campos = [
             { label: "Nombre", valor: socio.nombre },
             { label: "DNI", valor: socio.dni },
             { label: "Teléfono", valor: socio.telefono ?? "-" },
             { label: "Email", valor: socio.email ?? "-" },
-            { label: "Estado", valor: socio.activo ? "Activo" : "Inactivo" },
         ];
 
         campos.forEach(c => {

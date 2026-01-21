@@ -10,8 +10,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const resultado = document.getElementById("resultado");
 
   document
-    .getElementById("btnHome")
-    .addEventListener("click", () => (window.location.href = "home.html"));
+    .getElementById("btnVolver")
+    .addEventListener("click", () => (window.location.href = "membresias.html"));
 
   document
     .getElementById("btnLogout")

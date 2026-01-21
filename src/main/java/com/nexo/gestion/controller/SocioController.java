@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -110,6 +111,18 @@ public class SocioController {
     public ResponseEntity<Integer> diasParaVencerMembresiaVigente(@RequestParam("q") String dni){
         return ResponseEntity.ok(socioService.diasParaVencimientoMembresiaVigente(dni));
     }
+
+    @GetMapping("/activo-mes")
+    public  ResponseEntity<Boolean> socioIsActivoMes(@RequestParam("dni") String dni){
+        return ResponseEntity.ok(socioService.socioActivoMes(dni));
+    }
+
+    @PostMapping("/activo-mes-listado")
+    public ResponseEntity<Map<String, Boolean>> sociosActivosEnElMes(@RequestBody List<String> dnis) {
+        return ResponseEntity.ok(socioService.listadoSociosActivosEnELMes(dnis));
+
+    }
+
 
 
 

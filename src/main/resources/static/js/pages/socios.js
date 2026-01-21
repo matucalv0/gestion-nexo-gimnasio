@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
   cargarSocios(tablaBody);
 });
 
-/* ================= lógica ================= */
+
 
 async function cargarSocios(tablaBody) {
   const res = await authFetch(API_URL);
@@ -43,7 +43,7 @@ async function cargarSocios(tablaBody) {
   renderSocios(tablaBody, socios);
 }
 
-function renderSocios(tablaBody, socios) {
+async function renderSocios(tablaBody, socios) {
   tablaBody.innerHTML = "";
 
   if (!socios.length) {
@@ -57,8 +57,20 @@ function renderSocios(tablaBody, socios) {
     return;
   }
 
+  // Hacer un POST con todos los DNIs
+  const dnis = socios.map(s => s.dni);
+  const res = await authFetch(`${API_URL}/activo-mes-listado`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(dnis),
+  });
+
+  const activos = await res.json(); 
+
   socios.forEach(s => {
     const tr = document.createElement("tr");
+    const isActivo = activos[s.dni];
+
     tr.className = "border-b border-[var(--input-border)] hover:bg-[#1a1a1a] transition";
 
     tr.innerHTML = `
@@ -66,8 +78,8 @@ function renderSocios(tablaBody, socios) {
       <td class="px-6 py-4">${s.nombre}</td>
       <td class="px-6 py-4">${s.telefono ?? "-"}</td>
       <td class="px-6 py-4">${s.email ?? "-"}</td>
-      <td class="px-6 py-4 font-semibold ${s.activo ? "text-[var(--orange)]" : "text-gray-500"}">
-        ${s.activo ? "Activo" : "Inactivo"}
+      <td class="px-6 py-4 font-semibold ${isActivo ? "text-[var(--orange)]" : "text-gray-500"}">
+        ${isActivo ? "Activo" : "Inactivo"}
       </td>
       <td class="px-6 py-4">
         <button class="text-[var(--orange)] font-medium hover:underline transition">
@@ -83,6 +95,8 @@ function renderSocios(tablaBody, socios) {
     tablaBody.appendChild(tr);
   });
 }
+
+
 
 
 async function buscarSocios(tablaBody, texto) {

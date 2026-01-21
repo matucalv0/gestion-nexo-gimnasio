@@ -9,9 +9,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class SocioService {
@@ -303,5 +301,22 @@ public class SocioService {
         Integer dias = socioMembresiaRepository.cantidadDiasParaVencimiento(dni, idMembresiaVigente);
 
         return socioMembresiaRepository.cantidadDiasParaVencimiento(dni, idMembresiaVigente);
+    }
+
+    public Boolean socioActivoMes(String dni) {
+        return socioMembresiaRepository.estaActivoEnElMesActual(dni);
+    }
+
+    public Map<String, Boolean> listadoSociosActivosEnELMes(List<String> dnis) {
+        Map<String, Boolean> resultado = new HashMap<>();
+        for (String dni : dnis) {
+            if (socioMembresiaRepository.estaActivoEnElMesActual(dni)) {
+                resultado.put(dni, true);
+            } else {
+                resultado.put(dni, false);
+            }
+        }
+
+        return resultado;
     }
 }

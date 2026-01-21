@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,23 +8,22 @@
   <title>NEXO · PRODUCTOS</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-
   <link rel="stylesheet" href="../css/main.css">
   <link rel="preload" as="image" href="../assets/nexofondo.jpg">
-  
 </head>
 
-<body class="min-h-screen bg-cover bg-center relative"
-      style="background-image: url('../assets/nexofondo.jpg');">
+<body class="min-h-screen bg-cover bg-center relative text-gray-300"
+  style="background-image: url('../assets/nexofondo.jpg');">
 
   <!-- Overlay -->
-  <div class="absolute inset-0 bg-black/80"></div>
+  <div class="absolute inset-0 bg-black/80 z-0"></div>
 
   <main class="relative z-10 flex justify-center items-start min-h-screen p-6 pt-16">
     <div class="w-full max-w-5xl">
 
       <!-- Header -->
-      <header class="flex justify-between items-center mb-8">
+      <header
+        class="flex justify-between items-center mb-8 bg-[#121212] px-6 py-4 rounded-xl border border-[var(--input-border)] shadow-xl">
         <img src="../assets/nexologo.png" alt="NEXO" class="h-12">
         <div class="flex gap-2">
           <button id="btnHome"
@@ -37,10 +37,10 @@
         </div>
       </header>
 
-      <!-- Card -->
-      <div class="bg-[var(--dark-bg)] p-8 rounded-lg shadow-xl">
+      <!-- Card principal -->
+      <div class="bg-[#121212] p-6 rounded-xl border border-[var(--input-border)] shadow-2xl">
 
-        <!-- Título -->
+        <!-- Título y botón Nuevo -->
         <div class="flex justify-between items-center mb-6">
           <h1 class="text-2xl font-bold text-[var(--beige)]">Productos</h1>
           <button id="btnNuevoProducto"
@@ -51,32 +51,27 @@
 
         <!-- Buscador -->
         <div class="flex gap-3 mb-6">
-          <input
-            type="text"
-            id="inputBusqueda"
-            placeholder="Buscar por nombre o código"
-            class="flex-1 px-4 py-3 rounded-md bg-[var(--input-bg)] border border-[var(--input-border)]
-                   text-[var(--beige)] focus:outline-none focus:ring-2 focus:ring-[var(--orange)]"
-          />
+          <input type="text" id="inputBusqueda" placeholder="Buscar por nombre o código" class="flex-1 px-4 py-3 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)]
+                        focus:outline-none focus:border-[var(--orange)] transition" />
           <button id="btnBuscar"
-            class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-6 rounded-md">
+            class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-6 py-3 rounded-md">
             Buscar
           </button>
         </div>
 
         <!-- Tabla -->
-        <div class="overflow-x-auto rounded-lg border border-gray-300">
-          <table class="w-full text-sm text-left text-gray-800">
-            <thead class="bg-gray-100 border-b border-gray-300">
+        <div class="overflow-x-auto rounded-lg border border-[var(--input-border)]">
+          <table class="w-full text-sm text-left text-[var(--beige)]">
+            <thead class="bg-[#1a1a1a] border-b border-[var(--input-border)]">
               <tr>
-                <th class="px-6 py-3">Código</th>
-                <th class="px-6 py-3">Nombre</th>
-                <th class="px-6 py-3">Precio</th>
-                <th class="px-6 py-3">Stock</th>
-                <th class="px-6 py-3">Acción</th>
+                <th class="px-6 py-3 font-medium">Código</th>
+                <th class="px-6 py-3 font-medium">Nombre</th>
+                <th class="px-6 py-3 font-medium">Precio</th>
+                <th class="px-6 py-3 font-medium">Stock</th>
+                <th class="px-6 py-3 font-medium">Acción</th>
               </tr>
             </thead>
-            <tbody id="tablaProductosBody" class="bg-white">
+            <tbody id="tablaProductosBody" class="divide-y divide-[var(--input-border)]">
               <!-- filas dinámicas -->
             </tbody>
           </table>
@@ -88,4 +83,5 @@
 
   <script type="module" src="../js/pages/productos.js"></script>
 </body>
+
 </html>
