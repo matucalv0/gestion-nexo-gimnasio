@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("btnPagos").onclick = () => go("pagos.html");
   document.getElementById("btnMembresias").onclick = () => go("membresias.html");
   document.getElementById("btnProductos").onclick = () => go("productos.html");
+  document.getElementById("btnFinanzas").onclick = () => go("finanzas.html");
 
   // Accesos rápidos
   document.getElementById("quickAsistencia").onclick = () => go("asistencia.html");

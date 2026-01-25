@@ -31,45 +31,38 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        String path = request.getServletPath();
-
-        // Saltar rutas públicas
-        if (path.equals("/auth/login") || path.equals("/login.html") ||
-                path.startsWith("/css/") || path.startsWith("/js/") ||
-                path.startsWith("/assets/") || path.equals("/favicon.ico")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
         String authHeader = request.getHeader("Authorization");
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
 
-        String token = authHeader.substring(7);
+            try {
+                String username = jwtService.extraerUsername(token);
 
-        try {
-            String username = jwtService.extraerUsername(token);
+                if (username != null &&
+                        SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                    UserDetails userDetails =
+                            userDetailsService.loadUserByUsername(username);
 
-                if (jwtService.esTokenValido(token, userDetails)) {
-                    UsernamePasswordAuthenticationToken authToken =
-                            new UsernamePasswordAuthenticationToken(
-                                    userDetails,
-                                    null,
-                                    userDetails.getAuthorities()
-                            );
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                    if (jwtService.esTokenValido(token, userDetails)) {
+                        UsernamePasswordAuthenticationToken authToken =
+                                new UsernamePasswordAuthenticationToken(
+                                        userDetails,
+                                        null,
+                                        userDetails.getAuthorities()
+                                );
+
+                        SecurityContextHolder.getContext()
+                                .setAuthentication(authToken);
+                    }
                 }
+            } catch (Exception e) {
+                // token inválido → no autentica
             }
-        } catch (Exception e) {
-            // Token inválido → ignorar
         }
 
         filterChain.doFilter(request, response);
     }
+
 }

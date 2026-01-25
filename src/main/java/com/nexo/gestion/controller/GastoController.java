@@ -20,12 +20,14 @@ public class GastoController {
 
     @PostMapping
     public ResponseEntity<GastoDTO> altaGasto(@Valid @RequestBody GastoDTO gastoDTO){
+        System.out.println("CONTROLLER GASTOS HIT");
+        System.out.println("DTO = " + gastoDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(gastoService.registrarGasto(gastoDTO));
     }
 
     @GetMapping
     public ResponseEntity<List<GastoDTO>> mostrarGastos(){
-        return ResponseEntity.ok(gastoService.buscarPagos());
+        return ResponseEntity.ok(gastoService.buscarGastos());
     }
 
 }

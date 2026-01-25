@@ -15,7 +15,7 @@ export async function authFetch(endpoint, options = {}) {
   });
 
   if (response.status === 401 || response.status === 403) {
-    logout();
+    //logout();
     throw new Error("Unauthorized");
   }
 

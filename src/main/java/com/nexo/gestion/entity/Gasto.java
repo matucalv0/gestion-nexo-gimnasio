@@ -27,12 +27,12 @@ public class Gasto {
 
     public Gasto(){}
 
-    public Gasto(LocalDateTime fecha, BigDecimal monto, CategoriaGasto categoria, String proveedor, MedioPago medioPago) {
-        this.fecha = fecha;
+    public Gasto(BigDecimal monto, CategoriaGasto categoria, String proveedor, MedioPago medioPago) {
         this.monto = monto;
         this.categoria = categoria;
         this.proveedor = proveedor;
         this.medioPago = medioPago;
+        this.fecha = LocalDateTime.now();
     }
 
     public Integer getIdGasto() {

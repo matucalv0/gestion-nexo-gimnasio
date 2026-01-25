@@ -8,7 +8,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public record GastoDTO(
-        @NotNull
         LocalDateTime fecha,
         @NotNull
         BigDecimal monto,

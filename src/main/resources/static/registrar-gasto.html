@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../assets/nexologo.png" />
+    <title>NEXO · REGISTRAR GASTO</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="preload" as="image" href="../assets/nexofondo.jpg">
+</head>
+
+<body class="min-h-screen bg-cover bg-center relative text-gray-300"
+    style="background-image: url('../assets/nexofondo.jpg');">
+
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-black/80 z-0"></div>
+
+    <main class="relative z-10 flex justify-center items-start min-h-screen p-6 pt-16">
+        <div class="w-full max-w-3xl">
+
+            <!-- HEADER -->
+            <header class="flex justify-between items-center mb-8 bg-[#121212]
+                px-6 py-4 rounded-xl border border-[var(--input-border)]
+                shadow-xl">
+                <div class="flex items-center gap-4">
+                    <img src="../assets/nexologo.png" alt="NEXO" class="h-10">
+                    <h1 class="text-xl font-bold tracking-wide text-[var(--beige)]">
+                        Registrar Gasto
+                    </h1>
+                </div>
+
+                <div class="flex gap-2">
+                    <button id="btnHome"
+                        class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">
+                        Home
+                    </button>
+                    <button id="btnLogout"
+                        class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">
+                        Cerrar sesión
+                    </button>
+                </div>
+            </header>
+
+            <!-- Alertas -->
+            <div id="alert-container" class="mb-4"></div>
+
+            <!-- CARD -->
+            <div class="bg-[#121212] p-6 rounded-xl border border-[var(--input-border)]
+                shadow-2xl">
+
+                <h2 class="text-[var(--beige)] text-2xl font-bold mb-6">
+                    Nuevo gasto
+                </h2>
+
+                <form id="gastoForm" class="space-y-4">
+
+                    <!-- CATEGORIA -->
+                    <div class="flex flex-col">
+                        <label class="text-[var(--beige)] font-semibold mb-1">Categoría</label>
+                        <select id="categoria" class="w-full px-4 py-3 rounded-md bg-[#1a1a1a] border border-[var(--input-border)]
+                     text-[var(--beige)] focus:outline-none focus:border-red-500 transition" required>
+                            <option value="">Seleccione...</option>
+                            <option value="ALQUILER">Alquiler</option>
+                            <option value="SERVICIOS">Servicios</option>
+                            <option value="INSUMOS">Insumos</option>
+                            <option value="SUELDOS">Sueldos</option>
+                        </select>
+                    </div>
+
+                    <!-- MONTO -->
+                    <div class="flex flex-col">
+                        <label class="text-[var(--beige)] font-semibold mb-1">Monto</label>
+                        <input type="number" id="monto" min="1" required class="w-full px-4 py-3 rounded-md bg-[#1a1a1a] border border-[var(--input-border)]
+                     text-[var(--beige)] focus:outline-none focus:border-red-500 transition">
+                    </div>
+
+                    <!-- MEDIO DE PAGO -->
+                    <div class="flex flex-col">
+                        <label class="text-[var(--beige)] font-semibold mb-1">Medio de pago</label>
+                        <select id="medioPago" class="w-full px-4 py-3 rounded-md bg-[#1a1a1a] border border-[var(--input-border)]
+                     text-[var(--beige)] focus:outline-none focus:border-red-500 transition" required></select>
+                    </div>
+
+
+                    <!-- DESCRIPCION -->
+                    <div class="flex flex-col">
+                        <label class="text-[var(--beige)] font-semibold mb-1">Proveedor</label>
+                        <textarea id="descripcion" rows="1" class="w-full px-4 py-3 rounded-md bg-[#1a1a1a] border border-[var(--input-border)]
+                     text-[var(--beige)] focus:outline-none focus:border-red-500 transition"></textarea>
+                    </div>
+
+                    <!-- BOTON -->
+                    <button type="submit"
+                        class="w-full bg-red-500 hover:bg-red-600 text-black font-semibold px-4 py-3 rounded-md">
+                        Registrar gasto
+                    </button>
+
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="../js/pages/registrar-gasto.js"></script>
+</body>
+
+</html>

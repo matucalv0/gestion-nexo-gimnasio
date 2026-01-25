@@ -17,6 +17,7 @@ public class GastoService {
     private final GastoRepository gastoRepository;
     private final MedioPagoRepository medioPagoRepository;
 
+
     public GastoService(GastoRepository gastoRepository, MedioPagoRepository medioPagoRepository){
         this.gastoRepository = gastoRepository;
         this.medioPagoRepository = medioPagoRepository;
@@ -38,7 +39,6 @@ public class GastoService {
         MedioPago medioPago = medioPagoRepository.findById(gastoDTO.idMedioPago()).orElseThrow(() -> new ObjetoNoEncontradoException(gastoDTO.idMedioPago() + " id no encontrado"));
 
         Gasto gasto = new Gasto(
-                gastoDTO.fecha(),
                 gastoDTO.monto(),
                 gastoDTO.categoria(),
                 gastoDTO.proveedor(),
@@ -50,7 +50,7 @@ public class GastoService {
 
     }
 
-    public List<GastoDTO> buscarPagos() {
+    public List<GastoDTO> buscarGastos() {
         List<GastoDTO> gastos = new ArrayList<>();
 
         for (Gasto g: gastoRepository.findAll()){
@@ -59,6 +59,10 @@ public class GastoService {
 
         return gastos;
     }
+
+
+
+
 
 
 }

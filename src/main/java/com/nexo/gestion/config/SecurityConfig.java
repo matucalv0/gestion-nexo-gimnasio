@@ -47,6 +47,8 @@ public class SecurityConfig {
                                 "/registrar-socio.html",
                                 "/registrar-pago.html",
                                 "/asistencia.html",
+                                "/finanzas.html",
+                                "/registrar-gasto.html",
                                 "/auth/login",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
