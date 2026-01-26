@@ -7,7 +7,7 @@ El foco principal del proyecto está en la **consistencia de los datos**, la **o
 
 ---
 
-## 🧩 Contexto del Proyecto
+## Sobre el proyecto
 
 **Cliente:** Nexo (gimnasio local)  
 **Estado:** 🚧 En desarrollo avanzado – Próximo a implementación productiva
@@ -30,7 +30,7 @@ Sistema web con backend en **Spring Boot** que centraliza:
 
 ---
 
-## 🚀 Funcionalidades Principales
+## Funcionalidades principales
 
 - Autenticación y autorización con JWT  
 - Gestión de socios y empleados  
@@ -41,7 +41,7 @@ Sistema web con backend en **Spring Boot** que centraliza:
 
 ---
 
-## 🧠 Decisiones Técnicas Relevantes
+## Arquitectura y decisiones de diseño
 
 - **Spring Boot** para desacoplar la lógica de negocio y facilitar el mantenimiento y la escalabilidad  
 - **Arquitectura MVC** para una correcta separación de responsabilidades  
@@ -52,7 +52,7 @@ Sistema web con backend en **Spring Boot** que centraliza:
 
 ---
 
-## 🛠️ Tecnologías Utilizadas
+## Tecnologías utilizadas
 
 - Java 17  
 - Spring Boot  
