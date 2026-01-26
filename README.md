@@ -68,7 +68,7 @@ Capturas del dashboard de métricas utilizado para el seguimiento financiero y o
 - **Arquitectura MVC** para una correcta separación de responsabilidades  
 - **PostgreSQL** como base de datos principal, priorizando integridad, modelado relacional y capacidad de análisis  
 - **JPA + Hibernate** para el manejo de la persistencia  
-- **JWT** para autenticación stateless y seguridad en entornos productivos  
+- **JWT** para autenticación y seguridad 
 - **Swagger** para facilitar el consumo, prueba y documentación de la API  
 
 ---
