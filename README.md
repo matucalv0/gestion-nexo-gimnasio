@@ -1,54 +1,77 @@
- **Arquitecturas y Patrones de Diseño Aplicados**
+🏋️‍♂️ Gestión Nexo – Sistema de Gestión para Gimnasio
 
-Este proyecto fue desarrollado aplicando buenas prácticas de diseño de software, utilizando los siguientes conceptos clave:
+Proyecto real desarrollado para un gimnasio local.
+Sistema web diseñado para reemplazar el uso de planillas Excel y centralizar la gestión diaria del negocio.
 
-*  **MVC (Model–View–Controller)**
-*  **Singleton**
-*  **Inyección de Dependencias**
-*  **Inversión de Control (implementada gracias a la Inyección de Dependencias)**
-*  **SRP – Principio de Responsabilidad Única**
-*  **Normalizacion sobre el modelado de la base de datos relacional**
+El foco principal del proyecto está en la consistencia de los datos, la obtención de métricas financieras y la automatización de procesos administrativos.
 
----
+🧩 Contexto del Proyecto
 
- **Tecnologías Utilizadas**
+Cliente: Nexo, gimnasio local
+Estado: En desarrollo 
 
-*  **Java**
-*  **Spring Framework**
-*  **JPA**
-*  **Hibernate**
-*  **PostgreSQL**
-*  **JWT**
+¿Qué problemas soluciona?
 
----
-##  Documentación de la API (Swagger)
+Gestión manual con Excel
 
-La siguiente documentación muestra los principales controladores del sistema,
-incluyendo autenticación JWT, gestión de usuarios, socios, empleados, pagos y productos.
+Errores e inconsistencias en pagos y asistencias
 
-### Vista general de controladores
-<img width="1296" height="889" alt="controllers1" src="https://github.com/user-attachments/assets/08038d8c-d67b-47ad-8cbe-a42d25ada49e" />
+Dificultad para obtener métricas diarias, semanales y mensuales
 
+Falta de control centralizado sobre socios y empleados
 
-### Gestión de usuarios, socios y productos
-<img width="1335" height="889" alt="controllers2" src="https://github.com/user-attachments/assets/5c9bdc52-44c4-4b54-9b8f-f660c7e8bd87" />
+Solución
 
----
-##  Autenticación y Seguridad
+Sistema web con backend en Spring Boot que centraliza:
 
-El sistema implementa autenticación basada en JWT con Spring Security.
+Gestión de socios
 
-### Flujo de autenticación
-1. Login con usuario y contraseña → devuelve JWT
-2. Acceso denegado a endpoints protegidos sin token
-3. Acceso autorizado enviando JWT como Bearer Token
+Registro de pagos e ingresos
 
-### Prueba con Postman:
-<img width="845" height="716" alt="auth" src="https://github.com/user-attachments/assets/7ccfd014-1acb-4ea6-8fc5-652c181ec981" />
-<img width="796" height="627" alt="authNo" src="https://github.com/user-attachments/assets/1f1fad29-532b-4574-9b22-ded88f70957f" />
-<img width="859" height="786" alt="authSi" src="https://github.com/user-attachments/assets/3615d53c-36a8-4af3-a4df-4507dfcde00d" />
+Control de asistencias
 
+Métricas financieras y operativas
 
+🚀 Funcionalidades Principales
 
+Autenticación y autorización con JWT
 
+Gestión de socios y empleados
 
+Registro y consulta de pagos
+
+Control de asistencias diarias
+
+Cálculo de ingresos diarios, semanales y mensuales
+
+Documentación automática de la API con Swagger
+
+🧠 Decisiones Técnicas Relevantes
+
+Spring Boot para desacoplar la lógica de negocio y facilitar mantenimiento y escalabilidad
+
+Arquitectura MVC para separar responsabilidades
+
+PostgreSQL como base de datos principal para un modelado relacional consistente, integridad y capacidad de análisis
+
+JPA + Hibernate 
+
+JWT para autenticación stateless y seguridad en entornos productivos
+
+Swagger para facilitar el consumo y prueba de la API
+
+🛠️ Tecnologías Utilizadas
+
+Java 17
+
+Spring Boot
+
+Spring Security
+
+JPA / Hibernate
+
+PostgreSQL
+
+JWT
+
+Swagger / OpenAPI
