@@ -1,77 +1,65 @@
-🏋️‍♂️ Gestión Nexo – Sistema de Gestión para Gimnasio
+# 🏋️‍♂️ Gestión Nexo – Sistema de Gestión para Gimnasios
 
-Proyecto real desarrollado para un gimnasio local.
+**Proyecto real desarrollado para un gimnasio local.**  
 Sistema web diseñado para reemplazar el uso de planillas Excel y centralizar la gestión diaria del negocio.
 
-El foco principal del proyecto está en la consistencia de los datos, la obtención de métricas financieras y la automatización de procesos administrativos.
+El foco principal del proyecto está en la **consistencia de los datos**, la **obtención de métricas financieras** y la **automatización de procesos administrativos**.
 
-🧩 Contexto del Proyecto
+---
 
-Cliente: Nexo, gimnasio local
-Estado: En desarrollo 
+## 🧩 Contexto del Proyecto
 
-¿Qué problemas soluciona?
+**Cliente:** Nexo (gimnasio local)  
+**Estado:** 🚧 En desarrollo avanzado – Próximo a implementación productiva
 
-Gestión manual con Excel
+### ¿Qué problemas soluciona?
 
-Errores e inconsistencias en pagos y asistencias
+- Gestión manual mediante planillas Excel  
+- Errores e inconsistencias en pagos y asistencias  
+- Dificultad para obtener métricas diarias, semanales y mensuales  
+- Falta de control centralizado sobre socios y empleados  
 
-Dificultad para obtener métricas diarias, semanales y mensuales
+### Solución
 
-Falta de control centralizado sobre socios y empleados
+Sistema web con backend en **Spring Boot** que centraliza:
 
-Solución
+- Gestión de socios  
+- Registro de pagos e ingresos  
+- Control de asistencias  
+- Métricas financieras y operativas  
 
-Sistema web con backend en Spring Boot que centraliza:
+---
 
-Gestión de socios
+## 🚀 Funcionalidades Principales
 
-Registro de pagos e ingresos
+- Autenticación y autorización con JWT  
+- Gestión de socios y empleados  
+- Registro y consulta de pagos  
+- Control de asistencias diarias  
+- Cálculo de ingresos diarios, semanales y mensuales  
+- Documentación automática de la API con Swagger  
 
-Control de asistencias
+---
 
-Métricas financieras y operativas
+## 🧠 Decisiones Técnicas Relevantes
 
-🚀 Funcionalidades Principales
+- **Spring Boot** para desacoplar la lógica de negocio y facilitar el mantenimiento y la escalabilidad  
+- **Arquitectura MVC** para una correcta separación de responsabilidades  
+- **PostgreSQL** como base de datos principal, priorizando integridad, modelado relacional y capacidad de análisis  
+- **JPA + Hibernate** para el manejo de la persistencia  
+- **JWT** para autenticación stateless y seguridad en entornos productivos  
+- **Swagger** para facilitar el consumo, prueba y documentación de la API  
 
-Autenticación y autorización con JWT
+---
 
-Gestión de socios y empleados
+## 🛠️ Tecnologías Utilizadas
 
-Registro y consulta de pagos
+- Java 17  
+- Spring Boot  
+- Spring Security  
+- JPA / Hibernate  
+- PostgreSQL  
+- JWT  
 
-Control de asistencias diarias
-
-Cálculo de ingresos diarios, semanales y mensuales
-
-Documentación automática de la API con Swagger
-
-🧠 Decisiones Técnicas Relevantes
-
-Spring Boot para desacoplar la lógica de negocio y facilitar mantenimiento y escalabilidad
-
-Arquitectura MVC para separar responsabilidades
-
-PostgreSQL como base de datos principal para un modelado relacional consistente, integridad y capacidad de análisis
-
-JPA + Hibernate 
-
-JWT para autenticación stateless y seguridad en entornos productivos
-
-Swagger para facilitar el consumo y prueba de la API
-
-🛠️ Tecnologías Utilizadas
-
-Java 17
-
-Spring Boot
-
-Spring Security
-
-JPA / Hibernate
-
-PostgreSQL
-
-JWT
 
 Swagger / OpenAPI
