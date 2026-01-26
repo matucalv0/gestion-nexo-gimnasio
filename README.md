@@ -41,6 +41,26 @@ Sistema web con backend en **Spring Boot** que centraliza:
 
 ---
 
+## 📸 Capturas del Sistema
+
+### 🔗 API – Documentación Swagger (SOCIOS Y PAGOS)
+<img width="1392" height="753" alt="endpoints-socios" src="https://github.com/user-attachments/assets/ec66724f-fb82-458b-9226-37203feb6ba9" />
+<img width="1403" height="749" alt="endpoints-pagos" src="https://github.com/user-attachments/assets/005429a4-bc47-4411-881d-8e25903bfef1" />
+
+
+### 🗄️ Diagrama entidad–relación + modelo logico de la base de datos
+<img width="2367" height="1232" alt="derGym" src="https://github.com/user-attachments/assets/1ee53a5a-7c6f-4975-a67f-cf5c03871caf" />
+
+### 📊 Métricas y KPIs
+<img width="1919" height="912" alt="kpis" src="https://github.com/user-attachments/assets/7a98fe85-0cbd-4b7e-affa-fb14bef365e1" />
+<img width="1919" height="909" alt="kpi-asistencias" src="https://github.com/user-attachments/assets/738914d6-51a6-4bfe-8a38-60a11a8258de" />
+<img width="972" height="851" alt="finanzas-kpis" src="https://github.com/user-attachments/assets/9c86fda6-2131-4b20-a0fe-933a3a47d3df" />
+
+
+### 🖥️ Interfaz del Sistema
+<img width="1919" height="910" alt="panel-nexo" src="https://github.com/user-attachments/assets/d61e7562-65fa-473f-91ba-012336ff5143" />
+
+
 ## Arquitectura y decisiones de diseño
 
 - **Spring Boot** para desacoplar la lógica de negocio y facilitar el mantenimiento y la escalabilidad  
