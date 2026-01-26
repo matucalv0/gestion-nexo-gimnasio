@@ -52,6 +52,7 @@ Sistema web con backend en **Spring Boot** que centraliza:
 <img width="2367" height="1232" alt="derGym" src="https://github.com/user-attachments/assets/1ee53a5a-7c6f-4975-a67f-cf5c03871caf" />
 
 ###  Métricas y KPIs
+Capturas del dashboard de métricas utilizado para el seguimiento financiero y operativo del gimnasio
 <img width="1919" height="912" alt="kpis" src="https://github.com/user-attachments/assets/7a98fe85-0cbd-4b7e-affa-fb14bef365e1" />
 <img width="1919" height="909" alt="kpi-asistencias" src="https://github.com/user-attachments/assets/738914d6-51a6-4bfe-8a38-60a11a8258de" />
 <img width="972" height="851" alt="finanzas-kpis" src="https://github.com/user-attachments/assets/9c86fda6-2131-4b20-a0fe-933a3a47d3df" />
