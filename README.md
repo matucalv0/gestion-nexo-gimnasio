@@ -1,4 +1,4 @@
-# 🏋️‍♂️ Gestión Nexo – Sistema de gestión para gimnasio
+# Gestión Nexo – Sistema de gestión para gimnasio
 
 **Proyecto real desarrollado para un gimnasio local.**  
 Sistema web diseñado para reemplazar el uso de planillas Excel y centralizar la gestión diaria del negocio.
