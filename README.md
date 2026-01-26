@@ -24,7 +24,7 @@ El foco principal del proyecto está en la **consistencia de los datos**, la **o
 Sistema web con backend en **Spring Boot** que centraliza:
 
 - Gestión de socios  
-- Registro de pagos e ingresos  
+- Registro de ingresos y gastos 
 - Control de asistencias  
 - Métricas financieras y operativas  
 
