@@ -10,7 +10,7 @@ El foco principal del proyecto está en la **consistencia de los datos**, la **o
 ## Sobre el proyecto
 
 **Cliente:** Nexo (gimnasio local)  
-**Estado:** 🚧 En desarrollo avanzado – Próximo a implementación productiva
+**Estado:**  En desarrollo avanzado – Próximo a implementación productiva
 
 ### ¿Qué problemas soluciona?
 
