@@ -120,6 +120,14 @@ public interface PagoRepository extends JpaRepository<Pago, Integer> {
 
     List<Object[]> planMasVendidoMensual();
 
+    @Query(value = """
+            SELECT COALESCE(COUNT(*), 0)
+                        FROM pago p
+                        WHERE p.fecha >= date_trunc('month', CURRENT_DATE)
+                        AND p.fecha <  date_trunc('month', CURRENT_DATE) + INTERVAL '1 month'
+            """, nativeQuery = true)
+    Integer cantidadPagosMesActual();
+
 
 
 

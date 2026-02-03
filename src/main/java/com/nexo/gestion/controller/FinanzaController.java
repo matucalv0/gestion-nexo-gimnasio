@@ -2,6 +2,7 @@ package com.nexo.gestion.controller;
 
 import com.nexo.gestion.dto.BalancePorFechaDTO;
 import com.nexo.gestion.dto.BalancePorMesDTO;
+import com.nexo.gestion.dto.DistribucionFinanzasDTO;
 import com.nexo.gestion.dto.MovimientoFinancieroDTO;
 import com.nexo.gestion.services.FinanzaService;
 import com.nexo.gestion.services.GastoService;
@@ -61,6 +62,16 @@ public class FinanzaController {
     public ResponseEntity<List<BalancePorMesDTO>> balanceMeses(){
         return ResponseEntity.ok(finanzaService.obtenerBalanceMeses());
     }
+
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
+    @GetMapping("/distribucion-mensual")
+    public ResponseEntity<DistribucionFinanzasDTO> distribucionMensual(){
+        return ResponseEntity.ok(finanzaService.distribucionFinanzasMensual());
+    }
+
+
+
+
 
 
 }

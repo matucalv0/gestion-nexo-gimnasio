@@ -165,4 +165,10 @@ public class FinanzaService {
         return balances;
     }
 
+    public DistribucionFinanzasDTO distribucionFinanzasMensual() {
+        BigDecimal gastos = gastoRepository.totalGastadoMes();
+        BigDecimal pagos = pagoRepository.totalRecaudadoMes();
+
+        return new DistribucionFinanzasDTO(pagos, gastos);
+    }
 }

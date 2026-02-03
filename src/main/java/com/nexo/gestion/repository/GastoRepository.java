@@ -48,4 +48,5 @@ public interface GastoRepository extends JpaRepository<Gasto, Integer> {
         ORDER BY anio ASC, mes ASC
         """, nativeQuery = true)
     List<Object[]> totalGastosPorMes();
+
 }

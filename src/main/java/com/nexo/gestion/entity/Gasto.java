@@ -14,7 +14,7 @@ public class Gasto {
     @Column(name = "fecha")
     private LocalDateTime fecha;
     @Column(name = "monto", precision = 10, scale = 2)
-    BigDecimal monto;
+    private BigDecimal monto;
     @Column(name = "categoria")
     @Enumerated(EnumType.STRING)
     private CategoriaGasto categoria;

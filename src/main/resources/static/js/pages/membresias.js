@@ -64,7 +64,7 @@ function renderMembresias(tablaBody, membresias) {
     tr.classList.add("border-b", "border-[var(--input-border)]", "hover:bg-[#1a1a1a]");
 
     tr.innerHTML = `
-      <td class="px-6 py-4">${m.nombre}</td>
+  <td class="px-6 py-4">${m.nombre}</td>
       <td class="px-6 py-4">${m.duracionDias} días</td>
       <td class="px-6 py-4">${m.asistenciasPorSemana === null ? "Ilimitadas" : m.asistenciasPorSemana}</td>
       <td class="px-6 py-4">$${m.precioSugerido}</td>
