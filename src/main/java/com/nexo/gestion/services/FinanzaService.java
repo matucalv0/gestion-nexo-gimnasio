@@ -172,6 +172,64 @@ public class FinanzaService {
         return balances;
     }
 
+    public FinanzaMesStatsDTO obtenerEstadisticasMensuales() {
+        // Ganancia actual
+        BigDecimal ingresosMesActual = pagoRepository.totalRecaudadoMes();
+        BigDecimal egresosMesActual = gastoRepository.totalGastadoMes();
+        
+        if (ingresosMesActual == null) ingresosMesActual = BigDecimal.ZERO;
+        if (egresosMesActual == null) egresosMesActual = BigDecimal.ZERO;
+        
+        BigDecimal gananciaMesActual = ingresosMesActual.subtract(egresosMesActual);
+
+        // Ganancia mes anterior
+        List<BalancePorMesDTO> historico = obtenerBalanceMeses();
+        
+        LocalDate fechaActual = LocalDate.now();
+        int mesActual = fechaActual.getMonthValue();
+        int anioActual = fechaActual.getYear();
+        
+        int mesAnterior = mesActual - 1;
+        int anioAnterior = anioActual;
+        if (mesAnterior == 0) {
+            mesAnterior = 12;
+            anioAnterior--;
+        }
+
+        final int finalMesAnterior = mesAnterior;
+        final int finalAnioAnterior = anioAnterior;
+        
+        BalancePorMesDTO balanceAnterior = historico.stream()
+            .filter(h -> h.mes().equals(finalMesAnterior) && h.anio().equals(finalAnioAnterior))
+            .findFirst()
+            .orElse(null);
+            
+        BigDecimal gananciaMesAnterior = BigDecimal.ZERO;
+        if (balanceAnterior != null) {
+            gananciaMesAnterior = balanceAnterior.ingresos().subtract(balanceAnterior.egresos());
+        }
+
+        Double variacion = null;
+
+        // Lógica de variación permitiendo > 100% y manejando negativos
+        // Si el mes anterior fue 0, y el actual != 0, crecimiento "infinito"
+        if (gananciaMesAnterior.compareTo(BigDecimal.ZERO) != 0) {
+            BigDecimal diferencia = gananciaMesActual.subtract(gananciaMesAnterior);
+            // Usamos valor absoluto del denominador para mantener el signo correcto de la variación
+            BigDecimal var = diferencia.divide(gananciaMesAnterior.abs(), 4, java.math.RoundingMode.HALF_UP)
+                                       .multiply(BigDecimal.valueOf(100));
+            variacion = var.doubleValue();
+        } else if (gananciaMesActual.compareTo(BigDecimal.ZERO) != 0) {
+            // Anterior 0, Actual != 0 -> 100% (o mantener lógica de 'infinito')
+             variacion = 100.0;
+        } else {
+            // 0 vs 0
+            variacion = 0.0;
+        }
+
+        return new FinanzaMesStatsDTO(gananciaMesActual, variacion);
+    }
+
     public DistribucionFinanzasDTO distribucionFinanzasMensual() {
         BigDecimal gastos = gastoRepository.totalGastadoMes();
         BigDecimal pagos = pagoRepository.totalRecaudadoMes();

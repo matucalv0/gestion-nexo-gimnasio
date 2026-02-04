@@ -400,5 +400,52 @@ public class PagoService {
         );
     }
 
+    public PagoMesStatsDTO obtenerEstadisticasMensuales() {
+        BigDecimal totalMesActual = recaudadoMes();
+        
+        // Obtener historial de meses
+        List<PagoPorMesDTO> historico = recaudadoMeses();
+        
+        LocalDate fechaActual = LocalDate.now();
+        int mesActual = fechaActual.getMonthValue();
+        int anioActual = fechaActual.getYear();
+        
+        int mesAnterior = mesActual - 1;
+        int anioAnterior = anioActual;
+        if (mesAnterior == 0) {
+            mesAnterior = 12;
+            anioAnterior--;
+        }
+
+        // Buscar total del mes anterior
+        final int finalMesAnterior = mesAnterior;
+        final int finalAnioAnterior = anioAnterior;
+        
+        BigDecimal totalMesAnterior = historico.stream()
+            .filter(h -> h.mes().equals(finalMesAnterior) && h.anio().equals(finalAnioAnterior))
+            .map(PagoPorMesDTO::monto)
+            .findFirst()
+            .orElse(BigDecimal.ZERO);
+
+        Double variacion = null;
+
+        if (totalMesAnterior.compareTo(BigDecimal.ZERO) > 0) {
+            // ((Actual - Anterior) / Anterior) * 100
+            BigDecimal diferencia = totalMesActual.subtract(totalMesAnterior);
+            BigDecimal var = diferencia.divide(totalMesAnterior, 4, java.math.RoundingMode.HALF_UP)
+                                       .multiply(BigDecimal.valueOf(100));
+            variacion = var.doubleValue();
+        } else if (totalMesActual.compareTo(BigDecimal.ZERO) > 0) {
+            // Si el mes anterior fue 0 y este tiene ventas, es un aumento "infinito", 
+            // pero lo representaremos como 100% o null según regla de negocio. 
+            // El usuario pidió que se muestre > 100% si aplica.
+            variacion = 100.0; 
+        } else {
+            // 0 vs 0 es 0% variación
+            variacion = 0.0;
+        }
+
+        return new PagoMesStatsDTO(totalMesActual, variacion);
+    }
 }
 

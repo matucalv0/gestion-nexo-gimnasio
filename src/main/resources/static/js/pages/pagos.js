@@ -207,15 +207,15 @@ function renderDetalle(detallePagos) {
 
 async function cargarKPIsRecaudado() {
   try {
-    const [resHoy, resSemana, resMes] = await Promise.all([
+    const [resHoy, resSemana, resMesCompleto] = await Promise.all([
       authFetch("/pagos/estadisticas/recaudado-hoy"),
       authFetch("/pagos/estadisticas/recaudado-semana"),
-      authFetch("/pagos/estadisticas/recaudado-mes")
+      authFetch("/pagos/estadisticas/mes-completo")
     ]);
 
     const totalHoy = await resHoy.json();
     const totalSemana = await resSemana.json();
-    const totalMes = await resMes.json();
+    const statsMes = await resMesCompleto.json();
 
     document.getElementById("kpiDia").textContent =
       `$${Number(totalHoy).toLocaleString("es-AR")}`;
@@ -224,7 +224,9 @@ async function cargarKPIsRecaudado() {
       `$${Number(totalSemana).toLocaleString("es-AR")}`;
 
     document.getElementById("kpiMes").textContent =
-      `$${Number(totalMes).toLocaleString("es-AR")}`;
+      `$${Number(statsMes.totalMes).toLocaleString("es-AR")}`;
+
+    renderVariacion("varMes", statsMes.variacionMensual);
 
   } catch (err) {
     console.error("Error al cargar KPIs de recaudado:", err);
@@ -468,9 +470,16 @@ async function cargarRecaudado(filtro = "7dias") {
   }
 }
 
+/* ================== UTIL ================== */
 
+function renderVariacion(elementId, variacion) {
+  const el = document.getElementById(elementId);
+  if (!el || variacion == null) return;
 
+  const esPositivo = variacion >= 0;
+  const color = esPositivo ? "text-green-500" : "text-red-500";
+  const icono = esPositivo ? "▲" : "▼";
 
-
-
-
+  el.className = `text-xs font-bold ${color} ml-2`;
+  el.innerHTML = `${icono} ${Math.abs(variacion).toFixed(1)}%`;
+}

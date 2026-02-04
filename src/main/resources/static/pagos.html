@@ -7,6 +7,10 @@
   <link rel="icon" type="image/png" href="../assets/nexologo.png" />
   <title>NEXO · PAGOS</title>
 
+  <!-- Tailwind CDN primero -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Configuración después -->
   <script>
     tailwind.config = {
       theme: {
@@ -21,7 +25,6 @@
       },
     }
   </script>
-  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -32,8 +35,7 @@
   <link rel="preload" as="image" href="../assets/nexofondo.jpg">
 </head>
 
-<body class="min-h-screen bg-cover bg-center relative text-gray-300"
-  style="background-image: url('../assets/nexofondo.jpg');">
+<body class="text-gray-100 min-h-screen font-sans selection:bg-[var(--orange)] selection:text-white">
 
   <!-- Overlay -->
   <div class="absolute inset-0 bg-black/80 z-0"></div>
@@ -90,31 +92,33 @@
             </h2>
 
             <div class="grid grid-cols-3 gap-4">
-              <div class="border border-[var(--input-border)]
-                          rounded-lg p-4 hover:border-[var(--orange)]/50
-                          transition">
+              <!-- Hoy -->
+              <div
+                class="border border-[var(--input-border)] rounded-lg p-4 hover:border-[var(--orange)]/50 transition">
                 <p class="text-label text-gray-400 mb-1">Hoy</p>
-                <p id="kpiDia" class="text-metric text-[var(--beige)]">
-                  $0
-                </p>
+                <div class="flex items-baseline gap-2">
+                  <p id="kpiDia" class="text-metric text-[var(--beige)]">$0</p>
+                </div>
               </div>
 
-              <div class="border border-[var(--input-border)]
-                          rounded-lg p-4 hover:border-[var(--orange)]/50
-                          transition">
-                <p class="text-label text-gray-400 mb-1">Semana actual</p>
-                <p id="kpiSemana" class="text-metric text-[var(--beige)]">
-                  $0
-                </p>
+              <!-- Semana -->
+              <div
+                class="border border-[var(--input-border)] rounded-lg p-4 hover:border-[var(--orange)]/50 transition">
+                <p class="text-label text-gray-400 mb-1">Esta semana</p>
+                <div class="flex items-baseline gap-2">
+                  <p id="kpiSemana" class="text-metric text-[var(--beige)]">$0</p>
+                </div>
               </div>
 
-              <div class="border border-[var(--input-border)]
-                          rounded-lg p-4 hover:border-[var(--orange)]/50
-                          transition">
-                <p class="text-label text-gray-400 mb-1">Mes actual</p>
-                <p id="kpiMes" class="text-metric text-[var(--beige)]">
-                  $0
-                </p>
+              <!-- Mes -->
+              <div
+                class="border border-[var(--input-border)] rounded-lg p-4 hover:border-[var(--orange)]/50 transition">
+                <p class="text-label text-gray-400 mb-1">Este mes</p>
+                <div class="flex items-baseline gap-2">
+                  <p id="kpiMes" class="text-metric text-[var(--beige)]">$0</p>
+                  <span id="varMes"></span>
+                </div>
+                <p class="text-caption text-gray-500">vs. mes anterior</p>
               </div>
             </div>
           </div>

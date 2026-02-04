@@ -102,13 +102,17 @@ public class PagoController {
         return ResponseEntity.ok(pagoService.productoMasVendidoEnELMes());
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping("/estadisticas/plan-mas-vendido-mes")
     public ResponseEntity<PlanMasVendidoMesDTO> planMasVendidoMes(){
         return ResponseEntity.ok(pagoService.planMasVendidoEnELMes());
     }
 
-
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
+    @GetMapping("/estadisticas/mes-completo")
+    public ResponseEntity<PagoMesStatsDTO> estadisticasMesCompleto() {
+        return ResponseEntity.ok(pagoService.obtenerEstadisticasMensuales());
+    }
 
 }
 

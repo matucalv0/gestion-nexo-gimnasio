@@ -117,8 +117,6 @@ async function cargarKPIs() {
     document.getElementById("kpiSociosActivosTotal").textContent = stats.sociosActivos ?? 0;
     renderVariacion("varSociosActivos", stats.variacionSocios);
 
-    document.getElementById("kpiMaxAsistencias").textContent = stats.maxAsistencias ?? 0;
-
     const ul = document.getElementById("kpiSociosActivos");
     ul.innerHTML = "";
 

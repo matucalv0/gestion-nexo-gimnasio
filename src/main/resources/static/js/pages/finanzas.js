@@ -52,9 +52,23 @@ function initEventos() {
 
 async function cargarKPIs() {
   try {
-    setValor("kpiGananciaHoy", await fetchValor(`${API}/ganancias-hoy`));
-    setValor("kpiGananciaSemana", await fetchValor(`${API}/ganancias-semana`));
-    setValor("kpiGananciaMes", await fetchValor(`${API}/ganancias-mes`));
+    const [resHoy, resSemana, resMes] = await Promise.all([
+      authFetch(`${API}/ganancias-hoy`),
+      authFetch(`${API}/ganancias-semana`),
+      authFetch(`${API}/estadisticas/mes-completo`)
+    ]);
+
+    const hoy = await resHoy.json();
+    const semana = await resSemana.json();
+    const statsMes = await resMes.json();
+
+    setValor("kpiGananciaHoy", hoy);
+    setValor("kpiGananciaSemana", semana);
+
+    // Ganancia Mes + Variación
+    setValor("kpiGananciaMes", statsMes.gananciaMes);
+    renderVariacion("varGananciaMes", statsMes.variacionMensual);
+
   } catch (e) {
     console.error("Error cargando KPIs", e);
   }
@@ -68,8 +82,19 @@ async function fetchValor(endpoint) {
 function setValor(id, valor) {
   const el = document.getElementById(id);
   if (!el) return;
+  el.innerText = `$${(Number(valor) || 0).toLocaleString("es-AR")}`;
+}
 
-  el.innerText = `$${(Number(valor) || 0).toLocaleString()}`;
+function renderVariacion(elementId, variacion) {
+  const el = document.getElementById(elementId);
+  if (!el || variacion == null) return;
+
+  const esPositivo = variacion >= 0;
+  const color = esPositivo ? "text-green-500" : "text-red-500";
+  const icono = esPositivo ? "▲" : "▼";
+
+  el.className = `text-xs font-bold ${color} ml-2`;
+  el.innerHTML = `${icono} ${Math.abs(variacion).toFixed(1)}%`;
 }
 
 // ==========================

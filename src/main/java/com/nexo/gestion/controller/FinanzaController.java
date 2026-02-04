@@ -1,9 +1,6 @@
 package com.nexo.gestion.controller;
 
-import com.nexo.gestion.dto.BalancePorFechaDTO;
-import com.nexo.gestion.dto.BalancePorMesDTO;
-import com.nexo.gestion.dto.DistribucionFinanzasDTO;
-import com.nexo.gestion.dto.MovimientoFinancieroDTO;
+import com.nexo.gestion.dto.*;
 import com.nexo.gestion.services.FinanzaService;
 import com.nexo.gestion.services.GastoService;
 import com.nexo.gestion.services.PagoService;
@@ -69,9 +66,10 @@ public class FinanzaController {
         return ResponseEntity.ok(finanzaService.distribucionFinanzasMensual());
     }
 
-
-
-
-
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
+    @GetMapping("/estadisticas/mes-completo")
+    public ResponseEntity<FinanzaMesStatsDTO> estadisticasMesCompleto() {
+        return ResponseEntity.ok(finanzaService.obtenerEstadisticasMensuales());
+    }
 
 }

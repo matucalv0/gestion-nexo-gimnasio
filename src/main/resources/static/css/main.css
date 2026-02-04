@@ -9,14 +9,28 @@
 
 /* main.css */
 body {
-  background-image: url("../assets/nexofondo.jpg");
+  margin: 0;
+  min-height: 100vh;
+  /* El fondo se maneja en el pseudo-elemento para evitar cortes al scroll */
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+
+  /* Fondo profesional: Equilibrio identidad/legibilidad */
+  background-color: #0f172a;
+  background-image:
+    linear-gradient(to bottom, rgba(11, 15, 20, 0.88), rgba(11, 15, 20, 0.90)),
+    url("../assets/nexofondo.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-attachment: fixed;
-
-  /* Esto le dice al navegador: "No animes este fondo, mantenlo fijo" */
-  view-transition-name: main-background;
 }
 
 /* Evita que el fondo parpadee durante la transición */
