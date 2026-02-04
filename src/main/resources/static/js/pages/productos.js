@@ -43,18 +43,20 @@ async function cargarProductos(tablaBody) {
 }
 
 function renderProductos(tablaBody, productos) {
-  tablaBody.innerHTML = "";
+  const emptyState = document.getElementById('emptyStateProductos');
+
+  // Limpiar filas existentes (excepto el empty state)
+  const rows = tablaBody.querySelectorAll('tr:not(#emptyStateProductos)');
+  rows.forEach(row => row.remove());
 
   if (!Array.isArray(productos) || productos.length === 0) {
-    tablaBody.innerHTML = `
-      <tr>
-        <td colspan="6" class="px-6 py-4 text-center text-gray-500">
-          No hay productos
-        </td>
-      </tr>
-    `;
+    // Mostrar empty state
+    if (emptyState) emptyState.classList.remove('hidden');
     return;
   }
+
+  // Ocultar empty state y mostrar datos
+  if (emptyState) emptyState.classList.add('hidden');
 
   productos.forEach(producto => {
     const tr = document.createElement("tr");

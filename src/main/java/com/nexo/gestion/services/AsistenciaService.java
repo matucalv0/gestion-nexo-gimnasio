@@ -95,16 +95,50 @@ public class AsistenciaService {
             ));
         }
 
-        BigDecimal promedio = BigDecimal.valueOf(totalMes)
-                .divide(BigDecimal.valueOf(totalSociosActivos), 2, RoundingMode.HALF_UP);
+        Integer totalMesAnterior = asistenciaRepository.asistenciasTotalMesAnterior();
+        if (totalMesAnterior == null) totalMesAnterior = 0;
+
+        Integer sociosActivosAnterior = socioMembresiaRepository.sociosActivosMesAnterior();
+        if (sociosActivosAnterior == null) sociosActivosAnterior = 0;
+
+        // Calcular variaciones
+        Double variacionAsistencias = calcularVariacion(totalMes.doubleValue(), totalMesAnterior.doubleValue());
+        Double variacionSocios = calcularVariacion(totalSociosActivos.doubleValue(), sociosActivosAnterior.doubleValue());
+
+        BigDecimal promedio = BigDecimal.ZERO;
+        Double variacionPromedio = 0.0;
+
+        if (totalSociosActivos > 0) {
+            promedio = BigDecimal.valueOf(totalMes)
+                    .divide(BigDecimal.valueOf(totalSociosActivos), 2, RoundingMode.HALF_UP);
+        }
+
+        if (sociosActivosAnterior > 0) {
+            BigDecimal promedioAnterior = BigDecimal.valueOf(totalMesAnterior)
+                    .divide(BigDecimal.valueOf(sociosActivosAnterior), 2, RoundingMode.HALF_UP);
+             variacionPromedio = calcularVariacion(promedio.doubleValue(), promedioAnterior.doubleValue());
+        } else if (promedio.compareTo(BigDecimal.ZERO) > 0) {
+             variacionPromedio = 100.0;
+        }
+
 
         return new EstadisticasAsistenciasMensualDTO(
                 totalMes,
                 promedio,
                 totalSociosActivos,
                 sociosDTO,
-                maxAsistencias
+                maxAsistencias,
+                variacionAsistencias,
+                variacionSocios,
+                variacionPromedio
         );
+    }
+
+    private Double calcularVariacion(Double actual, Double anterior) {
+        if (anterior == 0) {
+            return actual > 0 ? 100.0 : 0.0;
+        }
+        return ((actual - anterior) / anterior) * 100;
     }
 
     public List<AsistenciasPorDiaDTO> totalAsistenciasPorDia(String mes) {
@@ -125,5 +159,30 @@ public class AsistenciaService {
         return result;
     }
 
+    public HoraPicoDTO obtenerHoraPico() {
+        List<Object[]> rows = asistenciaRepository.asistenciasPorHora();
+        if (rows.isEmpty()) {
+            return HoraPicoDTO.of(0, 0L);
+        }
+        
+        Object[] top = rows.get(0);
+        Integer hora = ((Number) top[0]).intValue();
+        Long total = ((Number) top[1]).longValue();
+        
+        return HoraPicoDTO.of(hora, total);
+    }
+
+    public List<HoraPicoDTO> obtenerDistribucionPorHora() {
+        List<Object[]> rows = asistenciaRepository.asistenciasPorHora();
+        List<HoraPicoDTO> distribucion = new ArrayList<>();
+        
+        for (Object[] row : rows) {
+            Integer hora = ((Number) row[0]).intValue();
+            Long total = ((Number) row[1]).longValue();
+            distribucion.add(HoraPicoDTO.of(hora, total));
+        }
+        
+        return distribucion;
+    }
 
 }

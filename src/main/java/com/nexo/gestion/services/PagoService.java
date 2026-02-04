@@ -28,6 +28,7 @@ public class PagoService {
     private final ProductoRepository productoRepository;
     private final SocioMembresiaRepository socioMembresiaRepository;
     private final MembresiaRepository membresiaRepository;
+    private final AsistenciaRepository asistenciaRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -40,7 +41,8 @@ public class PagoService {
             EmpleadoRepository empleadoRepository,
             MedioPagoRepository medioPagoRepository,
             ProductoRepository productoRepository,
-            SocioMembresiaRepository socioMembresiaRepository
+            SocioMembresiaRepository socioMembresiaRepository,
+            AsistenciaRepository asistenciaRepository
     ) {
         this.pagoRepository = pagoRepository;
         this.socioRepository = socioRepository;
@@ -49,22 +51,31 @@ public class PagoService {
         this.productoRepository = productoRepository;
         this.socioMembresiaRepository = socioMembresiaRepository;
         this.membresiaRepository = membresiaRepository;
+        this.asistenciaRepository = asistenciaRepository;
     }
 
     private DetallePagoDTO convertirDetallePagoADTO(DetallePago detallePago) {
 
         Integer idProducto = null;
         Integer idMembresia = null;
+        String tipo = null;
+        String nombre = null;
 
         if (detallePago.getProducto() != null) {
             idProducto = detallePago.getProducto().getIdProducto();
+            tipo = "Producto";
+            nombre = detallePago.getProducto().getNombre();
         } else if (detallePago.getSocioMembresia() != null) {
             idMembresia = detallePago.getSocioMembresia()
                     .getMembresia()
                     .getIdMembresia();
+            tipo = "Membresía";
+            nombre = detallePago.getSocioMembresia().getMembresia().getNombre();
         }
 
         return new DetallePagoDTO(
+                tipo,
+                nombre,
                 detallePago.getCantidad(),
                 detallePago.getPrecioUnitario(),
                 idProducto,
@@ -96,6 +107,8 @@ public class PagoService {
             throw new ObjetoNoEncontradoException("No existe el socio con el dni: " + socio.getDni());
         }
 
+
+
         LocalDate ultimoVencimiento =
                 socioMembresiaRepository.findUltimoVencimientoVigente(socio.getDni());
 
@@ -103,9 +116,31 @@ public class PagoService {
                 ? ultimoVencimiento.plusDays(1)
                 : LocalDate.now();
 
+        Integer asistenciasPendientes = asistenciaRepository.asistenciasPendientesSocio(socio.getDni());
+
+        if (asistenciasPendientes > 0){
+            java.time.Instant fechaInstant = asistenciaRepository.fechaPrimeraAsistenciasPendiente(socio.getDni());
+            inicio = fechaInstant.atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+        }
+
         LocalDate vencimiento = inicio.plusDays(membresia.getDuracionDias());
 
         SocioMembresia nuevaSuscripcion = new SocioMembresia(socio, membresia, inicio, vencimiento);
+
+        List<Asistencia> pendientes = asistenciaRepository
+                .findPendientesEnRango(
+                        socio.getDni(),
+                        inicio.atStartOfDay(),
+                        vencimiento.atTime(java.time.LocalTime.MAX)
+                );
+
+
+
+        for (Asistencia asistencia : pendientes) {
+            asistencia.setEstadoAsistencia(EstadoAsistencia.VALIDA);
+        }
+
+        asistenciaRepository.saveAll(pendientes);
         return socioMembresiaRepository.save(nuevaSuscripcion);
     }
 
@@ -156,12 +191,21 @@ public class PagoService {
                     throw new ObjetoNoEncontradoException("dni del socio");
                 }
 
-                Membresia membresia = membresiaRepository.findById(dDTO.getIdMembresia())
+                if (pago.getEstado() == EstadoPago.PAGADO) {
+                     Membresia membresia = membresiaRepository.findById(dDTO.getIdMembresia())
                         .orElseThrow(() -> new ObjetoNoEncontradoException("membresia"));
 
-                SocioMembresia nuevaSuscripcion = renovarMembresia(socio, membresia);
-                socio.setActivo(true);
-                detalle.setSocioMembresia(nuevaSuscripcion);
+                     SocioMembresia nuevaSuscripcion = renovarMembresia(socio, membresia);
+                     socio.setActivo(true);
+                     detalle.setSocioMembresia(nuevaSuscripcion);
+                } else {
+                     // For pending/anulled payments, we don't assign membership but we validate existence?
+                     // Verify membership exists to avoid FK error if needed?
+                     // Details table references SocioMembresia. If null, it's fine.
+                     // But we should check if membership ID exists validly?
+                     membresiaRepository.findById(dDTO.getIdMembresia())
+                        .orElseThrow(() -> new ObjetoNoEncontradoException("membresia"));
+                }
             }
 
             pago.agregarDetalle(detalle);
@@ -214,10 +258,67 @@ public class PagoService {
 
         pago.setEstado(EstadoPago.ANULADO);
 
-
-        // revertir membresías / stock / caja
+        // Revertir membresías y stock
+        for (DetallePago detalle : pago.getDetalles()) {
+            if (detalle.getSocioMembresia() != null) {
+                // Desactivar la membresía asociada
+                SocioMembresia sm = detalle.getSocioMembresia();
+                sm.setActivo(false);
+                socioMembresiaRepository.save(sm);
+                
+                // También desactivar el socio si ya no tiene membresías activas
+                Socio socio = sm.getSocio();
+                if (socio != null && !socioMembresiaRepository.estaActivoHoy(socio.getDni())) {
+                    socio.setActivo(false);
+                    socioRepository.save(socio);
+                }
+            }
+            
+            if (detalle.getProducto() != null && detalle.getCantidad() != null) {
+                // Restaurar stock del producto
+                Producto producto = detalle.getProducto();
+                producto.setStock(producto.getStock() + detalle.getCantidad());
+                productoRepository.save(producto);
+            }
+        }
 
         pagoRepository.save(pago);
+    }
+
+    @Transactional
+    public void eliminarPago(Integer id) {
+        Pago pago = pagoRepository.findById(id)
+                .orElseThrow(() -> new ObjetoNoEncontradoException("pago"));
+
+        // Revertir membresías y stock antes de eliminar
+        for (DetallePago detalle : pago.getDetalles()) {
+            if (detalle.getSocioMembresia() != null) {
+                // Eliminar físicamente la membresía asociada
+                SocioMembresia sm = detalle.getSocioMembresia();
+                Socio socio = sm.getSocio();
+                
+                // Desvincular el detalle de la membresía antes de eliminarla
+                detalle.setSocioMembresia(null);
+                
+                socioMembresiaRepository.delete(sm);
+                
+                // Desactivar el socio si ya no tiene membresías activas
+                if (socio != null && !socioMembresiaRepository.estaActivoHoy(socio.getDni())) {
+                    socio.setActivo(false);
+                    socioRepository.save(socio);
+                }
+            }
+            
+            if (detalle.getProducto() != null && detalle.getCantidad() != null) {
+                // Restaurar stock del producto
+                Producto producto = detalle.getProducto();
+                producto.setStock(producto.getStock() + detalle.getCantidad());
+                productoRepository.save(producto);
+            }
+        }
+
+        // Eliminar físicamente el pago (los detalles se eliminan por CASCADE)
+        pagoRepository.delete(pago);
     }
 
     public List<PagoPorFechaDTO> recaudadoPorDia() {

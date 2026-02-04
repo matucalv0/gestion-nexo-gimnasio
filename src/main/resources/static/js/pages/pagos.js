@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
   cargarKPIsRecaudado();
   cargarDistribucionIngresos();
   cargarMasVendidos();
-  
+
 
   // Cargar gráfico según filtro seleccionado
   cargarRecaudado(filtroSelect.value);
@@ -52,17 +52,20 @@ async function cargarPagos(tablaBody) {
 }
 
 function renderPagos(tablaBody, pagos) {
-  tablaBody.innerHTML = "";
+  const emptyState = document.getElementById('emptyStatePagos');
+
+  // Limpiar filas existentes (excepto el empty state)
+  const rows = tablaBody.querySelectorAll('tr:not(#emptyStatePagos)');
+  rows.forEach(row => row.remove());
 
   if (!pagos.length) {
-    tablaBody.innerHTML = `
-      <tr>
-        <td colspan="4" class="px-6 py-4 text-center text-gray-400">
-          No hay pagos registrados
-        </td>
-      </tr>`;
+    // Mostrar empty state
+    if (emptyState) emptyState.classList.remove('hidden');
     return;
   }
+
+  // Ocultar empty state y mostrar datos
+  if (emptyState) emptyState.classList.add('hidden');
 
   pagos.forEach((p, index) => {
 

@@ -123,10 +123,11 @@ public class SocioController {
 
     }
 
-
-
-
-
-
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @GetMapping("/inactivos")
+    public ResponseEntity<List<SocioInactivoDTO>> sociosInactivos(
+            @RequestParam(value = "dias", defaultValue = "7") Integer dias) {
+        return ResponseEntity.ok(socioService.obtenerSociosInactivos(dias));
+    }
 
 }

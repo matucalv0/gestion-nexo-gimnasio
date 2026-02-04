@@ -65,17 +65,23 @@ async function cargarAsistencias(tablaBody, filtro = "") {
 }
 
 function renderTabla(tablaBody, asistencias) {
-  tablaBody.innerHTML = "";
+  const emptyState = document.getElementById('emptyStateAsistencias');
+
+  // Limpiar filas existentes (excepto el empty state)
+  const rows = tablaBody.querySelectorAll('tr:not(#emptyStateAsistencias)');
+  rows.forEach(row => row.remove());
 
   if (!asistencias || asistencias.length === 0) {
-    tablaBody.innerHTML = `
-      <tr>
-        <td colspan="3" class="px-6 py-4 text-center text-gray-500">
-          No se encontraron asistencias
-        </td>
-      </tr>`;
+    // Mostrar empty state
+    if (emptyState) emptyState.classList.remove('hidden');
     return;
   }
+
+  // Ocultar empty state y mostrar datos
+  if (emptyState) emptyState.classList.add('hidden');
+
+  // Agregar animación al tbody
+  tablaBody.classList.add('animate-fade-in');
 
   asistencias.forEach(a => {
     const tr = document.createElement("tr");
@@ -102,17 +108,16 @@ async function cargarKPIs() {
     const res = await authFetch(`${API_URL}/estadisticas/mes`);
     const stats = await res.json();
 
-    document.getElementById("kpiTotalAsistencias").textContent =
-      stats.totalAsistencias ?? 0;
+    document.getElementById("kpiTotalAsistencias").textContent = stats.totalAsistencias ?? 0;
+    renderVariacion("varTotalAsistencias", stats.variacionAsistencias);
 
-    document.getElementById("kpiPromedio").textContent =
-      stats.promedioAsistencias ?? 0;
+    document.getElementById("kpiPromedio").textContent = stats.promedioAsistencias ?? 0;
+    renderVariacion("varPromedio", stats.variacionPromedio);
 
-    document.getElementById("kpiSociosActivosTotal").textContent =
-      stats.sociosActivos ?? 0;
+    document.getElementById("kpiSociosActivosTotal").textContent = stats.sociosActivos ?? 0;
+    renderVariacion("varSociosActivos", stats.variacionSocios);
 
-    document.getElementById("kpiMaxAsistencias").textContent =
-      stats.maxAsistencias ?? 0;
+    document.getElementById("kpiMaxAsistencias").textContent = stats.maxAsistencias ?? 0;
 
     const ul = document.getElementById("kpiSociosActivos");
     ul.innerHTML = "";
@@ -127,6 +132,10 @@ async function cargarKPIs() {
       li.textContent = `• ${s.nombre} (${s.dni})`;
       ul.appendChild(li);
     });
+
+    // Cargar hora pico
+    await cargarHoraPico();
+
   } catch (err) {
     console.error(err);
     mostrarAlerta({
@@ -134,6 +143,19 @@ async function cargarKPIs() {
       tipo: "danger",
       contenedor: document.getElementById("alert-container"),
     });
+  }
+}
+
+async function cargarHoraPico() {
+  try {
+    const res = await authFetch(`${API_URL}/estadisticas/hora-pico`);
+    const data = await res.json();
+
+    document.getElementById("kpiHoraPico").textContent = data.rangoHorario || "--:--";
+    document.getElementById("kpiHoraPicoAsistencias").textContent =
+      `${data.totalAsistencias || 0} asistencias`;
+  } catch (err) {
+    console.error("Error cargando hora pico", err);
   }
 }
 
@@ -164,6 +186,12 @@ async function cargarGrafico() {
 
     if (chart) chart.destroy();
 
+    // Crear gradiente para el fill
+    const gradient = ctx.getContext("2d").createLinearGradient(0, 0, 0, 250);
+    gradient.addColorStop(0, "rgba(255, 140, 50, 0.3)");
+    gradient.addColorStop(0.5, "rgba(255, 140, 50, 0.1)");
+    gradient.addColorStop(1, "rgba(255, 140, 50, 0)");
+
     chart = new Chart(ctx, {
       type: "line",
       data: {
@@ -172,15 +200,16 @@ async function cargarGrafico() {
           {
             label: "Asistencias",
             data: values,
-            borderColor: "#ECD9BA",
-            backgroundColor: "rgba(236,217,186,0.15)",
+            borderColor: "#FF8C32",
+            backgroundColor: gradient,
             fill: true,
-            tension: 0.35,
-            borderWidth: 2,
-            pointRadius: 3,
-            pointHoverRadius: 6,
-            pointBackgroundColor: "#ECD9BA",
-            pointHoverBackgroundColor: "#FFF1D6"
+            tension: 0.4,
+            borderWidth: 3,
+            pointRadius: 0,
+            pointHoverRadius: 8,
+            pointHoverBackgroundColor: "#FF8C32",
+            pointHoverBorderColor: "#fff",
+            pointHoverBorderWidth: 2
           }
         ]
       },
@@ -196,20 +225,16 @@ async function cargarGrafico() {
         plugins: {
           legend: { display: false },
 
-          title: {
-            display: true,
-            text: "Asistencias diarias del mes",
-            color: "#ECD9BA",
-            font: { size: 16, weight: "bold" },
-            padding: { bottom: 12 }
-          },
-
           tooltip: {
-            backgroundColor: "rgba(15,15,15,0.95)",
-            borderColor: "rgba(255,255,255,0.15)",
+            backgroundColor: "rgba(10,10,10,0.95)",
+            borderColor: "#FF8C32",
             borderWidth: 1,
-            titleColor: "#ECD9BA",
+            titleColor: "#FF8C32",
             bodyColor: "#e5e5e5",
+            titleFont: { size: 14, weight: "bold" },
+            bodyFont: { size: 13 },
+            padding: 12,
+            cornerRadius: 8,
             displayColors: false,
             callbacks: {
               title: (items) => {
@@ -220,7 +245,7 @@ async function cargarGrafico() {
                   month: "long"
                 }).format(fechas[i]);
               },
-              label: (item) => `Asistencias: ${item.parsed.y}`
+              label: (item) => `📊 ${item.parsed.y} asistencias`
             }
           }
         },
@@ -229,31 +254,34 @@ async function cargarGrafico() {
           y: {
             beginAtZero: true,
             ticks: {
-              color: "#e5e5e5",
-              stepSize: 5
+              color: "#9ca3af",
+              font: { size: 11 },
+              padding: 8
             },
             grid: {
-              color: "rgba(255,255,255,0.06)"
-            }
+              color: "rgba(255,255,255,0.05)",
+              drawBorder: false
+            },
+            border: { display: false }
           },
           x: {
             ticks: {
-              color: "#e5e5e5",
+              color: "#9ca3af",
+              font: { size: 11 },
+              maxRotation: 0,
               callback: (value, index) => {
-                // mostrar solo algunos días para no saturar
                 const day = labels[index];
-                return day === 1 || day % 5 === 0 || day === labels[labels.length - 1] ? day : "";
+                return day === 1 || day % 7 === 0 || day === labels[labels.length - 1] ? day : "";
               }
             },
-            grid: {
-              drawOnChartArea: false
-            }
+            grid: { display: false },
+            border: { display: false }
           }
         },
 
         animation: {
-          duration: 700,
-          easing: "easeOutQuart"
+          duration: 800,
+          easing: "easeOutCubic"
         }
       }
     });
@@ -274,6 +302,18 @@ async function cargarGrafico() {
 function mesActualISO() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+}
+
+function renderVariacion(elementId, variacion) {
+  const el = document.getElementById(elementId);
+  if (!el || variacion == null) return;
+
+  const esPositivo = variacion >= 0;
+  const color = esPositivo ? "text-green-500" : "text-red-500";
+  const icono = esPositivo ? "▲" : "▼";
+
+  el.className = `text-xs font-bold ${color} ml-2`;
+  el.innerHTML = `${icono} ${Math.abs(variacion).toFixed(1)}%`;
 }
 
 

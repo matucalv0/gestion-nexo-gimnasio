@@ -35,7 +35,14 @@ public class FinanzaService {
         }
 
         for (Gasto g: gastos){
-            movimientos.add(new MovimientoFinancieroDTO(TipoMovimiento.EGRESO, g.getMonto(), g.getFecha(), g.getIdGasto()));
+            movimientos.add(new MovimientoFinancieroDTO(
+                TipoMovimiento.EGRESO, 
+                g.getMonto(), 
+                g.getFecha(), 
+                g.getIdGasto(),
+                g.getCategoria(),
+                g.getProveedor()
+            ));
         }
 
         movimientos.sort(Comparator.comparing(MovimientoFinancieroDTO::fecha).reversed());

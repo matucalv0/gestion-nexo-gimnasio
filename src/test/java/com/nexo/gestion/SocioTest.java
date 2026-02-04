@@ -60,7 +60,7 @@ public class SocioTest {
         socioRepository.save(socio);
         membresiaRepository.save(membresia1);
 
-        SocioMembresia nuevaSuscripcion = new SocioMembresia(BigDecimal.valueOf(30000.00), socio, membresia1);
+        SocioMembresia nuevaSuscripcion = new SocioMembresia(socio, membresia1);
 
 
         socio.agregarMembresia(nuevaSuscripcion);
@@ -86,7 +86,7 @@ public class SocioTest {
     public void verificarAsistenciaSocio(){
         Socio socio = new Socio("44048664", "Mateo", "1156686238", "matucalv@gmail.com", LocalDate.of(2002,1,28));
         socioRepository.save(socio);
-        Asistencia nuevaAsistencia = new Asistencia(socio);
+        Asistencia nuevaAsistencia = new Asistencia(socio, true);
         Asistencia guardado = asistenciaRepository.save(nuevaAsistencia);
 
 

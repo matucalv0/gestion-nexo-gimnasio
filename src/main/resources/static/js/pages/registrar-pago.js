@@ -223,10 +223,84 @@ function renderDetalles() {
   );
 }
 
+/* Versión silenciosa de agregarDetalle que retorna true/false */
+function agregarDetalleSilencioso() {
+  const tipo = tipoDetalle.value;
+  let precioUnitario;
+
+  if (tipo === "PRODUCTO") {
+    if (!producto.value) {
+      mostrarAlerta({ mensaje: "Seleccione un producto", tipo: "danger" });
+      return false;
+    }
+    precioUnitario = Number(precio.value);
+  } else {
+    if (!membresia.value) {
+      mostrarAlerta({ mensaje: "Seleccione una membresía", tipo: "danger" });
+      return false;
+    }
+    precioUnitario = Number(precioMembresia.value);
+  }
+
+  if (!precioUnitario || precioUnitario <= 0) {
+    mostrarAlerta({
+      mensaje: "El ítem seleccionado no tiene precio",
+      tipo: "danger"
+    });
+    return false;
+  }
+
+  let detalle;
+  if (tipo === "PRODUCTO") {
+    detalle = {
+      idProducto: Number(producto.value),
+      cantidad: Number(cantidad.value),
+      precioUnitario
+    };
+  } else {
+    detalle = {
+      idSocio: socioSeleccionado ? socioSeleccionado.dni : null,
+      idMembresia: Number(membresia.value),
+      cantidad: 1,
+      precioUnitario
+    };
+  }
+
+  detalles.push(detalle);
+  renderDetalles();
+
+  // Limpiar selección del detalle para evitar duplicados
+  producto.value = "";
+  membresia.value = "";
+  precio.value = "";
+  precioMembresia.value = "";
+
+  return true;
+}
+
 /* ================== SUBMIT ================== */
 async function registrarPago(e) {
   e.preventDefault();
   limpiarAlertas();
+
+  // Auto-agregar detalle pendiente del formulario si hay algo seleccionado
+  const tipo = tipoDetalle.value;
+  let tieneDetallePendiente = false;
+
+  if (tipo === "PRODUCTO" && producto.value) {
+    tieneDetallePendiente = true;
+  } else if (tipo === "MEMBRESIA" && membresia.value) {
+    tieneDetallePendiente = true;
+  }
+
+  if (tieneDetallePendiente) {
+    // Intentar agregar el detalle pendiente silenciosamente
+    const detalleAgregado = agregarDetalleSilencioso();
+    if (!detalleAgregado) {
+      // Si falla la validación del detalle, no continuar
+      return;
+    }
+  }
 
   if (detalles.length === 0)
     return mostrarAlerta({

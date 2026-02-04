@@ -11,6 +11,29 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnHome = document.getElementById("btnVolver");
   const btnLogout = document.getElementById("btnLogout");
 
+  /* ===== Date Picker ===== */
+  if (window.flatpickr) {
+    window.flatpickr("#fechaNacimiento", {
+      locale: {
+        firstDayOfWeek: 1,
+        weekdays: {
+          shorthand: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
+          longhand: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]
+        },
+        months: {
+          shorthand: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
+          longhand: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+        }
+      },
+      dateFormat: "Y-m-d",
+      altInput: true,
+      altFormat: "d/m/Y",
+      allowInput: true,
+      maxDate: "today",
+      defaultDate: new Date(2000, 0, 1)
+    });
+  }
+
   /* ===== Navegación ===== */
   btnHome.addEventListener("click", () => window.location.href = "socios.html");
   btnLogout.addEventListener("click", logout);

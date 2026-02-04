@@ -30,6 +30,39 @@ public class AsistenciaTest {
     MembresiaService membresiaService;
     @Autowired
     SocioMembresiaRepository socioMembresiaRepository;
+    @Autowired
+    AsistenciaRepository asistenciaRepository;
+
+
+    private SocioDTO crearSocioConMembresiaActiva() {
+        Socio socio = new Socio("78452365", "Eduardo", "11478523211",
+                "edu@gmail.com", LocalDate.of(1986,1,28));
+
+        SocioDTO socioGuardado = socioService.registrarSocio(
+                new SocioCreateDTO(
+                        socio.getDni(),
+                        socio.getNombre(),
+                        socio.getTelefono(),
+                        socio.getEmail(),
+                        socio.getFechaNacimiento()
+                )
+        );
+
+        MembresiaDTO membresia = membresiaService.registrarMembresia(
+                new MembresiaCreateDTO(
+                        28,
+                        new BigDecimal("50000"),
+                        "plan basico",
+                        2,
+                        TipoMembresia.MUSCULACION
+                )
+        );
+
+        socioService.asignarMembresia(socioGuardado.dni(), membresia.idMembresia());
+
+        return socioGuardado;
+    }
+
 
 
     @Test
@@ -56,8 +89,9 @@ public class AsistenciaTest {
         Socio socio = new Socio("78452365", "Eduardo", "11478523211", "edu@gmail.com", LocalDate.of(1986, 1, 28));
         socioService.registrarSocio(new SocioCreateDTO(socio.getDni(), socio.getNombre(), socio.getTelefono(), socio.getEmail(), socio.getFechaNacimiento()));
 
-        assertThrows(SocioInactivoException.class, () -> socioService.registrarAsistencia(socio.getDni()));
-
+        AsistenciaSocioIdDTO asistencia = socioService.registrarAsistencia(socio.getDni());
+        Asistencia asistencias = asistenciaRepository.findById(new AsistenciaSocioId(asistencia.dniSocio(), asistencia.fechaHora())).get();
+        assertEquals(EstadoAsistencia.PENDIENTE, asistencias.getEstadoAsistencia());
     }
 
     @Test
@@ -74,9 +108,11 @@ public class AsistenciaTest {
 
         suscripcionGuardada.setFechaInicio(LocalDate.of(2025, 11, 1));
         suscripcionGuardada.setFechaHasta(LocalDate.of(2025,12,1));
-        socioMembresiaRepository.save(suscripcionGuardada);
+        socioMembresiaRepository.saveAndFlush(suscripcionGuardada);
 
-        assertThrows(MembresiaVencidaException.class, () -> socioService.registrarAsistencia(socioGuardado.dni()));
+        AsistenciaSocioIdDTO asistencia = socioService.registrarAsistencia(socioGuardado.dni());
+        Asistencia asistencias = asistenciaRepository.findById(new AsistenciaSocioId(asistencia.dniSocio(), asistencia.fechaHora())).get();
+        assertEquals(EstadoAsistencia.PENDIENTE, asistencias.getEstadoAsistencia());
     }
 
     @Test
@@ -90,8 +126,17 @@ public class AsistenciaTest {
 
         socioService.asignarMembresia(socioGuardado.dni(), guardada.idMembresia());
 
-        for (int i = 0; i <= 7; i++) {
-            socioService.registrarAsistencia(socioGuardado.dni());  //registro 8 asistencias
+        // Backdate membership so past attendances count
+        SocioMembresia sm = socioMembresiaRepository.findActivaBySocio(socioGuardado.dni()).get();
+        sm.setFechaInicio(LocalDate.now().minusMonths(1));
+        socioMembresiaRepository.saveAndFlush(sm);
+
+        for (int i = 1; i <= 8; i++) {
+            Asistencia a = new Asistencia(socio, true);
+            AsistenciaSocioId id = new AsistenciaSocioId(socio.getDni(), java.time.LocalDateTime.now().minusDays(i));
+            a.setIdAsistencia(id);
+            a.setEstadoAsistencia(EstadoAsistencia.VALIDA);
+            asistenciaRepository.save(a);
         }
 
         assertThrows(SocioSinAsistenciasDisponiblesException.class, () -> socioService.registrarAsistencia(socioGuardado.dni()));
@@ -110,8 +155,21 @@ public class AsistenciaTest {
 
         socioService.asignarMembresia(socioGuardado.dni(), guardada.idMembresia());
 
+        // Backdate membership so past attendances count
+        SocioMembresia sm = socioMembresiaRepository.findActivaBySocio(socioGuardado.dni()).get();
+        sm.setFechaInicio(LocalDate.now().minusMonths(1));
+        socioMembresiaRepository.saveAndFlush(sm);
+
+        int diasAtras = 1;
         while (socioService.asistenciasDisponibles(socioGuardado.dni()) > 0) {
-            socioService.registrarAsistencia(socioGuardado.dni());
+            Asistencia a = new Asistencia(socio, true);
+            AsistenciaSocioId id = new AsistenciaSocioId(socio.getDni(), java.time.LocalDateTime.now().minusDays(diasAtras));
+            a.setIdAsistencia(id);
+            a.setEstadoAsistencia(EstadoAsistencia.VALIDA);
+            asistenciaRepository.save(a);
+            diasAtras++;
+            
+            if (diasAtras > 30) break; // Circuit breaker just in case
         }
 
         assertThrows(SocioSinAsistenciasDisponiblesException.class, () -> socioService.registrarAsistencia(socioGuardado.dni()));

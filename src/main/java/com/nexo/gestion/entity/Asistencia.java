@@ -14,11 +14,28 @@ public class Asistencia {
     @JoinColumn(name = "dni")
     private Socio socio;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado_asistencia")
+    private EstadoAsistencia estadoAsistencia;
+
     public Asistencia(){}
 
-    public Asistencia(Socio socio){
+    public Asistencia(Socio socio, boolean valida){
         this.socio = socio;
         this.idAsistencia = new AsistenciaSocioId(socio.getDni(), LocalDateTime.now());
+        if (valida){
+            estadoAsistencia = EstadoAsistencia.VALIDA;
+        } else {
+            estadoAsistencia = EstadoAsistencia.PENDIENTE;
+        }
+    }
+
+    public EstadoAsistencia getEstadoAsistencia() {
+        return estadoAsistencia;
+    }
+
+    public void setEstadoAsistencia(EstadoAsistencia estadoAsistencia) {
+        this.estadoAsistencia = estadoAsistencia;
     }
 
     public AsistenciaSocioId getIdAsistencia() {

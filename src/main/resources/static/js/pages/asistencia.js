@@ -127,6 +127,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
+    // Solo bloquear si tiene membresía activa pero sin asistencias disponibles
+    // Si asistenciasDisponibles es null, significa que no tiene membresía (permitir como PENDIENTE)
     if (asistenciasDisponibles !== null && asistenciasDisponibles <= 0) {
       mostrarAlerta({ mensaje: "No quedan asistencias disponibles", tipo: "warning" });
       return;
@@ -182,8 +184,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         Asistencias disponibles: <strong>${data.disponibles}</strong>
       `;
     } catch {
-      infoSocio.textContent = "El socio no tiene asistencias disponibles";
-      asistenciasDisponibles = 0;
+      infoSocio.textContent = "El socio no tiene membresía activa (asistencia quedará como pendiente)";
+      asistenciasDisponibles = null; // null = sin membresía, permite registrar como PENDIENTE
     }
   }
 

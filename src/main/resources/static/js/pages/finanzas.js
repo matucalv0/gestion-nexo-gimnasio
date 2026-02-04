@@ -1,5 +1,6 @@
 import { checkAuth } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
+import { mostrarAlerta, limpiarAlertas } from "../ui/alerta.js";
 
 const API = "/finanzas";
 
@@ -108,17 +109,20 @@ async function cargarDistribucionMensual() {
 
 function renderMovimientos(movimientos) {
   const tbody = document.getElementById("tablaMovimientos");
-  tbody.innerHTML = "";
+  const emptyState = document.getElementById('emptyStateFinanzas');
+
+  // Limpiar filas existentes (excepto el empty state)
+  const rows = tbody.querySelectorAll('tr:not(#emptyStateFinanzas)');
+  rows.forEach(row => row.remove());
 
   if (!movimientos.length) {
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="4" class="px-6 py-4 text-center text-gray-400">
-          No hay movimientos registrados
-        </td>
-      </tr>`;
+    // Mostrar empty state
+    if (emptyState) emptyState.classList.remove('hidden');
     return;
   }
+
+  // Ocultar empty state y mostrar datos
+  if (emptyState) emptyState.classList.add('hidden');
 
   movimientos.forEach((m, index) => {
     // ---------- FILA PRINCIPAL ----------
@@ -144,15 +148,19 @@ function renderMovimientos(movimientos) {
         $ ${Number(m.monto).toLocaleString()}
       </td>
 
-      <td class="px-6 py-4">
+      <td class="px-6 py-4 flex gap-3">
         <button
         class="text-[var(--orange)] font-semibold hover:underline"
-        data-id="${m.id}"
+        data-id="${m.idReferencia}"
         data-tipo="${m.tipoMovimiento}">
         Ver detalle
         </button>
-
-
+        <button
+        class="text-red-500 font-semibold hover:underline btn-eliminar"
+        data-id="${m.idReferencia}"
+        data-tipo="${m.tipoMovimiento}">
+        Eliminar
+        </button>
       </td>
     `;
 
@@ -160,13 +168,13 @@ function renderMovimientos(movimientos) {
 
     // ---------- FILA DETALLE ----------
     const trDetalle = document.createElement("tr");
-    trDetalle.id = `detalle-${m.id}`;
+    trDetalle.id = `detalle-${m.idReferencia}-${m.tipoMovimiento}`;
     trDetalle.className = "hidden";
 
     trDetalle.innerHTML = `
   <td colspan="4" class="px-6 py-4 bg-[#0f0f0f]">
     <div
-      id="detalle-content-${m.id}"
+      id="detalle-content-${m.idReferencia}-${m.tipoMovimiento}"
       class="bg-[#121212] border border-[var(--input-border)]
              rounded-xl p-5 shadow-inner text-sm text-gray-400">
       Cargando detalle...
@@ -177,14 +185,141 @@ function renderMovimientos(movimientos) {
     tbody.appendChild(trDetalle);
   });
 
-  // ---------- TOGGLE ----------
-  tbody.querySelectorAll("button[data-index]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      document
-        .getElementById(`detalle-${btn.dataset.index}`)
-        .classList.toggle("hidden");
+  // ---------- VER DETALLE ----------
+  tbody.querySelectorAll("button[data-id]:not(.btn-eliminar)").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const id = btn.dataset.id;
+      const tipo = btn.dataset.tipo;
+      const row = document.getElementById(`detalle-${id}-${tipo}`);
+      const contentDiv = document.getElementById(`detalle-content-${id}-${tipo}`);
+
+      row.classList.toggle("hidden");
+
+      // Si se está mostrando, cargar los detalles
+      if (!row.classList.contains("hidden")) {
+        if (tipo === "INGRESO") {
+          await cargarDetallesPago(id, contentDiv);
+        } else {
+          // Para gastos, buscar el movimiento en movimientosData
+          const movimiento = movimientosData.find(m =>
+            m.idReferencia === parseInt(id) && m.tipoMovimiento === "EGRESO"
+          );
+          if (movimiento) {
+            contentDiv.innerHTML = renderDetalleGasto(movimiento);
+          }
+        }
+      }
     });
   });
+
+  // ---------- ELIMINAR ----------
+  tbody.querySelectorAll(".btn-eliminar").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const id = btn.dataset.id;
+      const tipo = btn.dataset.tipo;
+
+      mostrarModalConfirmacion(
+        `¿Seguro que deseas eliminar este ${tipo === "INGRESO" ? "pago" : "gasto"}?`,
+        async () => {
+          await eliminarMovimiento(id, tipo);
+        }
+      );
+    });
+  });
+}
+
+function mostrarModalConfirmacion(mensaje, onConfirm) {
+  // Crear overlay
+  const overlay = document.createElement("div");
+  overlay.className = "fixed inset-0 bg-black/70 flex items-center justify-center z-50";
+  overlay.id = "modal-confirmacion";
+
+  overlay.innerHTML = `
+    <div class="bg-[#1a1a1a] border border-[var(--input-border)] rounded-xl p-6 max-w-md mx-4 shadow-xl">
+      <p class="text-[var(--beige)] text-lg mb-6">${mensaje}</p>
+      <div class="flex gap-4 justify-end">
+        <button id="btn-cancelar" class="px-4 py-2 rounded-lg border border-gray-600 text-gray-400 hover:bg-gray-800 transition">
+          Cancelar
+        </button>
+        <button id="btn-confirmar" class="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition">
+          Eliminar
+        </button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  overlay.querySelector("#btn-cancelar").addEventListener("click", () => {
+    overlay.remove();
+  });
+
+  overlay.querySelector("#btn-confirmar").addEventListener("click", async () => {
+    overlay.remove();
+    await onConfirm();
+  });
+
+  // Cerrar con click fuera
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) overlay.remove();
+  });
+}
+
+async function eliminarMovimiento(id, tipo) {
+  try {
+    let endpoint;
+
+    if (tipo === "INGRESO") {
+      // Ahora usamos DELETE físico para pagos
+      endpoint = `/pagos/${id}`;
+    } else {
+      endpoint = `/gastos/${id}`;
+    }
+
+    const res = await authFetch(endpoint, { method: "DELETE" });
+
+    if (!res.ok) {
+      throw new Error("Error al eliminar movimiento");
+    }
+
+    // Mostrar alerta de éxito
+    mostrarAlerta({
+      mensaje: `${tipo === "INGRESO" ? "Pago" : "Gasto"} eliminado correctamente`,
+      tipo: "success",
+      tiempo: 3000
+    });
+
+    // Recargar datos
+    await cargarMovimientos();
+    await cargarKPIs();
+    await cargarDistribucionMensual();
+
+  } catch (e) {
+    console.error("Error eliminando movimiento", e);
+    mostrarAlerta({
+      mensaje: "No se pudo eliminar el movimiento",
+      tipo: "danger",
+      tiempo: 5000
+    });
+  }
+}
+
+async function cargarDetallesPago(id, contentDiv) {
+  try {
+    contentDiv.innerHTML = "Cargando detalles...";
+    const res = await authFetch(`/pagos/${id}`);
+
+    if (!res.ok) {
+      throw new Error("Error al cargar detalles");
+    }
+
+    const pago = await res.json();
+    contentDiv.innerHTML = renderDetalleIngreso(pago);
+
+  } catch (e) {
+    console.error("Error cargando detalles del pago", e);
+    contentDiv.innerHTML = `<p class="text-red-400">No se pudieron cargar los detalles</p>`;
+  }
 }
 
 function renderDetalleMovimiento(m) {

@@ -20,6 +20,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 public class PagoTest {
     @Autowired
+    private jakarta.persistence.EntityManager entityManager;
+    @Autowired
     private PagoRepository pagoRepository;
     @Autowired
     private SocioRepository socioRepository;
@@ -51,6 +53,8 @@ public class PagoTest {
     private MembresiaService membresiaService;
     @Autowired
     private ProductoService productoService;
+    @Autowired
+    private AsistenciaRepository asistenciaRepository;
 
 
     @Test
@@ -495,4 +499,140 @@ public class PagoTest {
 
 
 
+    @Test
+    @Transactional
+    @Rollback
+    public void verificarMembresiaRetroactivaPorAsistenciasPendientes() {
+        // 1. Crear socio sin membresia
+        Socio socio = new Socio("99887766", "Retroactivo", "1122334455", "retro@test.com", LocalDate.of(1990, 1, 1));
+        socioService.registrarSocio(new SocioCreateDTO(socio.getDni(), socio.getNombre(), socio.getTelefono(), socio.getEmail(), socio.getFechaNacimiento()));
+
+        // 2. Registrar asistencia old manually
+        AsistenciaSocioId idViejo = new AsistenciaSocioId(socio.getDni(), java.time.LocalDateTime.now().minusDays(3));
+        Asistencia asistenciaVieja = new Asistencia(socio, false);
+        asistenciaVieja.setIdAsistencia(idViejo);
+        asistenciaRepository.saveAndFlush(asistenciaVieja);
+
+        // 3. Registrar Pago de Membresia
+        MembresiaDTO membresia = membresiaService.registrarMembresia(new MembresiaCreateDTO(30, new BigDecimal("50000"), "Plan Test", 30, TipoMembresia.MUSCULACION));
+        MedioPagoDTO medioPago = medioPagoService.registrarMedioPago(new MedioPagoDTO("EFECTIVO"));
+        PuestoDTO puesto = puestoService.registrarPuesto(new PuestoDTO("Vendedor"));
+        EmpleadoDTO empleado = empleadoService.registrarEmpleado(new EmpleadoDTO("11122233", "Vendedor", "111", "vend@test.com", LocalDate.now(), true, puesto.idPuesto()));
+
+        pagoService.crearPago(new PagoCreateDTO(
+                EstadoPago.PAGADO,
+                socio.getDni(),
+                medioPago.idMedioPago(),
+                empleado.dni(),
+                List.of(new DetallePagoCreateDTO(1, new BigDecimal("50000"), null, socio.getDni(), membresia.idMembresia()))
+        ));
+
+        // 4. Verificar que la membresia arranca el dia de la asistencia
+        SocioMembresia sm = socioMembresiaRepository.findActivaBySocio(socio.getDni()).get();
+        assertEquals(LocalDate.now().minusDays(3), sm.getFechaInicio());
+
+        // 5. Verificar que la asistencia paso a VALIDA
+        Asistencia asistenciaActualizada = asistenciaRepository.findById(idViejo).get();
+        entityManager.refresh(asistenciaActualizada);
+        assertEquals(EstadoAsistencia.VALIDA, asistenciaActualizada.getEstadoAsistencia());
+    }
+
+    // ==================== ERROR HANDLING TESTS ====================
+
+    @Test
+    @Transactional
+    @Rollback
+    public void crearPago_lanzaExcepcionSiSocioNoExiste() {
+        MedioPagoDTO medioPago = medioPagoService.registrarMedioPago(new MedioPagoDTO("TEST_MP"));
+        PuestoDTO puesto = puestoService.registrarPuesto(new PuestoDTO("TestPuesto"));
+        EmpleadoDTO empleado = empleadoService.registrarEmpleado(
+            new EmpleadoDTO("99999999", "Test", "111", "test@test.com", LocalDate.now(), true, puesto.idPuesto())
+        );
+        MembresiaDTO membresia = membresiaService.registrarMembresia(
+            new MembresiaCreateDTO(30, new BigDecimal("10000"), "Test", 2, TipoMembresia.MUSCULACION)
+        );
+
+        assertThrows(com.nexo.gestion.exceptions.ObjetoNoEncontradoException.class, () ->
+            pagoService.crearPago(new PagoCreateDTO(
+                EstadoPago.PAGADO,
+                "DNI_INEXISTENTE",
+                medioPago.idMedioPago(),
+                empleado.dni(),
+                List.of(new DetallePagoCreateDTO(1, new BigDecimal("10000"), null, "DNI_INEXISTENTE", membresia.idMembresia()))
+            ))
+        );
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void crearPago_lanzaExcepcionSiMedioPagoNoExiste() {
+        SocioDTO socio = socioService.registrarSocio(
+            new SocioCreateDTO("88887777", "Test", "111", "test@test.com", LocalDate.of(1990, 1, 1))
+        );
+        PuestoDTO puesto = puestoService.registrarPuesto(new PuestoDTO("TestPuesto2"));
+        EmpleadoDTO empleado = empleadoService.registrarEmpleado(
+            new EmpleadoDTO("88886666", "Test2", "222", "test2@test.com", LocalDate.now(), true, puesto.idPuesto())
+        );
+        MembresiaDTO membresia = membresiaService.registrarMembresia(
+            new MembresiaCreateDTO(30, new BigDecimal("10000"), "Test2", 2, TipoMembresia.MUSCULACION)
+        );
+
+        assertThrows(com.nexo.gestion.exceptions.ObjetoNoEncontradoException.class, () ->
+            pagoService.crearPago(new PagoCreateDTO(
+                EstadoPago.PAGADO,
+                socio.dni(),
+                99999, // ID inexistente
+                empleado.dni(),
+                List.of(new DetallePagoCreateDTO(1, new BigDecimal("10000"), null, socio.dni(), membresia.idMembresia()))
+            ))
+        );
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void crearPago_lanzaExcepcionSiEmpleadoNoExiste() {
+        SocioDTO socio = socioService.registrarSocio(
+            new SocioCreateDTO("77776666", "Test", "111", "test@test.com", LocalDate.of(1990, 1, 1))
+        );
+        MedioPagoDTO medioPago = medioPagoService.registrarMedioPago(new MedioPagoDTO("TEST_MP2"));
+        MembresiaDTO membresia = membresiaService.registrarMembresia(
+            new MembresiaCreateDTO(30, new BigDecimal("10000"), "Test3", 2, TipoMembresia.MUSCULACION)
+        );
+
+        assertThrows(com.nexo.gestion.exceptions.ObjetoNoEncontradoException.class, () ->
+            pagoService.crearPago(new PagoCreateDTO(
+                EstadoPago.PAGADO,
+                socio.dni(),
+                medioPago.idMedioPago(),
+                "DNI_EMPLEADO_INEXISTENTE",
+                List.of(new DetallePagoCreateDTO(1, new BigDecimal("10000"), null, socio.dni(), membresia.idMembresia()))
+            ))
+        );
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void crearPago_lanzaExcepcionSiMembresiaNoExiste() {
+        SocioDTO socio = socioService.registrarSocio(
+            new SocioCreateDTO("66665555", "Test", "111", "test@test.com", LocalDate.of(1990, 1, 1))
+        );
+        MedioPagoDTO medioPago = medioPagoService.registrarMedioPago(new MedioPagoDTO("TEST_MP3"));
+        PuestoDTO puesto = puestoService.registrarPuesto(new PuestoDTO("TestPuesto3"));
+        EmpleadoDTO empleado = empleadoService.registrarEmpleado(
+            new EmpleadoDTO("66664444", "Test3", "333", "test3@test.com", LocalDate.now(), true, puesto.idPuesto())
+        );
+
+        assertThrows(com.nexo.gestion.exceptions.ObjetoNoEncontradoException.class, () ->
+            pagoService.crearPago(new PagoCreateDTO(
+                EstadoPago.PAGADO,
+                socio.dni(),
+                medioPago.idMedioPago(),
+                empleado.dni(),
+                List.of(new DetallePagoCreateDTO(1, new BigDecimal("10000"), null, socio.dni(), 99999)) // ID membresia inexistente
+            ))
+        );
+    }
 }

@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.parameters.P;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
@@ -94,13 +95,54 @@ public interface AsistenciaRepository extends JpaRepository<Asistencia, Asistenc
             nativeQuery = true)
     List<Object[]> cantidadAsistenciasPorDiaDelMes(@Param("mes") LocalDate mes);
 
+    @Query(value = """
+            SELECT COUNT(*) FROM asistencia A
+            WHERE A.estado_asistencia = 'PENDIENTE' and A.DNI = :dni
+            """, nativeQuery = true)
+    Integer asistenciasPendientesSocio(@Param("dni") String dni);
 
+    @Query(value = """
+            SELECT A.FECHA_HORA FROM asistencia A
+            WHERE A.estado_asistencia = 'PENDIENTE' and A.DNI = :dni
+            ORDER BY A.FECHA_HORA ASC
+            LIMIT 1
+            """, nativeQuery = true)
+    java.time.Instant fechaPrimeraAsistenciasPendiente(@Param("dni") String dni);
 
+    @Query("""
+    SELECT a
+    FROM Asistencia a
+    WHERE a.socio.dni = :dni
+      AND a.estadoAsistencia = com.nexo.gestion.entity.EstadoAsistencia.PENDIENTE
+      AND a.idAsistencia.fechaHora BETWEEN :inicio AND :fin
+""")
+    List<Asistencia> findPendientesEnRango(
+            @Param("dni") String dni,
+            @Param("inicio") java.time.LocalDateTime inicio,
+            @Param("fin") java.time.LocalDateTime fin
+    );
 
+    // Hora pico: contar asistencias por hora del día (mes actual)
+    @Query(value = """
+        SELECT EXTRACT(HOUR FROM a.fecha_hora) as hora, COUNT(*) as total
+        FROM asistencia a
+        WHERE EXTRACT(MONTH FROM a.fecha_hora) = EXTRACT(MONTH FROM CURRENT_DATE)
+          AND EXTRACT(YEAR FROM a.fecha_hora) = EXTRACT(YEAR FROM CURRENT_DATE)
+        GROUP BY EXTRACT(HOUR FROM a.fecha_hora)
+        ORDER BY total DESC
+        """, nativeQuery = true)
+    List<Object[]> asistenciasPorHora();
 
-
-
-
+    @Query(value = """
+            SELECT COUNT(*) FROM asistencia a
+            WHERE a.fecha_hora >= date_trunc('month', CURRENT_DATE - INTERVAL '1 month')
+              AND a.fecha_hora < date_trunc('month', CURRENT_DATE)
+            """, nativeQuery = true)
+    Integer asistenciasTotalMesAnterior();
 
 
 }
+
+
+
+

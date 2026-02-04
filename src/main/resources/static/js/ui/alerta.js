@@ -19,7 +19,7 @@ export function mostrarAlerta({ mensaje, tipo = "success", contenedor = "#alert-
   if (!container) return;
 
   const alertDiv = document.createElement("div");
-  alertDiv.className = `flex p-4 mb-4 rounded-lg text-sm ${colors[tipo] || colors.success} items-center justify-between`;
+  alertDiv.className = `flex p-4 mb-4 rounded-lg text-sm ${colors[tipo] || colors.success} items-center justify-between animate-slide-down`;
   alertDiv.innerHTML = `
     <span>${mensaje}</span>
     <button type="button" class="ml-4 font-bold" aria-label="Cerrar alerta">✕</button>

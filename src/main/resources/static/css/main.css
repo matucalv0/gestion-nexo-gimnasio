@@ -1,9 +1,9 @@
 :root {
-      --orange: #E9561E;
-      --beige: #ECD9BA;
-      --dark-bg: #1f2e38;
-      --input-bg: #16222b;
-      --input-border: #2f3e48;
+  --orange: #E9561E;
+  --beige: #ECD9BA;
+  --dark-bg: #1f2e38;
+  --input-bg: #16222b;
+  --input-border: #2f3e48;
 }
 
 
@@ -14,9 +14,9 @@ body {
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
-  
+
   /* Esto le dice al navegador: "No animes este fondo, mantenlo fijo" */
-  view-transition-name: main-background; 
+  view-transition-name: main-background;
 }
 
 /* Evita que el fondo parpadee durante la transición */
@@ -26,6 +26,421 @@ body {
   mix-blend-mode: normal;
 }
 
+/* Glassmorphism Effect - DEPRECADO, mantener para compatibilidad */
+.glass {
+  background: rgba(18, 18, 18, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
 
+/* Card minimalista con fondo sólido */
+.glass-card {
+  background: #1a1a1a;
+  /* Fondo sólido oscuro */
+  border: 1px solid #2d2d2d;
+  /* Borde sutil */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  /* Sombra suave */
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
+}
 
+.glass-card:hover {
+  border-color: #3a3a3a;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
 
+/* Buttons - Diseño sólido y minimalista */
+.btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: none;
+  cursor: pointer;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+/* Primary Button - Naranja sólido */
+.btn-primary {
+  background-color: var(--orange);
+  color: #0a0a0a;
+  /* Negro para mejor contraste */
+  border: 1px solid var(--orange);
+  box-shadow: 0 2px 4px rgba(233, 86, 30, 0.2);
+}
+
+.btn-primary:hover {
+  background-color: #ff6b35;
+  border-color: #ff6b35;
+  box-shadow: 0 4px 8px rgba(233, 86, 30, 0.3);
+}
+
+/* Secondary Button - Fondo oscuro con borde */
+.btn-secondary {
+  background-color: #2a2a2a;
+  border: 1px solid #3a3a3a;
+  color: var(--beige);
+}
+
+.btn-secondary:hover {
+  background-color: #333;
+  border-color: #4a4a4a;
+  color: white;
+}
+
+/* Danger Button - Rojo sólido */
+.btn-danger {
+  background-color: #1a1a1a;
+  border: 1px solid #ef4444;
+  color: #f87171;
+}
+
+.btn-danger:hover {
+  background-color: #ef4444;
+  border-color: #dc2626;
+  color: white;
+}
+
+/* Inputs - Minimalistas con mejor contraste */
+.input-modern {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background-color: #1a1a1a;
+  /* Fondo más claro que antes */
+  border: 1px solid #3a3a3a;
+  /* Borde más visible */
+  color: var(--beige);
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.input-modern:focus {
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px rgba(233, 86, 30, 0.15);
+  /* Ring más sutil */
+  background-color: #1f1f1f;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f0f0f;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--orange);
+}
+
+/* ========== SISTEMA TIPOGRÁFICO ========== */
+
+/* Display (pantallas grandes, héroes) */
+.text-display {
+  font-size: 3rem;
+  /* 48px */
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* Headings */
+.text-h1 {
+  font-size: 2.25rem;
+  /* 36px */
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.text-h2 {
+  font-size: 1.875rem;
+  /* 30px */
+  line-height: 1.3;
+  font-weight: 700;
+}
+
+.text-h3 {
+  font-size: 1.5rem;
+  /* 24px */
+  line-height: 1.4;
+  font-weight: 600;
+}
+
+.text-h4 {
+  font-size: 1.25rem;
+  /* 20px */
+  line-height: 1.5;
+  font-weight: 600;
+}
+
+/* Body */
+.text-body-lg {
+  font-size: 1.125rem;
+  /* 18px */
+  line-height: 1.6;
+}
+
+.text-body {
+  font-size: 1rem;
+  /* 16px */
+  line-height: 1.6;
+}
+
+.text-body-sm {
+  font-size: 0.875rem;
+  /* 14px */
+  line-height: 1.5;
+}
+
+/* Labels y captions */
+.text-label {
+  font-size: 0.75rem;
+  /* 12px */
+  line-height: 1.4;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.text-caption {
+  font-size: 0.75rem;
+  /* 12px */
+  line-height: 1.4;
+  color: #9ca3af;
+}
+
+/* KPIs y métricas */
+.text-metric-xl {
+  font-size: 3.75rem;
+  /* 60px */
+  line-height: 1;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  /* Números monoespaciados */
+}
+
+.text-metric-lg {
+  font-size: 2.25rem;
+  /* 36px */
+  line-height: 1;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.text-metric {
+  font-size: 1.875rem;
+  /* 30px */
+  line-height: 1;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ========== BOTONES SEMÁNTICOS ========== */
+
+.btn-danger {
+  background-color: transparent;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #f87171;
+  box-shadow: none;
+}
+
+.btn-danger:hover {
+  border-color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #fca5a5;
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+}
+
+/* ========== ANIMACIONES ========== */
+
+/* Fade in/out */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.animate-fade-out {
+  animation: fadeOut 0.3s ease-out forwards;
+}
+
+/* Slide down (para alertas) */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-down {
+  animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Scale in (para modales/tooltips) */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Skeleton loader (para estados de carga) */
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Shimmer (alternativa moderna a pulse) */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(90deg,
+      #1a1a1a 0%,
+      #2a2a2a 50%,
+      #1a1a1a 100%);
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite linear;
+  border-radius: 4px;
+}
+
+/* ========== FLATPICKR PERSONALIZADO ========== */
+
+.flatpickr-calendar {
+  background: #121212 !important;
+  border: 1px solid var(--input-border) !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6) !important;
+  border-radius: 0.75rem !important;
+}
+
+.flatpickr-months {
+  background: #1a1a1a !important;
+  border-radius: 0.75rem 0.75rem 0 0 !important;
+}
+
+.flatpickr-current-month {
+  color: var(--beige) !important;
+}
+
+.flatpickr-weekdays {
+  background: #1a1a1a !important;
+}
+
+.flatpickr-weekday {
+  color: var(--beige) !important;
+  font-weight: 600 !important;
+}
+
+.flatpickr-day {
+  color: #9ca3af !important;
+  border-radius: 0.375rem !important;
+}
+
+.flatpickr-day:hover:not(.flatpickr-disabled) {
+  background: rgba(233, 86, 30, 0.1) !important;
+  border-color: var(--orange) !important;
+  color: var(--beige) !important;
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange {
+  background: var(--orange) !important;
+  border-color: var(--orange) !important;
+  color: black !important;
+  font-weight: 700 !important;
+}
+
+.flatpickr-day.today {
+  border-color: var(--orange) !important;
+  background: rgba(233, 86, 30, 0.15) !important;
+}
+
+.flatpickr-day.disabled {
+  color: #4b5563 !important;
+}
+
+.flatpickr-months .flatpickr-prev-month,
+.flatpickr-months .flatpickr-next-month {
+  fill: var(--beige) !important;
+}
+
+.flatpickr-months .flatpickr-prev-month:hover,
+.flatpickr-months .flatpickr-next-month:hover {
+  fill: var(--orange) !important;
+}
+
+/* Input alternativo de Flatpickr */
+input.flatpickr-input[readonly] {
+  cursor: pointer;
+  background-color: #1a1a1a !important;
+}

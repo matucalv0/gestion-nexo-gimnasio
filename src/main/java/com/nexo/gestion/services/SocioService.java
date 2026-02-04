@@ -71,16 +71,24 @@ public class SocioService {
 
         Integer idProducto = null;
         Integer idMembresia = null;
+        String tipo = null;
+        String nombre = null;
 
         if (detallePago.getProducto() != null) {
             idProducto = detallePago.getProducto().getIdProducto();
+            tipo = "Producto";
+            nombre = detallePago.getProducto().getNombre();
         } else if (detallePago.getSocioMembresia() != null) {
             idMembresia = detallePago.getSocioMembresia()
                     .getMembresia()
                     .getIdMembresia();
+            tipo = "Membresía";
+            nombre = detallePago.getSocioMembresia().getMembresia().getNombre();
         }
 
         return new DetallePagoDTO(
+                tipo,
+                nombre,
                 detallePago.getCantidad(),
                 detallePago.getPrecioUnitario(),
                 idProducto,
@@ -206,24 +214,25 @@ public class SocioService {
     public AsistenciaSocioIdDTO registrarAsistencia(String dni) {
         Socio socio = socioRepository.findById(dni).orElseThrow(() -> new ObjetoNoEncontradoException(dni));
 
-        if (!socio.isActivo()) {
-            throw new SocioInactivoException();
+        if (!socioMembresiaRepository.estaActivoHoy(dni)){
+            Asistencia nuevaAsistencia = new Asistencia(socio, false);
+            Asistencia guardada = asistenciaRepository.save(nuevaAsistencia);
+            return convertirAAsistenciaSocioIdDTO(guardada.getIdAsistencia());
         }
 
         if (asistenciaRepository.socioVinoHoy(socio.getDni())){
             throw new AsistenciaDiariaException();
         }
 
-        if (asistenciasDisponibles(dni) == 0){
+        if (socioMembresiaRepository.estaActivoHoy(dni) && asistenciasDisponibles(dni) == 0){
             throw new SocioSinAsistenciasDisponiblesException();
         }
 
 
-        SocioMembresia membresia = membresiaVigente(socio);
+        //SocioMembresia membresia = membresiaVigente(socio);
 
-
-
-        Asistencia nuevaAsistencia = new Asistencia(socio);
+    
+        Asistencia nuevaAsistencia = new Asistencia(socio, true);
         Asistencia guardada = asistenciaRepository.save(nuevaAsistencia);
         return convertirAAsistenciaSocioIdDTO(guardada.getIdAsistencia());
     }
@@ -271,7 +280,7 @@ public class SocioService {
                 socioRepository.diasAsistidos(membresiaActual.getIdSm(), socio.getDni())
         ).orElse(0L);
 
-        int cantidadAsistenciasMes = (int) Math.round(asistenciasPorSemana * (duracionDias / 7.0));
+        int cantidadAsistenciasMes = (int) Math.floor(asistenciasPorSemana * (duracionDias / 7.0));
 
 
 
@@ -318,5 +327,22 @@ public class SocioService {
         }
 
         return resultado;
+    }
+
+    public List<SocioInactivoDTO> obtenerSociosInactivos(Integer dias) {
+        List<Object[]> rows = socioMembresiaRepository.sociosActivosSinAsistencia(dias);
+        List<SocioInactivoDTO> inactivos = new ArrayList<>();
+        
+        for (Object[] row : rows) {
+            String dni = (String) row[0];
+            String nombre = (String) row[1];
+            String telefono = (String) row[2];
+            Integer diasSinAsistir = ((Number) row[3]).intValue();
+            LocalDate ultimaAsistencia = row[4] != null ? ((java.sql.Date) row[4]).toLocalDate() : null;
+            
+            inactivos.add(new SocioInactivoDTO(dni, nombre, telefono, diasSinAsistir, ultimaAsistencia));
+        }
+        
+        return inactivos;
     }
 }

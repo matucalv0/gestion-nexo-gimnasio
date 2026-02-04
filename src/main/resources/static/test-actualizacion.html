@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEST - Verificación de Actualización</title>
+    <link rel="stylesheet" href="../css/main.css">
+</head>
+
+<body class="min-h-screen bg-cover bg-center relative text-gray-300"
+    style="background-image: url('../assets/nexofondo.jpg');">
+
+    <div class="absolute inset-0 bg-black/80 z-0"></div>
+
+    <main class="relative z-10 flex justify-center items-center min-h-screen p-6">
+        <div class="glass-card p-12 text-center">
+            <h1 class="text-h1 text-[var(--beige)] mb-4">
+                ✅ SERVIDOR ACTUALIZADO
+            </h1>
+            <p class="text-body-lg mb-6">
+                Si ves este mensaje, el servidor está sirviendo archivos actualizados.
+            </p>
+
+            <div class="flex flex-col gap-4 mt-8">
+                <button class="btn-primary px-6 py-3">
+                    Botón Primary (Naranja)
+                </button>
+
+                <button class="btn-secondary px-6 py-3">
+                    Botón Secondary (Borde Gris)
+                </button>
+
+                <button class="btn-danger px-6 py-3">
+                    Botón Danger (Borde Rojo) ← DEBE SER ROJO
+                </button>
+            </div>
+
+            <div class="mt-8 p-4 border border-blue-500 rounded-lg">
+                <p class="text-sm text-blue-400">
+                    🔵 Si el botón "Danger" NO es rojo, el servidor está cacheado.
+                </p>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

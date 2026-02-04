@@ -44,18 +44,20 @@ async function cargarMembresias(tablaBody) {
 }
 
 function renderMembresias(tablaBody, membresias) {
-  tablaBody.innerHTML = "";
+  const emptyState = document.getElementById('emptyStateMembresias');
+
+  // Limpiar filas existentes (excepto el empty state)
+  const rows = tablaBody.querySelectorAll('tr:not(#emptyStateMembresias)');
+  rows.forEach(row => row.remove());
 
   if (!membresias?.length) {
-    tablaBody.innerHTML = `
-      <tr>
-        <td colspan="7" class="px-6 py-4 text-center text-gray-500">
-          No hay membresías registradas
-        </td>
-      </tr>
-    `;
+    // Mostrar empty state
+    if (emptyState) emptyState.classList.remove('hidden');
     return;
   }
+
+  // Ocultar empty state y mostrar datos
+  if (emptyState) emptyState.classList.add('hidden');
 
   membresias.forEach(m => {
     const tr = document.createElement("tr");

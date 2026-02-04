@@ -60,6 +60,13 @@ public class GastoService {
         return gastos;
     }
 
+    @Transactional
+    public void eliminarGasto(Integer id) {
+        Gasto gasto = gastoRepository.findById(id)
+                .orElseThrow(() -> new ObjetoNoEncontradoException("Gasto con id " + id + " no encontrado"));
+        gastoRepository.delete(gasto);
+    }
+
 
 
 

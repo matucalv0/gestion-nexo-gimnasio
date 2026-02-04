@@ -7,7 +7,21 @@
   <link rel="icon" type="image/png" href="../assets/nexologo.png" />
   <title>NEXO · PLANES</title>
 
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { DEFAULT: '#FF6B2C', 500: '#FF6B2C', 600: '#E85A1F' },
+            accent: { DEFAULT: '#A855F7', 500: '#A855F7' },
+          },
+          fontFamily: { sans: ['Inter', '-apple-system', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/main.css">
   <link rel="preload" as="image" href="../assets/nexofondo.jpg">
 </head>
@@ -23,17 +37,38 @@
 
       <!-- HEADER -->
       <header
-        class="flex justify-between items-center mb-8 bg-[#121212] px-6 py-4 rounded-xl border border-[var(--input-border)] shadow-xl">
-        <img src="../assets/nexologo.png" alt="NEXO" class="h-12">
-        <div class="flex gap-2">
-          <button id="btnHome"
-            class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">
-            Home
-          </button>
-          <button id="btnLogout"
-            class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">
-            Cerrar sesión
-          </button>
+        class="bg-gradient-to-r from-gray-900 to-gray-800 border-b border-gray-700/50 rounded-2xl mb-8 px-8 py-5 shadow-2xl backdrop-blur-sm">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center gap-4">
+            <div class="p-3 bg-accent-500/10 rounded-xl">
+              <svg class="w-8 h-8 text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+              </svg>
+            </div>
+            <div>
+              <h1 class="text-2xl font-bold text-white tracking-tight">Membresías</h1>
+              <p class="text-sm text-gray-400 font-medium">Planes y suscripciones</p>
+            </div>
+          </div>
+          <div class="flex gap-3">
+            <button id="btnNuevoPlan" class="px-6 py-2.5 bg-gradient-to-br from-primary-500 to-primary-600 hover:from-primary-400 hover:to-primary-500
+                           text-white rounded-xl font-semibold text-sm shadow-lg hover:shadow-glow-primary
+                           transition-all duration-200 hover:scale-105 active:scale-95">
+              + Nuevo Plan
+            </button>
+            <button id="btnHome" class="px-6 py-2.5 bg-gray-800 hover:bg-gray-700 border-2 border-gray-700 hover:border-gray-600
+                           text-gray-300 hover:text-white rounded-xl font-semibold text-sm
+                           transition-all duration-200 hover:scale-105 active:scale-95">
+              ← Volver
+            </button>
+            <button id="btnLogout" class="px-6 py-2.5 bg-red-500/10 hover:bg-red-500 border-2 border-red-500/50 hover:border-red-500
+                           text-red-400 hover:text-white rounded-xl font-semibold text-sm
+                           transition-all duration-200 hover:shadow-lg hover:shadow-red-500/30
+                           hover:scale-105 active:scale-95">
+              Cerrar sesión
+            </button>
+          </div>
         </div>
       </header>
 
@@ -42,7 +77,7 @@
 
         <!-- Título y botón Nuevo -->
         <div class="flex justify-between items-center mb-6">
-          <h1 class="text-2xl font-bold text-[var(--beige)]">Planes</h1>
+          <h2 class="text-h3 text-[var(--beige)]">Gestión de Planes</h2>
           <button id="btnNuevaMembresia"
             class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">
             Nuevo plan
@@ -64,6 +99,37 @@
               </tr>
             </thead>
             <tbody id="tablaMembresiasBody" class="divide-y divide-[var(--input-border)]">
+              <!-- Empty state -->
+              <tr id="emptyStateMembresias" class="hidden">
+                <td colspan="7" class="px-6 py-16 text-center">
+                  <div class="flex flex-col items-center gap-4 animate-fade-in">
+                    <div class="w-16 h-16 rounded-full bg-indigo-500/10 flex items-center justify-center">
+                      <svg class="w-8 h-8 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                      </svg>
+                    </div>
+
+                    <div>
+                      <h3 class="text-lg font-semibold text-[var(--beige)] mb-1">
+                        No hay planes configurados
+                      </h3>
+                      <p class="text-sm text-gray-400">
+                        Creá los planes de membresía para que los socios puedan suscribirse
+                      </p>
+                    </div>
+
+                    <button class="btn-primary mt-2" onclick="window.location.href='/registrar-membresia.html'">
+                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                          d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                          clip-rule="evenodd" />
+                      </svg>
+                      Crear plan
+                    </button>
+                  </div>
+                </td>
+              </tr>
 
               <!-- filas dinámicas -->
             </tbody>

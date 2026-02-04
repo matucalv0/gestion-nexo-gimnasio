@@ -1,18 +1,65 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/png" href="../assets/nexologo.png" />
   <title>NEXO · PANEL</title>
 
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              DEFAULT: '#FF6B2C',
+              50: '#FFF4EF',
+              100: '#FFE8DC',
+              200: '#FFD1B9',
+              300: '#FFBA96',
+              400: '#FFA373',
+              500: '#FF6B2C',
+              600: '#E85A1F',
+              700: '#C74A19',
+              800: '#A63A14',
+              900: '#852A0F',
+            },
+            secondary: {
+              DEFAULT: '#00D9FF',
+              500: '#00D9FF',
+              600: '#00B8DB',
+            },
+            accent: {
+              DEFAULT: '#A855F7',
+              500: '#A855F7',
+              600: '#9333EA',
+            },
+          },
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+          },
+          boxShadow: {
+            'glow-primary': '0 0 20px rgba(255, 107, 44, 0.3)',
+            'glow-secondary': '0 0 20px rgba(0, 217, 255, 0.3)',
+          },
+        },
+      },
+    }
+  </script>
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts - Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="../css/main.css">
   <link rel="preload" as="image" href="../assets/nexofondo.jpg">
 </head>
 
 <body class="min-h-screen bg-cover bg-center relative text-gray-300"
-      style="background-image: url('../assets/nexofondo.jpg');">
+  style="background-image: url('../assets/nexofondo.jpg');">
 
   <!-- Overlay -->
   <div class="absolute inset-0 bg-black/80 z-0"></div>
@@ -20,102 +67,246 @@
   <main class="relative z-10 flex justify-center items-start min-h-screen p-6 pt-16">
     <div class="w-full max-w-7xl">
 
-      <!-- HEADER -->
-      <header class="flex justify-between items-center mb-8 bg-[#121212]
-               px-6 py-4 rounded-xl border border-[var(--input-border)]
-               shadow-xl">
-        <div class="flex items-center gap-4">
-          <img src="../assets/nexologo.png" alt="NEXO" class="h-10">
-          <h1 class="text-xl font-bold tracking-wide text-[var(--beige)]">
-            Panel
-          </h1>
-        </div>
+      <!-- HEADER - Diseño moderno deportivo -->
+      <header
+        class="bg-gradient-to-r from-gray-900 to-gray-800 border-b border-gray-700/50 rounded-2xl mb-8 px-8 py-5 shadow-2xl backdrop-blur-sm">
+        <div class="flex justify-between items-center">
+          <!-- Logo y título -->
+          <div class="flex items-center gap-4">
+            <img src="../assets/nexologo.png" alt="NEXO" class="h-12 drop-shadow-lg">
+            <div>
+              <h1 class="text-2xl font-bold text-white tracking-tight">
+                Panel Principal
+              </h1>
+              <p class="text-sm text-gray-400 font-medium">Gestión NEXO Gym</p>
+            </div>
+          </div>
 
-        <button id="btnLogout" class="bg-[var(--orange)] hover:bg-orange-600
-                 text-black font-semibold px-4 py-2 rounded-md">
-          Cerrar sesión
-        </button>
+          <!-- Botón cerrar sesión -->
+          <button id="btnLogout" class="px-6 py-2.5 bg-red-500/10 hover:bg-red-500 border-2 border-red-500/50 hover:border-red-500 
+                         text-red-400 hover:text-white rounded-xl font-semibold text-sm 
+                         transition-all duration-200 hover:shadow-lg hover:shadow-red-500/30 
+                         hover:scale-105 active:scale-95">
+            Cerrar sesión
+          </button>
+        </div>
       </header>
 
-      <!-- ATAJOS -->
-      <section class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <button id="quickAsistencia" class="bg-[var(--orange)] hover:bg-orange-600
-                 text-black font-bold py-4 rounded-md transition">
-          Registrar asistencia
+
+      <!-- ATAJOS - Botones Energéticos -->
+      <section class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
+        <!-- Registrar Asistencia - Naranja (principal) -->
+        <button id="quickAsistencia" class="group relative overflow-hidden bg-gradient-to-br from-primary-500 to-primary-600 
+                       hover:from-primary-400 hover:to-primary-500 text-white font-bold py-6 rounded-2xl 
+                       shadow-lg hover:shadow-glow-primary transition-all duration-300 
+                       hover:scale-105 active:scale-95 border border-primary-400/30">
+          <div class="relative z-10 flex flex-col items-center gap-2">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span class="text-lg">Registrar Asistencia</span>
+          </div>
+          <!-- Efecto de brillo al hover -->
+          <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent 
+                      translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
         </button>
 
-        <button id="quickSocio" class="bg-[#121212] border border-[var(--input-border)]
-                 hover:border-[var(--orange)] text-[var(--beige)]
-                 font-semibold py-4 rounded-md transition">
-          Nuevo socio
+        <!-- Nuevo Socio - Cyan (secundario) -->
+        <button id="quickSocio" class="group relative overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 
+                       hover:from-secondary-600 hover:to-secondary-700 text-white font-semibold py-6 rounded-2xl 
+                       shadow-lg hover:shadow-glow-secondary transition-all duration-300 
+                       hover:scale-105 active:scale-95 border-2 border-gray-700 hover:border-secondary-500">
+          <div class="relative z-10 flex flex-col items-center gap-2">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+            </svg>
+            <span class="text-lg">Nuevo Socio</span>
+          </div>
+          <!-- Efecto de brillo al hover -->
+          <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent 
+                      translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
         </button>
 
-        <button id="quickPago" class="bg-[#121212] border border-[var(--input-border)]
-                 hover:border-[var(--orange)] text-[var(--beige)]
-                 font-semibold py-4 rounded-md transition">
-          Nuevo pago
+        <!-- Nuevo Pago - Púrpura (acento) -->
+        <button id="quickPago" class="group relative overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 
+                       hover:from-accent-500 hover:to-accent-600 text-white font-semibold py-6 rounded-2xl 
+                       shadow-lg hover:shadow-xl transition-all duration-300 
+                       hover:scale-105 active:scale-95 border-2 border-gray-700 hover:border-accent-500">
+          <div class="relative z-10 flex flex-col items-center gap-2">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            <span class="text-lg">Nuevo Pago</span>
+          </div>
+          <!-- Efecto de brillo al hover -->
+          <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent 
+                      translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
         </button>
       </section>
 
-      <!-- CARD PRINCIPAL -->
-      <div class="bg-[#121212] p-8 rounded-xl border border-[var(--input-border)] shadow-2xl">
+      <!-- ALERTA SOCIOS INACTIVOS (compacta) -->
+      <section id="seccionSociosInactivos" class="hidden mb-6">
+        <details class="glass rounded-lg border-l-4 border-yellow-600 shadow-lg">
+          <summary class="flex items-center gap-2 px-4 py-3 cursor-pointer hover:bg-white/5 transition rounded-lg">
+            <span>⚠️</span>
+            <span class="text-sm font-medium text-yellow-500">Socios inactivos (+7 días)</span>
+            <span id="cantidadInactivos"
+              class="bg-yellow-600 text-black text-xs px-2 py-0.5 rounded-full font-bold shadow-lg shadow-yellow-600/20">0</span>
+          </summary>
+          <ul id="listaInactivos" class="px-4 pb-3 pt-1 space-y-1 max-h-32 overflow-y-auto text-sm">
+            <!-- dinámico -->
+          </ul>
+        </details>
+      </section>
 
-        <h1 class="text-2xl font-bold text-[var(--beige)] mb-6 tracking-wide">
-          Gestión
-        </h1>
+      <!-- CARDS DE NAVEGACIÓN - Módulos del Sistema -->
+      <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+        <!-- Card: Asistencias -->
+        <a href="asistencias.html" class="group bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm
+                  hover:from-primary-500/20 hover:to-primary-600/20 
+                  border-2 border-gray-700 hover:border-primary-500
+                  rounded-2xl p-6 transition-all duration-300 hover:scale-105 hover:shadow-2xl
+                  hover:shadow-primary-500/20 active:scale-95">
+          <div class="flex flex-col items-center text-center gap-3">
+            <div class="p-4 bg-primary-500/10 rounded-xl group-hover:bg-primary-500/20 transition-colors">
+              <svg class="w-10 h-10 text-primary-400 group-hover:text-primary-300 transition-colors" fill="none"
+                stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+              </svg>
+            </div>
+            <h3 class="text-lg font-bold text-white group-hover:text-primary-300 transition-colors">
+              Asistencias
+            </h3>
+            <p class="text-xs text-gray-400 group-hover:text-gray-300">
+              Registros diarios
+            </p>
+          </div>
+        </a>
 
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-6">
-          <button id="btnSocios" class="bg-[#1a1a1a] border border-[var(--input-border)]
-                 hover:border-[var(--orange)] text-[var(--beige)]
-                 py-6 rounded-md font-semibold transition">
-            Socios
-          </button>
+        <!-- Card: Socios -->
+        <a href="socios.html" class="group bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm
+                  hover:from-secondary-500/20 hover:to-secondary-600/20 
+                  border-2 border-gray-700 hover:border-secondary-500
+                  rounded-2xl p-6 transition-all duration-300 hover:scale-105 hover:shadow-2xl
+                  hover:shadow-secondary-500/20 active:scale-95">
+          <div class="flex flex-col items-center text-center gap-3">
+            <div class="p-4 bg-secondary-500/10 rounded-xl group-hover:bg-secondary-500/20 transition-colors">
+              <svg class="w-10 h-10 text-secondary-400 group-hover:text-secondary-300 transition-colors" fill="none"
+                stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+            <h3 class="text-lg font-bold text-white group-hover:text-secondary-300 transition-colors">
+              Socios
+            </h3>
+            <p class="text-xs text-gray-400 group-hover:text-gray-300">
+              Gestión de miembros
+            </p>
+          </div>
+        </a>
 
-          <button id="btnAsistencias" class="bg-[#1a1a1a] border border-[var(--input-border)]
-                 hover:border-[var(--orange)] text-[var(--beige)]
-                 py-6 rounded-md font-semibold transition">
-            Asistencias
-          </button>
+        <!-- Card: Pagos -->
+        <a href="pagos.html" class="group bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm
+                  hover:from-green-500/20 hover:to-green-600/20 
+                  border-2 border-gray-700 hover:border-green-500
+                  rounded-2xl p-6 transition-all duration-300 hover:scale-105 hover:shadow-2xl
+                  hover:shadow-green-500/20 active:scale-95">
+          <div class="flex flex-col items-center text-center gap-3">
+            <div class="p-4 bg-green-500/10 rounded-xl group-hover:bg-green-500/20 transition-colors">
+              <svg class="w-10 h-10 text-green-400 group-hover:text-green-300 transition-colors" fill="none"
+                stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+            <h3 class="text-lg font-bold text-white group-hover:text-green-300 transition-colors">
+              Pagos
+            </h3>
+            <p class="text-xs text-gray-400 group-hover:text-gray-300">
+              Ingresos y cuotas
+            </p>
+          </div>
+        </a>
 
-          <button id="btnPagos" class="bg-[#1a1a1a] border border-[var(--input-border)]
-                 hover:border-[var(--orange)] text-[var(--beige)]
-                 py-6 rounded-md font-semibold transition">
-            Pagos
-          </button>
+        <!-- Card: Finanzas -->
+        <a href="finanzas.html" class="group bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm
+                  hover:from-blue-500/20 hover:to-blue-600/20 
+                  border-2 border-gray-700 hover:border-blue-500
+                  rounded-2xl p-6 transition-all duration-300 hover:scale-105 hover:shadow-2xl
+                  hover:shadow-blue-500/20 active:scale-95">
+          <div class="flex flex-col items-center text-center gap-3">
+            <div class="p-4 bg-blue-500/10 rounded-xl group-hover:bg-blue-500/20 transition-colors">
+              <svg class="w-10 h-10 text-blue-400 group-hover:text-blue-300 transition-colors" fill="none"
+                stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+            <h3 class="text-lg font-bold text-white group-hover:text-blue-300 transition-colors">
+              Finanzas
+            </h3>
+            <p class="text-xs text-gray-400 group-hover:text-gray-300">
+              Balance y gastos
+            </p>
+          </div>
+        </a>
 
-          <button id="btnMembresias" class="bg-[#1a1a1a] border border-[var(--input-border)]
-                 hover:border-[var(--orange)] text-[var(--beige)]
-                 py-6 rounded-md font-semibold transition">
-            Planes
-          </button>
+        <!-- Card: Productos -->
+        <a href="productos.html" class="group bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm
+                  hover:from-amber-500/20 hover:to-amber-600/20 
+                  border-2 border-gray-700 hover:border-amber-500
+                  rounded-2xl p-6 transition-all duration-300 hover:scale-105 hover:shadow-2xl
+                  hover:shadow-amber-500/20 active:scale-95">
+          <div class="flex flex-col items-center text-center gap-3">
+            <div class="p-4 bg-amber-500/10 rounded-xl group-hover:bg-amber-500/20 transition-colors">
+              <svg class="w-10 h-10 text-amber-400 group-hover:text-amber-300 transition-colors" fill="none"
+                stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              </svg>
+            </div>
+            <h3 class="text-lg font-bold text-white group-hover:text-amber-300 transition-colors">
+              Productos
+            </h3>
+            <p class="text-xs text-gray-400 group-hover:text-gray-300">
+              Inventario y ventas
+            </p>
+          </div>
+        </a>
 
-          <button id="btnProductos" class="bg-[#1a1a1a] border border-[var(--input-border)]
-                 hover:border-[var(--orange)] text-[var(--beige)]
-                 py-6 rounded-md font-semibold transition">
-            Productos
-          </button>
-
-          <button id="btnFinanzas" class="bg-[#1a1a1a] border border-[var(--input-border)]
-                 hover:border-[var(--orange)] text-[var(--beige)]
-                 py-6 rounded-md font-semibold transition">
-            Finanzas
-          </button>
-        </div>
-
-      </div>
+        <!-- Card: Membresías -->
+        <a href="membresias.html" class="group bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm
+                  hover:from-accent-500/20 hover:to-accent-600/20 
+                  border-2 border-gray-700 hover:border-accent-500
+                  rounded-2xl p-6 transition-all duration-300 hover:scale-105 hover:shadow-2xl
+                  hover:shadow-accent-500/20 active:scale-95">
+          <div class="flex flex-col items-center text-center gap-3">
+            <div class="p-4 bg-accent-500/10 rounded-xl group-hover:bg-accent-500/20 transition-colors">
+              <svg class="w-10 h-10 text-accent-400 group-hover:text-accent-300 transition-colors" fill="none"
+                stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+              </svg>
+            </div>
+            <h3 class="text-lg font-bold text-white group-hover:text-accent-300 transition-colors">
+              Membresías
+            </h3>
+            <p class="text-xs text-gray-400 group-hover:text-gray-300">
+              Planes disponibles
+            </p>
+          </div>
+        </a>
+      </section>
 
     </div>
   </main>
 
   <script type="module" src="js/pages/home.js"></script>
 </body>
+
 </html>
-
-
-
-
-
-
-
-
-

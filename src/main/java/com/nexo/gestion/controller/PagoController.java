@@ -48,6 +48,13 @@ public class PagoController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarPago(@PathVariable Integer id) {
+        pagoService.eliminarPago(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/estadisticas/recaudado-por-dia")
     public ResponseEntity<List<PagoPorFechaDTO>> totalRecaudadoPorDia(){
         return ResponseEntity.ok(pagoService.recaudadoPorDia());

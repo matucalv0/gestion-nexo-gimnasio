@@ -44,18 +44,20 @@ async function cargarSocios(tablaBody) {
 }
 
 async function renderSocios(tablaBody, socios) {
-  tablaBody.innerHTML = "";
+  const emptyState = document.getElementById('emptyStateSocios');
+
+  // Limpiar filas existentes (excepto el empty state)
+  const rows = tablaBody.querySelectorAll('tr:not(#emptyStateSocios)');
+  rows.forEach(row => row.remove());
 
   if (!socios.length) {
-    tablaBody.innerHTML = `
-      <tr>
-        <td colspan="6" class="px-6 py-4 text-center text-gray-500">
-          No hay socios
-        </td>
-      </tr>
-    `;
+    // Mostrar empty state
+    if (emptyState) emptyState.classList.remove('hidden');
     return;
   }
+
+  // Ocultar empty state y mostrar datos
+  if (emptyState) emptyState.classList.add('hidden');
 
   // Hacer un POST con todos los DNIs
   const dnis = socios.map(s => s.dni);
@@ -65,7 +67,7 @@ async function renderSocios(tablaBody, socios) {
     body: JSON.stringify(dnis),
   });
 
-  const activos = await res.json(); 
+  const activos = await res.json();
 
   socios.forEach(s => {
     const tr = document.createElement("tr");

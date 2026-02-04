@@ -20,35 +20,35 @@ public interface SocioRepository extends JpaRepository<Socio, String> {
     Long diasAsistidos(@Param("idSm") Integer id_sm, @Param("dni") String dni);
 
     @Query("""
-   SELECT new com.nexo.gestion.dto.MembresiaVigenteDTO(
-       m.nombre,
-       m.tipoMembresia,
-       sm.fechaHasta
-   )
-   FROM SocioMembresia sm
-   JOIN sm.membresia m
-   WHERE sm.socio.dni = :dni
-   AND CURRENT_DATE BETWEEN sm.fechaInicio AND sm.fechaHasta
-   ORDER BY sm.fechaHasta DESC
-""")
+               SELECT new com.nexo.gestion.dto.MembresiaVigenteDTO(
+                   m.nombre,
+                   m.tipoMembresia,
+                   sm.fechaHasta
+               )
+               FROM SocioMembresia sm
+               JOIN sm.membresia m
+               WHERE sm.socio.dni = :dni
+               AND CURRENT_DATE BETWEEN sm.fechaInicio AND sm.fechaHasta
+               ORDER BY sm.fechaHasta DESC
+            """)
     List<MembresiaVigenteDTO> findMembresiasVigentes(@Param("dni") String dni);
 
     @Query("""
-   SELECT CASE WHEN COUNT(sm) > 0 THEN true ELSE false END
-   FROM SocioMembresia sm
-   WHERE sm.socio.dni = :dni
-   AND CURRENT_DATE BETWEEN sm.fechaInicio AND sm.fechaHasta
-""")
+               SELECT CASE WHEN COUNT(sm) > 0 THEN true ELSE false END
+               FROM SocioMembresia sm
+               WHERE sm.socio.dni = :dni
+               AND CURRENT_DATE BETWEEN sm.fechaInicio AND sm.fechaHasta
+            """)
     boolean existsMembresiaActiva(@Param("dni") String dni);
 
     @Query(
             value = """
-  SELECT COUNT(*)
-  FROM asistencia a
-  WHERE a.fecha_hora >= CURRENT_DATE
-    AND a.fecha_hora < CURRENT_DATE + INTERVAL '1 day'
-    AND a.dni = :dni
-  """,
+                    SELECT COUNT(*)
+                    FROM asistencia a
+                    WHERE a.fecha_hora >= CURRENT_DATE
+                      AND a.fecha_hora < CURRENT_DATE + INTERVAL '1 day'
+                      AND a.dni = :dni
+                    """,
             nativeQuery = true
     )
     Long asististenciasHoy(@Param("dni") String dni);
@@ -57,3 +57,4 @@ public interface SocioRepository extends JpaRepository<Socio, String> {
     boolean existsByEmail(String email);
 
 }
+

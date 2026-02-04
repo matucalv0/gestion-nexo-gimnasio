@@ -30,4 +30,10 @@ public class GastoController {
         return ResponseEntity.ok(gastoService.buscarGastos());
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarGasto(@PathVariable Integer id){
+        gastoService.eliminarGasto(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }
