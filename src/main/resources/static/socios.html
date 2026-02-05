@@ -71,13 +71,35 @@
 
         </div>
 
-        <!-- Buscador -->
-        <div class="flex gap-3 mb-6">
-          <input type="text" id="inputBusqueda" placeholder="Buscar por DNI o nombre" class="flex-1 px-4 py-3 rounded-md bg-[#1a1a1a] border border-[var(--input-border)]
-                        text-[var(--beige)] focus:outline-none focus:ring-2 focus:ring-[var(--orange)]" />
-          <button id="btnBuscar" class="bg-[var(--orange)] hover:bg-orange-600
-                   text-black font-semibold px-6 rounded-md">
+        <!-- Filtros -->
+        <div
+          class="bg-[#1a1a1a] p-4 rounded-lg border border-[var(--input-border)] mb-6 flex flex-wrap gap-4 items-end">
+          <!-- Buscador -->
+          <div class="flex-1 min-w-[200px]">
+            <label class="block text-xs text-gray-400 mb-1">Buscar (DNI o Nombre)</label>
+            <input type="text" id="inputBusqueda" placeholder="Ej: Juan Perez"
+              class="w-full bg-[#121212] border border-[var(--input-border)] rounded px-3 py-1.5 text-sm text-[var(--beige)] focus:outline-none focus:border-[var(--orange)]">
+          </div>
+
+          <!-- Filtro Estado -->
+          <div>
+            <label class="block text-xs text-gray-400 mb-1">Estado</label>
+            <select id="filtroActivo"
+              class="bg-[#121212] border border-[var(--input-border)] rounded px-3 py-1.5 text-sm text-[var(--beige)] focus:outline-none focus:border-[var(--orange)] w-32">
+              <option value="">Todos</option>
+              <option value="true" selected>Activos</option>
+              <option value="false">Bajas</option>
+            </select>
+          </div>
+
+          <!-- Botones -->
+          <button id="btnBuscar"
+            class="px-4 py-1.5 bg-[var(--orange)] hover:bg-[var(--orange)]/80 text-white rounded text-sm font-medium transition">
             Buscar
+          </button>
+          <button id="btnLimpiar"
+            class="px-4 py-1.5 bg-transparent border border-[var(--input-border)] text-gray-400 hover:text-white rounded text-sm font-medium transition">
+            Limpiar
           </button>
         </div>
 
@@ -130,6 +152,9 @@
             </tbody>
           </table>
         </div>
+
+        <!-- Paginación -->
+        <div id="paginationContainer" class="mt-4"></div>
 
       </div>
 

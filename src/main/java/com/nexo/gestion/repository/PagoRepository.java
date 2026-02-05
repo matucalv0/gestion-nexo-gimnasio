@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -85,6 +86,14 @@ public interface PagoRepository extends JpaRepository<Pago, Integer> {
 
 
     List<Pago> findAllByOrderByFechaDesc();
+
+    // Paginated query with date range filter
+    @Query("SELECT p FROM Pago p WHERE p.fecha >= :desde AND p.fecha <= :hasta ORDER BY p.fecha DESC")
+    org.springframework.data.domain.Page<Pago> findByFechaBetweenOrderByFechaDesc(
+            @Param("desde") LocalDate desde,
+            @Param("hasta") LocalDate hasta,
+            org.springframework.data.domain.Pageable pageable
+    );
 
     @Query(value = """
             SELECT

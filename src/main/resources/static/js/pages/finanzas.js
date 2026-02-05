@@ -1,6 +1,7 @@
 import { checkAuth } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
 import { mostrarAlerta, limpiarAlertas } from "../ui/alerta.js";
+import { renderPagination } from "../ui/pagination.js";
 
 const API = "/finanzas";
 
@@ -13,6 +14,8 @@ checkAuth();
 let chartEvolucion = null;
 let chartDonut = null;
 let movimientosData = [];
+let currentPage = 0;
+const pageSize = 20;
 
 // ==========================
 // INIT
@@ -21,7 +24,18 @@ let movimientosData = [];
 document.addEventListener("DOMContentLoaded", () => {
   initEventos();
   cargarKPIs();
-  cargarMovimientos();
+
+  // Init params
+  const hoy = new Date();
+  const hace30dias = new Date();
+  hace30dias.setDate(hoy.getDate() - 30);
+
+  if (document.getElementById("filtroHasta"))
+    document.getElementById("filtroHasta").value = hoy.toISOString().split("T")[0];
+  if (document.getElementById("filtroDesde"))
+    document.getElementById("filtroDesde").value = hace30dias.toISOString().split("T")[0];
+
+  cargarMovimientosPaginados();
   cargarDistribucionMensual();
   cargarEvolucion("7dias");
 });
@@ -43,6 +57,18 @@ function initEventos() {
 
   document.getElementById("btnNuevoGasto")?.addEventListener("click", () => {
     window.location.href = "registrar-gasto.html";
+  });
+
+  document.getElementById("btnFiltrarFecha")?.addEventListener("click", () => {
+    currentPage = 0;
+    cargarMovimientosPaginados();
+  });
+
+  document.getElementById("btnLimpiarFiltros")?.addEventListener("click", () => {
+    if (document.getElementById("filtroDesde")) document.getElementById("filtroDesde").value = "";
+    if (document.getElementById("filtroHasta")) document.getElementById("filtroHasta").value = "";
+    currentPage = 0;
+    cargarMovimientosPaginados();
   });
 }
 
@@ -101,13 +127,31 @@ function renderVariacion(elementId, variacion) {
 // MOVIMIENTOS
 // ==========================
 
-async function cargarMovimientos() {
+async function cargarMovimientosPaginados() {
   try {
-    const res = await authFetch("/finanzas");
-    const data = await res.json();
+    const desde = document.getElementById("filtroDesde")?.value;
+    const hasta = document.getElementById("filtroHasta")?.value;
 
-    movimientosData = data;
-    renderMovimientos(data);
+    let url = `${API}?page=${currentPage}&size=${pageSize}`;
+    if (desde) url += `&desde=${desde}`;
+    if (hasta) url += `&hasta=${hasta}`;
+
+    const res = await authFetch(url);
+    const pageData = await res.json();
+
+    movimientosData = pageData.content;
+    renderMovimientos(pageData.content);
+
+    renderPagination(
+      document.getElementById("paginationContainer"),
+      pageData.page,
+      pageData.totalPages,
+      (newPage) => {
+        currentPage = newPage;
+        cargarMovimientosPaginados();
+      }
+    );
+
   } catch (e) {
     console.error("Error cargando movimientos", e);
   }
@@ -226,6 +270,7 @@ function renderMovimientos(movimientos) {
           await cargarDetallesPago(id, contentDiv);
         } else {
           // Para gastos, buscar el movimiento en movimientosData
+          // Nota: movimientosData ahora es current page content
           const movimiento = movimientosData.find(m =>
             m.idReferencia === parseInt(id) && m.tipoMovimiento === "EGRESO"
           );
@@ -315,7 +360,7 @@ async function eliminarMovimiento(id, tipo) {
     });
 
     // Recargar datos
-    await cargarMovimientos();
+    await cargarMovimientosPaginados();
     await cargarKPIs();
     await cargarDistribucionMensual();
 

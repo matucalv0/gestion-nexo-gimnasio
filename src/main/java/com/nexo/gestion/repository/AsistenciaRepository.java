@@ -17,11 +17,25 @@ public interface AsistenciaRepository extends JpaRepository<Asistencia, Asistenc
     @Query("""
     SELECT a FROM Asistencia a
     JOIN a.socio s
-    WHERE LOWER(s.nombre) LIKE LOWER(CONCAT('%', :q, '%'))
-       OR s.dni LIKE CONCAT('%', :q, '%')
+    WHERE (LOWER(s.nombre) LIKE :q OR s.dni LIKE :q)
     ORDER BY a.idAsistencia.fechaHora DESC
     """)
     List<Asistencia> buscarPorNombreODni(@Param("q") String q);
+
+    @Query("""
+    SELECT a FROM Asistencia a
+    JOIN a.socio s
+    WHERE (:q IS NULL OR LOWER(s.nombre) LIKE :q OR s.dni LIKE :q)
+      AND a.idAsistencia.fechaHora >= :desde
+      AND a.idAsistencia.fechaHora <= :hasta
+    ORDER BY a.idAsistencia.fechaHora DESC
+    """)
+    org.springframework.data.domain.Page<Asistencia> buscarAsistenciasPaginadas(
+            @Param("q") String q,
+            @Param("desde") LocalDateTime desde,
+            @Param("hasta") LocalDateTime hasta,
+            org.springframework.data.domain.Pageable pageable
+    );
 
 
     @Query(value = "SELECT * FROM ASISTENCIA ORDER BY FECHA_HORA DESC", nativeQuery = true)

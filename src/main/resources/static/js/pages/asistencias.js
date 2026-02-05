@@ -1,35 +1,68 @@
 import { checkAuth } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
 import { mostrarAlerta, limpiarAlertas } from "../ui/alerta.js";
+import { renderPagination } from "../ui/pagination.js";
 
 checkAuth();
 
 const API_URL = "/asistencias";
 
+// Estado paginación
+let currentPage = 0;
+const pageSize = 20;
+
 document.addEventListener("DOMContentLoaded", () => {
   limpiarAlertas();
 
   const tablaBody = document.getElementById("tablaAsistenciasBody");
-  const busquedaInput = document.getElementById("inputBusqueda");
-  const btnBuscar = document.getElementById("btnBuscar");
-  const btnHome = document.getElementById("btnHome");
 
+  // Filtros
+  const inputBusqueda = document.getElementById("inputBusqueda");
+  const inputDesde = document.getElementById("filtroDesde");
+  const inputHasta = document.getElementById("filtroHasta");
+  const btnBuscar = document.getElementById("btnBuscar");
+  const btnLimpiar = document.getElementById("btnLimpiarFiltros");
+
+  // Filtro Mes (KPIs)
   const inputMes = document.getElementById("filtroMesAsistencias");
 
-  btnHome?.addEventListener("click", () => window.location.href = "home.html");
+  // Inicializar fechas (últimos 30 días)
+  const hoy = new Date();
+  const hace30dias = new Date();
+  hace30dias.setDate(hoy.getDate() - 30);
 
-  btnBuscar?.addEventListener("click", () =>
-    cargarAsistencias(tablaBody, busquedaInput.value)
-  );
+  inputHasta.value = hoy.toISOString().split("T")[0];
+  inputDesde.value = hace30dias.toISOString().split("T")[0];
 
-  busquedaInput?.addEventListener("input", () =>
-    cargarAsistencias(tablaBody, busquedaInput.value)
-  );
+  document.getElementById("btnHome")?.addEventListener("click", () => window.location.href = "home.html");
 
-  // set mes actual por defecto
+  // Botón Buscar / Filtrar
+  btnBuscar?.addEventListener("click", () => {
+    currentPage = 0;
+    cargarAsistencias(tablaBody);
+  });
+
+  // Enter en buscador
+  inputBusqueda?.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      currentPage = 0;
+      cargarAsistencias(tablaBody);
+    }
+  });
+
+  // Botón Limpiar
+  btnLimpiar?.addEventListener("click", () => {
+    inputBusqueda.value = "";
+    inputDesde.value = "";
+    inputHasta.value = "";
+    currentPage = 0;
+    cargarAsistencias(tablaBody);
+  });
+
+  // set mes actual por defecto para KPIs
   inputMes.value = mesActualISO();
 
-  // listeners
+  // listeners KPIs
   inputMes.addEventListener("change", () => {
     cargarKPIs();
     cargarGrafico();
@@ -43,17 +76,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
 /* ================== ASISTENCIAS (TABLA) ================== */
 
-async function cargarAsistencias(tablaBody, filtro = "") {
+async function cargarAsistencias(tablaBody) {
   try {
-    const url =
-      filtro.length >= 2
-        ? `${API_URL}/search?q=${encodeURIComponent(filtro)}`
-        : API_URL;
+    const q = document.getElementById("inputBusqueda").value;
+    const desde = document.getElementById("filtroDesde").value;
+    const hasta = document.getElementById("filtroHasta").value;
+
+    let url = `${API_URL}?page=${currentPage}&size=${pageSize}`;
+    if (q) url += `&q=${encodeURIComponent(q)}`;
+    if (desde) url += `&desde=${desde}`;
+    if (hasta) url += `&hasta=${hasta}`;
 
     const res = await authFetch(url);
-    const asistencias = await res.json();
+    const pageData = await res.json();
 
-    renderTabla(tablaBody, asistencias);
+    // pageData es PageResponseDTO
+    renderTabla(tablaBody, pageData.content);
+
+    renderPagination(
+      document.getElementById("paginationContainer"),
+      pageData.page,
+      pageData.totalPages,
+      (newPage) => {
+        currentPage = newPage;
+        cargarAsistencias(tablaBody);
+      }
+    );
+
   } catch (err) {
     console.error(err);
     mostrarAlerta({

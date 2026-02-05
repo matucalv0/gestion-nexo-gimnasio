@@ -31,8 +31,13 @@ public class PagoController {
 
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping
-    public ResponseEntity<List<PagoDTO>> mostrarPagos() {
-        return ResponseEntity.ok(pagoService.buscarPagos());
+    public ResponseEntity<PageResponseDTO<PagoDTO>> mostrarPagos(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate desde,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate hasta
+    ) {
+        return ResponseEntity.ok(pagoService.buscarPagosPaginados(page, size, desde, hasta));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")

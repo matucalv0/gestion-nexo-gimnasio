@@ -1,5 +1,6 @@
 import { checkAuth } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
+import { renderPagination } from "../ui/pagination.js";
 
 checkAuth();
 
@@ -8,12 +9,27 @@ let membresiasMap = {};
 let pagosDiaChart = null;
 let donutIngresosChart;
 
-
 const API_URL = "/pagos";
+
+// Estado de paginación y filtro
+let currentPage = 0;
+const pageSize = 20;
 
 document.addEventListener("DOMContentLoaded", () => {
   const tablaBody = document.getElementById("tablaPagosBody");
   const filtroSelect = document.getElementById("filtroRecaudado");
+
+  // Inputs de fecha
+  const inputDesde = document.getElementById("filtroDesde");
+  const inputHasta = document.getElementById("filtroHasta");
+
+  // Inicializar fechas (últimos 30 días por defecto)
+  const hoy = new Date();
+  const hace30dias = new Date();
+  hace30dias.setDate(hoy.getDate() - 30);
+
+  inputHasta.value = hoy.toISOString().split("T")[0];
+  inputDesde.value = hace30dias.toISOString().split("T")[0];
 
   document.getElementById("btnHome")
     .addEventListener("click", () => window.location.href = "home.html");
@@ -21,30 +37,63 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("btnNuevoPago")
     .addEventListener("click", () => window.location.href = "registrar-pago.html");
 
-  // Cargar tabla y nombres
+  // Botón Filtrar Fechas
+  document.getElementById("btnFiltrarFecha").addEventListener("click", () => {
+    currentPage = 0; // Resetear a primera página al filtrar
+    cargarPagos(tablaBody);
+  });
+
+  // Botón Limpiar Filtros
+  document.getElementById("btnLimpiarFiltros").addEventListener("click", () => {
+    inputDesde.value = "";
+    inputHasta.value = "";
+    currentPage = 0;
+    cargarPagos(tablaBody);
+  });
+
+  // Cargar tabla inicial
   cargarPagos(tablaBody);
+
+  // Cargar otros datos
   cargarNombres();
   cargarKPIsRecaudado();
   cargarDistribucionIngresos();
   cargarMasVendidos();
 
-
   // Cargar gráfico según filtro seleccionado
   cargarRecaudado(filtroSelect.value);
 
-  // Escuchar cambios en el filtro
+  // Escuchar cambios en el filtro de gráfico
   filtroSelect.addEventListener("change", (e) => {
     cargarRecaudado(e.target.value);
   });
 });
 
-
-
 async function cargarPagos(tablaBody) {
   try {
-    const res = await authFetch(API_URL);
-    const data = await res.json();
-    renderPagos(tablaBody, data);
+    const desde = document.getElementById("filtroDesde").value;
+    const hasta = document.getElementById("filtroHasta").value;
+
+    let url = `${API_URL}?page=${currentPage}&size=${pageSize}`;
+    if (desde) url += `&desde=${desde}`;
+    if (hasta) url += `&hasta=${hasta}`;
+
+    const res = await authFetch(url);
+    const pageData = await res.json();
+
+    // pageData es PageResponseDTO { content, page, size, totalElements, totalPages }
+    renderPagos(tablaBody, pageData.content);
+
+    renderPagination(
+      document.getElementById("paginationContainer"),
+      pageData.page,
+      pageData.totalPages,
+      (newPage) => {
+        currentPage = newPage;
+        cargarPagos(tablaBody);
+      }
+    );
+
   } catch (err) {
     console.error(err);
     alert("Error al cargar pagos");
@@ -58,7 +107,7 @@ function renderPagos(tablaBody, pagos) {
   const rows = tablaBody.querySelectorAll('tr:not(#emptyStatePagos)');
   rows.forEach(row => row.remove());
 
-  if (!pagos.length) {
+  if (!pagos || !pagos.length) {
     // Mostrar empty state
     if (emptyState) emptyState.classList.remove('hidden');
     return;

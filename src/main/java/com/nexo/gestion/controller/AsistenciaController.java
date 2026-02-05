@@ -22,17 +22,14 @@ public class AsistenciaController {
 
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping
-    public ResponseEntity<List<AsistenciaDTO>> mostrarAsistencias(){
-        List<AsistenciaDTO> asistencias = asistenciaService.buscarAsistencias();
-        return ResponseEntity.ok(asistencias);
-
-    }
-
-    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
-    @GetMapping("/search")
-    public ResponseEntity<List<AsistenciaDTO>> buscarAsistenciaPorNombreODNI(@RequestParam("q") String dniOrNombre){
-        List<AsistenciaDTO> asistencias = asistenciaService.buscarAsistencia(dniOrNombre);
-        return ResponseEntity.ok(asistencias);
+    public ResponseEntity<PageResponseDTO<AsistenciaDTO>> mostrarAsistencias(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate desde,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate hasta,
+            @RequestParam(required = false) String q
+    ) {
+        return ResponseEntity.ok(asistenciaService.buscarAsistenciasPaginadas(page, size, desde, hasta, q));
     }
 
     @GetMapping("estadisticas/semana-actual")

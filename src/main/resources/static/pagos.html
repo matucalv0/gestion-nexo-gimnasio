@@ -205,9 +205,30 @@
           </h2>
         </div>
 
-        <div class="overflow-x-auto rounded-lg
-              border border-[var(--input-border)]">
-          <table table class="w-full min-w-[900px] text-sm text-[var(--beige)]">
+        <div class="overflow-x-auto rounded-lg border border-[var(--input-border)]">
+          <!-- Filtros de fecha -->
+          <div class="bg-[#1a1a1a] p-4 border-b border-[var(--input-border)] flex flex-wrap gap-4 items-end">
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">Desde</label>
+              <input type="date" id="filtroDesde"
+                class="bg-[#121212] border border-[var(--input-border)] rounded px-3 py-1 text-sm text-[var(--beige)] focus:outline-none focus:border-[var(--orange)]">
+            </div>
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">Hasta</label>
+              <input type="date" id="filtroHasta"
+                class="bg-[#121212] border border-[var(--input-border)] rounded px-3 py-1 text-sm text-[var(--beige)] focus:outline-none focus:border-[var(--orange)]">
+            </div>
+            <button id="btnFiltrarFecha"
+              class="px-4 py-1.5 bg-[var(--orange)] hover:bg-[var(--orange)]/80 text-white rounded text-sm font-medium transition">
+              Filtrar
+            </button>
+            <button id="btnLimpiarFiltros"
+              class="px-4 py-1.5 bg-transparent border border-[var(--input-border)] text-gray-400 hover:text-white rounded text-sm font-medium transition">
+              Limpiar
+            </button>
+          </div>
+
+          <table class="w-full min-w-[900px] text-sm text-[var(--beige)]">
             <thead class="bg-[#1a1a1a]">
               <tr>
                 <th class="px-6 py-4 text-left">Fecha</th>
@@ -251,6 +272,9 @@
             </tbody>
           </table>
         </div>
+
+        <!-- Contenedor Pagincación -->
+        <div id="paginationContainer" class="mt-4"></div>
       </section>
 
     </div>

@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
@@ -25,8 +26,13 @@ public class FinanzaController {
 
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping
-    public ResponseEntity<List<MovimientoFinancieroDTO>> mostrarMovimientos(){
-        return ResponseEntity.ok(finanzaService.buscarMovimientos());
+    public ResponseEntity<PageResponseDTO<MovimientoFinancieroDTO>> mostrarMovimientos(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate desde,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate hasta
+    ){
+        return ResponseEntity.ok(finanzaService.buscarMovimientosPaginados(page, size, desde, hasta));
 
     }
 

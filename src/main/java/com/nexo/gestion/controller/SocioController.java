@@ -48,10 +48,13 @@ public class SocioController {
 
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping
-    public ResponseEntity<List<SocioDTO>> mostrarSocios(){
-        List<SocioDTO> socios = socioService.buscarSocios();
-        return ResponseEntity.ok(socios);
-
+    public ResponseEntity<PageResponseDTO<SocioDTO>> mostrarSocios(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) Boolean activo
+    ) {
+        return ResponseEntity.ok(socioService.buscarSociosPaginados(page, size, q, activo));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
@@ -83,13 +86,6 @@ public class SocioController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
-    @GetMapping("/search")
-    public ResponseEntity<List<SocioDTO>> buscarSocioPorNombre(@RequestParam("q") String dniOrNombre){
-        List<SocioDTO> socios = socioService.buscarSocios(dniOrNombre);
-        return ResponseEntity.ok(socios);
-    }
-
-    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping("/{dni}/asistencias-disponibles")
     public Map<String, Integer> asistenciasDisponibles(@PathVariable String dni) {
         return Map.of(
@@ -107,16 +103,19 @@ public class SocioController {
         return ResponseEntity.ok(membresia);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping("/dias-para-vencer-membresiavigente")
     public ResponseEntity<Integer> diasParaVencerMembresiaVigente(@RequestParam("q") String dni){
         return ResponseEntity.ok(socioService.diasParaVencimientoMembresiaVigente(dni));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping("/activo-mes")
     public  ResponseEntity<Boolean> socioIsActivoMes(@RequestParam("dni") String dni){
         return ResponseEntity.ok(socioService.socioActivoMes(dni));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @PostMapping("/activo-mes-listado")
     public ResponseEntity<Map<String, Boolean>> sociosActivosEnElMes(@RequestBody List<String> dnis) {
         return ResponseEntity.ok(socioService.listadoSociosActivosEnELMes(dnis));

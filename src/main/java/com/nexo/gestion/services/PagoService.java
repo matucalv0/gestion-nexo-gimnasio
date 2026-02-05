@@ -254,6 +254,38 @@ public class PagoService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public PageResponseDTO<PagoDTO> buscarPagosPaginados(int page, int size, LocalDate desde, LocalDate hasta) {
+        // Si no se especifica 'hasta', es hoy
+        if (hasta == null) {
+            hasta = LocalDate.now();
+        }
+        // Si no se especifica 'desde', mostrar TODO el historial (desde 1970)
+        // Esto permite que "Limpiar filtros" muestre todos los pagos.
+        if (desde == null) {
+            desde = LocalDate.of(1970, 1, 1);
+        }
+
+        org.springframework.data.domain.Pageable pageable = 
+                org.springframework.data.domain.PageRequest.of(page, size);
+        
+        org.springframework.data.domain.Page<Pago> pagos = 
+                pagoRepository.findByFechaBetweenOrderByFechaDesc(desde, hasta, pageable);
+
+        List<PagoDTO> content = pagos.getContent()
+                .stream()
+                .map(this::convertirAPagoDTO)
+                .toList();
+
+        return new PageResponseDTO<>(
+                content,
+                pagos.getNumber(),
+                pagos.getSize(),
+                pagos.getTotalElements(),
+                pagos.getTotalPages()
+        );
+    }
+
 
 
     @Transactional

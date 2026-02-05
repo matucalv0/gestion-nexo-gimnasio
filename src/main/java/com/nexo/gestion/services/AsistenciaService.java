@@ -53,13 +53,55 @@ public class AsistenciaService {
 
     public List<AsistenciaDTO> buscarAsistencia(String dniOrNombre) {
         List<AsistenciaDTO> asistencias = new ArrayList<>();
+        
+        String q = "%" + dniOrNombre.trim().toLowerCase() + "%";
 
-        for (Asistencia asistencia: asistenciaRepository.buscarPorNombreODni(dniOrNombre)){
+        for (Asistencia asistencia: asistenciaRepository.buscarPorNombreODni(q)){
             AsistenciaDTO asistenciaDTO = convertirAAsistenciaDTO(asistencia);
             asistencias.add(asistenciaDTO);
         }
 
         return asistencias;
+    }
+
+    public PageResponseDTO<AsistenciaDTO> buscarAsistenciasPaginadas(int page, int size, LocalDate desde, LocalDate hasta, String q) {
+        // Defaults: últimos 30 días si no se especifica
+        if (hasta == null) {
+            hasta = LocalDate.now();
+        }
+        if (desde == null) {
+            desde = hasta.minusDays(30);
+        }
+
+        // Manejo de string vacío para búsqueda
+        if (q != null && !q.trim().isEmpty()) {
+            q = "%" + q.trim().toLowerCase() + "%";
+        } else {
+            q = null;
+        }
+
+        org.springframework.data.domain.Pageable pageable =
+                org.springframework.data.domain.PageRequest.of(page, size);
+
+        // Convertir LocalDate a LocalDateTime para la query
+        java.time.LocalDateTime fechaDesde = desde.atStartOfDay();
+        java.time.LocalDateTime fechaHasta = hasta.atTime(java.time.LocalTime.MAX);
+
+        org.springframework.data.domain.Page<Asistencia> pageResult =
+                asistenciaRepository.buscarAsistenciasPaginadas(q, fechaDesde, fechaHasta, pageable);
+
+        List<AsistenciaDTO> content = pageResult.getContent()
+                .stream()
+                .map(this::convertirAAsistenciaDTO)
+                .toList();
+
+        return new PageResponseDTO<>(
+                content,
+                pageResult.getNumber(),
+                pageResult.getSize(),
+                pageResult.getTotalElements(),
+                pageResult.getTotalPages()
+        );
     }
 
 

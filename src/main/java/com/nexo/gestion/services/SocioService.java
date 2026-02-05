@@ -254,14 +254,15 @@ public class SocioService {
 
 
 
-    public List<SocioDTO> buscarSocios(String dniOrNombre) {
+    public List<SocioDTO> buscarSocios(String dniOrNombre){
         List<SocioDTO> socios = new ArrayList<>();
+        
+        String q = "%" + dniOrNombre.trim().toLowerCase() + "%";
 
-        for (Socio socio: socioRepository.buscarPorNombreODni(dniOrNombre)){
+        for (Socio socio: socioRepository.buscarPorNombreODni(q)){
             SocioDTO socioDTO = convertirASocioDTO(socio);
             socios.add(socioDTO);
         }
-
 
         return socios;
     }
@@ -344,5 +345,31 @@ public class SocioService {
         }
         
         return inactivos;
+    }
+    public PageResponseDTO<SocioDTO> buscarSociosPaginados(int page, int size, String q, Boolean activo) {
+        if (q != null && !q.trim().isEmpty()) {
+            q = "%" + q.trim().toLowerCase() + "%";
+        } else {
+            q = null;
+        }
+
+        org.springframework.data.domain.Pageable pageable =
+                org.springframework.data.domain.PageRequest.of(page, size);
+
+        org.springframework.data.domain.Page<Socio> pageResult =
+                socioRepository.buscarSociosPaginados(q, activo, pageable);
+
+        List<SocioDTO> content = pageResult.getContent()
+                .stream()
+                .map(this::convertirASocioDTO)
+                .toList();
+
+        return new PageResponseDTO<>(
+                content,
+                pageResult.getNumber(),
+                pageResult.getSize(),
+                pageResult.getTotalElements(),
+                pageResult.getTotalPages()
+        );
     }
 }

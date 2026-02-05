@@ -95,4 +95,65 @@ public class SocioTest {
 
     }
 
+    @Test
+    @Transactional
+    @Rollback
+    public void verificarFiltradoPorEstado(){
+        // Crear membresía base
+        Membresia membresia = new Membresia("Base", 30, BigDecimal.valueOf(1000));
+        membresiaRepository.save(membresia);
+
+        // Crear socio ACTIVO (con membresía vigente)
+        Socio activo = new Socio("11111111", "Socio Activo");
+        activo.setActivo(true);
+        socioRepository.save(activo);
+        
+        SocioMembresia smActiva = new SocioMembresia(activo, membresia);
+        smActiva.setFechaInicio(LocalDate.now().minusDays(5));
+        smActiva.setFechaHasta(LocalDate.now().plusDays(25));
+        socioMembresiaRepository.save(smActiva);
+
+        // Crear socio INACTIVO (sin membresía vigente)
+        Socio inactivo = new Socio("22222222", "Socio Inactivo");
+        inactivo.setActivo(true); // El flag booleano no debería importar
+        socioRepository.save(inactivo);
+        
+        // Membresía vencida
+        SocioMembresia smVencida = new SocioMembresia(inactivo, membresia);
+        smVencida.setFechaInicio(LocalDate.now().minusDays(60));
+        smVencida.setFechaHasta(LocalDate.now().minusDays(30));
+        socioMembresiaRepository.save(smVencida);
+
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(0, 10);
+
+        // Test filtro Activos (true)
+        org.springframework.data.domain.Page<Socio> resultadosActivos = 
+            socioRepository.buscarSociosPaginados(null, true, pageable);
+        
+        long countActivos = resultadosActivos.getContent().stream().filter(s -> s.getDni().equals("11111111")).count();
+        long countInactivosEnActivos = resultadosActivos.getContent().stream().filter(s -> s.getDni().equals("22222222")).count();
+
+        assertEquals(1, countActivos, "Debería encontrar al socio con membresía vigente");
+        assertEquals(0, countInactivosEnActivos, "No debería encontrar al socio con membresía vencida");
+
+        // Test filtro Inactivos (false)
+        org.springframework.data.domain.Page<Socio> resultadosInactivos = 
+            socioRepository.buscarSociosPaginados(null, false, pageable);
+        
+        long countInactivos = resultadosInactivos.getContent().stream().filter(s -> s.getDni().equals("22222222")).count();
+        long countActivosEnInactivos = resultadosInactivos.getContent().stream().filter(s -> s.getDni().equals("11111111")).count();
+
+        assertEquals(1, countInactivos, "Debería encontrar al socio con membresía vencida");
+        assertEquals(0, countActivosEnInactivos, "No debería encontrar al socio con membresía vigente");
+
+        // Test sin filtro (null)
+        org.springframework.data.domain.Page<Socio> resultadosTodos = 
+            socioRepository.buscarSociosPaginados(null, null, pageable);
+        
+        long countTodosActivos = resultadosTodos.getContent().stream().filter(s -> s.getDni().equals("11111111")).count();
+        long countTodosInactivos = resultadosTodos.getContent().stream().filter(s -> s.getDni().equals("22222222")).count();
+
+        assertEquals(1, countTodosActivos, "Debería encontrar al socio activo en búsqueda total");
+        assertEquals(1, countTodosInactivos, "Debería encontrar al socio inactivo en búsqueda total");
+    }
 }

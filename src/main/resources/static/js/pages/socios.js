@@ -5,42 +5,94 @@ checkAuth();
 
 const API_URL = "/socios";
 
+// Estado paginación
+let currentPage = 0;
+const pageSize = 20;
+
 document.addEventListener("DOMContentLoaded", () => {
   const tablaBody = document.getElementById("tablaSociosBody");
   const inputBusqueda = document.getElementById("inputBusqueda");
+  const filtroActivo = document.getElementById("filtroActivo");
 
   const btnHome = document.getElementById("btnHome");
   const btnLogout = document.getElementById("btnLogout");
   const btnNuevoSocio = document.getElementById("btnNuevoSocio");
   const btnBuscar = document.getElementById("btnBuscar");
+  const btnLimpiar = document.getElementById("btnLimpiar");
 
-  btnHome.addEventListener("click", () => {
+  btnHome?.addEventListener("click", () => {
     window.location.href = "home.html";
   });
 
-  btnLogout.addEventListener("click", logout);
+  btnLogout?.addEventListener("click", logout);
 
-  btnNuevoSocio.addEventListener("click", () => {
+  btnNuevoSocio?.addEventListener("click", () => {
     window.location.href = "registrar-socio.html";
   });
 
-  btnBuscar.addEventListener("click", () => {
-    buscarSocios(tablaBody, inputBusqueda.value);
+  // Buscar Button
+  btnBuscar?.addEventListener("click", () => {
+    currentPage = 0;
+    cargarSocios(tablaBody);
   });
 
-  inputBusqueda.addEventListener("input", () => {
-    buscarSocios(tablaBody, inputBusqueda.value);
+  // Enter en buscador
+  inputBusqueda?.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      currentPage = 0;
+      cargarSocios(tablaBody);
+    }
   });
 
+  // Filtro Estado Change
+  filtroActivo?.addEventListener("change", () => {
+    currentPage = 0;
+    cargarSocios(tablaBody);
+  });
+
+  // Limpiar
+  btnLimpiar?.addEventListener("click", () => {
+    inputBusqueda.value = "";
+    filtroActivo.value = ""; // Todos
+    currentPage = 0;
+    cargarSocios(tablaBody);
+  });
+
+  // Carga inicial
   cargarSocios(tablaBody);
 });
 
 
-
 async function cargarSocios(tablaBody) {
-  const res = await authFetch(API_URL);
-  const socios = await res.json();
-  renderSocios(tablaBody, socios);
+  try {
+    const q = document.getElementById("inputBusqueda").value;
+    const activo = document.getElementById("filtroActivo").value; // "", "true", "false"
+
+    let url = `${API_URL}?page=${currentPage}&size=${pageSize}`;
+    if (q) url += `&q=${encodeURIComponent(q)}`;
+    if (activo) url += `&activo=${activo}`;
+
+    const res = await authFetch(url);
+    const pageData = await res.json();
+
+    // pageData es PageResponseDTO
+    await renderSocios(tablaBody, pageData.content);
+
+    // Render paginación
+    renderPagination(
+      document.getElementById("paginationContainer"),
+      pageData.page,
+      pageData.totalPages,
+      (newPage) => {
+        currentPage = newPage;
+        cargarSocios(tablaBody);
+      }
+    );
+
+  } catch (err) {
+    console.error("Error al cargar socios", err);
+    // Podríamos mostrar alerta si hubiera contenedor de alerta
+  }
 }
 
 async function renderSocios(tablaBody, socios) {
@@ -50,7 +102,7 @@ async function renderSocios(tablaBody, socios) {
   const rows = tablaBody.querySelectorAll('tr:not(#emptyStateSocios)');
   rows.forEach(row => row.remove());
 
-  if (!socios.length) {
+  if (!socios || !socios.length) {
     // Mostrar empty state
     if (emptyState) emptyState.classList.remove('hidden');
     return;
@@ -59,19 +111,24 @@ async function renderSocios(tablaBody, socios) {
   // Ocultar empty state y mostrar datos
   if (emptyState) emptyState.classList.add('hidden');
 
-  // Hacer un POST con todos los DNIs
+  // Hacer un POST con todos los DNIs para ver si están activos (membresía)
   const dnis = socios.map(s => s.dni);
-  const res = await authFetch(`${API_URL}/activo-mes-listado`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(dnis),
-  });
+  let activosMap = {};
 
-  const activos = await res.json();
+  try {
+    const res = await authFetch(`${API_URL}/activo-mes-listado`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(dnis),
+    });
+    activosMap = await res.json();
+  } catch (e) {
+    console.error("Error obteniendo estado activos", e);
+  }
 
   socios.forEach(s => {
     const tr = document.createElement("tr");
-    const isActivo = activos[s.dni];
+    const isActivo = activosMap[s.dni];
 
     tr.className = "border-b border-[var(--input-border)] hover:bg-[#1a1a1a] transition";
 
@@ -96,25 +153,6 @@ async function renderSocios(tablaBody, socios) {
 
     tablaBody.appendChild(tr);
   });
-}
-
-
-
-
-async function buscarSocios(tablaBody, texto) {
-  const q = texto.trim();
-
-  if (q.length < 2) {
-    cargarSocios(tablaBody);
-    return;
-  }
-
-  const res = await authFetch(
-    `${API_URL}/search?q=${encodeURIComponent(q)}`
-  );
-
-  const socios = await res.json();
-  renderSocios(tablaBody, socios);
 }
 
 

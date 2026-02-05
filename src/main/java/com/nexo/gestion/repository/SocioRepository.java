@@ -11,9 +11,24 @@ import java.util.List;
 import java.util.Optional;
 
 public interface SocioRepository extends JpaRepository<Socio, String> {
-    @Query("SELECT s FROM Socio s WHERE LOWER(s.nombre) LIKE LOWER(CONCAT('%', :query, '%')) " +
-            "OR s.dni LIKE CONCAT('%', :query, '%')")
+    @Query("SELECT s FROM Socio s WHERE (LOWER(s.nombre) LIKE :query OR s.dni LIKE :query)")
     List<Socio> buscarPorNombreODni(@Param("query") String query);
+
+    @Query("""
+            SELECT s FROM Socio s
+            WHERE (:q IS NULL OR LOWER(s.nombre) LIKE :q OR s.dni LIKE :q)
+            AND (
+                :activo IS NULL OR
+                (:activo = true AND EXISTS (SELECT sm FROM SocioMembresia sm WHERE sm.socio = s AND CURRENT_DATE BETWEEN sm.fechaInicio AND sm.fechaHasta)) OR
+                (:activo = false AND NOT EXISTS (SELECT sm FROM SocioMembresia sm WHERE sm.socio = s AND CURRENT_DATE BETWEEN sm.fechaInicio AND sm.fechaHasta))
+            )
+            ORDER BY s.nombre ASC
+            """)
+    org.springframework.data.domain.Page<Socio> buscarSociosPaginados(
+            @Param("q") String q,
+            @Param("activo") Boolean activo,
+            org.springframework.data.domain.Pageable pageable
+    );
 
     @Query(value = "SELECT count(*) FROM asistencia a join socio_membresia sc on sc.dni_socio = a.dni where (sc.id_sm = :idSm) and " +
             "(a.dni = :dni) and ((a.fecha_hora <= sc.fecha_hasta) and (a.fecha_hora >= sc.fecha_inicio))", nativeQuery = true)

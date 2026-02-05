@@ -16,12 +16,111 @@ import java.util.*;
 
 @Service
 public class FinanzaService {
+    @jakarta.persistence.PersistenceContext
+    private jakarta.persistence.EntityManager entityManager;
     private final GastoRepository gastoRepository;
     private final PagoRepository pagoRepository;
 
     public FinanzaService(GastoRepository gastoRepository, PagoRepository pagoRepository){
         this.gastoRepository = gastoRepository;
         this.pagoRepository = pagoRepository;
+    }
+
+    public PageResponseDTO<MovimientoFinancieroDTO> buscarMovimientosPaginados(int page, int size, LocalDate desde, LocalDate hasta) {
+        if (hasta == null) hasta = LocalDate.now();
+        if (desde == null) desde = LocalDate.of(1970, 1, 1);
+
+        int offset = page * size;
+
+        // FIXED: Explicit casting for PostgreSQL compatibility in UNION
+        String sql = """
+            SELECT * FROM (
+                SELECT id_pago as ref_id, 'INGRESO' as tipo, monto, fecha, CAST('Pago' AS VARCHAR) as cat, CAST(NULL AS VARCHAR) as prov FROM pago
+                UNION ALL
+                SELECT id_gasto as ref_id, 'EGRESO' as tipo, monto, fecha, CAST(categoria AS VARCHAR) as cat, proveedor as prov FROM gasto
+            ) as movimientos
+            WHERE fecha >= :desde AND fecha <= :hasta
+            ORDER BY fecha DESC
+            LIMIT :limit OFFSET :offset
+            """;
+
+        String countSql = """
+            SELECT COUNT(*) FROM (
+                SELECT fecha FROM pago
+                UNION ALL
+                SELECT fecha FROM gasto
+            ) as movimientos
+            WHERE fecha >= :desde AND fecha <= :hasta
+            """;
+
+        // Execute Content Query
+        jakarta.persistence.Query query = entityManager.createNativeQuery(sql);
+        query.setParameter("desde", java.sql.Date.valueOf(desde));
+        query.setParameter("hasta", java.sql.Date.valueOf(hasta));
+        query.setParameter("limit", size);
+        query.setParameter("offset", offset);
+
+        List<Object[]> rows = query.getResultList();
+        List<MovimientoFinancieroDTO> content = new ArrayList<>();
+
+        for (Object[] row : rows) {
+            Integer refId = ((Number) row[0]).intValue();
+            String tipoStr = (String) row[1];
+            BigDecimal monto = (BigDecimal) row[2];
+            
+            // FIXED: Safe Date Handling (handles java.sql.Date or java.sql.Timestamp)
+            LocalDate fecha;
+            if (row[3] instanceof java.sql.Timestamp) {
+                fecha = ((java.sql.Timestamp) row[3]).toLocalDateTime().toLocalDate();
+            } else {
+                fecha = ((java.sql.Date) row[3]).toLocalDate();
+            }
+
+            String categoriaStr = (String) row[4];
+            String proveedorRaw = (String) row[5];
+
+            TipoMovimiento tipo = TipoMovimiento.valueOf(tipoStr);
+            
+            // FIXED: Map Category Enum for Expenses (EGRESO)
+            com.nexo.gestion.entity.CategoriaGasto categoriaEnum = null;
+            String proveedor = null;
+            
+            if (tipo == TipoMovimiento.EGRESO) {
+                if (categoriaStr != null) {
+                    try {
+                        categoriaEnum = com.nexo.gestion.entity.CategoriaGasto.valueOf(categoriaStr);
+                    } catch (IllegalArgumentException e) {
+                        // Handle unknown categories gracefully if needed, or leave null
+                    }
+                }
+                proveedor = proveedorRaw;
+            }
+
+            content.add(new MovimientoFinancieroDTO(
+                    tipo,
+                    monto,
+                    fecha.atStartOfDay(),
+                    refId,
+                    categoriaEnum,
+                    proveedor
+            ));
+        }
+
+        // Execute Count Query
+        jakarta.persistence.Query countQuery = entityManager.createNativeQuery(countSql);
+        countQuery.setParameter("desde", java.sql.Date.valueOf(desde));
+        countQuery.setParameter("hasta", java.sql.Date.valueOf(hasta));
+        
+        long totalElements = ((Number) countQuery.getSingleResult()).longValue();
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+
+        return new PageResponseDTO<>(
+                content,
+                page,
+                size,
+                totalElements,
+                totalPages
+        );
     }
 
     public List<MovimientoFinancieroDTO> buscarMovimientos(){
