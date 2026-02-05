@@ -18,21 +18,22 @@
     <div class="w-full max-w-4xl">
 
       <!-- HEADER -->
-      <header class="glass-card flex justify-between items-center mb-8 px-6 py-4 shadow-xl">
-        <div class="flex items-center gap-4">
-          <img src="../assets/nexologo.png" alt="NEXO" class="h-10">
-          <h1 class="text-h4 text-[var(--beige)]">
-            Registrar Pago
-          </h1>
+      <header class="header-nexo">
+        <div class="header-left">
+          <div class="header-icon bg-green-500/10">
+            <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+          </div>
+          <div>
+            <h1 class="header-title">Registrar Pago</h1>
+            <p class="header-subtitle">Nuevo cobro a socio</p>
+          </div>
         </div>
-
-        <div class="flex gap-2">
-          <button id="btnHome" class="btn-primary px-4 py-2 text-sm">
-            Home
-          </button>
-          <button id="btnLogout" class="btn-danger px-4 py-2 text-sm">
-            Cerrar sesión
-          </button>
+        <div class="header-actions">
+          <button id="btnHome" class="btn-secondary px-4 py-2 text-sm">← Volver</button>
+          <button id="btnLogout" class="btn-danger px-4 py-2 text-sm">Cerrar sesión</button>
         </div>
       </header>
 

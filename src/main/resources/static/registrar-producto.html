@@ -19,18 +19,22 @@
     <div class="w-full max-w-lg">
 
       <!-- HEADER -->
-      <header
-        class="flex justify-between items-center mb-8 bg-[#121212] px-6 py-4 rounded-xl border border-[var(--input-border)] shadow-xl">
-        <img src="../assets/nexologo.png" alt="NEXO" class="h-12">
-        <div class="flex gap-2">
-          <button id="btnVolver"
-            class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">
-            Volver
-          </button>
-          <button id="btnLogout"
-            class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">
-            Cerrar sesión
-          </button>
+      <header class="header-nexo">
+        <div class="header-left">
+          <div class="header-icon bg-amber-500/10">
+            <svg class="w-8 h-8 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
+          </div>
+          <div>
+            <h1 class="header-title">Registrar Producto</h1>
+            <p class="header-subtitle">Nuevo item de inventario</p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button id="btnVolver" class="btn-secondary px-4 py-2 text-sm">← Volver</button>
+          <button id="btnLogout" class="btn-danger px-4 py-2 text-sm">Cerrar sesión</button>
         </div>
       </header>
 
