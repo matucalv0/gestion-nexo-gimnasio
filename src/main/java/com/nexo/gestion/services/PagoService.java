@@ -119,8 +119,17 @@ public class PagoService {
         Integer asistenciasPendientes = asistenciaRepository.asistenciasPendientesSocio(socio.getDni());
 
         if (asistenciasPendientes > 0){
-            java.time.Instant fechaInstant = asistenciaRepository.fechaPrimeraAsistenciasPendiente(socio.getDni());
-            inicio = fechaInstant.atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+            // Solo considerar asistencias pendientes dentro de la duración de la membresía
+            // Ejemplo: si compra plan de 30 días, solo mirar pendientes de los últimos 30 días
+            LocalDate limiteInferior = LocalDate.now().minusDays(membresia.getDuracionDias());
+            
+            java.time.Instant fechaInstant = asistenciaRepository
+                    .fechaPrimeraAsistenciaPendienteDentroDeRango(socio.getDni(), limiteInferior);
+            
+            if (fechaInstant != null) {
+                inicio = fechaInstant.atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+            }
+            // Si no hay pendientes dentro del rango, inicio queda como estaba (hoy o ultimoVencimiento+1)
         }
 
         LocalDate vencimiento = inicio.plusDays(membresia.getDuracionDias());

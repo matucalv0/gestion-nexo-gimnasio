@@ -140,6 +140,18 @@ public interface AsistenciaRepository extends JpaRepository<Asistencia, Asistenc
             """, nativeQuery = true)
     Integer asistenciasTotalMesAnterior();
 
+    // Primera asistencia pendiente dentro de un rango de fechas
+    @Query(value = """
+            SELECT a.fecha_hora FROM asistencia a
+            WHERE a.estado_asistencia = 'PENDIENTE' 
+              AND a.dni = :dni
+              AND a.fecha_hora >= CAST(:limiteInferior AS DATE)
+            ORDER BY a.fecha_hora ASC
+            LIMIT 1
+            """, nativeQuery = true)
+    java.time.Instant fechaPrimeraAsistenciaPendienteDentroDeRango(
+            @Param("dni") String dni, 
+            @Param("limiteInferior") LocalDate limiteInferior);
 
 }
 

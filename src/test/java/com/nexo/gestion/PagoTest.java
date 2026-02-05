@@ -507,8 +507,9 @@ public class PagoTest {
         Socio socio = new Socio("99887766", "Retroactivo", "1122334455", "retro@test.com", LocalDate.of(1990, 1, 1));
         socioService.registrarSocio(new SocioCreateDTO(socio.getDni(), socio.getNombre(), socio.getTelefono(), socio.getEmail(), socio.getFechaNacimiento()));
 
-        // 2. Registrar asistencia old manually
-        AsistenciaSocioId idViejo = new AsistenciaSocioId(socio.getDni(), java.time.LocalDateTime.now().minusDays(3));
+        // 2. Registrar asistencia old manually (truncated to seconds for consistency)
+        java.time.LocalDateTime fechaVieja = java.time.LocalDateTime.now().minusDays(3).truncatedTo(java.time.temporal.ChronoUnit.SECONDS);
+        AsistenciaSocioId idViejo = new AsistenciaSocioId(socio.getDni(), fechaVieja);
         Asistencia asistenciaVieja = new Asistencia(socio, false);
         asistenciaVieja.setIdAsistencia(idViejo);
         asistenciaRepository.saveAndFlush(asistenciaVieja);
@@ -531,10 +532,96 @@ public class PagoTest {
         SocioMembresia sm = socioMembresiaRepository.findActivaBySocio(socio.getDni()).get();
         assertEquals(LocalDate.now().minusDays(3), sm.getFechaInicio());
 
-        // 5. Verificar que la asistencia paso a VALIDA
-        Asistencia asistenciaActualizada = asistenciaRepository.findById(idViejo).get();
-        entityManager.refresh(asistenciaActualizada);
-        assertEquals(EstadoAsistencia.VALIDA, asistenciaActualizada.getEstadoAsistencia());
+        // 5. Verificar que la asistencia paso a VALIDA (usando count de pendientes)
+        Integer pendientes = asistenciaRepository.asistenciasPendientesSocio(socio.getDni());
+        assertEquals(0, pendientes, "No debería haber asistencias pendientes, la existente debería haberse validado");
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void verificarQueAsistenciaMuyViejaNoCuentaParaInicioDeMembresia() {
+        // 1. Crear socio sin membresia
+        Socio socio = new Socio("88776655", "ViejoPendiente", "1199887766", "viejo@test.com", LocalDate.of(1985, 5, 15));
+        socioService.registrarSocio(new SocioCreateDTO(socio.getDni(), socio.getNombre(), socio.getTelefono(), socio.getEmail(), socio.getFechaNacimiento()));
+
+        // 2. Registrar asistencia de hace 60 días (fuera del rango de un plan de 30 días)
+        java.time.LocalDateTime fechaVieja = java.time.LocalDateTime.now().minusDays(60).truncatedTo(java.time.temporal.ChronoUnit.SECONDS);
+        AsistenciaSocioId idMuyViejo = new AsistenciaSocioId(socio.getDni(), fechaVieja);
+        Asistencia asistenciaMuyVieja = new Asistencia(socio, false);
+        asistenciaMuyVieja.setIdAsistencia(idMuyViejo);
+        asistenciaRepository.saveAndFlush(asistenciaMuyVieja);
+
+        // 3. Registrar Pago de Membresia de 30 días
+        MembresiaDTO membresia = membresiaService.registrarMembresia(new MembresiaCreateDTO(30, new BigDecimal("50000"), "Plan 30 dias", 30, TipoMembresia.MUSCULACION));
+        MedioPagoDTO medioPago = medioPagoService.registrarMedioPago(new MedioPagoDTO("EFECTIVO_VIEJO"));
+        PuestoDTO puesto = puestoService.registrarPuesto(new PuestoDTO("Recepcion"));
+        EmpleadoDTO empleado = empleadoService.registrarEmpleado(new EmpleadoDTO("22233344", "Recep", "222", "recep@test.com", LocalDate.now(), true, puesto.idPuesto()));
+
+        pagoService.crearPago(new PagoCreateDTO(
+                EstadoPago.PAGADO,
+                socio.getDni(),
+                medioPago.idMedioPago(),
+                empleado.dni(),
+                List.of(new DetallePagoCreateDTO(1, new BigDecimal("50000"), null, socio.getDni(), membresia.idMembresia()))
+        ));
+
+        // 4. Verificar que la membresia arranca HOY (no hace 60 días)
+        SocioMembresia sm = socioMembresiaRepository.findActivaBySocio(socio.getDni()).get();
+        assertEquals(LocalDate.now(), sm.getFechaInicio(), 
+            "La membresía debería arrancar hoy porque la asistencia pendiente está fuera del rango");
+
+        // 5. La asistencia vieja debería seguir PENDIENTE (verificar con count)
+        Integer pendientes = asistenciaRepository.asistenciasPendientesSocio(socio.getDni());
+        assertEquals(1, pendientes, 
+            "Debería quedar 1 asistencia pendiente porque la vieja no se validó");
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void verificarQueSeTomaAsistenciaRecienteCuandoHayViejasYRecientes() {
+        // 1. Crear socio sin membresia
+        Socio socio = new Socio("77665544", "MixtoEdad", "1188776655", "mixto@test.com", LocalDate.of(1988, 8, 20));
+        socioService.registrarSocio(new SocioCreateDTO(socio.getDni(), socio.getNombre(), socio.getTelefono(), socio.getEmail(), socio.getFechaNacimiento()));
+
+        // 2. Registrar asistencia vieja (60 días - fuera del rango)
+        java.time.LocalDateTime fechaVieja = java.time.LocalDateTime.now().minusDays(60).truncatedTo(java.time.temporal.ChronoUnit.SECONDS);
+        AsistenciaSocioId idVieja = new AsistenciaSocioId(socio.getDni(), fechaVieja);
+        Asistencia asistenciaVieja = new Asistencia(socio, false);
+        asistenciaVieja.setIdAsistencia(idVieja);
+        asistenciaRepository.saveAndFlush(asistenciaVieja);
+
+        // 3. Registrar asistencia reciente (5 días - dentro del rango)
+        java.time.LocalDateTime fechaReciente = java.time.LocalDateTime.now().minusDays(5).truncatedTo(java.time.temporal.ChronoUnit.SECONDS);
+        AsistenciaSocioId idReciente = new AsistenciaSocioId(socio.getDni(), fechaReciente);
+        Asistencia asistenciaReciente = new Asistencia(socio, false);
+        asistenciaReciente.setIdAsistencia(idReciente);
+        asistenciaRepository.saveAndFlush(asistenciaReciente);
+
+        // 4. Registrar Pago de Membresia de 30 días
+        MembresiaDTO membresia = membresiaService.registrarMembresia(new MembresiaCreateDTO(30, new BigDecimal("60000"), "Plan Mixto", 30, TipoMembresia.MUSCULACION));
+        MedioPagoDTO medioPago = medioPagoService.registrarMedioPago(new MedioPagoDTO("EFECTIVO_MIXTO"));
+        PuestoDTO puesto = puestoService.registrarPuesto(new PuestoDTO("Caja"));
+        EmpleadoDTO empleado = empleadoService.registrarEmpleado(new EmpleadoDTO("33344455", "Cajero", "333", "caja@test.com", LocalDate.now(), true, puesto.idPuesto()));
+
+        pagoService.crearPago(new PagoCreateDTO(
+                EstadoPago.PAGADO,
+                socio.getDni(),
+                medioPago.idMedioPago(),
+                empleado.dni(),
+                List.of(new DetallePagoCreateDTO(1, new BigDecimal("60000"), null, socio.getDni(), membresia.idMembresia()))
+        ));
+
+        // 5. Verificar que la membresia arranca hace 5 días (la reciente, no la vieja)
+        SocioMembresia sm = socioMembresiaRepository.findActivaBySocio(socio.getDni()).get();
+        assertEquals(LocalDate.now().minusDays(5), sm.getFechaInicio(), 
+            "La membresía debería arrancar desde la asistencia reciente (5 días atrás)");
+
+        // 6. Solo debe quedar 1 asistencia pendiente (la vieja de 60 días)
+        Integer pendientes = asistenciaRepository.asistenciasPendientesSocio(socio.getDni());
+        assertEquals(1, pendientes, 
+            "Debería quedar 1 asistencia pendiente (la vieja), la reciente se validó");
     }
 
     // ==================== ERROR HANDLING TESTS ====================
