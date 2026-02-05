@@ -3,6 +3,7 @@ package com.nexo.gestion.dto;
 
 import com.nexo.gestion.entity.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 
@@ -10,18 +11,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PagoCreateDTO {
-    @NotBlank
+    @NotNull
     private EstadoPago estado;
     @Pattern(
             regexp = "\\d{7,8}",
             message = "El DNI debe tener 7 u 8 dígitos numéricos"
     )
     private String dniSocio; // opcional
-    @NotBlank
+    @NotNull
     private Integer idMedioPago;
     @NotBlank
     private String dniEmpleado;
-    @NotBlank
+    @NotNull
     private List<DetallePagoCreateDTO> detalles = new ArrayList<>();
 
     public EstadoPago getEstado() {

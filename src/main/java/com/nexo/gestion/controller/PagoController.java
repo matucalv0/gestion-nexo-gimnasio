@@ -2,6 +2,7 @@ package com.nexo.gestion.controller;
 
 import com.nexo.gestion.dto.*;
 import com.nexo.gestion.services.PagoService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,7 +23,7 @@ public class PagoController {
 
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @PostMapping
-    public ResponseEntity<PagoDTO> altaPago(@RequestBody PagoCreateDTO dto) {
+    public ResponseEntity<PagoDTO> altaPago(@Valid @RequestBody PagoCreateDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(pagoService.crearPago(dto));
     }

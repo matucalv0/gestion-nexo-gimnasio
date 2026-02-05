@@ -1,6 +1,6 @@
 import { getToken, logout } from "../auth/auth.js";
 
-const API_URL = "http://localhost:8080";
+const API_URL = "";
 
 export async function authFetch(endpoint, options = {}) {
   const token = getToken();
