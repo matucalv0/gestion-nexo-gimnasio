@@ -31,32 +31,25 @@
 
 <body class="text-gray-100 min-h-screen font-sans selection:bg-[var(--orange)] selection:text-white">
 
-    <div class="absolute inset-0 bg-black/80 z-0"></div>
-
-    <main class="relative z-10 flex justify-center min-h-screen p-6 pt-16">
+    <main class="flex justify-center min-h-screen p-6 pt-16">
         <div class="w-full max-w-7xl">
 
             <!-- HEADER -->
-            <header
-                class="bg-gradient-to-r from-gray-900 to-gray-800 border-b border-gray-700/50 rounded-2xl mb-8 px-8 py-5 shadow-2xl backdrop-blur-sm">
-                <div class="flex justify-between items-center">
-                    <div class="flex items-center gap-4">
-                        <div class="p-3 bg-blue-500/10 rounded-xl">
-                            <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <h1 class="text-2xl font-bold text-white tracking-tight">Finanzas</h1>
-                            <p class="text-sm text-gray-400 font-medium">Balance y movimientos</p>
-                        </div>
+            <header class="header-nexo">
+                <div class="header-left">
+                    <div class="header-icon bg-blue-500/10">
+                        <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
                     </div>
-                    <button id="btnHome" class="px-6 py-2.5 bg-gray-800 hover:bg-gray-700 border-2 border-gray-700 hover:border-gray-600
-                                   text-gray-300 hover:text-white rounded-xl font-semibold text-sm
-                                   transition-all duration-200 hover:scale-105 active:scale-95">
-                        ← Volver
-                    </button>
+                    <div>
+                        <h1 class="header-title">Finanzas</h1>
+                        <p class="header-subtitle">Balance y movimientos</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button id="btnHome" class="btn-secondary px-4 py-2 text-sm">← Volver</button>
                 </div>
             </header>
 
@@ -81,13 +74,13 @@
 
                             <div
                                 class="border border-[var(--input-border)] rounded-lg p-4 hover:border-[var(--orange)]/50 transition">
-                                <p class="text-label text-gray-400 mb-1">Semana</p>
+                                <p class="text-label text-gray-400 mb-1">esta semana</p>
                                 <p id="kpiGananciaSemana" class="text-metric text-[var(--beige)]">$0</p>
                             </div>
 
                             <div
                                 class="border border-[var(--input-border)] rounded-lg p-4 hover:border-[var(--orange)]/50 transition">
-                                <p class="text-label text-gray-400 mb-1">Mes</p>
+                                <p class="text-label text-gray-400 mb-1">este mes</p>
                                 <div class="flex items-baseline gap-2">
                                     <p id="kpiGananciaMes" class="text-metric text-[var(--beige)]">$0</p>
                                     <span id="varGananciaMes"></span>
