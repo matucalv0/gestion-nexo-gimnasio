@@ -5,10 +5,13 @@ const API_URL = "";
 export async function authFetch(endpoint, options = {}) {
   const token = getToken();
 
+  // No setear Content-Type si el body es FormData (el navegador lo hace automáticamente)
+  const isFormData = options.body instanceof FormData;
+
   const response = await fetch(API_URL + endpoint, {
     ...options,
     headers: {
-      "Content-Type": "application/json",
+      ...(!isFormData && { "Content-Type": "application/json" }),
       ...(token && { Authorization: `Bearer ${token}` }),
       ...(options.headers || {})
     }

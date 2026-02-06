@@ -20,28 +20,27 @@ import java.util.Map;
 public class SocioController {
     private final SocioService socioService;
 
-    public SocioController(SocioService socioService){
+    public SocioController(SocioService socioService) {
         this.socioService = socioService;
     }
 
-
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<SocioDTO> altaSocio(@Valid @RequestBody SocioCreateDTO socioCreateDTO){
+    public ResponseEntity<SocioDTO> altaSocio(@Valid @RequestBody SocioCreateDTO socioCreateDTO) {
         SocioDTO socio = socioService.registrarSocio(socioCreateDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(socio);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping("/{dni}")
-    public ResponseEntity<SocioDTO> buscarPorDni(@PathVariable String dni){
+    public ResponseEntity<SocioDTO> buscarPorDni(@PathVariable String dni) {
         SocioDTO socio = socioService.buscarSocioPorDni(dni);
         return ResponseEntity.ok(socio);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping("/{dni}/pagos")
-    public ResponseEntity<List<PagoDTO>> buscarPagosPorDni(@PathVariable String dni){
+    public ResponseEntity<List<PagoDTO>> buscarPagosPorDni(@PathVariable String dni) {
         List<PagoDTO> pagos = socioService.buscarPagosPorDni(dni);
         return ResponseEntity.ok(pagos);
     }
@@ -52,35 +51,36 @@ public class SocioController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(required = false) String q,
-            @RequestParam(required = false) Boolean activo
-    ) {
+            @RequestParam(required = false) Boolean activo) {
         return ResponseEntity.ok(socioService.buscarSociosPaginados(page, size, q, activo));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PatchMapping("/{dni}/baja")
-    public ResponseEntity<SocioDTO> darDeBajaSocio(@PathVariable String dni){
+    public ResponseEntity<SocioDTO> darDeBajaSocio(@PathVariable String dni) {
         SocioDTO socio = socioService.bajaSocio(dni);
         return ResponseEntity.ok(socio);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @PatchMapping("/{dni}")
-    public ResponseEntity<SocioDTO> actualizar(@PathVariable String dni, @Valid @RequestBody SocioPatchDTO socioPatchDTO){
+    public ResponseEntity<SocioDTO> actualizar(@PathVariable String dni,
+            @Valid @RequestBody SocioPatchDTO socioPatchDTO) {
         SocioDTO socio = socioService.patchSocio(dni, socioPatchDTO);
         return ResponseEntity.ok(socio);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @PostMapping("/{dni}/membresias/{idMembresia}")
-    public ResponseEntity<SocioMembresiaDTO> crearMembresiaParaSocio(@PathVariable String dni, @PathVariable Integer id_membresia){
+    public ResponseEntity<SocioMembresiaDTO> crearMembresiaParaSocio(@PathVariable String dni,
+            @PathVariable Integer id_membresia) {
         SocioMembresiaDTO suscripcion = socioService.asignarMembresia(dni, id_membresia);
         return ResponseEntity.ok(suscripcion);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @PostMapping("/{dni}/asistencias")
-    public ResponseEntity<AsistenciaSocioIdDTO> asistenciaSocio(@PathVariable String dni){
+    public ResponseEntity<AsistenciaSocioIdDTO> asistenciaSocio(@PathVariable String dni) {
         AsistenciaSocioIdDTO asistencia = socioService.registrarAsistencia(dni);
         return ResponseEntity.ok(asistencia);
     }
@@ -90,28 +90,25 @@ public class SocioController {
     public Map<String, Integer> asistenciasDisponibles(@PathVariable String dni) {
         return Map.of(
                 "disponibles",
-                socioService.asistenciasDisponibles(dni)
-        );
+                socioService.asistenciasDisponibles(dni));
     }
-
-
 
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping("/{dni}/membresia-vigente")
-    public ResponseEntity<MembresiaVigenteDTO> membresiaVigente(@PathVariable String dni){
+    public ResponseEntity<MembresiaVigenteDTO> membresiaVigente(@PathVariable String dni) {
         MembresiaVigenteDTO membresia = socioService.membresiaVigenteSocio(dni);
         return ResponseEntity.ok(membresia);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping("/dias-para-vencer-membresiavigente")
-    public ResponseEntity<Integer> diasParaVencerMembresiaVigente(@RequestParam("q") String dni){
+    public ResponseEntity<Integer> diasParaVencerMembresiaVigente(@RequestParam("q") String dni) {
         return ResponseEntity.ok(socioService.diasParaVencimientoMembresiaVigente(dni));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping("/activo-mes")
-    public  ResponseEntity<Boolean> socioIsActivoMes(@RequestParam("dni") String dni){
+    public ResponseEntity<Boolean> socioIsActivoMes(@RequestParam("dni") String dni) {
         return ResponseEntity.ok(socioService.socioActivoMes(dni));
     }
 
@@ -127,6 +124,16 @@ public class SocioController {
     public ResponseEntity<List<SocioInactivoDTO>> sociosInactivos(
             @RequestParam(value = "dias", defaultValue = "7") Integer dias) {
         return ResponseEntity.ok(socioService.obtenerSociosInactivos(dias));
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
+    @GetMapping("/{dni}/rutina-activa")
+    public ResponseEntity<?> obtenerRutinaActivaDeSocio(@PathVariable String dni) {
+        RutinaDTO rutina = socioService.obtenerRutinaActivaDeSocio(dni);
+        if (rutina == null) {
+            return ResponseEntity.ok(Map.of("mensaje", "Este socio no tiene rutina activa asignada"));
+        }
+        return ResponseEntity.ok(rutina);
     }
 
 }

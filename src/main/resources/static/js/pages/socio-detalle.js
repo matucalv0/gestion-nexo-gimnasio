@@ -17,12 +17,13 @@ document.addEventListener("DOMContentLoaded", () => {
     cargarKPIs(dni);
     cargarSocio(dni);
     cargarMembresiaVigente(dni);
+    cargarRutinaActiva(dni);
 
     // Botones
     document.getElementById("btnVolver").addEventListener("click", () => window.location.href = "socios.html");
     document.getElementById("btnEditar").addEventListener("click", () => window.location.href = `editar-socio.html?dni=${dni}`);
     document.getElementById("btnRegistrarPago").addEventListener("click", () => window.location.href = `registrar-pago.html?dni=${dni}&cuota=true`);
-    document.getElementById("btnRegistrarAsistencia").addEventListener("click", () => {window.location.href = `asistencia.html?dni=${dni}&asistencia=true`;});
+    document.getElementById("btnRegistrarAsistencia").addEventListener("click", () => { window.location.href = `asistencia.html?dni=${dni}&asistencia=true`; });
 
 });
 
@@ -122,6 +123,66 @@ function renderMembresiaCard(container, nombre, tipo, estado, vencimiento) {
         `;
         container.appendChild(card);
     });
+}
+
+async function cargarRutinaActiva(dni) {
+    const container = document.getElementById("rutinaContainer");
+    container.innerHTML = "";
+
+    try {
+        const res = await authFetch(`${API_URL}/${dni}/rutina-activa`);
+        if (!res.ok) {
+            container.innerHTML = '<p class="text-gray-500">No hay rutina activa asignada</p>';
+            return;
+        }
+
+        const rutina = await res.json();
+
+        // Si solo retorna un mensaje, no hay rutina
+        if (rutina.mensaje) {
+            container.innerHTML = '<p class="text-gray-500">' + rutina.mensaje + '</p>';
+            return;
+        }
+
+        const campos = [
+            { label: "Nombre", valor: rutina.nombre || "—" },
+            { label: "Profesor", valor: rutina.nombreEmpleado || "—" },
+            { label: "Fecha", valor: rutina.fecha ? new Date(rutina.fecha).toLocaleDateString() : "—" },
+            { label: "Descripción", valor: rutina.descripcion || "—" },
+        ];
+
+        campos.forEach(c => {
+            const card = document.createElement("div");
+            card.className = `
+                border border-[var(--input-border)]
+                bg-[#121212]
+                rounded-lg
+                p-4
+                hover:border-[var(--orange)]
+                transition
+            `;
+            card.innerHTML = `
+                <p class="text-xs text-gray-400">${c.label}</p>
+                <p class="text-lg font-bold text-[var(--beige)]">${c.valor}</p>
+            `;
+            container.appendChild(card);
+        });
+
+        // Botón para ver detalles
+        const btnContainer = document.createElement("div");
+        btnContainer.className = "col-span-full";
+        btnContainer.innerHTML = `
+            <button onclick="window.location.href='ver-rutina.html?id=${rutina.idRutina}'" 
+                class="w-full bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">
+                Ver rutina completa
+            </button>
+        `;
+        container.appendChild(btnContainer);
+
+    } catch (err) {
+        console.error("Error al cargar la rutina activa:", err);
+        container.innerHTML = '<p class="text-gray-500">Error al cargar la rutina</p>';
+    }
 }
 
 

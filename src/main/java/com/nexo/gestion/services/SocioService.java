@@ -18,32 +18,49 @@ public class SocioService {
     private final SocioMembresiaRepository socioMembresiaRepository;
     private final PagoRepository pagoRepository;
     private final AsistenciaRepository asistenciaRepository;
+    private final RutinaRepository rutinaRepository;
 
-    public SocioService(AsistenciaRepository asistenciaRepository, PagoRepository pagoRepository, SocioRepository socioRepository, MembresiaRepository membresiaRepository, SocioMembresiaRepository socioMembresiaRepository) {
+    public SocioService(AsistenciaRepository asistenciaRepository, PagoRepository pagoRepository,
+            SocioRepository socioRepository, MembresiaRepository membresiaRepository,
+            SocioMembresiaRepository socioMembresiaRepository, RutinaRepository rutinaRepository) {
         this.socioRepository = socioRepository;
         this.membresiaRepository = membresiaRepository;
         this.socioMembresiaRepository = socioMembresiaRepository;
         this.pagoRepository = pagoRepository;
         this.asistenciaRepository = asistenciaRepository;
-
+        this.rutinaRepository = rutinaRepository;
     }
 
     private AsistenciaSocioIdDTO convertirAAsistenciaSocioIdDTO(AsistenciaSocioId a) {
         return new AsistenciaSocioIdDTO(
                 a.getDniSocio(),
-                a.getFechaHora()
-        );
+                a.getFechaHora());
     }
 
     private SocioDTO convertirASocioDTO(Socio socio) {
+        RutinaDTO rutinaActiva = null;
+        var rutinaOpt = rutinaRepository.findFirstBySocioDniOrderByIdRutinaDesc(socio.getDni());
+        if (rutinaOpt.isPresent()) {
+            Rutina rutina = rutinaOpt.get();
+            rutinaActiva = new RutinaDTO(
+                    rutina.getIdRutina(),
+                    rutina.getNombre(),
+                    rutina.getDescripcion(),
+                    rutina.getEmpleado().getDni(),
+                    rutina.getEmpleado().getNombre(),
+                    rutina.getSocio() != null ? rutina.getSocio().getDni() : null,
+                    rutina.getSocio() != null ? rutina.getSocio().getNombre() : null,
+                    rutina.getFecha(),
+                    null);
+        }
         return new SocioDTO(
                 socio.getDni(),
                 socio.getNombre(),
                 socio.getTelefono(),
                 socio.getEmail(),
                 socio.getFechaNacimiento(),
-                socio.isActivo()
-        );
+                socio.isActivo(),
+                rutinaActiva);
     }
 
     private SocioMembresiaDTO convertirASocioMembresiaDTO(SocioMembresia socioMembresia) {
@@ -51,8 +68,7 @@ public class SocioService {
                 socioMembresia.getIdSm(),
                 socioMembresia.getFechaInicio(),
                 socioMembresia.getFechaHasta(),
-                socioMembresia.getPrecio()
-        );
+                socioMembresia.getPrecio());
     }
 
     private MembresiaDTO convertirAMembresiaDTO(Membresia membresia) {
@@ -63,8 +79,7 @@ public class SocioService {
                 membresia.getNombre(),
                 membresia.getTipoMembresia(),
                 membresia.getAsistenciasPorSemana(),
-                membresia.isActivo()
-        );
+                membresia.isActivo());
     }
 
     private DetallePagoDTO convertirDetallePagoADTO(DetallePago detallePago) {
@@ -92,16 +107,14 @@ public class SocioService {
                 detallePago.getCantidad(),
                 detallePago.getPrecioUnitario(),
                 idProducto,
-                idMembresia
-        );
+                idMembresia);
     }
-
 
     private PagoDTO convertirAPagoDTO(Pago pago) {
         List<DetallePago> detalle = pago.getDetalles();
         List<DetallePagoDTO> detalleDTO = new ArrayList<>();
 
-        for (DetallePago d: detalle){
+        for (DetallePago d : detalle) {
             detalleDTO.add(convertirDetallePagoADTO(d));
 
         }
@@ -111,8 +124,7 @@ public class SocioService {
                 pago.getEstado(),
                 pago.getFecha(),
                 pago.getMonto(),
-                detalleDTO
-        );
+                detalleDTO);
     }
 
     @Transactional
@@ -121,11 +133,12 @@ public class SocioService {
             throw new ObjetoDuplicadoException("El dni " + socioDTO.getDni() + " ");
         }
 
-        if (socioRepository.existsByEmail(socioDTO.getEmail())){
+        if (socioRepository.existsByEmail(socioDTO.getEmail())) {
             throw new ObjetoDuplicadoException("El email " + socioDTO.getEmail() + " ");
         }
 
-        Socio socio = new Socio(socioDTO.getDni(), socioDTO.getNombre(), socioDTO.getTelefono(), socioDTO.getEmail(), socioDTO.getFechaNacimiento());
+        Socio socio = new Socio(socioDTO.getDni(), socioDTO.getNombre(), socioDTO.getTelefono(), socioDTO.getEmail(),
+                socioDTO.getFechaNacimiento());
         Socio guardado = socioRepository.save(socio);
         return convertirASocioDTO(guardado);
     }
@@ -140,11 +153,11 @@ public class SocioService {
     public SocioDTO patchSocio(String dni, SocioPatchDTO socioPatch) {
         Socio socio = socioRepository.findById(dni).orElseThrow(() -> new ObjetoNoEncontradoException("dni"));
 
-        if (socioPatch.getDni() != null){
+        if (socioPatch.getDni() != null) {
             socio.setDni(socioPatch.getDni());
         }
 
-        if (socioPatch.getNombre() != null){
+        if (socioPatch.getNombre() != null) {
             socio.setNombre(socioPatch.getNombre());
         }
 
@@ -183,7 +196,8 @@ public class SocioService {
     public SocioMembresiaDTO asignarMembresia(String dni, Integer idMembresia) {
         Socio socio = socioRepository.findById(dni).orElseThrow(() -> new ObjetoNoEncontradoException(dni));
 
-        Membresia membresia = membresiaRepository.findById(idMembresia).orElseThrow(() -> new ObjetoNoEncontradoException(String.valueOf(idMembresia)));
+        Membresia membresia = membresiaRepository.findById(idMembresia)
+                .orElseThrow(() -> new ObjetoNoEncontradoException(String.valueOf(idMembresia)));
 
         SocioMembresia socioMembresia = new SocioMembresia(socio, membresia);
 
@@ -214,24 +228,22 @@ public class SocioService {
     public AsistenciaSocioIdDTO registrarAsistencia(String dni) {
         Socio socio = socioRepository.findById(dni).orElseThrow(() -> new ObjetoNoEncontradoException(dni));
 
-        if (!socioMembresiaRepository.estaActivoHoy(dni)){
+        if (!socioMembresiaRepository.estaActivoHoy(dni)) {
             Asistencia nuevaAsistencia = new Asistencia(socio, false);
             Asistencia guardada = asistenciaRepository.save(nuevaAsistencia);
             return convertirAAsistenciaSocioIdDTO(guardada.getIdAsistencia());
         }
 
-        if (asistenciaRepository.socioVinoHoy(socio.getDni())){
+        if (asistenciaRepository.socioVinoHoy(socio.getDni())) {
             throw new AsistenciaDiariaException();
         }
 
-        if (socioMembresiaRepository.estaActivoHoy(dni) && asistenciasDisponibles(dni) == 0){
+        if (socioMembresiaRepository.estaActivoHoy(dni) && asistenciasDisponibles(dni) == 0) {
             throw new SocioSinAsistenciasDisponiblesException();
         }
 
+        // SocioMembresia membresia = membresiaVigente(socio);
 
-        //SocioMembresia membresia = membresiaVigente(socio);
-
-    
         Asistencia nuevaAsistencia = new Asistencia(socio, true);
         Asistencia guardada = asistenciaRepository.save(nuevaAsistencia);
         return convertirAAsistenciaSocioIdDTO(guardada.getIdAsistencia());
@@ -251,15 +263,12 @@ public class SocioService {
         return socioMembresia;
     }
 
-
-
-
-    public List<SocioDTO> buscarSocios(String dniOrNombre){
+    public List<SocioDTO> buscarSocios(String dniOrNombre) {
         List<SocioDTO> socios = new ArrayList<>();
-        
+
         String q = "%" + dniOrNombre.trim().toLowerCase() + "%";
 
-        for (Socio socio: socioRepository.buscarPorNombreODni(q)){
+        for (Socio socio : socioRepository.buscarPorNombreODni(q)) {
             SocioDTO socioDTO = convertirASocioDTO(socio);
             socios.add(socioDTO);
         }
@@ -267,44 +276,42 @@ public class SocioService {
         return socios;
     }
 
-    public int asistenciasDisponibles(String dni){
+    public int asistenciasDisponibles(String dni) {
         Socio socio = socioRepository.findById(dni)
                 .orElseThrow(() -> new ObjetoNoEncontradoException(dni));
 
         SocioMembresia membresiaActual = membresiaVigente(socio);
 
-
-        int asistenciasPorSemana = Optional.ofNullable(membresiaActual.getMembresia().getAsistenciasPorSemana()).orElse(0);
+        int asistenciasPorSemana = Optional.ofNullable(membresiaActual.getMembresia().getAsistenciasPorSemana())
+                .orElse(0);
         int duracionDias = Optional.ofNullable(membresiaActual.getMembresia().getDuracionDias()).orElse(0);
 
         long diasAsistidos = Optional.ofNullable(
-                socioRepository.diasAsistidos(membresiaActual.getIdSm(), socio.getDni())
-        ).orElse(0L);
+                socioRepository.diasAsistidos(membresiaActual.getIdSm(), socio.getDni())).orElse(0L);
 
         int cantidadAsistenciasMes = (int) Math.floor(asistenciasPorSemana * (duracionDias / 7.0));
-
-
-
 
         return Math.toIntExact(Math.max(cantidadAsistenciasMes - diasAsistidos, 0));
     }
 
-    public MembresiaVigenteDTO membresiaVigenteSocio(String dni){
-        Socio socio = socioRepository.findById(dni).orElseThrow(() -> new ObjetoNoEncontradoException("No existe ningun socio con el dni " + dni));
+    public MembresiaVigenteDTO membresiaVigenteSocio(String dni) {
+        Socio socio = socioRepository.findById(dni)
+                .orElseThrow(() -> new ObjetoNoEncontradoException("No existe ningun socio con el dni " + dni));
 
         SocioMembresia suscripcionActiva = membresiaVigente(socio);
 
-        return new MembresiaVigenteDTO(suscripcionActiva.getMembresia().getNombre(), suscripcionActiva.getMembresia().getTipoMembresia(), suscripcionActiva.getFechaHasta());
+        return new MembresiaVigenteDTO(suscripcionActiva.getMembresia().getNombre(),
+                suscripcionActiva.getMembresia().getTipoMembresia(), suscripcionActiva.getFechaHasta());
 
     }
 
-    private boolean socioAsistioHoy(String dni){
+    private boolean socioAsistioHoy(String dni) {
         return socioRepository.asististenciasHoy(dni) > 0;
     }
 
-
     public Integer diasParaVencimientoMembresiaVigente(String dni) {
-        Socio socio = socioRepository.findById(dni).orElseThrow(() -> new ObjetoNoEncontradoException("No existe ningun socio con el dni " + dni));
+        Socio socio = socioRepository.findById(dni)
+                .orElseThrow(() -> new ObjetoNoEncontradoException("No existe ningun socio con el dni " + dni));
 
         Integer idMembresiaVigente = membresiaVigente(socio).getIdSm();
 
@@ -333,19 +340,20 @@ public class SocioService {
     public List<SocioInactivoDTO> obtenerSociosInactivos(Integer dias) {
         List<Object[]> rows = socioMembresiaRepository.sociosActivosSinAsistencia(dias);
         List<SocioInactivoDTO> inactivos = new ArrayList<>();
-        
+
         for (Object[] row : rows) {
             String dni = (String) row[0];
             String nombre = (String) row[1];
             String telefono = (String) row[2];
             Integer diasSinAsistir = ((Number) row[3]).intValue();
             LocalDate ultimaAsistencia = row[4] != null ? ((java.sql.Date) row[4]).toLocalDate() : null;
-            
+
             inactivos.add(new SocioInactivoDTO(dni, nombre, telefono, diasSinAsistir, ultimaAsistencia));
         }
-        
+
         return inactivos;
     }
+
     public PageResponseDTO<SocioDTO> buscarSociosPaginados(int page, int size, String q, Boolean activo) {
         if (q != null && !q.trim().isEmpty()) {
             q = "%" + q.trim().toLowerCase() + "%";
@@ -353,11 +361,10 @@ public class SocioService {
             q = null;
         }
 
-        org.springframework.data.domain.Pageable pageable =
-                org.springframework.data.domain.PageRequest.of(page, size);
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
 
-        org.springframework.data.domain.Page<Socio> pageResult =
-                socioRepository.buscarSociosPaginados(q, activo, pageable);
+        org.springframework.data.domain.Page<Socio> pageResult = socioRepository.buscarSociosPaginados(q, activo,
+                pageable);
 
         List<SocioDTO> content = pageResult.getContent()
                 .stream()
@@ -369,7 +376,24 @@ public class SocioService {
                 pageResult.getNumber(),
                 pageResult.getSize(),
                 pageResult.getTotalElements(),
-                pageResult.getTotalPages()
-        );
+                pageResult.getTotalPages());
+    }
+
+    public RutinaDTO obtenerRutinaActivaDeSocio(String dni) {
+        var rutinaOpt = rutinaRepository.findFirstBySocioDniOrderByIdRutinaDesc(dni);
+        if (rutinaOpt.isEmpty()) {
+            return null;
+        }
+        Rutina rutina = rutinaOpt.get();
+        return new RutinaDTO(
+                rutina.getIdRutina(),
+                rutina.getNombre(),
+                rutina.getDescripcion(),
+                rutina.getEmpleado().getDni(),
+                rutina.getEmpleado().getNombre(),
+                rutina.getSocio() != null ? rutina.getSocio().getDni() : null,
+                rutina.getSocio() != null ? rutina.getSocio().getNombre() : null,
+                rutina.getFecha(),
+                null);
     }
 }

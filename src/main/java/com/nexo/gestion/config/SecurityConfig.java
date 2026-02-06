@@ -48,6 +48,7 @@ public class SecurityConfig {
                                 "/socio-detalle.html",
                                 "/ejercicios.html",
                                 "ver-rutina.html",
+                                "importar-rutina.html",
                                 "/registrar-socio.html",
                                 "/registrar-pago.html",
                                 "/asistencia.html",

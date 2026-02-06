@@ -47,21 +47,40 @@ public class RutinaService {
     }
 
     private RutinaDetalleDTO convertirADetalleDTO(RutinaDetalle detalle) {
+        Integer idEjercicio = null;
+        String nombreEjercicio = "EJERCICIO NO DISPONIBLE";
+        String video = null;
+        Integer idGrupo = null;
+
+        try {
+            if (detalle.getEjercicio() != null) {
+                idEjercicio = detalle.getEjercicio().getIdEjercicio();
+                nombreEjercicio = detalle.getEjercicio().getNombre();
+                video = detalle.getEjercicio().getVideo();
+                idGrupo = detalle.getEjercicio().getGrupoMuscular() != null
+                        ? detalle.getEjercicio().getGrupoMuscular().getIdGrupo()
+                        : null;
+            }
+        } catch (jakarta.persistence.EntityNotFoundException | org.hibernate.ObjectNotFoundException e) {
+            // Log warning but allow proceeding
+            // System.err.println("Ejercicio no encontrado para detalle ID: " + detalle.getIdDetalle());
+            nombreEjercicio = "⚠️ NO DISPONIBLE (ID_REF ERROR)";
+        }
+
         return new RutinaDetalleDTO(
                 detalle.getIdDetalle(),
-                detalle.getEjercicio().getIdEjercicio(),
-                detalle.getEjercicio().getNombre(),
-                detalle.getEjercicio().getVideo(),
-                detalle.getEjercicio().getGrupoMuscular() != null
-                        ? detalle.getEjercicio().getGrupoMuscular().getIdGrupo()
-                        : null,
+                idEjercicio,
+                nombreEjercicio,
+                video,
+                idGrupo,
                 detalle.getOrden(),
                 detalle.getSeries(),
                 detalle.getRepeticiones(),
                 detalle.getCarga(),
                 detalle.getDescanso(),
                 detalle.getObservacion(),
-                detalle.getDia());
+                detalle.getDia(),
+                detalle.getCargas() != null ? detalle.getCargas() : java.util.List.of());
     }
 
     private EjercicioDTO convertirAEjercicioDTO(Ejercicio ejercicio) {
@@ -143,12 +162,12 @@ public class RutinaService {
     // 🆕 OBTENER rutina por ID
     @Transactional(readOnly = true)
     public RutinaDTO obtenerRutinaPorId(Integer idRutina) {
-        Rutina rutina = rutinaRepository.findById(idRutina)
+        Rutina rutina = rutinaRepository.findByIdWithDetails(idRutina)
                 .orElseThrow(() -> new ObjetoNoEncontradoException("Rutina no encontrada con ID: " + idRutina));
         return convertirARutinaDTO(rutina);
     }
 
-    // 🆕 ACTUALIZAR rutina completa (reemplaza detalles)
+    // 🆕 ACTUALIZAR rutina completa (SMART UPDATE)
     @Transactional
     public RutinaDTO actualizarRutina(RutinaUpdateDTO dto) {
         Rutina rutina = rutinaRepository.findById(dto.idRutina())
@@ -171,19 +190,42 @@ public class RutinaService {
             }
         }
 
-        // Reemplazar detalles: borrar viejos, agregar nuevos
-        rutina.getDetalles().clear();
-        if (dto.detalles() != null && !dto.detalles().isEmpty()) {
-            for (RutinaDetalleRequestDTO d : dto.detalles()) {
-                if (d.idEjercicio() == null) {
-                    throw new ObjetoNoEncontradoException("Ejercicio no especificado en detalle");
-                }
+        // --- SMART UPDATE DETALLES ---
+        List<RutinaDetalleRequestDTO> incomingDetails = dto.detalles() != null ? dto.detalles() : new java.util.ArrayList<>();
+        
+        // 1. Map existing details by ID for quick lookup
+        java.util.Map<Long, RutinaDetalle> existingDetailsMap = new java.util.HashMap<>();
+        for (RutinaDetalle d : rutina.getDetalles()) {
+            existingDetailsMap.put(d.getIdDetalle(), d);
+        }
 
-                Ejercicio ejercicio = ejercicioRepository.findById(d.idEjercicio())
-                        .orElseThrow(() -> new ObjetoNoEncontradoException(
-                                "Ejercicio no encontrado id: " + d.idEjercicio()));
+        // 2. Track which IDs are updated to identify deletions
+        java.util.Set<Long> updatedIds = new java.util.HashSet<>();
 
-                RutinaDetalle detalle = new RutinaDetalle(
+        for (RutinaDetalleRequestDTO d : incomingDetails) {
+            if (d.idEjercicio() == null) {
+                throw new ObjetoNoEncontradoException("Ejercicio no especificado en detalle");
+            }
+            Ejercicio ejercicio = ejercicioRepository.findById(d.idEjercicio())
+                    .orElseThrow(() -> new ObjetoNoEncontradoException("Ejercicio no encontrado id: " + d.idEjercicio()));
+
+            if (d.idDetalle() != null && existingDetailsMap.containsKey(d.idDetalle())) {
+                // UPDATE EXISTING
+                RutinaDetalle existing = existingDetailsMap.get(d.idDetalle());
+                existing.setEjercicio(ejercicio);
+                existing.setOrden(d.orden());
+                existing.setSeries(d.series());
+                existing.setRepeticiones(d.repeticiones());
+                existing.setCarga(d.carga()); // Update current config load (string)
+                existing.setDescanso(d.descanso());
+                existing.setObservacion(d.observacion());
+                existing.setDia(d.dia() != null ? d.dia() : 1);
+                // DO NOT TOUCH 'cargas' list here to preserve history!
+
+                updatedIds.add(d.idDetalle());
+            } else {
+                // CREATE NEW
+                RutinaDetalle newDetail = new RutinaDetalle(
                         rutina,
                         ejercicio,
                         d.orden(),
@@ -192,10 +234,13 @@ public class RutinaService {
                         d.carga(),
                         d.descanso(),
                         d.observacion(),
-                        d.dia());
-                rutina.agregarDetalle(detalle);
+                        d.dia() != null ? d.dia() : 1);
+                rutina.agregarDetalle(newDetail);
             }
         }
+
+        // 3. Remove details that are not in the payload
+        rutina.getDetalles().removeIf(d -> d.getIdDetalle() != null && !updatedIds.contains(d.getIdDetalle()));
 
         Rutina actualizada = rutinaRepository.save(rutina);
         return convertirARutinaDTO(actualizada);
@@ -236,6 +281,9 @@ public class RutinaService {
             detalle.setObservacion(dto.observacion());
         if (dto.dia() != null)
             detalle.setDia(dto.dia());
+        if (dto.cargas() != null) {
+            detalle.setCargas(new java.util.ArrayList<>(dto.cargas()));
+        }
 
         RutinaDetalle actualizada = rutinaDetalleRepository.save(detalle);
         return convertirADetalleDTO(actualizada);
@@ -245,9 +293,129 @@ public class RutinaService {
     // crearRutinaConDetalles.
     @Transactional(readOnly = true)
     public java.util.List<RutinaDTO> buscarRutinas() {
-        return rutinaRepository.findAll().stream()
+        // Fetch ALL routines to identify all unique "names" (plans)
+        List<Rutina> allRutinas = rutinaRepository.findAll();
+
+        // Map Name -> Best Representative Routine
+        // Rules:
+        // 1. Prefer routine with socio == null (Pure Template)
+        // 2. If no template, use the most recent creation (highest ID)
+        java.util.Map<String, Rutina> uniqueRoutines = new java.util.HashMap<>();
+
+        for (Rutina r : allRutinas) {
+            String key = r.getNombre().trim().toLowerCase();
+            
+            if (!uniqueRoutines.containsKey(key)) {
+                uniqueRoutines.put(key, r);
+                continue;
+            }
+
+            Rutina existing = uniqueRoutines.get(key);
+            
+            // If current 'r' is a better representative
+            boolean currentIsTemplate = r.getSocio() == null;
+            boolean existingIsTemplate = existing.getSocio() == null;
+
+            if (currentIsTemplate && !existingIsTemplate) {
+                // Found a real template, replace the assigned one
+                uniqueRoutines.put(key, r);
+            } else if ((currentIsTemplate == existingIsTemplate) && (r.getIdRutina() > existing.getIdRutina())) {
+                // Both are same type (both templates or both assigned), strictly prefer newest
+                uniqueRoutines.put(key, r);
+            }
+        }
+
+        // Return sorted by ID desc or Name
+        return uniqueRoutines.values().stream()
+                .sorted((r1, r2) -> r2.getIdRutina().compareTo(r1.getIdRutina()))
                 .map(this::convertirARutinaResumenDTO)
                 .collect(java.util.stream.Collectors.toList());
+    }
+ 
+    @Transactional
+    public java.util.List<Integer> asignarRutinaAMultiplesSocios(Integer idRutina, java.util.List<String> dnisSocios) {
+        Rutina rutinaOriginal = rutinaRepository.findById(idRutina)
+                .orElseThrow(() -> new ObjetoNoEncontradoException("Rutina no encontrada con ID: " + idRutina));
+
+        java.util.List<Integer> rutinasCreadas = new java.util.ArrayList<>();
+
+        for (String dniSocio : dnisSocios) {
+            Socio socio = socioRepository.findById(dniSocio)
+                    .orElseThrow(() -> new ObjetoNoEncontradoException("Socio no encontrado: " + dniSocio));
+
+            // VALIDACION: Verificar si ya tiene asignada esta rutina como activa
+            rutinaRepository.findFirstBySocioDniOrderByIdRutinaDesc(dniSocio).ifPresent(rutinaActiva -> {
+                if (rutinaActiva.getNombre().equalsIgnoreCase(rutinaOriginal.getNombre())) {
+                    throw new ObjetoDuplicadoException(
+                            "El socio " + socio.getNombre() + " ya tiene asignada la rutina '" 
+                            + rutinaOriginal.getNombre() + "' como activa.");
+                }
+            });
+
+            // Crear copia de la rutina para este socio
+            Rutina rutinaCopia = new Rutina(
+                    rutinaOriginal.getNombre(),
+                    rutinaOriginal.getDescripcion(),
+                    rutinaOriginal.getEmpleado(),
+                    socio);
+
+            // Copiar detalles
+            for (RutinaDetalle detalle : rutinaOriginal.getDetalles()) {
+                RutinaDetalle detalleCopia = new RutinaDetalle(
+                        rutinaCopia,
+                        detalle.getEjercicio(),
+                        detalle.getOrden(),
+                        detalle.getSeries(),
+                        detalle.getRepeticiones(),
+                        detalle.getCarga(),
+                        detalle.getDescanso(),
+                        detalle.getObservacion(),
+                        detalle.getDia());
+                // Copiar cargas
+                if (detalle.getCargas() != null && !detalle.getCargas().isEmpty()) {
+                    detalleCopia.setCargas(new java.util.ArrayList<>(detalle.getCargas()));
+                }
+                rutinaCopia.agregarDetalle(detalleCopia);
+            }
+
+            Rutina guardada = rutinaRepository.save(rutinaCopia);
+            rutinasCreadas.add(guardada.getIdRutina());
+        }
+
+        return rutinasCreadas;
+    }
+
+    public java.util.List<SocioDTO> obtenerSociosConRutina(Integer idRutinaTemplate) {
+        Rutina template = rutinaRepository.findById(idRutinaTemplate)
+                .orElseThrow(() -> new ObjetoNoEncontradoException("Rutina template no encontrada id: " + idRutinaTemplate));
+
+        // Find ALL routines with this name (including historical)
+        java.util.List<Rutina> asignadas = rutinaRepository.findByNombreAndSocioIsNotNull(template.getNombre());
+
+        return asignadas.stream()
+                .map(Rutina::getSocio)
+                .filter(java.util.Objects::nonNull)
+                .filter(socio -> {
+                    // Check if this socio's CURRENT ACTIVE routine matches the template name
+                    return rutinaRepository.findFirstBySocioDniOrderByIdRutinaDesc(socio.getDni())
+                            .map(active -> active.getNombre().equalsIgnoreCase(template.getNombre()))
+                            .orElse(false);
+                })
+                .map(this::convertirASocioResumenDTO)
+                .distinct()
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    private SocioDTO convertirASocioResumenDTO(Socio socio) {
+        return new SocioDTO(
+                socio.getDni(),
+                socio.getNombre(),
+                socio.getTelefono(),
+                socio.getEmail(),
+                socio.getFechaNacimiento(),
+                socio.isActivo(),
+                null // Rutina active not needed here to prevent recursion
+        );
     }
 
     private RutinaDTO convertirARutinaResumenDTO(Rutina rutina) {
@@ -263,4 +431,6 @@ public class RutinaService {
                 rutina.getFecha(),
                 java.util.Collections.emptyList());
     }
+
+
 }

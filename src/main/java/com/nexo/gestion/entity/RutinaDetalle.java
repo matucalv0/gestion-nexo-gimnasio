@@ -2,6 +2,8 @@ package com.nexo.gestion.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "rutina_detalle")
@@ -17,37 +19,47 @@ public class RutinaDetalle {
     @JsonBackReference
     private Rutina rutina;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_ejercicio", nullable = false)
     private Ejercicio ejercicio;
 
     private Integer orden;
-    
+
     @Column(length = 50)
     private String series;
-    
+
     @Column(length = 50)
     private String repeticiones;
-    
+
     @Column(length = 50)
     private String carga;
-    
+
     @Column(length = 50)
     private String descanso;
-    
+
     @Column(columnDefinition = "TEXT")
     private String observacion;
 
     @Column(name = "dia", nullable = false, columnDefinition = "int default 1")
     private Integer dia = 1;
 
-    public RutinaDetalle() {}
+    // Múltiples cargas (una por día/semana de la rutina)
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "rutina_detalle_cargas", joinColumns = @JoinColumn(name = "id_detalle"))
+    @Column(name = "carga_valor", length = 50)
+    @OrderColumn(name = "carga_indice")
+    private List<String> cargas = new ArrayList<>();
 
-    public RutinaDetalle(Rutina rutina, Ejercicio ejercicio, Integer orden, String series, String repeticiones, String carga, String descanso, String observacion) {
+    public RutinaDetalle() {
+    }
+
+    public RutinaDetalle(Rutina rutina, Ejercicio ejercicio, Integer orden, String series, String repeticiones,
+            String carga, String descanso, String observacion) {
         this(rutina, ejercicio, orden, series, repeticiones, carga, descanso, observacion, 1);
     }
 
-    public RutinaDetalle(Rutina rutina, Ejercicio ejercicio, Integer orden, String series, String repeticiones, String carga, String descanso, String observacion, Integer dia) {
+    public RutinaDetalle(Rutina rutina, Ejercicio ejercicio, Integer orden, String series, String repeticiones,
+            String carga, String descanso, String observacion, Integer dia) {
         this.rutina = rutina;
         this.ejercicio = ejercicio;
         this.orden = orden;
@@ -138,5 +150,20 @@ public class RutinaDetalle {
 
     public void setDia(Integer dia) {
         this.dia = dia;
+    }
+
+    public List<String> getCargas() {
+        return cargas;
+    }
+
+    public void setCargas(List<String> cargas) {
+        this.cargas = cargas;
+    }
+
+    public void agregarCarga(String carga) {
+        if (this.cargas == null) {
+            this.cargas = new ArrayList<>();
+        }
+        this.cargas.add(carga);
     }
 }
