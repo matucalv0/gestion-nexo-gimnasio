@@ -20,7 +20,7 @@ public class Ejercicio {
     @JoinColumn(name = "id_grupo")
     GrupoMuscular grupoMuscular;
     @OneToMany(mappedBy = "ejercicio")
-    List<EjercicioRutina> rutinas = new ArrayList<>();
+    List<RutinaDetalle> detalles = new ArrayList<>();
 
     public Ejercicio(){}
 
@@ -48,13 +48,13 @@ public class Ejercicio {
 
     }
 
-    public List<EjercicioRutina> getRutinas() {
-        return rutinas;
+    public List<RutinaDetalle> getDetalles() {
+        return detalles;
     }
 
-    public void agregarRutina(EjercicioRutina rutina) {
-        this.rutinas.add(rutina);
-        rutina.setEjercicio(this);
+    public void agregarDetalle(RutinaDetalle detalle) {
+        this.detalles.add(detalle);
+        detalle.setEjercicio(this);
     }
 
     public Integer getIdEjercicio() {

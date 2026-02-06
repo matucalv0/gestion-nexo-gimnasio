@@ -17,7 +17,7 @@ public class EmpleadoService {
     private final EmpleadoRepository empleadoRepository;
     private final PuestoRepository puestoRepository;
 
-    public EmpleadoService(PuestoRepository puestoRepository, EmpleadoRepository empleadoRepository){
+    public EmpleadoService(PuestoRepository puestoRepository, EmpleadoRepository empleadoRepository) {
         this.empleadoRepository = empleadoRepository;
         this.puestoRepository = puestoRepository;
 
@@ -31,38 +31,50 @@ public class EmpleadoService {
                 empleado.getEmail(),
                 empleado.getFechaNacimiento(),
                 empleado.isActivo(),
-                empleado.getPuesto().getIdPuesto()
-        );
+                empleado.getPuesto() != null ? empleado.getPuesto().getIdPuesto() : null);
     }
 
-    public EmpleadoDTO registrarEmpleado(EmpleadoDTO empleadoDTO){
-        if(empleadoRepository.existsById(empleadoDTO.dni())){
+    public EmpleadoDTO registrarEmpleado(EmpleadoDTO empleadoDTO) {
+        if (empleadoRepository.existsById(empleadoDTO.dni())) {
             throw new ObjetoNoEncontradoException(empleadoDTO.dni());
         }
 
-        Puesto puesto = puestoRepository.findById(empleadoDTO.idPuesto()).orElseThrow(()-> new ObjetoNoEncontradoException(String.valueOf(empleadoDTO.idPuesto())));
+        if (empleadoDTO.idPuesto() == null) {
+            throw new ObjetoNoEncontradoException("El puesto es obligatorio");
+        }
 
-        Empleado empleado = new Empleado(empleadoDTO.dni(), empleadoDTO.nombre(), empleadoDTO.telefono(), empleadoDTO.email(), empleadoDTO.fechaNacimiento(), puesto);
+        Puesto puesto = puestoRepository.findById(empleadoDTO.idPuesto())
+                .orElseThrow(() -> new ObjetoNoEncontradoException(String.valueOf(empleadoDTO.idPuesto())));
+
+        Empleado empleado = new Empleado(empleadoDTO.dni(), empleadoDTO.nombre(), empleadoDTO.telefono(),
+                empleadoDTO.email(), empleadoDTO.fechaNacimiento(), puesto);
         Empleado guardado = empleadoRepository.save(empleado);
         return convertirAEmpleadoDTO(guardado);
     }
 
-    public EmpleadoDTO bajaEmpleado(String dni){
-        Empleado empleado = empleadoRepository.findById(dni).orElseThrow(()-> new ObjetoNoEncontradoException(dni));
+    public EmpleadoDTO bajaEmpleado(String dni) {
+        Empleado empleado = empleadoRepository.findById(dni).orElseThrow(() -> new ObjetoNoEncontradoException(dni));
 
         empleado.setActivo(false);
         Empleado guardado = empleadoRepository.save(empleado);
         return convertirAEmpleadoDTO(empleado);
     }
 
-    public EmpleadoDTO patchEmpleado(String dni, EmpleadoDTO empleadoDTO){
+    public EmpleadoDTO patchEmpleado(String dni, EmpleadoDTO empleadoDTO) {
         Empleado empleado = empleadoRepository.findById(dni).orElseThrow(() -> new ObjetoNoEncontradoException("dni"));
 
-        if (empleadoDTO.email() != null) { empleado.setEmail(empleadoDTO.email());}
-        if (empleadoDTO.telefono() != null) { empleado.setTelefono(empleadoDTO.telefono());}
-        if (empleadoDTO.activo() != null) { empleado.setActivo(empleadoDTO.activo());}
+        if (empleadoDTO.email() != null) {
+            empleado.setEmail(empleadoDTO.email());
+        }
+        if (empleadoDTO.telefono() != null) {
+            empleado.setTelefono(empleadoDTO.telefono());
+        }
+        if (empleadoDTO.activo() != null) {
+            empleado.setActivo(empleadoDTO.activo());
+        }
         if (empleadoDTO.idPuesto() != null) {
-            Puesto puesto = puestoRepository.findById(empleadoDTO.idPuesto()).orElseThrow(()-> new ObjetoNoEncontradoException(String.valueOf(empleadoDTO.idPuesto())));
+            Puesto puesto = puestoRepository.findById(empleadoDTO.idPuesto())
+                    .orElseThrow(() -> new ObjetoNoEncontradoException(String.valueOf(empleadoDTO.idPuesto())));
             empleado.setPuesto(puesto);
         }
 
@@ -70,28 +82,20 @@ public class EmpleadoService {
         return convertirAEmpleadoDTO(guardado);
     }
 
-    public EmpleadoDTO buscarEmpleadoPorDni(String dni){
+    public EmpleadoDTO buscarEmpleadoPorDni(String dni) {
         Empleado empleado = empleadoRepository.findById(dni).orElseThrow(() -> new ObjetoNoEncontradoException("dni"));
         return convertirAEmpleadoDTO(empleado);
     }
 
-    public List<EmpleadoDTO> buscarEmpleados(){
+    public List<EmpleadoDTO> buscarEmpleados() {
         List<EmpleadoDTO> empleadosDTO = new ArrayList<>();
 
-        for (Empleado empleado: empleadoRepository.findAll()){
+        for (Empleado empleado : empleadoRepository.findAll()) {
             EmpleadoDTO empleadoDTO = convertirAEmpleadoDTO(empleado);
             empleadosDTO.add(empleadoDTO);
         }
 
         return empleadosDTO;
     }
-
-
-
-
-
-
-
-
 
 }

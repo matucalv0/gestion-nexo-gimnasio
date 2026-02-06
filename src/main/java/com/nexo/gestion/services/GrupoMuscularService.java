@@ -18,7 +18,7 @@ public class GrupoMuscularService {
     }
 
     private GrupoMuscularDTO convertirAGrupoMuscularDTO(GrupoMuscular grupoMuscular){
-        return new GrupoMuscularDTO(grupoMuscular.getNombre());
+        return new GrupoMuscularDTO(grupoMuscular.getIdGrupo(), grupoMuscular.getNombre());
     }
 
     public GrupoMuscularDTO registrarGrupoMuscular(GrupoMuscularDTO grupoMuscular){

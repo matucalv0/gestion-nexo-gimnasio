@@ -1,5 +1,6 @@
 package com.nexo.gestion.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -24,8 +25,9 @@ public class Rutina {
     @JoinColumn(name = "dni_socio")
     private Socio socio;
 
-    @OneToMany(mappedBy = "rutina")
-    List<EjercicioRutina> ejercicios = new ArrayList<>();
+    @OneToMany(mappedBy = "rutina", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<RutinaDetalle> detalles = new ArrayList<>();
 
     public Rutina(){}
 
@@ -51,19 +53,27 @@ public class Rutina {
         this.descripcion = descripcion;
         this.empleado = empleado;
         this.socio = socio;
+        this.fecha = LocalDate.now();
     }
 
     public Integer getIdRutina() {
         return idRutina;
     }
 
-    public List<EjercicioRutina> getEjercicios() {
-        return ejercicios;
+    public List<RutinaDetalle> getDetalles() {
+        return detalles;
     }
 
-    public void agregarEjercicio(EjercicioRutina ejercicio) {
-        this.ejercicios.add(ejercicio);
-        ejercicio.setRutina(this);
+    public void setDetalles(List<RutinaDetalle> detalles) {
+        this.detalles.clear();
+        if (detalles != null) {
+            this.detalles.addAll(detalles);
+        }
+    }
+
+    public void agregarDetalle(RutinaDetalle detalle) {
+        this.detalles.add(detalle);
+        detalle.setRutina(this);
     }
 
     public void setIdRutina(Integer idRutina) {

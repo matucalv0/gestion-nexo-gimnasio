@@ -17,33 +17,34 @@ public class GastoService {
     private final GastoRepository gastoRepository;
     private final MedioPagoRepository medioPagoRepository;
 
-
-    public GastoService(GastoRepository gastoRepository, MedioPagoRepository medioPagoRepository){
+    public GastoService(GastoRepository gastoRepository, MedioPagoRepository medioPagoRepository) {
         this.gastoRepository = gastoRepository;
         this.medioPagoRepository = medioPagoRepository;
     }
 
-    private GastoDTO convertirAGastoDTO(Gasto gasto){
+    private GastoDTO convertirAGastoDTO(Gasto gasto) {
         return new GastoDTO(
                 gasto.getFecha(),
                 gasto.getMonto(),
                 gasto.getCategoria(),
                 gasto.getProveedor(),
-                gasto.getMedioPago().getIdMedioPago()
-        );
+                gasto.getMedioPago() != null ? gasto.getMedioPago().getIdMedioPago() : null);
     }
-
 
     @Transactional
     public GastoDTO registrarGasto(GastoDTO gastoDTO) {
-        MedioPago medioPago = medioPagoRepository.findById(gastoDTO.idMedioPago()).orElseThrow(() -> new ObjetoNoEncontradoException(gastoDTO.idMedioPago() + " id no encontrado"));
+        if (gastoDTO.idMedioPago() == null) {
+            throw new ObjetoNoEncontradoException("El medio de pago es obligatorio");
+        }
+
+        MedioPago medioPago = medioPagoRepository.findById(gastoDTO.idMedioPago())
+                .orElseThrow(() -> new ObjetoNoEncontradoException(gastoDTO.idMedioPago() + " id no encontrado"));
 
         Gasto gasto = new Gasto(
                 gastoDTO.monto(),
                 gastoDTO.categoria(),
                 gastoDTO.proveedor(),
-                medioPago
-        );
+                medioPago);
 
         Gasto guardado = gastoRepository.save(gasto);
         return convertirAGastoDTO(guardado);
@@ -53,8 +54,9 @@ public class GastoService {
     public List<GastoDTO> buscarGastos() {
         List<GastoDTO> gastos = new ArrayList<>();
 
-        for (Gasto g: gastoRepository.findAll()){
-            gastos.add(new GastoDTO(g.getFecha(), g.getMonto(), g.getCategoria(), g.getProveedor(), g.getMedioPago().getIdMedioPago()));
+        for (Gasto g : gastoRepository.findAll()) {
+            gastos.add(new GastoDTO(g.getFecha(), g.getMonto(), g.getCategoria(), g.getProveedor(),
+                    g.getMedioPago() != null ? g.getMedioPago().getIdMedioPago() : null));
         }
 
         return gastos;
@@ -66,10 +68,5 @@ public class GastoService {
                 .orElseThrow(() -> new ObjetoNoEncontradoException("Gasto con id " + id + " no encontrado"));
         gastoRepository.delete(gasto);
     }
-
-
-
-
-
 
 }
