@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXO · Nueva Rutina</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { DEFAULT: '#FF6B2C', 400: '#FFA373', 500: '#FF6B2C', 600: '#E85A1F' },
+                        secondary: { DEFAULT: '#00D9FF', 500: '#00D9FF', 600: '#00B8DB' },
+                    },
+                    fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'] },
+                },
+            },
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/main.css">
+
+    <style>
+        /* Minimal overrides for table inputs to feel like a grid */
+        .table-input {
+            width: 100%;
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--beige);
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+        }
+
+        .table-input:focus {
+            background: #1a1a1a;
+            border-color: var(--orange);
+            outline: none;
+        }
+
+        .table-input.invalid {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        tr.selected td {
+            background-color: rgba(255, 107, 44, 0.05);
+        }
+
+        /* Modal transitions */
+        .modal-video {
+            display: none;
+        }
+
+        .modal-video.active {
+            display: flex;
+        }
+    </style>
+</head>
+
+<body class="text-gray-100 min-h-screen font-sans selection:bg-[var(--orange)] selection:text-white">
+
+    <!-- ALERTAS -->
+    <div id="alert-container" class="fixed top-4 right-4 max-w-md z-50"></div>
+
+    <main class="flex justify-center min-h-screen p-6 pt-16">
+        <div class="w-full max-w-7xl">
+
+            <!-- HEADER -->
+            <header class="header-nexo mb-8">
+                <div class="header-left">
+                    <div class="header-icon bg-primary-500/10">
+                        <svg class="w-8 h-8 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
+                            </path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="header-title">Diseñador de Rutinas</h1>
+                        <p class="header-subtitle">Crea planes de entrenamiento profesionales</p>
+                    </div>
+                </div>
+                <div class="header-actions flex gap-3">
+                    <a href="home.html" class="btn-secondary px-4 py-2 text-sm flex items-center gap-2">
+                        Cancelar
+                    </a>
+                    <button id="btnGuardarRutina" class="btn-primary px-4 py-2 text-sm flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        Guardar Rutina
+                    </button>
+                </div>
+            </header>
+
+            <!-- FORMULARIO METADATOS -->
+            <section class="bg-[#121212] p-6 rounded-xl border border-[var(--input-border)] shadow-xl mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Nombre de
+                            la Rutina *</label>
+                        <input type="text" id="nombreRutina"
+                            class="w-full px-4 py-2.5 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)] focus:outline-none focus:border-[var(--orange)] transition"
+                            placeholder="Ej: Hipertrofia Pecho - Semana 1">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Empleado
+                            *</label>
+                        <select id="selectEmpleado"
+                            class="w-full px-4 py-2.5 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)] focus:outline-none focus:border-[var(--orange)] transition cursor-pointer">
+                            <option value="">-- Seleccionar --</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Socio
+                            (Opcional)</label>
+                        <select id="selectSocio"
+                            class="w-full px-4 py-2.5 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)] focus:outline-none focus:border-[var(--orange)] transition cursor-pointer">
+                            <option value="">Sin asignar...</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Descripción /
+                        Objetivos</label>
+                    <textarea id="descripcionRutina" rows="2"
+                        class="w-full px-4 py-2.5 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)] focus:outline-none focus:border-[var(--orange)] transition resize-none"
+                        placeholder="Objetivos del mesociclo, notas generales..."></textarea>
+                </div>
+            </section>
+
+            <!-- EJERCICIOS - TABLA TIPO EXCEL -->
+            <section class="bg-[#121212] p-6 rounded-xl border border-[var(--input-border)] shadow-xl">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-[var(--beige)] flex items-center gap-2">
+                        <svg class="w-6 h-6 text-[var(--orange)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                        Planificación de Ejercicios
+                    </h3>
+                    <div class="flex gap-4 text-xs text-gray-500 font-mono">
+                        <span class="flex items-center gap-1"><kbd
+                                class="bg-[#1a1a1a] px-1 rounded border border-gray-700 text-gray-300">Tab</kbd>
+                            Siguiente celda</span>
+                        <span class="flex items-center gap-1"><kbd
+                                class="bg-[#1a1a1a] px-1 rounded border border-gray-700 text-gray-300">Enter</kbd> Nueva
+                            fila</span>
+                        <span class="flex items-center gap-1"><kbd
+                                class="bg-[#1a1a1a] px-1 rounded border border-gray-700 text-gray-300">Ctrl+D</kbd>
+                            Duplicar</span>
+                    </div>
+                </div>
+
+                <!-- TABS DE DÍAS -->
+                <div class="flex items-center gap-2 mb-6 border-b border-[var(--input-border)] pb-2 overflow-x-auto"
+                    id="daysTabsContainer">
+                    <!-- Tabs injected by JS -->
+                </div>
+
+                <!-- Botones de acción -->
+                <div class="flex gap-2 mb-4">
+                    <button id="btnAddEjercicio"
+                        class="px-3 py-1.5 bg-[#1a1a1a] hover:bg-gray-800 text-gray-300 rounded-md text-sm border border-[var(--input-border)] transition flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4">
+                            </path>
+                        </svg>
+                        Agregar
+                    </button>
+                    <button id="btnCrearEjercicio"
+                        class="px-3 py-1.5 bg-[#1a1a1a] hover:bg-gray-800 text-[var(--orange)] hover:text-white rounded-md text-sm border border-[var(--input-border)] transition flex items-center gap-2 font-semibold">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Nuevo Ejercicio
+                    </button>
+                    <button id="btnDuplicarEjercicio"
+                        class="px-3 py-1.5 bg-[#1a1a1a] hover:bg-gray-800 text-gray-300 rounded-md text-sm border border-[var(--input-border)] transition flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z">
+                            </path>
+                        </svg>
+                        Duplicar
+                    </button>
+                    <button id="btnImportarExcel"
+                        class="px-3 py-1.5 bg-[#1a1a1a] hover:bg-gray-800 text-gray-300 rounded-md text-sm border border-[var(--input-border)] transition flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                            </path>
+                        </svg>
+                        Importar Excel
+                    </button>
+                </div>
+
+                <!-- Tabla -->
+                <div class="overflow-x-auto rounded-lg border border-[var(--input-border)]">
+                    <table class="w-full text-sm text-[var(--beige)]">
+                        <thead class="bg-[#1a1a1a] text-gray-400 uppercase text-xs">
+                            <tr>
+                                <th class="px-3 py-3 text-center w-12">#</th>
+                                <th class="px-3 py-3 text-left min-w-[200px]">Ejercicio</th>
+                                <th class="px-2 py-3 text-center w-20">Series</th>
+                                <th class="px-2 py-3 text-center w-20">Reps</th>
+                                <th class="px-2 py-3 text-center w-24">Carga</th>
+                                <th class="px-2 py-3 text-center w-24">Pausa</th>
+                                <th class="px-2 py-3 text-center w-20">RPE</th>
+                                <th class="px-3 py-3 text-left">Notas</th>
+                                <th class="px-3 py-3 text-center w-20">Acc.</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ejerciciosTableBody" class="divide-y divide-[var(--input-border)] bg-[#121212]">
+                            <!-- Rows injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Empty State / Add Trigger (optional visual cue) -->
+                <div onclick="document.getElementById('btnAddEjercicio').click()"
+                    class="mt-2 p-3 border border-dashed border-[var(--input-border)] rounded-lg text-center text-gray-600 hover:text-[var(--orange)] hover:border-[var(--orange)]/50 cursor-pointer transition text-xs uppercase font-semibold tracking-wider">
+                    + Click para añadir fila
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- MODAL VIDEO -->
+    <div id="videoModal"
+        class="modal-video fixed inset-0 z-50 bg-black/80 hidden items-center justify-center backdrop-blur-sm">
+        <div
+            class="bg-[#121212] p-6 rounded-xl border border-[var(--input-border)] w-[90%] max-w-lg shadow-2xl transform transition-all scale-100">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-[var(--beige)] flex items-center gap-2">
+                    <svg class="w-5 h-5 text-[var(--orange)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z">
+                        </path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Video de Referencia
+                </h3>
+                <button id="closeVideoModal" class="text-gray-400 hover:text-white transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">URL del
+                        Video</label>
+                    <input type="text" id="videoUrlInput"
+                        class="w-full px-4 py-2.5 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)] focus:outline-none focus:border-[var(--orange)] transition"
+                        placeholder="https://youtube.com/...">
+                </div>
+                <div class="flex gap-3 pt-2">
+                    <button id="cancelVideoBtn" class="btn-secondary flex-1">Cancelar</button>
+                    <button id="saveVideoBtn" class="btn-primary flex-1">Guardar
+                        URL</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL NUEVO EJERCICIO -->
+    <div id="newExerciseModal"
+        class="modal-video fixed inset-0 z-50 bg-black/80 hidden items-center justify-center backdrop-blur-sm">
+        <div
+            class="bg-[#121212] p-6 rounded-xl border border-[var(--input-border)] w-[90%] max-w-lg shadow-2xl transform transition-all scale-100">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-[var(--beige)] flex items-center gap-2">
+                    <svg class="w-5 h-5 text-[var(--orange)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4">
+                        </path>
+                    </svg>
+                    Nuevo Ejercicio
+                </h3>
+                <button id="closeNewExerciseModal" class="text-gray-400 hover:text-white transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Nombre
+                        *</label>
+                    <input type="text" id="neNombre"
+                        class="w-full px-4 py-2.5 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)] focus:outline-none focus:border-[var(--orange)] transition"
+                        placeholder="Ej: Press Banca Plano">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Grupo
+                        Muscular *</label>
+                    <select id="neGrupo"
+                        class="w-full px-4 py-2.5 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)] focus:outline-none focus:border-[var(--orange)] transition cursor-pointer">
+                        <option value="">-- Cargando grupos... --</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">URL Video
+                        (Opcional)</label>
+                    <input type="text" id="neVideo"
+                        class="w-full px-4 py-2.5 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)] focus:outline-none focus:border-[var(--orange)] transition"
+                        placeholder="https://youtube.com/...">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Descripción
+                        (Opcional)</label>
+                    <textarea id="neDescripcion" rows="2"
+                        class="w-full px-4 py-2.5 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)] focus:outline-none focus:border-[var(--orange)] transition resize-none"
+                        placeholder="Tips técnicos..."></textarea>
+                </div>
+                <div class="flex gap-3 pt-2">
+                    <button id="cancelNewExerciseBtn" class="btn-secondary flex-1">Cancelar</button>
+                    <button id="saveNewExerciseBtn" class="btn-primary flex-1">Crear
+                        Ejercicio</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module" src="js/pages/registrar-rutina.js"></script>
+
+</body>
+
+</html>

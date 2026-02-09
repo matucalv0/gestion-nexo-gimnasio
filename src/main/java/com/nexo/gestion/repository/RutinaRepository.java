@@ -19,4 +19,10 @@ public interface RutinaRepository extends JpaRepository<Rutina, Integer> {
 
     @Query("SELECT r FROM Rutina r LEFT JOIN FETCH r.detalles d LEFT JOIN FETCH d.ejercicio e LEFT JOIN FETCH e.grupoMuscular WHERE r.idRutina = :id")
     Optional<Rutina> findByIdWithDetails(@Param("id") Integer id);
+
+    @Query(value = "SELECT DISTINCT ON (LOWER(TRIM(r.nombre))) r.* " +
+            "FROM rutina r " +
+            "ORDER BY LOWER(TRIM(r.nombre)), r.dni_socio ASC NULLS FIRST, r.id_rutina DESC", 
+            nativeQuery = true)
+    List<Rutina> findRutinasCondensadas();
 }

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NEXO · Rutinas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { DEFAULT: '#FF6B2C', 400: '#FFA373', 500: '#FF6B2C', 600: '#E85A1F' },
+                        secondary: { DEFAULT: '#00D9FF', 500: '#00D9FF', 600: '#00B8DB' },
+                    },
+                    fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'] },
+                },
+            },
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/main.css">
+</head>
+
+<body class="text-gray-100 min-h-screen font-sans selection:bg-[var(--orange)] selection:text-white">
+
+    <main class="flex justify-center min-h-screen p-6 pt-16">
+        <div class="w-full max-w-7xl">
+
+            <!-- HEADER -->
+            <header class="header-nexo mb-8">
+                <div class="header-left">
+                    <div class="header-icon bg-primary-500/10">
+                        <svg class="w-8 h-8 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
+                            </path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="header-title">Rutinas</h1>
+                        <p class="header-subtitle">Planes de entrenamiento</p>
+                    </div>
+                </div>
+                <div class="header-actions flex gap-3">
+                    <a href="importar-rutina.html" class="btn-primary px-4 py-2 text-sm flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3v-6">
+                            </path>
+                        </svg>
+                        Importar
+                    </a>
+                    <a href="home.html" class="btn-secondary px-4 py-2 text-sm flex items-center gap-2">
+                        ← Volver
+                    </a>
+                </div>
+            </header>
+
+            <!-- TABLA RUTINAS -->
+            <section class="bg-[#121212] p-6 rounded-xl border border-[var(--input-border)] shadow-2xl">
+                <!-- Search bar -->
+                <div class="mb-4">
+                    <div class="relative max-w-md">
+                        <svg class="w-5 h-5 absolute left-3 top-3 text-gray-500" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        <input type="text" id="busquedaRutina" placeholder="Buscar por socio (Nombre o DNI)..."
+                            class="w-full bg-[#1a1a1a] border border-[var(--input-border)] text-gray-200 text-sm rounded-lg pl-10 pr-4 py-2.5 focus:outline-none focus:border-[var(--orange)] transition">
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto rounded-lg">
+                    <table class="w-full text-sm text-gray-300">
+                        <thead class="bg-[#1a1a1a] text-gray-400 uppercase text-xs">
+                            <tr>
+                                <th class="px-6 py-4 text-left">Nombre</th>
+                                <th class="px-6 py-4 text-left">Asignaciones</th>
+                                <th class="px-6 py-4 text-left">Profesor</th>
+                                <th class="px-6 py-4 text-left">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaRutinasBody" class="divide-y divide-gray-800">
+                            <!-- Dinámico -->
+                            <tr>
+                                <td colspan="4" class="px-6 py-8 text-center text-gray-500">
+                                    Cargando rutinas...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <script type="module">
+        import { cargarRutinas } from "./js/pages/rutinas.js";
+
+        document.addEventListener("DOMContentLoaded", () => {
+            cargarRutinas();
+        });
+    </script>
+</body>
+
+</html>

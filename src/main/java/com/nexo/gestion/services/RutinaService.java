@@ -62,8 +62,6 @@ public class RutinaService {
                         : null;
             }
         } catch (jakarta.persistence.EntityNotFoundException | org.hibernate.ObjectNotFoundException e) {
-            // Log warning but allow proceeding
-            // System.err.println("Ejercicio no encontrado para detalle ID: " + detalle.getIdDetalle());
             nombreEjercicio = "⚠️ NO DISPONIBLE (ID_REF ERROR)";
         }
 
@@ -94,8 +92,6 @@ public class RutinaService {
 
     @Transactional
     public RutinaDTO crearRutina(RutinaDTO rutina) {
-        // DEPRECATED: Use crearRutinaConDetalles instead
-        // This method is kept for backward compatibility during migration
         if (rutinaRepository.existsByNombre(rutina.nombre())) {
             throw new ObjetoDuplicadoException("Ya existe una rutina con el nombre " + rutina.nombre());
         }
@@ -167,7 +163,7 @@ public class RutinaService {
         return convertirARutinaDTO(rutina);
     }
 
-    // 🆕 ACTUALIZAR rutina completa (SMART UPDATE)
+    // 🆕 ACTUALIZAR rutina completa
     @Transactional
     public RutinaDTO actualizarRutina(RutinaUpdateDTO dto) {
         Rutina rutina = rutinaRepository.findById(dto.idRutina())
@@ -190,16 +186,16 @@ public class RutinaService {
             }
         }
 
-        // --- SMART UPDATE DETALLES ---
+
         List<RutinaDetalleRequestDTO> incomingDetails = dto.detalles() != null ? dto.detalles() : new java.util.ArrayList<>();
         
-        // 1. Map existing details by ID for quick lookup
+
         java.util.Map<Long, RutinaDetalle> existingDetailsMap = new java.util.HashMap<>();
         for (RutinaDetalle d : rutina.getDetalles()) {
             existingDetailsMap.put(d.getIdDetalle(), d);
         }
 
-        // 2. Track which IDs are updated to identify deletions
+
         java.util.Set<Long> updatedIds = new java.util.HashSet<>();
 
         for (RutinaDetalleRequestDTO d : incomingDetails) {
@@ -210,21 +206,18 @@ public class RutinaService {
                     .orElseThrow(() -> new ObjetoNoEncontradoException("Ejercicio no encontrado id: " + d.idEjercicio()));
 
             if (d.idDetalle() != null && existingDetailsMap.containsKey(d.idDetalle())) {
-                // UPDATE EXISTING
                 RutinaDetalle existing = existingDetailsMap.get(d.idDetalle());
                 existing.setEjercicio(ejercicio);
                 existing.setOrden(d.orden());
                 existing.setSeries(d.series());
                 existing.setRepeticiones(d.repeticiones());
-                existing.setCarga(d.carga()); // Update current config load (string)
+                existing.setCarga(d.carga());
                 existing.setDescanso(d.descanso());
                 existing.setObservacion(d.observacion());
                 existing.setDia(d.dia() != null ? d.dia() : 1);
-                // DO NOT TOUCH 'cargas' list here to preserve history!
 
                 updatedIds.add(d.idDetalle());
             } else {
-                // CREATE NEW
                 RutinaDetalle newDetail = new RutinaDetalle(
                         rutina,
                         ejercicio,
@@ -239,7 +232,7 @@ public class RutinaService {
             }
         }
 
-        // 3. Remove details that are not in the payload
+
         rutina.getDetalles().removeIf(d -> d.getIdDetalle() != null && !updatedIds.contains(d.getIdDetalle()));
 
         Rutina actualizada = rutinaRepository.save(rutina);
@@ -289,17 +282,13 @@ public class RutinaService {
         return convertirADetalleDTO(actualizada);
     }
 
-    // DELETE: Methods removed legacy EjercicioRutina dependency. Use
-    // crearRutinaConDetalles.
+
     @Transactional(readOnly = true)
     public java.util.List<RutinaDTO> buscarRutinas() {
-        // Fetch ALL routines to identify all unique "names" (plans)
+
         List<Rutina> allRutinas = rutinaRepository.findAll();
 
-        // Map Name -> Best Representative Routine
-        // Rules:
-        // 1. Prefer routine with socio == null (Pure Template)
-        // 2. If no template, use the most recent creation (highest ID)
+
         java.util.Map<String, Rutina> uniqueRoutines = new java.util.HashMap<>();
 
         for (Rutina r : allRutinas) {
@@ -312,20 +301,19 @@ public class RutinaService {
 
             Rutina existing = uniqueRoutines.get(key);
             
-            // If current 'r' is a better representative
+
             boolean currentIsTemplate = r.getSocio() == null;
             boolean existingIsTemplate = existing.getSocio() == null;
 
             if (currentIsTemplate && !existingIsTemplate) {
-                // Found a real template, replace the assigned one
+
                 uniqueRoutines.put(key, r);
             } else if ((currentIsTemplate == existingIsTemplate) && (r.getIdRutina() > existing.getIdRutina())) {
-                // Both are same type (both templates or both assigned), strictly prefer newest
                 uniqueRoutines.put(key, r);
             }
         }
 
-        // Return sorted by ID desc or Name
+
         return uniqueRoutines.values().stream()
                 .sorted((r1, r2) -> r2.getIdRutina().compareTo(r1.getIdRutina()))
                 .map(this::convertirARutinaResumenDTO)
@@ -389,14 +377,13 @@ public class RutinaService {
         Rutina template = rutinaRepository.findById(idRutinaTemplate)
                 .orElseThrow(() -> new ObjetoNoEncontradoException("Rutina template no encontrada id: " + idRutinaTemplate));
 
-        // Find ALL routines with this name (including historical)
+
         java.util.List<Rutina> asignadas = rutinaRepository.findByNombreAndSocioIsNotNull(template.getNombre());
 
         return asignadas.stream()
                 .map(Rutina::getSocio)
                 .filter(java.util.Objects::nonNull)
                 .filter(socio -> {
-                    // Check if this socio's CURRENT ACTIVE routine matches the template name
                     return rutinaRepository.findFirstBySocioDniOrderByIdRutinaDesc(socio.getDni())
                             .map(active -> active.getNombre().equalsIgnoreCase(template.getNombre()))
                             .orElse(false);
@@ -419,7 +406,6 @@ public class RutinaService {
     }
 
     private RutinaDTO convertirARutinaResumenDTO(Rutina rutina) {
-        // Returns DTO without details for list view performance
         return new RutinaDTO(
                 rutina.getIdRutina(),
                 rutina.getNombre(),
