@@ -1,7 +1,7 @@
 package com.nexo.gestion.services;
 
 import com.nexo.gestion.dto.*;
-import com.nexo.gestion.entity.DetallePago;
+import com.nexo.gestion.entity.*;
 import com.nexo.gestion.entity.Gasto;
 import com.nexo.gestion.entity.Pago;
 import com.nexo.gestion.repository.GastoRepository;
@@ -35,9 +35,9 @@ public class FinanzaService {
         // FIXED: Explicit casting for PostgreSQL compatibility in UNION
         String sql = """
             SELECT * FROM (
-                SELECT id_pago as ref_id, 'INGRESO' as tipo, monto, fecha, CAST('Pago' AS VARCHAR) as cat, CAST(NULL AS VARCHAR) as prov FROM pago
+                SELECT id_pago as ref_id, 'INGRESO' as tipo, monto, fecha, CAST('Pago' AS VARCHAR) as cat, CAST(NULL AS VARCHAR) as prov FROM pago WHERE estado NOT IN ('ELIMINADO', 'ANULADO')
                 UNION ALL
-                SELECT id_gasto as ref_id, 'EGRESO' as tipo, monto, fecha, CAST(categoria AS VARCHAR) as cat, proveedor as prov FROM gasto
+                SELECT id_gasto as ref_id, 'EGRESO' as tipo, monto, fecha, CAST(categoria AS VARCHAR) as cat, proveedor as prov FROM gasto WHERE (activo IS NULL OR activo = true)
             ) as movimientos
             WHERE fecha >= :desde AND fecha <= :hasta
             ORDER BY fecha DESC
@@ -46,9 +46,9 @@ public class FinanzaService {
 
         String countSql = """
             SELECT COUNT(*) FROM (
-                SELECT fecha FROM pago
+                SELECT fecha FROM pago WHERE estado NOT IN ('ELIMINADO', 'ANULADO')
                 UNION ALL
-                SELECT fecha FROM gasto
+                SELECT fecha FROM gasto WHERE (activo IS NULL OR activo = true)
             ) as movimientos
             WHERE fecha >= :desde AND fecha <= :hasta
             """;
@@ -124,8 +124,9 @@ public class FinanzaService {
     }
 
     public List<MovimientoFinancieroDTO> buscarMovimientos(){
-        List<Pago> pagos = pagoRepository.findAllByOrderByFechaDesc();
-        List<Gasto> gastos = gastoRepository.findAllByOrderByFechaDesc();
+        List<Pago> pagos = pagoRepository.findByEstadoNotInOrderByFechaDesc(
+                List.of(EstadoPago.ELIMINADO, EstadoPago.ANULADO));
+        List<Gasto> gastos = gastoRepository.findByActivoTrueOrderByFechaDesc();
 
         List<MovimientoFinancieroDTO> movimientos = new ArrayList<>();
 

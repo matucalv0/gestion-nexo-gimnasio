@@ -1,6 +1,6 @@
 import { checkAuth } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
-import { mostrarAlerta, limpiarAlertas } from "../ui/alerta.js";
+import { Alerta } from "../ui/alerta.js";
 import { renderPagination } from "../ui/pagination.js";
 
 checkAuth();
@@ -12,7 +12,6 @@ let currentPage = 0;
 const pageSize = 20;
 
 document.addEventListener("DOMContentLoaded", () => {
-  limpiarAlertas();
 
   const tablaBody = document.getElementById("tablaAsistenciasBody");
 
@@ -60,10 +59,10 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // set mes actual por defecto para KPIs
-  inputMes.value = mesActualISO();
+  if (inputMes) inputMes.value = mesActualISO();
 
   // listeners KPIs
-  inputMes.addEventListener("change", () => {
+  inputMes?.addEventListener("change", () => {
     cargarKPIs();
     cargarGrafico();
   });
@@ -105,11 +104,7 @@ async function cargarAsistencias(tablaBody) {
 
   } catch (err) {
     console.error(err);
-    mostrarAlerta({
-      mensaje: "Error al cargar asistencias",
-      tipo: "danger",
-      contenedor: document.getElementById("alert-container"),
-    });
+    Alerta.error("Error al cargar asistencias");
   }
 }
 
@@ -150,7 +145,9 @@ function renderTabla(tablaBody, asistencias) {
 /* ================== KPIs ================== */
 
 async function cargarKPIs() {
-  const mes = document.getElementById("filtroMesAsistencias").value;
+  const mesInput = document.getElementById("filtroMesAsistencias");
+  if (!mesInput) return;
+  const mes = mesInput.value;
   if (!mes) return;
 
   try {
@@ -185,11 +182,7 @@ async function cargarKPIs() {
 
   } catch (err) {
     console.error(err);
-    mostrarAlerta({
-      mensaje: "Error al cargar KPIs",
-      tipo: "danger",
-      contenedor: document.getElementById("alert-container"),
-    });
+    Alerta.error("Error al cargar KPIs");
   }
 }
 
@@ -211,7 +204,9 @@ async function cargarHoraPico() {
 let chart;
 
 async function cargarGrafico() {
-  const mes = document.getElementById("filtroMesAsistencias").value;
+  const mesInput = document.getElementById("filtroMesAsistencias");
+  if (!mesInput) return;
+  const mes = mesInput.value;
   if (!mes) return;
 
   try {
@@ -335,11 +330,7 @@ async function cargarGrafico() {
 
   } catch (err) {
     console.error(err);
-    mostrarAlerta({
-      mensaje: "Error al cargar gráfico",
-      tipo: "danger",
-      contenedor: document.getElementById("alert-container"),
-    });
+    Alerta.error("Error al cargar gráfico");
   }
 }
 

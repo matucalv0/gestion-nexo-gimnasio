@@ -1,6 +1,6 @@
 import { checkAuth, logout } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
-import { mostrarAlerta, limpiarAlertas } from "../ui/alerta.js";
+import { Alerta } from "../ui/alerta.js";
 import { renderTabla } from "../ui/tabla.js";
 
 checkAuth();
@@ -160,19 +160,16 @@ function agregarDetalle() {
 
   if (tipo === "PRODUCTO") {
     if (!producto.value)
-      return mostrarAlerta({ mensaje: "Seleccione un producto", tipo: "danger" });
+      return Alerta.warning("Seleccione un producto");
     precioUnitario = Number(precio.value);
   } else {
     if (!membresia.value)
-      return mostrarAlerta({ mensaje: "Seleccione una membresía", tipo: "danger" });
+      return Alerta.warning("Seleccione una membresía");
     precioUnitario = Number(precioMembresia.value);
   }
 
   if (!precioUnitario || precioUnitario <= 0)
-    return mostrarAlerta({
-      mensaje: "El ítem seleccionado no tiene precio",
-      tipo: "danger"
-    });
+    return Alerta.error("El ítem seleccionado no tiene precio");
 
   let detalle;
   if (tipo === "PRODUCTO") {
@@ -230,23 +227,20 @@ function agregarDetalleSilencioso() {
 
   if (tipo === "PRODUCTO") {
     if (!producto.value) {
-      mostrarAlerta({ mensaje: "Seleccione un producto", tipo: "danger" });
+      Alerta.warning("Seleccione un producto");
       return false;
     }
     precioUnitario = Number(precio.value);
   } else {
     if (!membresia.value) {
-      mostrarAlerta({ mensaje: "Seleccione una membresía", tipo: "danger" });
+      Alerta.warning("Seleccione una membresía");
       return false;
     }
     precioUnitario = Number(precioMembresia.value);
   }
 
   if (!precioUnitario || precioUnitario <= 0) {
-    mostrarAlerta({
-      mensaje: "El ítem seleccionado no tiene precio",
-      tipo: "danger"
-    });
+    Alerta.error("El ítem seleccionado no tiene precio");
     return false;
   }
 
@@ -281,7 +275,6 @@ function agregarDetalleSilencioso() {
 /* ================== SUBMIT ================== */
 async function registrarPago(e) {
   e.preventDefault();
-  limpiarAlertas();
 
   // Auto-agregar detalle pendiente del formulario si hay algo seleccionado
   const tipo = tipoDetalle.value;
@@ -303,16 +296,10 @@ async function registrarPago(e) {
   }
 
   if (detalles.length === 0)
-    return mostrarAlerta({
-      mensaje: "El pago debe tener al menos un detalle",
-      tipo: "danger"
-    });
+    return Alerta.warning("El pago debe tener al menos un detalle");
 
   if (!medioPago.value)
-    return mostrarAlerta({
-      mensaje: "Seleccione un medio de pago",
-      tipo: "danger"
-    });
+    return Alerta.warning("Seleccione un medio de pago");
 
   const data = {
     estado: "PAGADO",
@@ -330,24 +317,19 @@ async function registrarPago(e) {
 
     if (!res.ok) {
       let mensaje = "Error al registrar pago";
-
       try {
         const error = await res.json();
         mensaje = error.message || mensaje;
       } catch { }
-
-      return mostrarAlerta({ mensaje, tipo: "danger" }); // ⬅️ RETURN CLAVE
+      return Alerta.error(mensaje);
     }
 
-    // ✅ SOLO SI SALIÓ BIEN
-    mostrarAlerta({
-      mensaje: "Pago registrado correctamente",
-      tipo: "success"
-    });
+    Alerta.success("Pago registrado correctamente");
 
     detalles = [];
     socioSeleccionado = null;
     buscarSocio.value = "";
+    buscarSocio.disabled = false;
     resultadosSocio.innerHTML = "";
     resultadosSocio.classList.add("hidden");
 
@@ -356,10 +338,7 @@ async function registrarPago(e) {
     onTipoDetalleChange();
 
   } catch {
-    mostrarAlerta({
-      mensaje: "No se pudo conectar con el servidor",
-      tipo: "danger"
-    });
+    Alerta.error("No se pudo conectar con el servidor");
   }
 }
 

@@ -1,6 +1,6 @@
 import { authFetch } from "../api/api.js";
 import { checkAuth } from "../auth/auth.js";
-import { mostrarAlerta } from "../ui/alerta.js";
+import { Alerta } from "../ui/alerta.js";
 
 checkAuth();
 
@@ -155,7 +155,7 @@ function abrirModal(ejercicio = null) {
         document.getElementById("descripcionInput").value = ejercicio.descripcion || "";
     } else {
         title.innerHTML = `
-             <svg class="w-5 h-5 text-secondary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 text-secondary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
             </svg>
             Nuevo Ejercicio
@@ -184,8 +184,8 @@ async function guardarEjercicio() {
     const video = document.getElementById("videoInput").value.trim();
     const descripcion = document.getElementById("descripcionInput").value.trim();
 
-    if (!nombre) return mostrarAlerta({ mensaje: "El nombre es obligatorio", tipo: "warning" });
-    if (!idGrupo) return mostrarAlerta({ mensaje: "El grupo muscular es obligatorio", tipo: "warning" });
+    if (!nombre) return Alerta.warning("El nombre es obligatorio");
+    if (!idGrupo) return Alerta.warning("El grupo muscular es obligatorio");
 
     const payload = {
         nombre,
@@ -204,44 +204,36 @@ async function guardarEjercicio() {
         });
 
         if (res.ok) {
-            mostrarAlerta({ mensaje: id ? "Actualizado correctamente" : "Creado correctamente", tipo: "success" });
+            Alerta.success(id ? "Actualizado correctamente" : "Creado correctamente");
             cerrarModal();
             cargarEjercicios(); // Reload list
         } else {
             const txt = await res.text();
-            mostrarAlerta({ mensaje: "Error: " + txt, tipo: "danger" });
+            Alerta.error("Error: " + txt);
         }
     } catch (e) {
         console.error(e);
-        mostrarAlerta({ mensaje: "Error de conexión", tipo: "danger" });
+        Alerta.error("Error de conexión");
     }
 }
 
 async function confirmarEliminacion(id) {
-    const result = await Swal.fire({
-        title: '¿Eliminar ejercicio?',
-        text: "No podrás revertir esto si ya está asignado a rutinas históricas podría causar inconsistencias visuales.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar',
-        background: '#1f2937',
-        color: '#fff'
-    });
-
-    if (result.isConfirmed) {
-        try {
-            const res = await authFetch(`/ejercicios/${id}`, { method: "DELETE" });
-            if (res.ok) {
-                mostrarAlerta({ mensaje: "Eliminado correctamente", tipo: "success" });
-                cargarEjercicios();
-            } else {
-                mostrarAlerta({ mensaje: "No se pudo eliminar (quizás tiene dependencias)", tipo: "danger" });
+    Alerta.confirm({
+        titulo: "¿Eliminar ejercicio?",
+        mensaje: "No podrás revertir esto si ya está asignado a rutinas históricas podría causar inconsistencias visuales.",
+        textoConfirmar: "Sí, eliminar",
+        onConfirm: async () => {
+            try {
+                const res = await authFetch(`/ejercicios/${id}`, { method: "DELETE" });
+                if (res.ok) {
+                    Alerta.success("Eliminado correctamente");
+                    cargarEjercicios();
+                } else {
+                    Alerta.error("No se pudo eliminar (quizás tiene dependencias)");
+                }
+            } catch (e) {
+                Alerta.error("Error de conexión");
             }
-        } catch (e) {
-            mostrarAlerta({ mensaje: "Error de conexión", tipo: "danger" });
         }
-    }
+    });
 }

@@ -1,6 +1,6 @@
 import { checkAuth } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
-import { mostrarAlerta, limpiarAlertas } from "../ui/alerta.js";
+import { Alerta } from "../ui/alerta.js";
 import { renderPagination } from "../ui/pagination.js";
 
 const API = "/finanzas";
@@ -288,52 +288,19 @@ function renderMovimientos(movimientos) {
       const id = btn.dataset.id;
       const tipo = btn.dataset.tipo;
 
-      mostrarModalConfirmacion(
-        `¿Seguro que deseas eliminar este ${tipo === "INGRESO" ? "pago" : "gasto"}?`,
-        async () => {
+      Alerta.confirm({
+        titulo: `¿Eliminar ${tipo === "INGRESO" ? "pago" : "gasto"}?`,
+        mensaje: `¿Seguro que deseas eliminar este ${tipo === "INGRESO" ? "pago" : "gasto"}?`,
+        textoConfirmar: "Eliminar",
+        onConfirm: async () => {
           await eliminarMovimiento(id, tipo);
         }
-      );
+      });
     });
   });
 }
 
-function mostrarModalConfirmacion(mensaje, onConfirm) {
-  // Crear overlay
-  const overlay = document.createElement("div");
-  overlay.className = "fixed inset-0 bg-black/70 flex items-center justify-center z-50";
-  overlay.id = "modal-confirmacion";
 
-  overlay.innerHTML = `
-    <div class="bg-[#1a1a1a] border border-[var(--input-border)] rounded-xl p-6 max-w-md mx-4 shadow-xl">
-      <p class="text-[var(--beige)] text-lg mb-6">${mensaje}</p>
-      <div class="flex gap-4 justify-end">
-        <button id="btn-cancelar" class="px-4 py-2 rounded-lg border border-gray-600 text-gray-400 hover:bg-gray-800 transition">
-          Cancelar
-        </button>
-        <button id="btn-confirmar" class="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition">
-          Eliminar
-        </button>
-      </div>
-    </div>
-  `;
-
-  document.body.appendChild(overlay);
-
-  overlay.querySelector("#btn-cancelar").addEventListener("click", () => {
-    overlay.remove();
-  });
-
-  overlay.querySelector("#btn-confirmar").addEventListener("click", async () => {
-    overlay.remove();
-    await onConfirm();
-  });
-
-  // Cerrar con click fuera
-  overlay.addEventListener("click", (e) => {
-    if (e.target === overlay) overlay.remove();
-  });
-}
 
 async function eliminarMovimiento(id, tipo) {
   try {
@@ -353,11 +320,7 @@ async function eliminarMovimiento(id, tipo) {
     }
 
     // Mostrar alerta de éxito
-    mostrarAlerta({
-      mensaje: `${tipo === "INGRESO" ? "Pago" : "Gasto"} eliminado correctamente`,
-      tipo: "success",
-      tiempo: 3000
-    });
+    Alerta.success(`${tipo === "INGRESO" ? "Pago" : "Gasto"} eliminado correctamente`);
 
     // Recargar datos
     await cargarMovimientosPaginados();
@@ -366,11 +329,7 @@ async function eliminarMovimiento(id, tipo) {
 
   } catch (e) {
     console.error("Error eliminando movimiento", e);
-    mostrarAlerta({
-      mensaje: "No se pudo eliminar el movimiento",
-      tipo: "danger",
-      tiempo: 5000
-    });
+    Alerta.error("No se pudo eliminar el movimiento");
   }
 }
 

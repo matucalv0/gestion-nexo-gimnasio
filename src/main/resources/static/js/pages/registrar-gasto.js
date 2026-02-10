@@ -1,6 +1,6 @@
 import { checkAuth, logout } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
-import { mostrarAlerta, limpiarAlertas } from "../ui/alerta.js";
+import { Alerta } from "../ui/alerta.js";
 
 checkAuth();
 
@@ -29,13 +29,9 @@ async function cargarMediosPago() {
 /* ================== SUBMIT ================== */
 async function registrarGasto(e) {
     e.preventDefault();
-    limpiarAlertas();
 
     if (!categoria.value || !monto.value || !medioPago.value)
-        return mostrarAlerta({
-            mensaje: "Complete todos los campos obligatorios",
-            tipo: "danger"
-        });
+        return Alerta.warning("Complete todos los campos obligatorios");
 
     const data = {
         categoria: categoria.value,
@@ -56,20 +52,14 @@ async function registrarGasto(e) {
                 const err = await res.json();
                 mensaje = err.message || mensaje;
             } catch { }
-            return mostrarAlerta({ mensaje, tipo: "danger" });
+            return Alerta.error(mensaje);
         }
 
-        mostrarAlerta({
-            mensaje: "Gasto registrado correctamente",
-            tipo: "success"
-        });
+        Alerta.success("Gasto registrado correctamente");
 
         gastoForm.reset();
 
     } catch {
-        mostrarAlerta({
-            mensaje: "No se pudo conectar con el servidor",
-            tipo: "danger"
-        });
+        Alerta.error("No se pudo conectar con el servidor");
     }
 }

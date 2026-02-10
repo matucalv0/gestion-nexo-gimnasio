@@ -1,6 +1,8 @@
 package com.nexo.gestion.config;
 
 import com.nexo.gestion.security.JwtAuthFilter;
+import com.nexo.gestion.security.RateLimitFilter;
+import com.nexo.gestion.security.JwtService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,6 +10,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -18,7 +21,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter) throws Exception {
+    public JwtAuthFilter jwtAuthFilter(JwtService jwtService, UserDetailsService userDetailsService) {
+        return new JwtAuthFilter(jwtService, userDetailsService);
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter, RateLimitFilter rateLimitFilter) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .formLogin(form -> form.disable())
@@ -26,45 +34,26 @@ public class SecurityConfig {
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                            response.getWriter().write("Credenciales inválidas");
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"error\": \"Credenciales inválidas\"}");
                         })
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/login.html",
-                                "/home.html",
-                                "/socios.html",
-                                "/asistencias.html",
-                                "/pagos.html",
-                                "/membresias.html",
-                                "/editar-producto.html",
-                                "/editar-membresia.html",
-                                "/editar-socio.html",
-                                "/productos.html",
-                                "/registrar-producto.html",
-                                "/registrar-membresia.html",
-                                "/rutinas.html",
-                                "/registrar-rutina.html",
-                                "/socio-detalle.html",
-                                "/ejercicios.html",
-                                "ver-rutina.html",
-                                "importar-rutina.html",
-                                "/registrar-socio.html",
-                                "/registrar-pago.html",
-                                "/asistencia.html",
-                                "/finanzas.html",
-                                "/registrar-gasto.html",
                                 "/auth/login",
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**",
+                                "/auth/logout",
+                                "/actuator/health",
                                 "/css/**",
                                 "/js/**",
                                 "/assets/**",
-                                "/favicon.ico"
+                                "/favicon.ico",
+                                "/error"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
 
+                .addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

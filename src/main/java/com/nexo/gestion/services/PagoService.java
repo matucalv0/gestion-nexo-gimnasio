@@ -170,6 +170,7 @@ public class PagoService {
                 .orElseThrow(() -> new ObjetoNoEncontradoException("id_mediopago"));
 
         Pago pago = new Pago(dto.getEstado(), socio, medioPago, empleado);
+        // Primer save para obtener el ID (necesario para DetallePagoId)
         pagoRepository.save(pago);
 
         int numero = 1;
@@ -192,7 +193,6 @@ public class PagoService {
                 detalle.setProducto(p);
                 p.restarStock(dDTO.getCantidad());
                 productoRepository.save(p);
-
             }
 
             if (dDTO.getIdMembresia() != null) {
@@ -208,18 +208,12 @@ public class PagoService {
                      socio.setActivo(true);
                      detalle.setSocioMembresia(nuevaSuscripcion);
                 } else {
-                     // For pending/anulled payments, we don't assign membership but we validate existence?
-                     // Verify membership exists to avoid FK error if needed?
-                     // Details table references SocioMembresia. If null, it's fine.
-                     // But we should check if membership ID exists validly?
                      membresiaRepository.findById(dDTO.getIdMembresia())
                         .orElseThrow(() -> new ObjetoNoEncontradoException("membresia"));
                 }
             }
 
             pago.agregarDetalle(detalle);
-
-
         }
 
         if (pago.hayMasDeUnaMembresiaEnDetalle()){
@@ -232,6 +226,8 @@ public class PagoService {
 
         pago.setMonto(monto);
 
+        // Segundo save para persistir el monto calculado y los detalles
+        pagoRepository.save(pago);
 
         return convertirAPagoDTO(pago);
     }
@@ -248,7 +244,8 @@ public class PagoService {
 
     @Transactional(readOnly = true)
     public List<PagoDTO> buscarPagos() {
-        return pagoRepository.findAllByOrderByFechaDesc()
+        return pagoRepository.findByEstadoNotInOrderByFechaDesc(
+                        List.of(EstadoPago.ELIMINADO, EstadoPago.ANULADO))
                 .stream()
                 .map(this::convertirAPagoDTO)
                 .toList();
@@ -331,25 +328,29 @@ public class PagoService {
         Pago pago = pagoRepository.findById(id)
                 .orElseThrow(() -> new ObjetoNoEncontradoException("pago"));
 
-        // Revertir membresías y stock antes de eliminar
+        if (pago.getEstado() == EstadoPago.ELIMINADO) {
+            throw new IllegalStateException("El pago ya está eliminado");
+        }
+
+        // Soft-delete: marcar como ELIMINADO en vez de borrar físicamente
+        pago.setEstado(EstadoPago.ELIMINADO);
+
+        // Revertir membresías y stock
         for (DetallePago detalle : pago.getDetalles()) {
             if (detalle.getSocioMembresia() != null) {
-                // Eliminar físicamente la membresía asociada
+                // Desactivar la membresía asociada (no eliminar)
                 SocioMembresia sm = detalle.getSocioMembresia();
-                Socio socio = sm.getSocio();
-                
-                // Desvincular el detalle de la membresía antes de eliminarla
-                detalle.setSocioMembresia(null);
-                
-                socioMembresiaRepository.delete(sm);
-                
+                sm.setActivo(false);
+                socioMembresiaRepository.save(sm);
+
                 // Desactivar el socio si ya no tiene membresías activas
+                Socio socio = sm.getSocio();
                 if (socio != null && !socioMembresiaRepository.estaActivoHoy(socio.getDni())) {
                     socio.setActivo(false);
                     socioRepository.save(socio);
                 }
             }
-            
+
             if (detalle.getProducto() != null && detalle.getCantidad() != null) {
                 // Restaurar stock del producto
                 Producto producto = detalle.getProducto();
@@ -358,8 +359,7 @@ public class PagoService {
             }
         }
 
-        // Eliminar físicamente el pago (los detalles se eliminan por CASCADE)
-        pagoRepository.delete(pago);
+        pagoRepository.save(pago);
     }
 
     public List<PagoPorFechaDTO> recaudadoPorDia() {

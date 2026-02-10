@@ -16,15 +16,16 @@ import java.util.Optional;
 public interface PagoRepository extends JpaRepository<Pago, Integer> {
     @Query(value = "SELECT SUM(D.SUBTOTAL) FROM DETALLE_PAGO D WHERE D.ID_PAGO = :idPago",  nativeQuery = true)
     BigDecimal sumarSubtotales(@Param("idPago") Integer id_pago);
-    @Query(value = "SELECT * FROM PAGO P WHERE P.DNI_SOCIO = :dni", nativeQuery = true)
+    @Query(value = "SELECT * FROM PAGO P WHERE P.DNI_SOCIO = :dni AND P.ESTADO NOT IN ('ELIMINADO', 'ANULADO')", nativeQuery = true)
     List<Pago> buscarPagosPorSocio(@Param("dni") String dni);
     @Query("SELECT new com.nexo.gestion.dto.PagoPorFechaDTO(p.fecha, SUM(p.monto)) " +
             "FROM Pago p " +
+            "WHERE p.estado NOT IN (com.nexo.gestion.entity.EstadoPago.ELIMINADO, com.nexo.gestion.entity.EstadoPago.ANULADO) " +
             "GROUP BY p.fecha " +
             "ORDER BY p.fecha ASC")
     List<PagoPorFechaDTO> totalPagosPorFecha();
 
-    @Query(value = "SELECT p.fecha, SUM(p.monto) FROM pago p WHERE p.fecha >= CURRENT_DATE - INTERVAL '7' DAY GROUP BY p.fecha ORDER BY p.fecha ASC", nativeQuery = true)
+    @Query(value = "SELECT p.fecha, SUM(p.monto) FROM pago p WHERE p.fecha >= CURRENT_DATE - INTERVAL '7' DAY AND p.estado NOT IN ('ELIMINADO', 'ANULADO') GROUP BY p.fecha ORDER BY p.fecha ASC", nativeQuery = true)
     List<Object[]> totalPagosUltimaSemana();
 
     @Query(value = """
@@ -32,14 +33,16 @@ public interface PagoRepository extends JpaRepository<Pago, Integer> {
                EXTRACT(MONTH FROM p.fecha) AS mes,
                SUM(p.monto) AS total
         FROM pago p
+        WHERE p.estado NOT IN ('ELIMINADO', 'ANULADO')
         GROUP BY EXTRACT(YEAR FROM p.fecha), EXTRACT(MONTH FROM p.fecha)
         ORDER BY anio ASC, mes ASC
         """, nativeQuery = true)
     List<Object[]> totalPagosPorMes();
 
     @Query(value = """
-            SELECT SUM(P.MONTO) FROM PAGO P\s
+            SELECT SUM(P.MONTO) FROM PAGO P
             WHERE P.FECHA = CURRENT_DATE
+            AND P.ESTADO NOT IN ('ELIMINADO', 'ANULADO')
             """, nativeQuery = true)
 
     BigDecimal totalRecaudadoHoy();
@@ -49,7 +52,7 @@ public interface PagoRepository extends JpaRepository<Pago, Integer> {
             FROM pago p
             WHERE p.fecha >= date_trunc('week', CURRENT_DATE)::date
              AND p.fecha <  (date_trunc('week', CURRENT_DATE) + INTERVAL '1 week')::date
-            
+             AND p.estado NOT IN ('ELIMINADO', 'ANULADO')
             """, nativeQuery = true)
 
     BigDecimal totalRecaudadoSemana();
@@ -58,7 +61,8 @@ public interface PagoRepository extends JpaRepository<Pago, Integer> {
             SELECT SUM(p.monto)
             FROM pago p
             WHERE p.fecha >= date_trunc('month', CURRENT_DATE)::date
-              AND p.fecha <  (date_trunc('month', CURRENT_DATE) + INTERVAL '1 month')::date;
+              AND p.fecha <  (date_trunc('month', CURRENT_DATE) + INTERVAL '1 month')::date
+              AND p.estado NOT IN ('ELIMINADO', 'ANULADO')
             """, nativeQuery = true)
 
     BigDecimal totalRecaudadoMes();
@@ -69,7 +73,8 @@ public interface PagoRepository extends JpaRepository<Pago, Integer> {
             JOIN pago p ON p.id_pago = d.id_pago
             WHERE d.id_producto IS NOT NULL
               AND p.fecha >= date_trunc('month', CURRENT_DATE)
-              AND p.fecha <  date_trunc('month', CURRENT_DATE) + INTERVAL '1 month';
+              AND p.fecha <  date_trunc('month', CURRENT_DATE) + INTERVAL '1 month'
+              AND p.estado NOT IN ('ELIMINADO', 'ANULADO')
             """, nativeQuery = true)
 
     BigDecimal totalRecaudadoMesProductos();
@@ -80,15 +85,18 @@ public interface PagoRepository extends JpaRepository<Pago, Integer> {
             JOIN pago p ON p.id_pago = d.id_pago
             WHERE d.id_sm IS NOT NULL
               AND p.fecha >= date_trunc('month', CURRENT_DATE)
-              AND p.fecha <  date_trunc('month', CURRENT_DATE) + INTERVAL '1 month';
+              AND p.fecha <  date_trunc('month', CURRENT_DATE) + INTERVAL '1 month'
+              AND p.estado NOT IN ('ELIMINADO', 'ANULADO')
             """, nativeQuery = true)
     BigDecimal totalRecaudadoMesPlanes();
 
 
+    List<Pago> findByEstadoNotInOrderByFechaDesc(List<com.nexo.gestion.entity.EstadoPago> estados);
+
     List<Pago> findAllByOrderByFechaDesc();
 
     // Paginated query with date range filter
-    @Query("SELECT p FROM Pago p WHERE p.fecha >= :desde AND p.fecha <= :hasta ORDER BY p.fecha DESC")
+    @Query("SELECT p FROM Pago p WHERE p.fecha >= :desde AND p.fecha <= :hasta AND p.estado NOT IN (com.nexo.gestion.entity.EstadoPago.ELIMINADO, com.nexo.gestion.entity.EstadoPago.ANULADO) ORDER BY p.fecha DESC")
     org.springframework.data.domain.Page<Pago> findByFechaBetweenOrderByFechaDesc(
             @Param("desde") LocalDate desde,
             @Param("hasta") LocalDate hasta,
@@ -105,6 +113,7 @@ public interface PagoRepository extends JpaRepository<Pago, Integer> {
             WHERE DP.id_sm IS NULL
               AND P.fecha >= date_trunc('month', CURRENT_DATE)
               AND P.fecha <  date_trunc('month', CURRENT_DATE) + INTERVAL '1 month'
+              AND P.estado NOT IN ('ELIMINADO', 'ANULADO')
             GROUP BY PR.nombre
             ORDER BY total_vendidos DESC
             LIMIT 1;
@@ -122,6 +131,7 @@ public interface PagoRepository extends JpaRepository<Pago, Integer> {
             WHERE DP.id_producto IS NULL
               AND P.fecha >= date_trunc('month', CURRENT_DATE)
               AND P.fecha <  date_trunc('month', CURRENT_DATE) + INTERVAL '1 month'
+              AND P.estado NOT IN ('ELIMINADO', 'ANULADO')
             GROUP BY m.nombre
             ORDER BY total_vendidos DESC
             LIMIT 1;
@@ -134,6 +144,7 @@ public interface PagoRepository extends JpaRepository<Pago, Integer> {
                         FROM pago p
                         WHERE p.fecha >= date_trunc('month', CURRENT_DATE)
                         AND p.fecha <  date_trunc('month', CURRENT_DATE) + INTERVAL '1 month'
+                        AND p.estado NOT IN ('ELIMINADO', 'ANULADO')
             """, nativeQuery = true)
     Integer cantidadPagosMesActual();
 

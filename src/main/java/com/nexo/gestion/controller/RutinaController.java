@@ -3,8 +3,10 @@ package com.nexo.gestion.controller;
 import com.nexo.gestion.dto.*;
 import com.nexo.gestion.services.RutinaService;
 import com.nexo.gestion.services.RutinaImportService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,50 +24,72 @@ public class RutinaController {
         this.rutinaImportService = rutinaImportService;
     }
 
-    // ✅ CREATE: POST /rutinas
+
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @PostMapping
-    public ResponseEntity<RutinaDTO> crearRutina(@RequestBody RutinaCreateDTO dto) {
+    public ResponseEntity<RutinaDTO> crearRutina(@Valid @RequestBody RutinaCreateDTO dto) {
+        if (dto.dniSocio() == null || dto.dniSocio().isBlank()) {
+            throw new IllegalArgumentException("No se permite crear Plantillas manualmente. Use la importación de Excel.");
+        }
         RutinaDTO rutinaDTO = rutinaService.crearRutinaConDetalles(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(rutinaDTO);
     }
 
-    // ✅ READ: GET /rutinas
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping
     public ResponseEntity<List<RutinaDTO>> listarRutinas() {
         return ResponseEntity.ok(rutinaService.buscarRutinas());
     }
 
-    // ✅ READ: GET /rutinas/{id}
+
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
+    @GetMapping("/plantillas")
+    public ResponseEntity<PageResponseDTO<RutinaDTO>> listarPlantillas(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(rutinaService.buscarPlantillas(page, size));
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
+    @GetMapping("/asignadas")
+    public ResponseEntity<PageResponseDTO<RutinaDTO>> listarRutinasAsignadas(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(rutinaService.buscarRutinasAsignadas(page, size));
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping("/{id}")
     public ResponseEntity<RutinaDTO> obtenerRutina(@PathVariable Integer id) {
         return ResponseEntity.ok(rutinaService.obtenerRutinaPorId(id));
     }
 
-    // ✅ UPDATE: PUT /rutinas/{id}
+
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @PutMapping("/{id}")
-    public ResponseEntity<RutinaDTO> actualizarRutina(@PathVariable Integer id, @RequestBody RutinaUpdateDTO dto) {
+    public ResponseEntity<RutinaDTO> actualizarRutina(@PathVariable Integer id, @Valid @RequestBody RutinaUpdateDTO dto) {
         if (!id.equals(dto.idRutina())) {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(rutinaService.actualizarRutina(dto));
     }
 
-    // ✅ DELETE: DELETE /rutinas/{id}
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarRutina(@PathVariable Integer id) {
         rutinaService.eliminarRutina(id);
         return ResponseEntity.noContent().build();
     }
 
-    // ✅ PATCH detalle: PATCH /rutinas/detalles/{idDetalle}
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @PatchMapping("/detalles/{idDetalle}")
     public ResponseEntity<RutinaDetalleDTO> actualizarDetalle(
             @PathVariable Long idDetalle,
-            @RequestBody RutinaDetalleUpdateDTO dto) {
+            @Valid @RequestBody RutinaDetalleUpdateDTO dto) {
         return ResponseEntity.ok(rutinaService.actualizarDetalle(idDetalle, dto));
     }
 
-    // ✅ IMPORT: POST /rutinas/importar
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @PostMapping("/importar")
     public ResponseEntity<?> importarRutinaDesdeExcel(
             @RequestParam("file") MultipartFile file,
@@ -80,7 +104,7 @@ public class RutinaController {
         }
     }
 
-    // ✅ ASSIGN: POST /rutinas/{id}/asignar
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @PostMapping("/{id}/asignar")
     public ResponseEntity<?> asignarRutinaAMultiplesSocios(
             @PathVariable Integer id,
@@ -95,9 +119,22 @@ public class RutinaController {
         }
     }
 
-    // ✅ VIEW ASSIGNED: GET /rutinas/{id}/socios
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping("/{id}/socios")
     public ResponseEntity<List<SocioDTO>> verSociosAsignados(@PathVariable Integer id) {
         return ResponseEntity.ok(rutinaService.obtenerSociosConRutina(id));
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
+    @PostMapping("/{id}/duplicar")
+    public ResponseEntity<?> duplicarPlantilla(
+            @PathVariable Integer id,
+            @RequestParam(value = "dniEmpleado", required = false) String dniEmpleado) {
+        try {
+            RutinaDTO nuevaPlantilla = rutinaService.duplicarPlantilla(id, dniEmpleado);
+            return ResponseEntity.status(HttpStatus.CREATED).body(nuevaPlantilla);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 }

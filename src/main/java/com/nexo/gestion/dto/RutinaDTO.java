@@ -13,5 +13,6 @@ public record RutinaDTO(
                 String dniSocio,
                 String nombreSocio,
                 LocalDate fecha,
+                Boolean personalizada,
                 List<RutinaDetalleDTO> detalles) {
 }

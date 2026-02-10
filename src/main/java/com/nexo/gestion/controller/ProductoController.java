@@ -54,7 +54,7 @@ public class ProductoController {
 
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PatchMapping("/{id}")
-    public ResponseEntity<ProductoDTO> patchProducto(@PathVariable Integer id, @RequestBody ProductoPatchDTO productoPatchDTO){
+    public ResponseEntity<ProductoDTO> patchProducto(@PathVariable Integer id, @Valid @RequestBody ProductoPatchDTO productoPatchDTO){
         ProductoDTO producto = productoService.patchProducto(id, productoPatchDTO);
         return ResponseEntity.ok(producto);
     }

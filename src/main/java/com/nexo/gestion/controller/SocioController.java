@@ -73,8 +73,8 @@ public class SocioController {
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @PostMapping("/{dni}/membresias/{idMembresia}")
     public ResponseEntity<SocioMembresiaDTO> crearMembresiaParaSocio(@PathVariable String dni,
-            @PathVariable Integer id_membresia) {
-        SocioMembresiaDTO suscripcion = socioService.asignarMembresia(dni, id_membresia);
+            @PathVariable Integer idMembresia) {
+        SocioMembresiaDTO suscripcion = socioService.asignarMembresia(dni, idMembresia);
         return ResponseEntity.ok(suscripcion);
     }
 
@@ -119,7 +119,7 @@ public class SocioController {
 
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping("/inactivos")
     public ResponseEntity<List<SocioInactivoDTO>> sociosInactivos(
             @RequestParam(value = "dias", defaultValue = "7") Integer dias) {

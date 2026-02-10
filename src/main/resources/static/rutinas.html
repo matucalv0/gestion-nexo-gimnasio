@@ -5,6 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NEXO · Rutinas</title>
+    <link rel="icon" type="image/png" href="../assets/nexologo.png" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -58,42 +59,129 @@
                 </div>
             </header>
 
-            <!-- TABLA RUTINAS -->
-            <section class="bg-[#121212] p-6 rounded-xl border border-[var(--input-border)] shadow-2xl">
-                <!-- Search bar -->
-                <div class="mb-4">
-                    <div class="relative max-w-md">
-                        <svg class="w-5 h-5 absolute left-3 top-3 text-gray-500" fill="none" stroke="currentColor"
+            <!-- SECCIÓN PLANTILLAS -->
+            <section class="mb-10">
+                <div class="flex items-center gap-3 mb-4">
+                    <h2 class="text-xl font-bold text-[var(--orange)] flex items-center gap-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2">
+                            </path>
+                        </svg>
+                        Rutinas
+                    </h2>
+                    <span class="text-xs text-gray-500 bg-gray-800 px-2 py-1 rounded border border-gray-700">Se importan
+                        desde Excel</span>
+                </div>
+
+                <div
+                    class="bg-[#121212] p-6 rounded-xl border border-[var(--input-border)] shadow-2xl relative overflow-hidden">
+                    <!-- Glow effect -->
+                    <div
+                        class="absolute top-0 right-0 w-64 h-64 bg-[var(--orange)]/5 rounded-full blur-3xl pointer-events-none -mr-32 -mt-32">
+                    </div>
+
+                    <div class="overflow-x-auto rounded-lg relative z-10">
+                        <table class="w-full text-sm text-gray-300">
+                            <thead class="bg-[#1a1a1a] text-gray-400 uppercase text-xs">
+                                <tr>
+                                    <th class="px-6 py-4 text-left">Nombre Plantilla</th>
+                                    <th class="px-6 py-4 text-left">Descripción</th>
+                                    <th class="px-6 py-4 text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaPlantillasBody" class="divide-y divide-gray-800">
+                                <tr>
+                                    <td colspan="3" class="px-6 py-8 text-center text-gray-500">Cargando plantillas...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Pagination Plantillas -->
+                    <div id="paginacionPlantillas"
+                        class="px-6 py-4 border-t border-gray-800 flex justify-between items-center text-sm text-gray-400">
+                        <!-- Injected by JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECCIÓN RUTINAS DE SOCIOS -->
+            <section>
+                <div class="flex justify-between items-end mb-4">
+                    <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                        <svg class="w-6 h-6 text-secondary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                            </path>
+                        </svg>
+                        Rutinas Asignadas (Socios)
+                    </h2>
+
+                    <!-- Search bar aligned right -->
+                    <div class="relative w-64">
+                        <svg class="w-4 h-4 absolute left-3 top-3 text-gray-500" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
-                        <input type="text" id="busquedaRutina" placeholder="Buscar por socio (Nombre o DNI)..."
-                            class="w-full bg-[#1a1a1a] border border-[var(--input-border)] text-gray-200 text-sm rounded-lg pl-10 pr-4 py-2.5 focus:outline-none focus:border-[var(--orange)] transition">
+                        <input type="text" id="busquedaRutina" placeholder="Buscar socio..."
+                            class="w-full bg-[#1a1a1a] border border-[var(--input-border)] text-gray-200 text-xs rounded-lg pl-9 pr-4 py-2.5 focus:outline-none focus:border-secondary-500 transition">
                     </div>
                 </div>
 
-                <div class="overflow-x-auto rounded-lg">
-                    <table class="w-full text-sm text-gray-300">
-                        <thead class="bg-[#1a1a1a] text-gray-400 uppercase text-xs">
-                            <tr>
-                                <th class="px-6 py-4 text-left">Nombre</th>
-                                <th class="px-6 py-4 text-left">Asignaciones</th>
-                                <th class="px-6 py-4 text-left">Profesor</th>
-                                <th class="px-6 py-4 text-left">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tablaRutinasBody" class="divide-y divide-gray-800">
-                            <!-- Dinámico -->
-                            <tr>
-                                <td colspan="4" class="px-6 py-8 text-center text-gray-500">
-                                    Cargando rutinas...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="bg-[#121212] p-6 rounded-xl border border-[var(--input-border)] shadow-lg">
+                    <div class="overflow-x-auto rounded-lg">
+                        <table class="w-full text-sm text-gray-300">
+                            <thead class="bg-[#1a1a1a] text-gray-400 uppercase text-xs">
+                                <tr>
+                                    <th class="px-6 py-4 text-left">Socio</th>
+                                    <th class="px-6 py-4 text-left">Nombre Rutina</th>
+                                    <th class="px-6 py-4 text-left">Fecha</th>
+                                    <th class="px-6 py-4 text-left">Profesor</th>
+                                    <th class="px-6 py-4 text-left">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaRutinasBody" class="divide-y divide-gray-800">
+                                <tr>
+                                    <td colspan="5" class="px-6 py-8 text-center text-gray-500">Cargando rutinas...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Pagination Asignadas -->
+                    <div id="paginacionAsignadas"
+                        class="px-6 py-4 border-t border-gray-800 flex justify-between items-center text-sm text-gray-400">
+                        <!-- Injected by JS -->
+                    </div>
                 </div>
             </section>
+
+            <!-- Modal Vista Previa -->
+            <div id="modalVistaPrevia"
+                class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+                <div
+                    class="bg-[#121212] rounded-xl border border-[var(--input-border)] max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
+                    <!-- Header -->
+                    <div class="flex justify-between items-center p-6 border-b border-gray-800">
+                        <div>
+                            <h3 id="modalRutinaNombre" class="text-xl font-bold text-white"></h3>
+                            <p id="modalRutinaDescripcion" class="text-sm text-gray-400 mt-1"></p>
+                        </div>
+                        <button onclick="cerrarVistaPrevia()" class="text-gray-400 hover:text-white transition">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- BodyScrollable -->
+                    <div id="modalVistaContenido" class="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+                        <div class="text-center text-gray-500">Cargando...</div>
+                    </div>
+                </div>
+            </div>
 
         </div>
     </main>

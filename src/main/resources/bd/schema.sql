@@ -2,7 +2,6 @@
 -- PostgreSQL database dump
 --
 
-\restrict t2qPoPbhhiqfb0G1wf62drB1A6tWKMmVgvPnWpKls3xubOh4nciuqoVMOaF7G4T
 
 -- Dumped from database version 18.1
 -- Dumped by pg_dump version 18.1
@@ -821,6 +820,3 @@ ALTER TABLE ONLY public.usuario
 --
 -- PostgreSQL database dump complete
 --
-
-\unrestrict t2qPoPbhhiqfb0G1wf62drB1A6tWKMmVgvPnWpKls3xubOh4nciuqoVMOaF7G4T
-

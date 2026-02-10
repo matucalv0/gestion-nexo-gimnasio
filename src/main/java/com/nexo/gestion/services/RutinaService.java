@@ -43,6 +43,7 @@ public class RutinaService {
                 rutina.getSocio() != null ? rutina.getSocio().getDni() : null,
                 rutina.getSocio() != null ? rutina.getSocio().getNombre() : null,
                 rutina.getFecha(),
+                rutina.getPersonalizada() != null ? rutina.getPersonalizada() : false,
                 detallesDTO);
     }
 
@@ -235,6 +236,11 @@ public class RutinaService {
 
         rutina.getDetalles().removeIf(d -> d.getIdDetalle() != null && !updatedIds.contains(d.getIdDetalle()));
 
+        // Marcar como personalizada si tiene plantilla origen
+        if (rutina.getIdPlantillaOrigen() != null) {
+            rutina.setPersonalizada(true);
+        }
+
         Rutina actualizada = rutinaRepository.save(rutina);
         return convertirARutinaDTO(actualizada);
     }
@@ -284,90 +290,98 @@ public class RutinaService {
 
 
     @Transactional(readOnly = true)
-    public java.util.List<RutinaDTO> buscarRutinas() {
+    public PageResponseDTO<RutinaDTO> buscarPlantillas(int page, int size) {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(
+                page, size, org.springframework.data.domain.Sort.by("idRutina").descending());
+        
+        org.springframework.data.domain.Page<Rutina> rutinasPage = rutinaRepository.findBySocioIsNull(pageable);
+        
+        return mapToPageResponse(rutinasPage);
+    }
 
+    @Transactional(readOnly = true)
+    public PageResponseDTO<RutinaDTO> buscarRutinasAsignadas(int page, int size) {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(
+                page, size, org.springframework.data.domain.Sort.by("idRutina").descending());
+
+        org.springframework.data.domain.Page<Rutina> rutinasPage = rutinaRepository.findBySocioIsNotNull(pageable);
+
+        return mapToPageResponse(rutinasPage);
+    }
+
+    private PageResponseDTO<RutinaDTO> mapToPageResponse(org.springframework.data.domain.Page<Rutina> page) {
+        List<RutinaDTO> content = page.getContent().stream()
+                .map(this::convertirARutinaResumenDTO)
+                .collect(java.util.stream.Collectors.toList());
+
+        return new PageResponseDTO<>(
+                content,
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements(),
+                page.getTotalPages());
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.List<RutinaDTO> buscarRutinas() {
+        // MANTENIDO POR COMPATIBILIDAD TEST (Opcional, se puede borrar si ya no se usa)
+        // Retornar TODAS las rutinas para que el Frontend pueda separar Plantillas de Asignadas
         List<Rutina> allRutinas = rutinaRepository.findAll();
 
-
-        java.util.Map<String, Rutina> uniqueRoutines = new java.util.HashMap<>();
-
-        for (Rutina r : allRutinas) {
-            String key = r.getNombre().trim().toLowerCase();
-            
-            if (!uniqueRoutines.containsKey(key)) {
-                uniqueRoutines.put(key, r);
-                continue;
-            }
-
-            Rutina existing = uniqueRoutines.get(key);
-            
-
-            boolean currentIsTemplate = r.getSocio() == null;
-            boolean existingIsTemplate = existing.getSocio() == null;
-
-            if (currentIsTemplate && !existingIsTemplate) {
-
-                uniqueRoutines.put(key, r);
-            } else if ((currentIsTemplate == existingIsTemplate) && (r.getIdRutina() > existing.getIdRutina())) {
-                uniqueRoutines.put(key, r);
-            }
-        }
-
-
-        return uniqueRoutines.values().stream()
+        return allRutinas.stream()
                 .sorted((r1, r2) -> r2.getIdRutina().compareTo(r1.getIdRutina()))
                 .map(this::convertirARutinaResumenDTO)
                 .collect(java.util.stream.Collectors.toList());
     }
  
     @Transactional
-    public java.util.List<Integer> asignarRutinaAMultiplesSocios(Integer idRutina, java.util.List<String> dnisSocios) {
-        Rutina rutinaOriginal = rutinaRepository.findById(idRutina)
+    public List<Integer> asignarRutinaAMultiplesSocios(Integer idRutina, List<String> dnisSocios) {
+        // Validar que la rutina sea plantilla
+        Rutina plantilla = rutinaRepository.findById(idRutina)
                 .orElseThrow(() -> new ObjetoNoEncontradoException("Rutina no encontrada con ID: " + idRutina));
 
-        java.util.List<Integer> rutinasCreadas = new java.util.ArrayList<>();
+        if (plantilla.getSocio() != null) {
+            throw new IllegalArgumentException("La rutina ID " + idRutina + " ya está asignada a un socio. Solo se pueden asignar plantillas.");
+        }
+
+        List<Integer> rutinasCreadas = new java.util.ArrayList<>();
 
         for (String dniSocio : dnisSocios) {
             Socio socio = socioRepository.findById(dniSocio)
-                    .orElseThrow(() -> new ObjetoNoEncontradoException("Socio no encontrado: " + dniSocio));
+                    .orElseThrow(() -> new ObjetoNoEncontradoException("Socio no encontrado con DNI: " + dniSocio));
 
-            // VALIDACION: Verificar si ya tiene asignada esta rutina como activa
-            rutinaRepository.findFirstBySocioDniOrderByIdRutinaDesc(dniSocio).ifPresent(rutinaActiva -> {
-                if (rutinaActiva.getNombre().equalsIgnoreCase(rutinaOriginal.getNombre())) {
-                    throw new ObjetoDuplicadoException(
-                            "El socio " + socio.getNombre() + " ya tiene asignada la rutina '" 
-                            + rutinaOriginal.getNombre() + "' como activa.");
+            // Crear copia de la plantilla
+            Rutina nuevaRutina = new Rutina();
+            nuevaRutina.setNombre(plantilla.getNombre());
+            nuevaRutina.setDescripcion(plantilla.getDescripcion());
+            nuevaRutina.setEmpleado(plantilla.getEmpleado());
+            nuevaRutina.setSocio(socio);
+            nuevaRutina.setFecha(java.time.LocalDate.now());
+            nuevaRutina.setIdPlantillaOrigen(idRutina); // Registrar plantilla origen
+            nuevaRutina.setPersonalizada(false); // Inicialmente no está personalizada
+
+            Rutina rutinaSaved = rutinaRepository.save(nuevaRutina);
+
+            // Copiar todos los detalles
+            for (RutinaDetalle detalleOriginal : plantilla.getDetalles()) {
+                RutinaDetalle nuevoDetalle = new RutinaDetalle();
+                nuevoDetalle.setRutina(rutinaSaved);
+                nuevoDetalle.setEjercicio(detalleOriginal.getEjercicio());
+                nuevoDetalle.setOrden(detalleOriginal.getOrden());
+                nuevoDetalle.setSeries(detalleOriginal.getSeries());
+                nuevoDetalle.setRepeticiones(detalleOriginal.getRepeticiones());
+                nuevoDetalle.setCarga(detalleOriginal.getCarga());
+                nuevoDetalle.setDescanso(detalleOriginal.getDescanso());
+                nuevoDetalle.setObservacion(detalleOriginal.getObservacion());
+                nuevoDetalle.setDia(detalleOriginal.getDia());
+                if (detalleOriginal.getCargas() != null) {
+                    nuevoDetalle.setCargas(new java.util.ArrayList<>(detalleOriginal.getCargas()));
                 }
-            });
-
-            // Crear copia de la rutina para este socio
-            Rutina rutinaCopia = new Rutina(
-                    rutinaOriginal.getNombre(),
-                    rutinaOriginal.getDescripcion(),
-                    rutinaOriginal.getEmpleado(),
-                    socio);
-
-            // Copiar detalles
-            for (RutinaDetalle detalle : rutinaOriginal.getDetalles()) {
-                RutinaDetalle detalleCopia = new RutinaDetalle(
-                        rutinaCopia,
-                        detalle.getEjercicio(),
-                        detalle.getOrden(),
-                        detalle.getSeries(),
-                        detalle.getRepeticiones(),
-                        detalle.getCarga(),
-                        detalle.getDescanso(),
-                        detalle.getObservacion(),
-                        detalle.getDia());
-                // Copiar cargas
-                if (detalle.getCargas() != null && !detalle.getCargas().isEmpty()) {
-                    detalleCopia.setCargas(new java.util.ArrayList<>(detalle.getCargas()));
-                }
-                rutinaCopia.agregarDetalle(detalleCopia);
+                rutinaSaved.agregarDetalle(nuevoDetalle);
             }
 
-            Rutina guardada = rutinaRepository.save(rutinaCopia);
-            rutinasCreadas.add(guardada.getIdRutina());
+            rutinaRepository.save(rutinaSaved);
+            rutinasCreadas.add(rutinaSaved.getIdRutina());
         }
 
         return rutinasCreadas;
@@ -415,7 +429,68 @@ public class RutinaService {
                 rutina.getSocio() != null ? rutina.getSocio().getDni() : null,
                 rutina.getSocio() != null ? rutina.getSocio().getNombre() : null,
                 rutina.getFecha(),
+                rutina.getPersonalizada() != null ? rutina.getPersonalizada() : false,
                 java.util.Collections.emptyList());
+    }
+
+    // 🆕 DUPLICATE: Duplicar una plantilla
+    @Transactional
+    public RutinaDTO duplicarPlantilla(Integer idRutina, String dniEmpleado) {
+        Rutina plantilla = rutinaRepository.findById(idRutina)
+                .orElseThrow(() -> new ObjetoNoEncontradoException("Rutina no encontrada con ID: " + idRutina));
+
+        // Validar que sea una plantilla
+        if (plantilla.getSocio() != null) {
+            throw new IllegalArgumentException("Solo se pueden duplicar plantillas (rutinas sin socio asignado)");
+        }
+
+        Empleado empleado;
+        if (dniEmpleado == null || dniEmpleado.isBlank()) {
+            empleado = plantilla.getEmpleado();
+        } else {
+            empleado = empleadoRepository.findById(dniEmpleado)
+                .orElseThrow(() -> new ObjetoNoEncontradoException("Empleado no encontrado con DNI: " + dniEmpleado));
+        }
+
+        // Crear nueva plantilla con nombre único
+        String nuevoNombre = plantilla.getNombre() + " (Copia)";
+        int contador = 1;
+        while (rutinaRepository.existsByNombre(nuevoNombre)) {
+            contador++;
+            nuevoNombre = plantilla.getNombre() + " (Copia " + contador + ")";
+        }
+
+        Rutina nuevaPlantilla = new Rutina();
+        nuevaPlantilla.setNombre(nuevoNombre);
+        nuevaPlantilla.setDescripcion(plantilla.getDescripcion());
+        nuevaPlantilla.setEmpleado(empleado);
+        nuevaPlantilla.setSocio(null); // Es plantilla
+        nuevaPlantilla.setFecha(java.time.LocalDate.now());
+        nuevaPlantilla.setIdPlantillaOrigen(null); // Las plantillas no tienen origen
+        nuevaPlantilla.setPersonalizada(false);
+
+        Rutina plantillaSaved = rutinaRepository.save(nuevaPlantilla);
+
+        // Copiar todos los detalles
+        for (RutinaDetalle detalleOriginal : plantilla.getDetalles()) {
+            RutinaDetalle nuevoDetalle = new RutinaDetalle();
+            nuevoDetalle.setRutina(plantillaSaved);
+            nuevoDetalle.setEjercicio(detalleOriginal.getEjercicio());
+            nuevoDetalle.setOrden(detalleOriginal.getOrden());
+            nuevoDetalle.setSeries(detalleOriginal.getSeries());
+            nuevoDetalle.setRepeticiones(detalleOriginal.getRepeticiones());
+            nuevoDetalle.setCarga(detalleOriginal.getCarga());
+            nuevoDetalle.setDescanso(detalleOriginal.getDescanso());
+            nuevoDetalle.setObservacion(detalleOriginal.getObservacion());
+            nuevoDetalle.setDia(detalleOriginal.getDia());
+            if (detalleOriginal.getCargas() != null) {
+                nuevoDetalle.setCargas(new java.util.ArrayList<>(detalleOriginal.getCargas()));
+            }
+            plantillaSaved.agregarDetalle(nuevoDetalle);
+        }
+
+        Rutina resultado = rutinaRepository.save(plantillaSaved);
+        return convertirARutinaDTO(resultado);
     }
 
 

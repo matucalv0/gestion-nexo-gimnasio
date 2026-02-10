@@ -2,6 +2,7 @@ package com.nexo.gestion.controller;
 
 import com.nexo.gestion.dto.MedioPagoDTO;
 import com.nexo.gestion.services.MedioPagoService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,7 +21,7 @@ public class MedioPagoController {
 
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<MedioPagoDTO> altaMedioPago(@RequestBody MedioPagoDTO medioPagoDTO){
+    public ResponseEntity<MedioPagoDTO> altaMedioPago(@Valid @RequestBody MedioPagoDTO medioPagoDTO){
         MedioPagoDTO medioPago = medioPagoService.registrarMedioPago(medioPagoDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(medioPago);
     }

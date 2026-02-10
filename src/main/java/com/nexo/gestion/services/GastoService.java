@@ -54,7 +54,7 @@ public class GastoService {
     public List<GastoDTO> buscarGastos() {
         List<GastoDTO> gastos = new ArrayList<>();
 
-        for (Gasto g : gastoRepository.findAll()) {
+        for (Gasto g : gastoRepository.findByActivoTrueOrderByFechaDesc()) {
             gastos.add(new GastoDTO(g.getFecha(), g.getMonto(), g.getCategoria(), g.getProveedor(),
                     g.getMedioPago() != null ? g.getMedioPago().getIdMedioPago() : null));
         }
@@ -66,7 +66,8 @@ public class GastoService {
     public void eliminarGasto(Integer id) {
         Gasto gasto = gastoRepository.findById(id)
                 .orElseThrow(() -> new ObjetoNoEncontradoException("Gasto con id " + id + " no encontrado"));
-        gastoRepository.delete(gasto);
+        gasto.setActivo(false);
+        gastoRepository.save(gasto);
     }
 
 }

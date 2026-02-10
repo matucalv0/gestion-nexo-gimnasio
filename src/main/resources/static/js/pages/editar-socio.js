@@ -1,6 +1,6 @@
 import { checkAuth } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
-import { mostrarAlerta, limpiarAlertas } from "../ui/alerta.js";
+import { Alerta } from "../ui/alerta.js";
 
 checkAuth();
 
@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   if (!dni) {
-    mostrarAlerta({ mensaje: "Socio inválido", tipo: "danger" });
+    Alerta.error("Socio inválido");
     return;
   }
 
@@ -41,14 +41,13 @@ async function cargarSocio(dni, form) {
     form.email.value = socio.email ?? "";
 
   } catch {
-    mostrarAlerta({ mensaje: "Error al cargar socio", tipo: "danger" });
+    Alerta.error("Error al cargar socio");
   }
 }
 
 /* ===== patch ===== */
 async function editarSocio(e, dni, form) {
   e.preventDefault();
-  limpiarAlertas();
   limpiarErrores();
 
   const data = {
@@ -70,10 +69,10 @@ async function editarSocio(e, dni, form) {
       return;
     }
 
-    mostrarAlerta({ mensaje: "Socio actualizado correctamente", tipo: "success" });
+    Alerta.success("Socio actualizado correctamente");
 
   } catch {
-    mostrarAlerta({ mensaje: "No se pudo conectar con el servidor", tipo: "danger" });
+    Alerta.error("No se pudo conectar con el servidor");
   }
 }
 
@@ -92,9 +91,8 @@ function manejarErrores(res, body, form) {
     return;
   }
 
-  mostrarAlerta({
-    mensaje: body.message || "Error al editar socio",
-    tipo: res.status >= 500 ? "danger" : "warning"
-  });
+  const mensaje = body.message || "Error al editar socio";
+  if (res.status >= 500) Alerta.error(mensaje);
+  else Alerta.warning(mensaje);
 }
 

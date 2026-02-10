@@ -1,6 +1,6 @@
 import { checkAuth, logout } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
-import { mostrarAlerta, limpiarAlertas } from "../ui/alerta.js";
+import { Alerta } from "../ui/alerta.js";
 
 checkAuth();
 
@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const id = params.get("id");
 
     if (!id) {
-        mostrarAlerta({ mensaje: "Plan inválido", tipo: "danger" });
+        Alerta.error("Plan inválido");
         return;
     }
 
@@ -37,14 +37,13 @@ document.addEventListener("DOMContentLoaded", async () => {
             form.asistenciasPorSemana.value = m.asistenciasPorSemana ?? "";
             form.precioSugerido.value = m.precioSugerido;
         } catch {
-            mostrarAlerta({ mensaje: "Error al cargar plan", tipo: "danger" });
+            Alerta.error("Error al cargar plan");
         }
     }
 
     async function editarMembresia(e, id) {
         e.preventDefault();
         limpiarErrores();
-        limpiarAlertas();
 
         const data = {
             nombre: form.nombre.value.trim(),
@@ -67,10 +66,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                 return;
             }
 
-            mostrarAlerta({ mensaje: "Plan actualizado correctamente", tipo: "success" });
+            Alerta.success("Plan actualizado correctamente");
 
         } catch {
-            mostrarAlerta({ mensaje: "No se pudo conectar con el servidor", tipo: "danger" });
+            Alerta.error("No se pudo conectar con el servidor");
         }
     }
 
@@ -80,10 +79,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
-        mostrarAlerta({
-            mensaje: body.message || "Error al editar plan",
-            tipo: res.status >= 500 ? "danger" : "warning"
-        });
+        const mensaje = body.message || "Error al editar plan";
+        if (res.status >= 500) Alerta.error(mensaje);
+        else Alerta.warning(mensaje);
     }
 
     function limpiarErrores() {

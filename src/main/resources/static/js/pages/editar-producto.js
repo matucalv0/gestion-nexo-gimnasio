@@ -1,6 +1,6 @@
 import { checkAuth, logout } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
-import { mostrarAlerta, limpiarAlertas } from "../ui/alerta.js";
+import { Alerta } from "../ui/alerta.js";
 
 checkAuth();
 
@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const idProducto = params.get("id");
 
   if (!idProducto) {
-    mostrarAlerta({ mensaje: "Producto inválido", tipo: "danger" });
+    Alerta.error("Producto inválido");
     return;
   }
 
@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       form.stock.value = producto.stock;
 
     } catch {
-      mostrarAlerta({ mensaje: "Error al cargar producto", tipo: "danger" });
+      Alerta.error("Error al cargar producto");
     }
   }
 
@@ -46,7 +46,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     e.preventDefault();
 
     limpiarErrores();
-    limpiarAlertas();
 
     const data = {
       nombre: form.nombre.value.trim(),
@@ -67,10 +66,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
       }
 
-      mostrarAlerta({ mensaje: "Producto actualizado correctamente", tipo: "success" });
+      Alerta.success("Producto actualizado correctamente");
 
     } catch {
-      mostrarAlerta({ mensaje: "No se pudo conectar con el servidor", tipo: "danger" });
+      Alerta.error("No se pudo conectar con el servidor");
     }
   }
 
@@ -80,10 +79,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
-    mostrarAlerta({
-      mensaje: body.message || "Error al editar producto",
-      tipo: res.status >= 500 ? "danger" : "warning"
-    });
+    const mensaje = body.message || "Error al editar producto";
+    if (res.status >= 500) Alerta.error(mensaje);
+    else Alerta.warning(mensaje);
   }
 
   function limpiarErrores() {

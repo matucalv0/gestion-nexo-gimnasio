@@ -12,13 +12,14 @@ export async function authFetch(endpoint, options = {}) {
     ...options,
     headers: {
       ...(!isFormData && { "Content-Type": "application/json" }),
-      ...(token && { Authorization: `Bearer ${token}` }),
+      // Authorization header removed (using Cookies now)
       ...(options.headers || {})
     }
   });
 
   if (response.status === 401 || response.status === 403) {
     logout();
+    console.error("Error de autenticación/autorización en:", endpoint, "Status:", response.status);
     throw new Error("Unauthorized");
   }
 

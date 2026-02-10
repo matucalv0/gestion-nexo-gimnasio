@@ -1,5 +1,6 @@
 import { checkAuth, logout } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
+import { Alerta } from "../ui/alerta.js";
 
 checkAuth();
 
@@ -38,7 +39,7 @@ async function cargarProductos(tablaBody) {
     renderProductos(tablaBody, productos);
   } catch (err) {
     console.error(err);
-    alert("Error al cargar productos");
+    Alerta.error("Error al cargar productos");
   }
 }
 

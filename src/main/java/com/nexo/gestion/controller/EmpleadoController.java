@@ -2,6 +2,7 @@ package com.nexo.gestion.controller;
 
 import com.nexo.gestion.dto.EmpleadoDTO;
 import com.nexo.gestion.services.EmpleadoService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ public class EmpleadoController {
 
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<EmpleadoDTO> altaEmpleado(@RequestBody EmpleadoDTO empleadoDTO){
+    public ResponseEntity<EmpleadoDTO> altaEmpleado(@Valid @RequestBody EmpleadoDTO empleadoDTO){
         EmpleadoDTO empleado = empleadoService.registrarEmpleado(empleadoDTO);
         return ResponseEntity.ok(empleado);
     }
@@ -33,7 +34,7 @@ public class EmpleadoController {
 
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @PatchMapping("/{dni}")
-    public ResponseEntity<EmpleadoDTO> patchEmpleado(@RequestBody EmpleadoDTO empleadoDTO, @PathVariable String dni){
+    public ResponseEntity<EmpleadoDTO> patchEmpleado(@Valid @RequestBody EmpleadoDTO empleadoDTO, @PathVariable String dni){
         EmpleadoDTO empleado = empleadoService.patchEmpleado(dni, empleadoDTO);
         return ResponseEntity.ok(empleado);
     }

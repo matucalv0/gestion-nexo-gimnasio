@@ -38,7 +38,7 @@ public class MembresiaController {
 
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @PatchMapping("/{id}")
-    public ResponseEntity<MembresiaDTO> actualizar(@PathVariable Integer id, @RequestBody MembresiaPatchDTO membresiaPatchDTO){
+    public ResponseEntity<MembresiaDTO> actualizar(@PathVariable Integer id, @Valid @RequestBody MembresiaPatchDTO membresiaPatchDTO){
         MembresiaDTO membresia = membresiaService.patchMembresia(id, membresiaPatchDTO);
         return ResponseEntity.ok(membresia);
     }

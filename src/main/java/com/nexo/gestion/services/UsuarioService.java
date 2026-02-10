@@ -47,6 +47,11 @@ public class UsuarioService {
         }
 
         Usuario nuevoUsuario = new Usuario(usuarioDTO.username());
+
+        if (usuarioDTO.password() == null || usuarioDTO.password().length() < 8) {
+            throw new IllegalStateException("La contraseña debe tener al menos 8 caracteres");
+        }
+
         nuevoUsuario.setPassword(passwordEncoder.encode(usuarioDTO.password()));
 
 

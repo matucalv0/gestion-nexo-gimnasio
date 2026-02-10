@@ -20,6 +20,7 @@ public class Gasto {
     private CategoriaGasto categoria;
     @Column(name = "proveedor")
     private String proveedor;
+    private boolean activo = true;
 
     @ManyToOne
     @JoinColumn(name = "id_mediopago")
@@ -33,6 +34,7 @@ public class Gasto {
         this.proveedor = proveedor;
         this.medioPago = medioPago;
         this.fecha = LocalDateTime.now();
+        this.activo = true;
     }
 
     public Integer getIdGasto() {
@@ -81,5 +83,13 @@ public class Gasto {
 
     public void setMedioPago(MedioPago medioPago) {
         this.medioPago = medioPago;
+    }
+
+    public boolean isActivo() {
+        return activo;
+    }
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
     }
 }

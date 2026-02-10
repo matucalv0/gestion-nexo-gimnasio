@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RutinaRepository extends JpaRepository<Rutina, Integer> {
+    org.springframework.data.domain.Page<Rutina> findBySocioIsNull(org.springframework.data.domain.Pageable pageable);
+    org.springframework.data.domain.Page<Rutina> findBySocioIsNotNull(org.springframework.data.domain.Pageable pageable);
     boolean existsByNombre(String nombre);
 
     Optional<Rutina> findFirstBySocioDniOrderByIdRutinaDesc(String dni);
@@ -19,6 +21,8 @@ public interface RutinaRepository extends JpaRepository<Rutina, Integer> {
 
     @Query("SELECT r FROM Rutina r LEFT JOIN FETCH r.detalles d LEFT JOIN FETCH d.ejercicio e LEFT JOIN FETCH e.grupoMuscular WHERE r.idRutina = :id")
     Optional<Rutina> findByIdWithDetails(@Param("id") Integer id);
+
+    Optional<Rutina> findFirstByNombreAndSocioIsNull(String nombre);
 
     @Query(value = "SELECT DISTINCT ON (LOWER(TRIM(r.nombre))) r.* " +
             "FROM rutina r " +

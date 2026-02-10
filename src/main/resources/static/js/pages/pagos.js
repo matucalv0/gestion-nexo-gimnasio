@@ -1,6 +1,7 @@
 import { checkAuth } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
 import { renderPagination } from "../ui/pagination.js";
+import { Alerta } from "../ui/alerta.js";
 
 checkAuth();
 
@@ -95,8 +96,7 @@ async function cargarPagos(tablaBody) {
     );
 
   } catch (err) {
-    console.error(err);
-    alert("Error al cargar pagos");
+    Alerta.error("Error al cargar pagos");
   }
 }
 

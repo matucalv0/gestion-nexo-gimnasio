@@ -1,6 +1,6 @@
 import { checkAuth } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
-import { mostrarAlerta, limpiarAlertas } from "../ui/alerta.js";
+import { Alerta } from "../ui/alerta.js";
 
 checkAuth();
 
@@ -72,10 +72,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       await cargarInfoMembresia(socio);
 
     } catch (err) {
-      mostrarAlerta({
-        mensaje: "No se pudo cargar el socio desde ficha",
-        tipo: "danger"
-      });
+      Alerta.error("No se pudo cargar el socio desde ficha");
     }
   }
 
@@ -112,25 +109,20 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     } catch (err) {
       console.error(err);
-      mostrarAlerta({
-        mensaje: "Error al buscar socios",
-        tipo: "danger"
-      });
+      Alerta.error("Error al buscar socios");
     }
   }
 
   async function registrar() {
-    limpiarAlertas();
-
     if (!socioSeleccionado) {
-      mostrarAlerta({ mensaje: "Seleccione un socio primero", tipo: "warning" });
+      Alerta.warning("Seleccione un socio primero");
       return;
     }
 
     // Solo bloquear si tiene membresía activa pero sin asistencias disponibles
     // Si asistenciasDisponibles es null, significa que no tiene membresía (permitir como PENDIENTE)
     if (asistenciasDisponibles !== null && asistenciasDisponibles <= 0) {
-      mostrarAlerta({ mensaje: "No quedan asistencias disponibles", tipo: "warning" });
+      Alerta.warning("No quedan asistencias disponibles");
       return;
     }
 
@@ -149,10 +141,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       const data = await res.json();
       const fecha = new Date(data.fechaHora).toLocaleDateString("es-AR");
 
-      mostrarAlerta({
-        mensaje: `Asistencia registrada para ${socioSeleccionado.nombre} - (${fecha})`,
-        tipo: "success"
-      });
+      Alerta.success(`Asistencia registrada para ${socioSeleccionado.nombre} - (${fecha})`);
 
       await cargarInfoSocio(socioSeleccionado);
       await cargarInfoMembresia(socioSeleccionado);
@@ -160,10 +149,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       resetFormulario();
 
     } catch (err) {
-      mostrarAlerta({
-        mensaje: err.message || "No se pudo registrar la asistencia",
-        tipo: "danger"
-      });
+      Alerta.error(err.message || "No se pudo registrar la asistencia");
     }
   }
 

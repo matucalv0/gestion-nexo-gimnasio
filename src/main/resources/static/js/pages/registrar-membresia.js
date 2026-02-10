@@ -1,5 +1,6 @@
 import { checkAuth, logout } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
+import { Alerta } from "../ui/alerta.js";
 
 checkAuth();
 
@@ -7,7 +8,6 @@ const API_URL = "/membresias";
 
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("registrarMembresiaForm");
-  const resultado = document.getElementById("resultado");
 
   document
     .getElementById("btnVolver")
@@ -21,7 +21,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function registrarMembresia(e) {
     e.preventDefault();
-    limpiarResultado();
 
     const asistenciasValue = document.getElementById("asistencias").value;
 
@@ -45,14 +44,11 @@ document.addEventListener("DOMContentLoaded", () => {
         throw await extraerMensajeError(res);
       }
 
-      mostrarResultado("Plan registrado correctamente", "ok");
+      Alerta.success("Plan registrado correctamente");
       form.reset();
 
     } catch (err) {
-      mostrarResultado(
-        err.message || "No se pudo registrar la membresía",
-        "warn"
-      );
+      Alerta.error(err.message || "No se pudo registrar la membresía");
     }
   }
 
@@ -65,20 +61,6 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch {
       return new Error("Error al procesar la solicitud");
     }
-  }
-
-  function limpiarResultado() {
-    resultado.className = "hidden";
-    resultado.textContent = "";
-  }
-
-  function mostrarResultado(texto, tipo) {
-    resultado.textContent = texto;
-    resultado.className =
-      "mb-6 rounded-md px-4 py-3 text-sm font-medium " +
-      (tipo === "ok"
-        ? "bg-green-100 text-green-800 border border-green-300"
-        : "bg-red-100 text-red-800 border border-red-300");
   }
 });
 

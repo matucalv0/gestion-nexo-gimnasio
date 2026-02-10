@@ -29,6 +29,14 @@ public class Rutina {
     @JsonManagedReference
     private List<RutinaDetalle> detalles = new ArrayList<>();
 
+    // ID de la plantilla de la cual fue copiada esta rutina (null si es plantilla)
+    @Column(name = "id_plantilla_origen")
+    private Integer idPlantillaOrigen;
+
+    // Indica si la rutina asignada fue modificada respecto a su plantilla original
+    @Column(name = "personalizada", nullable = false)
+    private Boolean personalizada = false;
+
     public Rutina(){}
 
     @Override
@@ -118,5 +126,21 @@ public class Rutina {
 
     public void setSocio(Socio socio) {
         this.socio = socio;
+    }
+
+    public Integer getIdPlantillaOrigen() {
+        return idPlantillaOrigen;
+    }
+
+    public void setIdPlantillaOrigen(Integer idPlantillaOrigen) {
+        this.idPlantillaOrigen = idPlantillaOrigen;
+    }
+
+    public Boolean getPersonalizada() {
+        return personalizada;
+    }
+
+    public void setPersonalizada(Boolean personalizada) {
+        this.personalizada = personalizada;
     }
 }

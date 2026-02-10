@@ -1,33 +1,41 @@
 export function getToken() {
-  return localStorage.getItem("token");
+  // Ya no usamos token en localStorage para Auth (se usa Cookie HttpOnly)
+  return null;
 }
 
 export function logout() {
-  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  // Idealmente llamar al backend para borrar cookie, pero por ahora redirect invalida la sesión UI
+  document.cookie = "jwt=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;"; // Intentar borrar cookie desde JS (no funcionará si es HttpOnly, pero por si acaso)
   window.location.href = "/login.html";
 }
 
 export function checkAuth() {
-  if (!getToken()) {
+  const user = getCurrentUser();
+  if (!user) {
     window.location.href = "/login.html";
   }
 }
 
-export function getCurrentUser() {
-  const token = getToken();
-  if (!token) return null;
-
+export function saveSession(data) {
   try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    // Map JWT claims to user object. Adjust keys based on your JWT structure.
-    // Assuming backend sends: sub (username), rol (role), dni (dniEmpleado)
-    return {
-      username: payload.sub,
-      rol: payload.rol || payload.authorities, // Spring Security often sends authorities
-      empleadoDni: payload.dni || payload.empleadoDni // check how backend issues token
+    const user = {
+      username: data.username,
+      rol: data.rol,
+      empleadoDni: data.dniEmpleado || null
     };
+    localStorage.setItem("user", JSON.stringify(user));
   } catch (e) {
-    console.error("Invalid token", e);
+    console.error("Error saving session", e);
+  }
+}
+
+export function getCurrentUser() {
+  const userStr = localStorage.getItem("user");
+  if (!userStr) return null;
+  try {
+    return JSON.parse(userStr);
+  } catch (e) {
     return null;
   }
 }

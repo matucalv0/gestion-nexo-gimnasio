@@ -1,6 +1,6 @@
 import { authFetch } from "../api/api.js";
 import { getCurrentUser, checkAuth } from "../auth/auth.js";
-import { mostrarAlerta, limpiarAlertas } from "../ui/alerta.js";
+import { Alerta } from "../ui/alerta.js";
 
 
 checkAuth();
@@ -79,11 +79,11 @@ async function cargarEjercicios() {
         } else {
             const errorText = await res.text();
             console.error("Error al cargar ejercicios:", res.status, errorText);
-            mostrarAlerta({ mensaje: `Error al cargar ejercicios: ${res.status}`, tipo: "danger", tiempo: 5000 });
+            Alerta.error(`Error al cargar ejercicios: ${res.status}`);
         }
     } catch (e) {
         console.error("Error cargando ejercicios", e);
-        mostrarAlerta({ mensaje: "Error de conexión al cargar ejercicios", tipo: "danger", tiempo: 5000 });
+        Alerta.error("Error de conexión al cargar ejercicios");
     }
 }
 
@@ -178,7 +178,7 @@ async function cargarRutina(id) {
 
     } catch (e) {
         console.error(e);
-        mostrarAlerta({ mensaje: "Error cargando datos de la rutina", tipo: "danger" });
+        Alerta.error("Error cargando datos de la rutina");
     }
 }
 
@@ -266,29 +266,34 @@ function agregarDia() {
 function eliminarDia(dayToDelete) {
     if (Object.keys(daysData).length <= 1) return; // Don't delete last day
 
-    if (!confirm(`¿Eliminar todo el contenido del Día ${dayToDelete}?`)) return;
+    Alerta.confirm({
+        titulo: "Eliminar Día",
+        mensaje: `¿Eliminar todo el contenido del Día ${dayToDelete}?`,
+        textoConfirmar: "Eliminar",
+        onConfirm: () => {
+            delete daysData[dayToDelete];
 
-    delete daysData[dayToDelete];
+            const newDaysData = {};
+            let newIndex = 1;
+            Object.keys(daysData).sort((a, b) => a - b).forEach(d => {
+                newDaysData[newIndex] = daysData[d];
+                newIndex++;
+            });
+            daysData = newDaysData;
 
-    const newDaysData = {};
-    let newIndex = 1;
-    Object.keys(daysData).sort((a, b) => a - b).forEach(d => {
-        newDaysData[newIndex] = daysData[d];
-        newIndex++;
+            // Reset view
+            const days = Object.keys(daysData).map(Number);
+            if (!days.includes(currentDay)) {
+                currentDay = days[0];
+            } else {
+                currentDay = 1;
+            }
+
+            rowsData = daysData[currentDay];
+            renderTabs();
+            recargarTabla();
+        }
     });
-    daysData = newDaysData;
-
-    // Reset view
-    const days = Object.keys(daysData).map(Number);
-    if (!days.includes(currentDay)) {
-        currentDay = days[0];
-    } else {
-        currentDay = 1;
-    }
-
-    rowsData = daysData[currentDay];
-    renderTabs();
-    recargarTabla();
 }
 
 function guardarEstadoDia() {
@@ -404,7 +409,7 @@ function manejadorTablaKeydown(e, tr) {
         } else {
             agregarFila();
             setTimeout(() => {
-                const newRow = document.querySelector(`tr[data-row-index="${rowsData.length - 1}"]`);
+                const newRow = document.querySelector(`tr[data-row-index="${rowIndex - 1}"]`);
                 const newInputs = Array.from(newRow.querySelectorAll("input, select"));
                 newInputs[1].focus();
             }, 50);
@@ -456,19 +461,19 @@ function manejadorTablaKeydown(e, tr) {
 
 function copiarFila(rowIndex) {
     clipboard = { ...rowsData[rowIndex] };
-    mostrarAlerta({ mensaje: "Fila copiada ✓", tipo: "success", tiempo: 2000 });
+    Alerta.success("Fila copiada ✓");
 }
 
 function pegarFila(rowIndex) {
     if (!clipboard) {
-        mostrarAlerta({ mensaje: "Portapapeles vacío", tipo: "warning", tiempo: 2000 });
+        Alerta.warning("Portapapeles vacío");
         return;
     }
     // Insertar después de la fila actual
     const newData = { ...clipboard };
     rowsData.splice(rowIndex + 1, 0, newData);
     recargarTabla();
-    mostrarAlerta({ mensaje: "Fila pegada ✓", tipo: "success", tiempo: 2000 });
+    Alerta.success("Fila pegada ✓");
 }
 
 function duplicarFila(rowIndex) {
@@ -476,14 +481,14 @@ function duplicarFila(rowIndex) {
     const newData = { ...rowData };
     rowsData.splice(rowIndex + 1, 0, newData);
     recargarTabla();
-    mostrarAlerta({ mensaje: "Fila duplicada ✓", tipo: "success", tiempo: 2000 });
+    Alerta.success("Fila duplicada ✓");
 }
 
 function duplicarFilaSeleccionada() {
     const tbody = document.getElementById("ejerciciosTableBody");
     const selectedRow = tbody.querySelector("tr.selected");
     if (!selectedRow) {
-        mostrarAlerta({ mensaje: "Selecciona una fila primero", tipo: "warning", tiempo: 2000 });
+        Alerta.warning("Selecciona una fila primero");
         return;
     }
     const rowIndex = parseInt(selectedRow.dataset.rowIndex);
@@ -504,12 +509,12 @@ function moverFilaAbajo(rowIndex) {
 
 function eliminarFila(rowIndex) {
     if (rowsData.length === 1) {
-        mostrarAlerta({ mensaje: "Debe haber al menos una fila", tipo: "warning", tiempo: 2000 });
+        Alerta.warning("Debe haber al menos una fila");
         return;
     }
     rowsData.splice(rowIndex, 1);
     recargarTabla();
-    mostrarAlerta({ mensaje: "Fila eliminada ✓", tipo: "success", tiempo: 1500 });
+    Alerta.success("Fila eliminada ✓");
 }
 
 function agregarFilaConIndice(rowIndex, data) {
@@ -678,7 +683,7 @@ function recargarTabla() {
 
 function deshacer() {
     // Implementar con stack de cambios
-    mostrarAlerta({ mensaje: "Deshacer no implementado aún", tipo: "warning", tiempo: 2000 });
+    Alerta.info("Deshacer no implementado aún");
 }
 
 function mostrarImportarExcel() {
@@ -689,7 +694,7 @@ function mostrarImportarExcel() {
         const file = e.target.files[0];
         if (!file) return;
 
-        mostrarAlerta({ mensaje: "Importar Excel: funcionalidad en desarrollo", tipo: "warning", tiempo: 3000 });
+        Alerta.warning("Importar Excel: funcionalidad en desarrollo");
         // TODO: Implementar parseador de Excel
     });
     input.click();
@@ -704,19 +709,18 @@ function manejadorAtajosTeclado(e) {
 }
 
 async function guardarRutina() {
-    limpiarAlertas();
     const nombre = document.getElementById("nombreRutina").value.trim();
     const desc = document.getElementById("descripcionRutina").value.trim();
     const empleadoSeleccionado = document.getElementById("selectEmpleado").value.trim();
     const socio = document.getElementById("selectSocio").value.trim();
 
     if (!nombre) {
-        mostrarAlerta({ mensaje: "Por favor ingresa un nombre de rutina", tipo: "warning", tiempo: 3000 });
+        Alerta.warning("Por favor ingresa un nombre de rutina");
         return;
     }
 
     if (!empleadoSeleccionado) {
-        mostrarAlerta({ mensaje: "Por favor selecciona un empleado", tipo: "warning", tiempo: 3000 });
+        Alerta.warning("Por favor selecciona un empleado");
         return;
     }
 
@@ -732,7 +736,7 @@ async function guardarRutina() {
             // We check the DOM or the cache. If idEjercicio is set but not in cache/valid.
             // Actually, the select value is the ID. If the select showed "NO DISPONIBLE", the value is still the ID.
             // But we need to force user to fix it.
-            // Let's check against exercisesCache.
+            // Let's check against ejerciciosCache.
 
             if (data.idEjercicio && data.idEjercicio !== "" && !isNaN(data.idEjercicio)) {
                 const exists = ejerciciosCache.some(e => (e.idEjercicio || e.id) == data.idEjercicio);
@@ -757,12 +761,12 @@ async function guardarRutina() {
     });
 
     if (invalidExercises) {
-        mostrarAlerta({ mensaje: "Hay ejercicios 'NO DISPONIBLES'. Por favor corrígelos o elimínalos antes de guardar.", tipo: "danger", tiempo: 5000 });
+        Alerta.error("Hay ejercicios 'NO DISPONIBLES'. Por favor corrígelos o elimínalos antes de guardar.");
         return;
     }
 
     if (detalles.length === 0) {
-        mostrarAlerta({ mensaje: "Agrega al menos un ejercicio en algún día", tipo: "warning", tiempo: 3000 });
+        Alerta.warning("Agrega al menos un ejercicio en algún día");
         return;
     }
 
@@ -790,15 +794,15 @@ async function guardarRutina() {
         });
 
         if (res.ok) {
-            mostrarAlerta({ mensaje: "Rutina guardada correctamente ✓", tipo: "success", tiempo: 2000 });
+            Alerta.success("Rutina guardada correctamente ✓");
             setTimeout(() => window.location.href = "rutinas.html", 2000);
         } else {
             const err = await res.text();
-            mostrarAlerta({ mensaje: "No se pudo guardar: " + err, tipo: "danger", tiempo: 5000 });
+            Alerta.error("No se pudo guardar: " + err);
         }
     } catch (e) {
         console.error(e);
-        mostrarAlerta({ mensaje: "Error de conexión", tipo: "danger", tiempo: 5000 });
+        Alerta.error("Error de conexión");
     }
 }
 
@@ -852,8 +856,8 @@ async function guardarNuevoEjercicio() {
     const video = document.getElementById("neVideo").value.trim();
     const descripcion = document.getElementById("neDescripcion").value.trim();
 
-    if (!nombre) return mostrarAlerta({ mensaje: "El nombre es obligatorio", tipo: "warning" });
-    if (!idGrupo) return mostrarAlerta({ mensaje: "El grupo muscular es obligatorio", tipo: "warning" });
+    if (!nombre) return Alerta.warning("El nombre es obligatorio");
+    if (!idGrupo) return Alerta.warning("El grupo muscular es obligatorio");
 
     // Payload matches EjercicioDTO
     const payload = {
@@ -871,7 +875,7 @@ async function guardarNuevoEjercicio() {
 
         if (res.ok) {
             const nuevoEj = await res.json();
-            mostrarAlerta({ mensaje: "Ejercicio creado con éxito ✓", tipo: "success" });
+            Alerta.success("Ejercicio creado con éxito ✓");
 
             // Update Cache
             ejerciciosCache.push(nuevoEj);
@@ -882,11 +886,11 @@ async function guardarNuevoEjercicio() {
             cerrarModalNuevoEjercicio();
         } else {
             const txt = await res.text();
-            mostrarAlerta({ mensaje: "Error al crear: " + txt, tipo: "danger" });
+            Alerta.error("Error al crear: " + txt);
         }
     } catch (e) {
         console.error(e);
-        mostrarAlerta({ mensaje: "Error de conexión", tipo: "danger" });
+        Alerta.error("Error de conexión");
     }
 }
 

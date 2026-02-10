@@ -3,6 +3,7 @@ package com.nexo.gestion.controller;
 import com.nexo.gestion.dto.UsuarioDTO;
 import com.nexo.gestion.dto.UsuarioResponseDTO;
 import com.nexo.gestion.services.UsuarioService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,8 +20,9 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<UsuarioResponseDTO> altaUsuario(@RequestBody UsuarioDTO usuarioDTO){
+    public ResponseEntity<UsuarioResponseDTO> altaUsuario(@Valid @RequestBody UsuarioDTO usuarioDTO){
         UsuarioResponseDTO usuario = usuarioService.registrarUsuario(usuarioDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(usuario);
     }

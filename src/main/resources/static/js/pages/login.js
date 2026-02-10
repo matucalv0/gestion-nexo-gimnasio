@@ -1,3 +1,5 @@
+import { saveSession } from "../auth/auth.js";
+
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("loginForm");
   const errorText = document.getElementById("loginError");
@@ -28,7 +30,9 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const data = await res.json();
-      localStorage.setItem("token", data.token);
+
+      // Guardar sesión (el servidor envía user info, el token va solo en cookie HttpOnly)
+      saveSession(data);
 
       window.location.href = "/home.html";
 

@@ -1,5 +1,7 @@
 import { checkAuth, logout } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
+import { Alerta } from "../ui/alerta.js";
+import { renderPagination } from "../ui/pagination.js";
 
 checkAuth();
 
@@ -73,6 +75,9 @@ async function cargarSocios(tablaBody) {
     if (activo) url += `&activo=${activo}`;
 
     const res = await authFetch(url);
+    if (!res.ok) {
+      throw new Error("No se pudo obtener la lista de socios");
+    }
     const pageData = await res.json();
 
     // pageData es PageResponseDTO
@@ -91,7 +96,7 @@ async function cargarSocios(tablaBody) {
 
   } catch (err) {
     console.error("Error al cargar socios", err);
-    // Podríamos mostrar alerta si hubiera contenedor de alerta
+    Alerta.error("No se pudieron cargar los socios");
   }
 }
 

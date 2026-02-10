@@ -2,6 +2,7 @@ package com.nexo.gestion.controller;
 
 import com.nexo.gestion.dto.PuestoDTO;
 import com.nexo.gestion.services.PuestoService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,7 +21,7 @@ public class PuestoController {
 
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<PuestoDTO> altaPuesto(@RequestBody PuestoDTO puestoDTO){
+    public ResponseEntity<PuestoDTO> altaPuesto(@Valid @RequestBody PuestoDTO puestoDTO){
         PuestoDTO puesto = puestoService.registrarPuesto(puestoDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(puesto);
     }

@@ -1,6 +1,6 @@
 import { authFetch } from "../api/api.js";
 import { checkAuth } from "../auth/auth.js";
-import { mostrarAlerta } from "../ui/alerta.js";
+import { Alerta } from "../ui/alerta.js";
 
 checkAuth();
 
@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const id = urlParams.get('id');
 
     if (!id) {
-        mostrarAlerta({ mensaje: "ID de rutina no especificado", tipo: "warning" });
+        Alerta.warning("ID de rutina no especificado");
         setTimeout(() => window.location.href = "rutinas.html", 2000);
         return;
     }
@@ -281,14 +281,14 @@ window.guardarCargas = async () => {
         .filter(c => c.length > 0);
 
     if (cargas.length === 0) {
-        mostrarAlerta({ mensaje: "Ingresa al menos una carga", tipo: "warning" });
+        Alerta.warning("Ingresa al menos una carga");
         return;
     }
 
     try {
         const detalle = currentRutinaDetails.find(d => d.idDetalle === detalleEnEdicion);
         if (!detalle) {
-            mostrarAlerta({ mensaje: "Ejercicio no encontrado", tipo: "error" });
+            Alerta.error("Ejercicio no encontrado");
             return;
         }
 
@@ -315,18 +315,14 @@ window.guardarCargas = async () => {
             }
             cerrarModalEditarCargas();
             renderExercisesForDay(currentDayView);
-            mostrarAlerta({
-                mensaje: `✓ Cargas actualizadas: ${cargas.join(', ')} kg`,
-                tipo: "success",
-                tiempo: 3000
-            });
+            Alerta.success(`✓ Cargas actualizadas: ${cargas.join(', ')} kg`);
         } else {
             const err = await res.json().catch(() => ({}));
-            mostrarAlerta({ mensaje: "Error al actualizar cargas: " + (err.error || err.mensaje || "Error desconocido"), tipo: "error" });
+            Alerta.error("Error al actualizar cargas: " + (err.error || err.mensaje || "Error desconocido"));
         }
     } catch (e) {
         console.error(e);
-        mostrarAlerta({ mensaje: "Error de conexión", tipo: "error" });
+        Alerta.error("Error de conexión");
     }
 }
 
@@ -375,7 +371,7 @@ window.abrirModalAsignar = async (idRutina) => {
 
             if (!Array.isArray(sociosDisponibles) || sociosDisponibles.length === 0) {
                 console.warn('No hay socios o formato inválido:', sociosDisponibles);
-                mostrarAlerta({ mensaje: "No hay socios disponibles", tipo: "warning" });
+                Alerta.warning("No hay socios disponibles");
                 return;
             }
 
@@ -394,11 +390,11 @@ window.abrirModalAsignar = async (idRutina) => {
                 inputBuscar.addEventListener('input', renderizarListaSocios);
             }
         } else {
-            mostrarAlerta({ mensaje: "Error al cargar socios", tipo: "error" });
+            Alerta.error("Error al cargar socios");
         }
     } catch (e) {
         console.error(e);
-        mostrarAlerta({ mensaje: "Error de conexión", tipo: "error" });
+        Alerta.error("Error de conexión");
     }
 };
 
@@ -453,7 +449,7 @@ window.asignarSociosSeleccionados = async () => {
         .map(cb => cb.value);
 
     if (seleccionados.length === 0) {
-        mostrarAlerta({ mensaje: "Selecciona al menos un socio", tipo: "warning" });
+        Alerta.warning("Selecciona al menos un socio");
         return;
     }
 
@@ -466,19 +462,15 @@ window.asignarSociosSeleccionados = async () => {
 
         if (res.ok) {
             const resultado = await res.json();
-            mostrarAlerta({
-                mensaje: resultado.mensaje,
-                tipo: "success",
-                tiempo: 3000
-            });
+            Alerta.success(resultado.mensaje);
             cerrarModalAsignar();
         } else {
             const err = await res.json();
-            mostrarAlerta({ mensaje: "Error: " + (err.error || "No se pudo asignar"), tipo: "error" });
+            Alerta.error("Error: " + (err.error || "No se pudo asignar"));
         }
     } catch (e) {
         console.error(e);
-        mostrarAlerta({ mensaje: "Error de conexión", tipo: "error" });
+        Alerta.error("Error de conexión");
     }
 };
 // Exportar a PDF
@@ -488,7 +480,7 @@ window.exportarPDF = () => {
     // Crear un elemento temporal con el contenido a exportar
     const content = document.querySelector("article");
     if (!content) {
-        mostrarAlerta({ mensaje: "No hay contenido para exportar", tipo: "warning" });
+        Alerta.warning("No hay contenido para exportar");
         return;
     }
 
@@ -502,16 +494,9 @@ window.exportarPDF = () => {
     };
 
     html2pdf().set(opt).from(content).save().then(() => {
-        mostrarAlerta({
-            mensaje: "✓ PDF generado correctamente",
-            tipo: "success",
-            tiempo: 2000
-        });
+        Alerta.success("✓ PDF generado correctamente");
     }).catch(err => {
         console.error(err);
-        mostrarAlerta({
-            mensaje: "Error al generar PDF",
-            tipo: "error"
-        });
+        Alerta.error("Error al generar PDF");
     });
 };

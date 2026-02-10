@@ -1,6 +1,6 @@
 import { checkAuth } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
-import { mostrarAlerta, limpiarAlertas } from "../ui/alerta.js";
+import { Alerta } from "../ui/alerta.js";
 
 checkAuth();
 const API_URL = "/socios";
@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const dni = params.get("dni");
 
     if (!dni) {
-        mostrarAlerta({ mensaje: "Socio inválido", tipo: "danger" });
+        Alerta.error("Socio inválido");
         return;
     }
 
@@ -71,7 +71,6 @@ async function cargarKPIs(dni) {
 }
 
 async function cargarMembresiaVigente(dni) {
-    limpiarAlertas();
     const container = document.getElementById("membresiaContainer");
     container.innerHTML = "";
 
@@ -86,14 +85,10 @@ async function cargarMembresiaVigente(dni) {
 
     } catch (err) {
         if (err.status === 409) {
-            mostrarAlerta({
-                mensaje: "La membresía del socio está vencida.",
-                tipo: "warning",
-                contenedor: document.getElementById("alert-container")
-            });
+            Alerta.warning("La membresía del socio está vencida.");
         } else {
             console.error("Error al cargar la membresía:", err);
-            mostrarAlerta({ mensaje: "Error al cargar la membresía", tipo: "danger" });
+            Alerta.error("Error al cargar la membresía");
         }
     }
 }
@@ -190,18 +185,12 @@ async function cargarRutinaActiva(dni) {
 
 /* ===== DETALLES SOCIO Y MEMBRESÍA ===== */
 async function cargarSocio(dni) {
-    limpiarAlertas();
     const container = document.getElementById("infoSocio");
     container.innerHTML = "";
 
     try {
         const res = await authFetch(`${API_URL}/${dni}`);
-        const activoRes = await authFetch(`${API_URL}/activo-mes?dni=${dni}`);
         const socio = await res.json();
-        const activo = await activoRes.json();
-
-
-
 
         const campos = [
             { label: "Nombre", valor: socio.nombre },
@@ -228,7 +217,7 @@ async function cargarSocio(dni) {
         });
 
     } catch {
-        mostrarAlerta({ mensaje: "Error al cargar los datos del socio", tipo: "danger" });
+        Alerta.error("Error al cargar los datos del socio");
     }
 }
 

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -18,19 +19,22 @@
     body::before {
       content: "";
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       background: url('../assets/nexofondo.jpg') center/cover no-repeat;
       filter: blur(8px) brightness(0.4);
       z-index: -1;
     }
   </style>
 </head>
+
 <body class="flex items-center justify-center min-h-screen bg-black">
 
   <main class="w-full max-w-sm p-8 rounded-3xl shadow-xl flex flex-col items-center"
-        style="background-color: rgba(31, 46, 56, 0.85);">
-    
+    style="background-color: rgba(31, 46, 56, 0.85);">
+
     <img src="../assets/nexologo.png" alt="Nexo Logo" class="w-32 mb-4" />
     <p class="text-beige text-center mb-6" style="color: var(--beige); font-weight:500;">
       Entrená. Conectá. Avanzá.
@@ -38,13 +42,14 @@
 
     <form id="loginForm" class="w-full flex flex-col gap-4">
       <input type="text" id="username" name="username" placeholder="Usuario" required
-             class="w-full px-4 py-2 rounded-lg focus:outline-none"
-             style="background-color: var(--input-bg); border: 1px solid var(--input-border); color: var(--beige);" />
+        class="w-full px-4 py-2 rounded-lg focus:outline-none"
+        style="background-color: var(--input-bg); border: 1px solid var(--input-border); color: var(--beige);" />
       <input type="password" id="password" name="password" placeholder="Contraseña" required
-             class="w-full px-4 py-2 rounded-lg focus:outline-none"
-             style="background-color: var(--input-bg); border: 1px solid var(--input-border); color: var(--beige);" />
-      <button type="submit" class="w-full py-2 rounded-lg text-white font-semibold transition-all duration-200"
-              style="background-color: var(--orange); hover:opacity-90;">
+        class="w-full px-4 py-2 rounded-lg focus:outline-none"
+        style="background-color: var(--input-bg); border: 1px solid var(--input-border); color: var(--beige);" />
+      <button type="submit"
+        class="w-full py-2 rounded-lg text-white font-semibold transition-all duration-200 hover:opacity-90"
+        style="background-color: var(--orange);">
         Ingresar
       </button>
     </form>
@@ -52,48 +57,7 @@
     <p id="loginError" class="text-red-500 text-sm mt-3 text-center"></p>
   </main>
 
-  <script type="module">
-    document.addEventListener("DOMContentLoaded", () => {
-      const form = document.getElementById("loginForm");
-      const errorText = document.getElementById("loginError");
-
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        errorText.textContent = "";
-
-        const username = form.username.value.trim();
-        const password = form.password.value.trim();
-
-        if (!username || !password) {
-          errorText.textContent = "Complete todos los campos";
-          return;
-        }
-
-        try {
-          const res = await fetch("/auth/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, password })
-          });
-
-          if (!res.ok) {
-            throw new Error("Usuario o contraseña incorrectos");
-          }
-
-          const data = await res.json();
-          localStorage.setItem("token", data.token);
-
-          window.location.href = "/home.html";
-
-        } catch (err) {
-          errorText.textContent = err.message;
-        }
-      });
-    });
-  </script>
+  <script type="module" src="js/pages/login.js"></script>
 </body>
+
 </html>
-
-
-
-

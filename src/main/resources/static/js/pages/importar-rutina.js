@@ -1,6 +1,6 @@
 import { authFetch } from "../api/api.js";
 import { getCurrentUser, checkAuth } from "../auth/auth.js";
-import { mostrarAlerta, limpiarAlertas } from "../ui/alerta.js";
+import { Alerta } from "../ui/alerta.js";
 
 checkAuth();
 
@@ -39,7 +39,7 @@ async function cargarEmpleados() {
         }
     } catch (e) {
         console.error("Error cargando empleados", e);
-        mostrarAlerta({ mensaje: "Error al cargar empleados", tipo: "danger" });
+        Alerta.error("Error al cargar empleados");
     }
 }
 
@@ -76,7 +76,7 @@ function onArchivoSeleccionado(e) {
     // Validar extensión
     const ext = file.name.split(".").pop().toLowerCase();
     if (!["xlsx", "xls"].includes(ext)) {
-        mostrarAlerta({ mensaje: "Solo se permiten archivos Excel (.xlsx, .xls)", tipo: "warning" });
+        Alerta.warning("Solo se permiten archivos Excel (.xlsx, .xls)");
         document.getElementById("fileInput").value = "";
         btn.disabled = true;
         return;
@@ -89,19 +89,17 @@ function onArchivoSeleccionado(e) {
 }
 
 async function importarRutina() {
-    limpiarAlertas();
-
     const file = document.getElementById("fileInput").files[0];
     const dniEmpleado = document.getElementById("selectEmpleado").value;
     const dniSocio = document.getElementById("selectSocio").value || null;
 
     if (!file) {
-        mostrarAlerta({ mensaje: "Selecciona un archivo Excel", tipo: "warning" });
+        Alerta.warning("Selecciona un archivo Excel");
         return;
     }
 
     if (!dniEmpleado) {
-        mostrarAlerta({ mensaje: "Selecciona un profesor", tipo: "warning" });
+        Alerta.warning("Selecciona un profesor");
         return;
     }
 
@@ -124,31 +122,19 @@ async function importarRutina() {
 
         if (res.ok) {
             const data = await res.json();
-            mostrarAlerta({
-                mensaje: `✓ Rutina importada correctamente (ID: ${data.idRutina})`,
-                tipo: "success",
-                tiempo: 3000
-            });
+            Alerta.success(`Rutina importada correctamente (ID: ${data.idRutina})`);
             setTimeout(() => {
                 window.location.href = "rutinas.html";
             }, 2000);
         } else {
             const err = await res.json();
-            mostrarAlerta({
-                mensaje: "Error: " + (err.error || "No se pudo importar"),
-                tipo: "danger",
-                tiempo: 5000
-            });
+            Alerta.error("Error: " + (err.error || "No se pudo importar"));
             btn.disabled = false;
             btn.innerHTML = textOriginal;
         }
     } catch (e) {
         console.error(e);
-        mostrarAlerta({
-            mensaje: "Error de conexión",
-            tipo: "danger",
-            tiempo: 5000
-        });
+        Alerta.error("Error de conexión");
         btn.disabled = false;
         btn.innerHTML = textOriginal;
     }

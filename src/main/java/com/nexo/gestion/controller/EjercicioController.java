@@ -3,6 +3,7 @@ package com.nexo.gestion.controller;
 import com.nexo.gestion.dto.EjercicioDTO;
 import com.nexo.gestion.entity.Ejercicio;
 import com.nexo.gestion.services.EjercicioService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,14 +29,14 @@ public class EjercicioController {
 
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<EjercicioDTO> altaEjercicio(@RequestBody EjercicioDTO ejercicio) {
+    public ResponseEntity<EjercicioDTO> altaEjercicio(@Valid @RequestBody EjercicioDTO ejercicio) {
         EjercicioDTO ejercicioDTO = ejercicioService.registrarEjercicio(ejercicio);
         return ResponseEntity.status(HttpStatus.CREATED).body(ejercicioDTO);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<EjercicioDTO> actualizarEjercicio(@PathVariable Integer id, @RequestBody EjercicioDTO ejercicio) {
+    public ResponseEntity<EjercicioDTO> actualizarEjercicio(@PathVariable Integer id, @Valid @RequestBody EjercicioDTO ejercicio) {
         EjercicioDTO actualizado = ejercicioService.actualizarEjercicio(id, ejercicio);
         return ResponseEntity.ok(actualizado);
     }

@@ -16,6 +16,9 @@ public class Producto {
     private Integer stock;
     private boolean activo;
 
+    @Version
+    private Integer version;
+
     public Producto(){}
 
     public Producto(String nombre, BigDecimal precioSugerido, Integer stock){
@@ -26,6 +29,10 @@ public class Producto {
     }
 
     public void restarStock(Integer cantidad){
+        if (this.stock == null || this.stock < cantidad) {
+            throw new IllegalStateException(
+                "Stock insuficiente para " + this.nombre + ". Disponible: " + this.stock + ", solicitado: " + cantidad);
+        }
         this.stock -= cantidad;
     }
 

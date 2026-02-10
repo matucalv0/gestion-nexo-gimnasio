@@ -32,16 +32,19 @@ public class AsistenciaController {
         return ResponseEntity.ok(asistenciaService.buscarAsistenciasPaginadas(page, size, desde, hasta, q));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping("estadisticas/semana-actual")
     public ResponseEntity<Integer> cantidadAsistenciasSemanaActual(@RequestParam("q") String dni){
         return ResponseEntity.ok(asistenciaService.asistenciasTotalesSemana(dni));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping("estadisticas/mes")
     public ResponseEntity<EstadisticasAsistenciasMensualDTO> estadisticasMensuales(){
         return ResponseEntity.ok(asistenciaService.estadisticasMensualesAsistencias());
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping("estadisticas")
     public ResponseEntity<List<AsistenciasPorDiaDTO>> asistenciasPorDia(@RequestParam("mes") String mes){
         return ResponseEntity.ok(asistenciaService.totalAsistenciasPorDia(mes));

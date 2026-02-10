@@ -5,6 +5,7 @@ import com.nexo.gestion.services.GastoService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,18 +19,19 @@ public class GastoController {
         this.gastoService = gastoService;
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @PostMapping
     public ResponseEntity<GastoDTO> altaGasto(@Valid @RequestBody GastoDTO gastoDTO){
-        System.out.println("CONTROLLER GASTOS HIT");
-        System.out.println("DTO = " + gastoDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(gastoService.registrarGasto(gastoDTO));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping
     public ResponseEntity<List<GastoDTO>> mostrarGastos(){
         return ResponseEntity.ok(gastoService.buscarGastos());
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarGasto(@PathVariable Integer id){
         gastoService.eliminarGasto(id);

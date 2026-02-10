@@ -2,6 +2,7 @@ package com.nexo.gestion.dto;
 
 
 import com.nexo.gestion.entity.*;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -23,6 +24,7 @@ public class PagoCreateDTO {
     @NotBlank
     private String dniEmpleado;
     @NotNull
+    @Valid
     private List<DetallePagoCreateDTO> detalles = new ArrayList<>();
 
     public EstadoPago getEstado() {

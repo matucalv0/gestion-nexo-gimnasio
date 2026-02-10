@@ -53,8 +53,13 @@ public class RutinaImportService {
                     rutinaImport.descripcion(),
                     rutinaImport.detalles());
 
-            // Crear rutina en BD
-            Integer idRutina = crearRutinaDesdeImport(rutinaImport);
+            // Crear rutina en BD o actualizar si ya existe (Solo si es Template)
+            Integer idRutina;
+            if (dniSocio == null || dniSocio.isBlank()) {
+                idRutina = gestionarRutinaTemplate(rutinaImport);
+            } else {
+                idRutina = crearRutinaDesdeImport(rutinaImport);
+            }
 
             workbook.close();
             return idRutina;
@@ -62,6 +67,79 @@ public class RutinaImportService {
         } catch (Exception e) {
             throw new RuntimeException("Error al importar Excel: " + e.getMessage(), e);
         }
+    }
+
+    private Integer gestionarRutinaTemplate(RutinaImportDTO dto) {
+        // Buscar si ya existe un template con ese nombre
+        Optional<Rutina> existingTemplate = rutinaRepository.findFirstByNombreAndSocioIsNull(dto.nombre());
+
+        if (existingTemplate.isPresent()) {
+            return actualizarRutinaTemplate(existingTemplate.get(), dto);
+        } else {
+            return crearRutinaDesdeImport(dto);
+        }
+    }
+
+    private Integer actualizarRutinaTemplate(Rutina rutina, RutinaImportDTO dto) {
+        // Actualizar datos básicos
+        rutina.setDescripcion(dto.descripcion());
+        
+        // Limpiar detalles anteriores (Hard reset para templates)
+        rutina.getDetalles().clear();
+        rutinaRepository.save(rutina); // Guardar para borrar cascada si es necesario, aunque orphanRemoval debería encargarse
+
+        // Re-crear detalles desde el Excel
+        return agregarDetallesARutina(rutina, dto);
+    }
+
+    private Integer agregarDetallesARutina(Rutina rutina, RutinaImportDTO dto) {
+        if (dto.detalles() != null) {
+            for (RutinaDetalleImportDTO detalle : dto.detalles()) {
+                Ejercicio ejercicio;
+
+                // Si el ejercicio no existe en BD, crearlo automáticamente
+                if (detalle.idEjercicio() == null) {
+                    GrupoMuscular grupoGeneral = grupoMuscularRepository.findAll().stream()
+                            .filter(g -> "General".equalsIgnoreCase(g.getNombre()))
+                            .findFirst()
+                            .orElseGet(() -> {
+                                GrupoMuscular nuevo = new GrupoMuscular("General");
+                                return grupoMuscularRepository.save(nuevo);
+                            });
+
+                    ejercicio = new Ejercicio();
+                    ejercicio.setNombre(detalle.nombreEjercicio());
+                    ejercicio.setDescripcion("Ejercicio importado desde rutina Excel");
+                    ejercicio.setGrupoMuscular(grupoGeneral);
+                    ejercicio = ejercicioRepository.save(ejercicio);
+                } else {
+                    ejercicio = ejercicioRepository.findById(detalle.idEjercicio())
+                            .orElseThrow(() -> new ObjetoNoEncontradoException(
+                                    "Ejercicio no encontrado: " + detalle.idEjercicio()));
+                }
+
+                RutinaDetalle rutinaDetalle = new RutinaDetalle(
+                        rutina,
+                        ejercicio,
+                        detalle.orden(),
+                        detalle.series(),
+                        detalle.repeticiones(),
+                        null, 
+                        null, 
+                        null, 
+                        detalle.dia());
+
+                if (detalle.cargas() != null && !detalle.cargas().isEmpty()) {
+                    rutinaDetalle.setCargas(new ArrayList<>(detalle.cargas()));
+                    rutinaDetalle.setCarga(detalle.cargas().get(0));
+                }
+
+                rutina.agregarDetalle(rutinaDetalle);
+            }
+        }
+
+        Rutina guardada = rutinaRepository.save(rutina);
+        return guardada.getIdRutina();
     }
 
     private RutinaImportDTO parsearExcel(Sheet sheet) {
@@ -187,58 +265,8 @@ public class RutinaImportService {
 
         // Crear rutina
         Rutina rutina = new Rutina(dto.nombre(), dto.descripcion(), empleado, socio);
-
-        // Agregar detalles
-        if (dto.detalles() != null) {
-            for (RutinaDetalleImportDTO detalle : dto.detalles()) {
-                Ejercicio ejercicio;
-
-                // Si el ejercicio no existe en BD, crearlo automáticamente
-                if (detalle.idEjercicio() == null) {
-                    // Obtener o crear grupo muscular "General"
-                    GrupoMuscular grupoGeneral = grupoMuscularRepository.findAll().stream()
-                            .filter(g -> "General".equalsIgnoreCase(g.getNombre()))
-                            .findFirst()
-                            .orElseGet(() -> {
-                                GrupoMuscular nuevo = new GrupoMuscular("General");
-                                return grupoMuscularRepository.save(nuevo);
-                            });
-
-                    ejercicio = new Ejercicio();
-                    ejercicio.setNombre(detalle.nombreEjercicio());
-                    ejercicio.setDescripcion("Ejercicio importado desde rutina Excel");
-                    ejercicio.setGrupoMuscular(grupoGeneral);
-                    ejercicio = ejercicioRepository.save(ejercicio);
-                } else {
-                    ejercicio = ejercicioRepository.findById(detalle.idEjercicio())
-                            .orElseThrow(() -> new ObjetoNoEncontradoException(
-                                    "Ejercicio no encontrado: " + detalle.idEjercicio()));
-                }
-
-                RutinaDetalle rutinaDetalle = new RutinaDetalle(
-                        rutina,
-                        ejercicio,
-                        detalle.orden(),
-                        detalle.series(),
-                        detalle.repeticiones(),
-                        null, // carga inicial vacía, se llena con cargas
-                        null, // descanso
-                        null, // observación
-                        detalle.dia());
-
-                // Agregar cargas
-                if (detalle.cargas() != null && !detalle.cargas().isEmpty()) {
-                    rutinaDetalle.setCargas(new ArrayList<>(detalle.cargas()));
-                    // Usar la primera carga como carga principal
-                    rutinaDetalle.setCarga(detalle.cargas().get(0));
-                }
-
-                rutina.agregarDetalle(rutinaDetalle);
-            }
-        }
-
-        Rutina guardada = rutinaRepository.save(rutina);
-        return guardada.getIdRutina();
+        
+        return agregarDetallesARutina(rutina, dto);
     }
 
     private String getCellValueAsString(Cell cell) {

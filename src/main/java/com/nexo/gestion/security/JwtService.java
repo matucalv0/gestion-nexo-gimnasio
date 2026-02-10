@@ -1,4 +1,6 @@
 package com.nexo.gestion.security;
+import com.nexo.gestion.entity.Usuario;
+import com.nexo.gestion.repository.UsuarioRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -16,11 +18,14 @@ public class JwtService {
 
     private final String secret;
     private final long expiration;
+    private final UsuarioRepository usuarioRepository;
 
     public JwtService(@Value("${jwt.secret}") String secret,
-                      @Value("${jwt.expiration}") long expiration) {
+                      @Value("${jwt.expiration}") long expiration,
+                      UsuarioRepository usuarioRepository) {
         this.secret = secret;
         this.expiration = expiration;
+        this.usuarioRepository = usuarioRepository;
     }
 
     private Key getKey() {
@@ -28,13 +33,28 @@ public class JwtService {
     }
 
     public String generarToken(UserDetails userDetails) {
-        return Jwts.builder()
-                .setSubject(userDetails.getUsername())
+        // Buscar el DNI del empleado desde la base de datos
+        String dni = null;
+        String username = userDetails.getUsername();
+        
+        Usuario usuario = usuarioRepository.findByUsername(username).orElse(null);
+        if (usuario != null && usuario.getEmpleado() != null) {
+            dni = usuario.getEmpleado().getDni();
+        }
+        
+        var builder = Jwts.builder()
+                .setSubject(username)
                 .claim("roles", userDetails.getAuthorities())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(getKey(), SignatureAlgorithm.HS256)
-                .compact();
+                .signWith(getKey(), SignatureAlgorithm.HS256);
+        
+        // Agregar DNI si existe
+        if (dni != null) {
+            builder.claim("dni", dni);
+        }
+        
+        return builder.compact();
     }
 
     public String extraerUsername(String token) {

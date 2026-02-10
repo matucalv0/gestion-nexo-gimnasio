@@ -51,6 +51,7 @@ public class SocioService {
                     rutina.getSocio() != null ? rutina.getSocio().getDni() : null,
                     rutina.getSocio() != null ? rutina.getSocio().getNombre() : null,
                     rutina.getFecha(),
+                    rutina.getPersonalizada() != null ? rutina.getPersonalizada() : false,
                     null);
         }
         return new SocioDTO(
@@ -153,8 +154,8 @@ public class SocioService {
     public SocioDTO patchSocio(String dni, SocioPatchDTO socioPatch) {
         Socio socio = socioRepository.findById(dni).orElseThrow(() -> new ObjetoNoEncontradoException("dni"));
 
-        if (socioPatch.getDni() != null) {
-            socio.setDni(socioPatch.getDni());
+        if (socioPatch.getDni() != null && !socioPatch.getDni().equals(dni)) {
+            throw new IllegalStateException("No se permite modificar el DNI de un socio existente");
         }
 
         if (socioPatch.getNombre() != null) {
@@ -394,6 +395,7 @@ public class SocioService {
                 rutina.getSocio() != null ? rutina.getSocio().getDni() : null,
                 rutina.getSocio() != null ? rutina.getSocio().getNombre() : null,
                 rutina.getFecha(),
+                rutina.getPersonalizada() != null ? rutina.getPersonalizada() : false,
                 null);
     }
 }

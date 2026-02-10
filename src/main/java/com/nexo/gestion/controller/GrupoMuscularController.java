@@ -2,6 +2,7 @@ package com.nexo.gestion.controller;
 
 import com.nexo.gestion.dto.GrupoMuscularDTO;
 import com.nexo.gestion.services.GrupoMuscularService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ public class GrupoMuscularController {
     }
 
     @PostMapping
-    public ResponseEntity<GrupoMuscularDTO> altaGrupoMuscular(@RequestBody GrupoMuscularDTO grupoMuscularDTO){
+    public ResponseEntity<GrupoMuscularDTO> altaGrupoMuscular(@Valid @RequestBody GrupoMuscularDTO grupoMuscularDTO){
         GrupoMuscularDTO grupoMuscular = grupoMuscularService.registrarGrupoMuscular(grupoMuscularDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(grupoMuscular);
     }

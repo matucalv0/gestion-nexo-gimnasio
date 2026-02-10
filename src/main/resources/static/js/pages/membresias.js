@@ -1,5 +1,6 @@
 import { checkAuth, logout } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
+import { Alerta } from "../ui/alerta.js";
 
 checkAuth();
 
@@ -33,6 +34,7 @@ async function cargarMembresias(tablaBody) {
     renderMembresias(tablaBody, membresias);
   } catch (err) {
     console.error(err);
+    Alerta.error("No se pudieron cargar las membresías");
     tablaBody.innerHTML = `
       <tr>
         <td colspan="7" class="px-6 py-4 text-center text-gray-500">
