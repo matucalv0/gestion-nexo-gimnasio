@@ -55,6 +55,12 @@ public class SocioController {
         return ResponseEntity.ok(socioService.buscarSociosPaginados(page, size, q, activo));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
+    @GetMapping("/search")
+    public ResponseEntity<List<SocioDTO>> buscarSocios(@RequestParam String q) {
+        return ResponseEntity.ok(socioService.buscarSocios(q));
+    }
+
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PatchMapping("/{dni}/baja")
     public ResponseEntity<SocioDTO> darDeBajaSocio(@PathVariable String dni) {

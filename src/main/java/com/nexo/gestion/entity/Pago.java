@@ -60,6 +60,7 @@ public class Pago {
         this.medioPago = medioPago;
         this.empleado = empleado;
         this.fecha = LocalDate.now();
+        this.monto = BigDecimal.ZERO;
     }
 
     public Pago(EstadoPago estado, BigDecimal monto, MedioPago medioPago, Empleado empleado){ //pago a consumidor final
