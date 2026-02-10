@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: gestion_db
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER:-admin}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: gestion_app
+    depends_on:
+      - db
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/${DB_NAME}
+      DB_USER: ${DB_USER:-admin}
+      DB_PASS: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      app.cookie.secure: ${COOKIE_SECURE}
+    ports:
+      - "8080:8080"
+
+volumes:
+  db_data:

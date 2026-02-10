@@ -1,5 +1,7 @@
 -- V1: Schema Inicial (Sincronizado con Producción)
 
+CREATE SEQUENCE IF NOT EXISTS public.usuario_seq INCREMENT BY 50;
+
 -- Tablas
 CREATE TABLE IF NOT EXISTS public.asistencia (
     dni character varying(255) NOT NULL,

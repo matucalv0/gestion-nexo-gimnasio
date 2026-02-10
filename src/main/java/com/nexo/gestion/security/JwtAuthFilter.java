@@ -55,6 +55,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         if (token != null) {
+            // No validar JWT si la ruta es /auth/login para evitar falsos positivos por cookies viejas
+            if (request.getRequestURI().contains("/auth/login")) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
             // RC-4: Verificar si el token fue revocado (logout server-side)
             if (tokenBlacklistService.isBlacklisted(token)) {
                 filterChain.doFilter(request, response);

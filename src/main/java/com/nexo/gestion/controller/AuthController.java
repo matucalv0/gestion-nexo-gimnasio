@@ -6,6 +6,8 @@ import com.nexo.gestion.dto.UsuarioLoginResponseDTO;
 import com.nexo.gestion.security.JwtService;
 import com.nexo.gestion.security.TokenBlacklistService;
 import com.nexo.gestion.services.AuthService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +20,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
 
     private final AuthService authService;
     private final JwtService jwtService;
@@ -35,6 +38,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@RequestBody UsuarioLoginDTO usuarioLoginDTO, jakarta.servlet.http.HttpServletResponse response) {
+        log.debug("Intentando login para usuario: {}", usuarioLoginDTO.username());
         String token = authService.login(usuarioLoginDTO);
         
         // Crear Cookie HttpOnly
