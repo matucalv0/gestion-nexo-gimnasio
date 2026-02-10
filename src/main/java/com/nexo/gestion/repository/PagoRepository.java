@@ -4,6 +4,7 @@ import com.nexo.gestion.dto.PagoPorFechaDTO;
 import com.nexo.gestion.dto.PlanMasVendidoMesDTO;
 import com.nexo.gestion.dto.ProductoMasVendidoMesDTO;
 import com.nexo.gestion.entity.Pago;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -91,11 +92,14 @@ public interface PagoRepository extends JpaRepository<Pago, Integer> {
     BigDecimal totalRecaudadoMesPlanes();
 
 
+    @EntityGraph(attributePaths = {"detalles"})
     List<Pago> findByEstadoNotInOrderByFechaDesc(List<com.nexo.gestion.entity.EstadoPago> estados);
 
+    @EntityGraph(attributePaths = {"detalles"})
     List<Pago> findAllByOrderByFechaDesc();
 
-    // Paginated query with date range filter
+    
+    @EntityGraph(attributePaths = {"detalles"})
     @Query("SELECT p FROM Pago p WHERE p.fecha >= :desde AND p.fecha <= :hasta AND p.estado NOT IN (com.nexo.gestion.entity.EstadoPago.ELIMINADO, com.nexo.gestion.entity.EstadoPago.ANULADO) ORDER BY p.fecha DESC")
     org.springframework.data.domain.Page<Pago> findByFechaBetweenOrderByFechaDesc(
             @Param("desde") LocalDate desde,

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class SocioService {
@@ -37,11 +38,9 @@ public class SocioService {
                 a.getFechaHora());
     }
 
-    private SocioDTO convertirASocioDTO(Socio socio) {
+    private SocioDTO convertirASocioDTO(Socio socio, Rutina rutina) {
         RutinaDTO rutinaActiva = null;
-        var rutinaOpt = rutinaRepository.findFirstBySocioDniOrderByIdRutinaDesc(socio.getDni());
-        if (rutinaOpt.isPresent()) {
-            Rutina rutina = rutinaOpt.get();
+        if (rutina != null) {
             rutinaActiva = new RutinaDTO(
                     rutina.getIdRutina(),
                     rutina.getNombre(),
@@ -62,6 +61,11 @@ public class SocioService {
                 socio.getFechaNacimiento(),
                 socio.isActivo(),
                 rutinaActiva);
+    }
+
+    private SocioDTO convertirASocioDTO(Socio socio) {
+        Rutina rutina = rutinaRepository.findFirstBySocioDniOrderByIdRutinaDesc(socio.getDni()).orElse(null);
+        return convertirASocioDTO(socio, rutina);
     }
 
     private SocioMembresiaDTO convertirASocioMembresiaDTO(SocioMembresia socioMembresia) {
@@ -183,14 +187,19 @@ public class SocioService {
 
     public List<SocioDTO> buscarSocios() {
         List<Socio> socios = socioRepository.findAll();
-        List<SocioDTO> sociosDTO = new ArrayList<>();
+        return mapearSociosADTOConRutinas(socios);
+    }
 
-        for (Socio socio : socios) {
-            SocioDTO socioConvertido = convertirASocioDTO(socio);
-            sociosDTO.add(socioConvertido);
-        }
+    private List<SocioDTO> mapearSociosADTOConRutinas(List<Socio> socios) {
+        if (socios.isEmpty()) return new ArrayList<>();
 
-        return sociosDTO;
+        List<String> dnis = socios.stream().map(Socio::getDni).toList();
+        Map<String, Rutina> rutinasMap = rutinaRepository.findLatestBySocioDnis(dnis).stream()
+                .collect(Collectors.toMap(r -> r.getSocio().getDni(), r -> r));
+
+        return socios.stream()
+                .map(s -> convertirASocioDTO(s, rutinasMap.get(s.getDni())))
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -265,16 +274,9 @@ public class SocioService {
     }
 
     public List<SocioDTO> buscarSocios(String dniOrNombre) {
-        List<SocioDTO> socios = new ArrayList<>();
-
         String q = "%" + dniOrNombre.trim().toLowerCase() + "%";
-
-        for (Socio socio : socioRepository.buscarPorNombreODni(q)) {
-            SocioDTO socioDTO = convertirASocioDTO(socio);
-            socios.add(socioDTO);
-        }
-
-        return socios;
+        List<Socio> socios = socioRepository.buscarPorNombreODni(q);
+        return mapearSociosADTOConRutinas(socios);
     }
 
     public int asistenciasDisponibles(String dni) {
@@ -367,10 +369,7 @@ public class SocioService {
         org.springframework.data.domain.Page<Socio> pageResult = socioRepository.buscarSociosPaginados(q, activo,
                 pageable);
 
-        List<SocioDTO> content = pageResult.getContent()
-                .stream()
-                .map(this::convertirASocioDTO)
-                .toList();
+        List<SocioDTO> content = mapearSociosADTOConRutinas(pageResult.getContent());
 
         return new PageResponseDTO<>(
                 content,

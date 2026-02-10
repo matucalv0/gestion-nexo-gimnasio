@@ -29,4 +29,10 @@ public interface RutinaRepository extends JpaRepository<Rutina, Integer> {
             "ORDER BY LOWER(TRIM(r.nombre)), r.dni_socio ASC NULLS FIRST, r.id_rutina DESC", 
             nativeQuery = true)
     List<Rutina> findRutinasCondensadas();
+    @Query(value = "SELECT DISTINCT ON (r.dni_socio) r.* " +
+            "FROM rutina r " +
+            "WHERE r.dni_socio IN :dnis " +
+            "ORDER BY r.dni_socio, r.id_rutina DESC", 
+            nativeQuery = true)
+    List<Rutina> findLatestBySocioDnis(@Param("dnis") List<String> dnis);
 }
