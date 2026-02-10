@@ -21,10 +21,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final TokenBlacklistService tokenBlacklistService;
 
-    public JwtAuthFilter(JwtService jwtService, UserDetailsService userDetailsService) {
+    public JwtAuthFilter(JwtService jwtService, UserDetailsService userDetailsService,
+                         TokenBlacklistService tokenBlacklistService) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
+        this.tokenBlacklistService = tokenBlacklistService;
     }
 
     @Override
@@ -52,6 +55,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         if (token != null) {
+            // RC-4: Verificar si el token fue revocado (logout server-side)
+            if (tokenBlacklistService.isBlacklisted(token)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
             try {
                 String username = jwtService.extraerUsername(token);
 
@@ -76,7 +85,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             } catch (Exception e) {
                 // Log para auditoría de errores de autenticación
                 log.warn("Error de autenticación JWT: {}", e.getMessage());
-                // SecurityContextHolder.clearContext(); // Opcional
             }
         }
 

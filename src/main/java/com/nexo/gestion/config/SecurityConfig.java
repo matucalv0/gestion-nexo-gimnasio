@@ -3,6 +3,7 @@ package com.nexo.gestion.config;
 import com.nexo.gestion.security.JwtAuthFilter;
 import com.nexo.gestion.security.RateLimitFilter;
 import com.nexo.gestion.security.JwtService;
+import com.nexo.gestion.security.TokenBlacklistService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,8 +22,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     @Bean
-    public JwtAuthFilter jwtAuthFilter(JwtService jwtService, UserDetailsService userDetailsService) {
-        return new JwtAuthFilter(jwtService, userDetailsService);
+    public JwtAuthFilter jwtAuthFilter(JwtService jwtService, UserDetailsService userDetailsService,
+                                       TokenBlacklistService tokenBlacklistService) {
+        return new JwtAuthFilter(jwtService, userDetailsService, tokenBlacklistService);
     }
 
     @Bean

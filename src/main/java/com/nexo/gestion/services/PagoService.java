@@ -158,6 +158,11 @@ public class PagoService {
     @Transactional
     public PagoDTO crearPago(PagoCreateDTO dto) {
 
+        // RC-2: Solo se permite crear pagos en estado PAGADO o PENDIENTE
+        if (dto.getEstado() != EstadoPago.PAGADO && dto.getEstado() != EstadoPago.PENDIENTE) {
+            throw new IllegalStateException("Estado de pago no válido para creación. Solo se permite PAGADO o PENDIENTE.");
+        }
+
         Socio socio = null;
         if (dto.getDniSocio() != null) {
             socio = socioRepository.findById(dto.getDniSocio())

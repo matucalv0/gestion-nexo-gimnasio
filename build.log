@@ -1,0 +1,47 @@
+﻿[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------------< com.nexo:gestion >--------------------------
+[INFO] Building gestion 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.3.2:clean (default-clean) @ gestion ---
+[INFO] Deleting C:\Users\matuc\OneDrive\Escritorio\gestion\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ gestion ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 69 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ gestion ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 138 source files with javac [debug parameters release 17] to target\classes
+[INFO] /C:/Users/matuc/OneDrive/Escritorio/gestion/src/main/java/com/nexo/gestion/services/FinanzaService.java: C:\Users\matuc\OneDrive\Escritorio\gestion\src\main\java\com\nexo\gestion\services\FinanzaService.java uses unchecked or unsafe operations.
+[INFO] /C:/Users/matuc/OneDrive/Escritorio/gestion/src/main/java/com/nexo/gestion/services/FinanzaService.java: Recompile with -Xlint:unchecked for details.
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /C:/Users/matuc/OneDrive/Escritorio/gestion/src/main/java/com/nexo/gestion/services/RutinaService.java:[371,16] constructor SocioDTO in record com.nexo.gestion.dto.SocioDTO cannot be applied to given types;
+  required: @jakarta.validation.constraints.NotBlank java.lang.String,@jakarta.validation.constraints.NotBlank java.lang.String,java.lang.String,@jakarta.validation.constraints.Email java.lang.String,@jakarta.validation.constraints.NotBlank java.time.LocalDate,boolean,com.nexo.gestion.dto.RutinaDTO
+  found:    java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.time.LocalDate,java.lang.Boolean,java.lang.Boolean,<nulltype>
+  reason: actual and formal argument lists differ in length
+[INFO] 1 error
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  4.494 s
+[INFO] Finished at: 2026-02-09T14:08:51-03:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.13.0:compile (default-compile) on project gestion: Compilation failure
+[ERROR] /C:/Users/matuc/OneDrive/Escritorio/gestion/src/main/java/com/nexo/gestion/services/RutinaService.java:[371,16] constructor SocioDTO in record com.nexo.gestion.dto.SocioDTO cannot be applied to given types;
+[ERROR]   required: @jakarta.validation.constraints.NotBlank java.lang.String,@jakarta.validation.constraints.NotBlank java.lang.String,java.lang.String,@jakarta.validation.constraints.Email java.lang.String,@jakarta.validation.constraints.NotBlank java.time.LocalDate,boolean,com.nexo.gestion.dto.RutinaDTO
+[ERROR]   found:    java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.time.LocalDate,java.lang.Boolean,java.lang.Boolean,<nulltype>
+[ERROR]   reason: actual and formal argument lists differ in length
+[ERROR] 
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

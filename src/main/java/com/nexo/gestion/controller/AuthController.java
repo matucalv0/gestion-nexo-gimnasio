@@ -3,12 +3,11 @@ package com.nexo.gestion.controller;
 
 import com.nexo.gestion.dto.UsuarioLoginDTO;
 import com.nexo.gestion.dto.UsuarioLoginResponseDTO;
+import com.nexo.gestion.security.JwtService;
+import com.nexo.gestion.security.TokenBlacklistService;
 import com.nexo.gestion.services.AuthService;
-import org.apache.catalina.Authenticator;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,9 +20,17 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthService authService;
+    private final JwtService jwtService;
+    private final TokenBlacklistService tokenBlacklistService;
+    private final boolean cookieSecure;
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, JwtService jwtService,
+                          TokenBlacklistService tokenBlacklistService,
+                          @Value("${app.cookie.secure:false}") boolean cookieSecure) {
         this.authService = authService;
+        this.jwtService = jwtService;
+        this.tokenBlacklistService = tokenBlacklistService;
+        this.cookieSecure = cookieSecure;
     }
 
     @PostMapping("/login")
@@ -33,19 +40,14 @@ public class AuthController {
         // Crear Cookie HttpOnly
         jakarta.servlet.http.Cookie cookie = new jakarta.servlet.http.Cookie("jwt", token);
         cookie.setHttpOnly(true);
-        cookie.setSecure(false); // Cambiar a true en Producción con HTTPS
+        cookie.setSecure(cookieSecure);
         cookie.setPath("/");
-        cookie.setMaxAge(7 * 24 * 60 * 60); // 7 días
-        
+        cookie.setMaxAge(10 * 60 * 60); // 10 horas (alineado con JWT expiration)
+
         response.addCookie(cookie);
 
-        // Decodificar claims para enviar info del usuario sin exponer el token
-        io.jsonwebtoken.Claims claims = io.jsonwebtoken.Jwts.parserBuilder()
-                .setSigningKey(io.jsonwebtoken.security.Keys.hmacShaKeyFor(
-                        authService.getJwtSecret().getBytes(java.nio.charset.StandardCharsets.UTF_8)))
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        // Extraer claims de forma segura via JwtService
+        io.jsonwebtoken.Claims claims = jwtService.extraerClaims(token);
 
         Map<String, String> body = new java.util.HashMap<>();
         body.put("mensaje", "Login exitoso");
@@ -58,10 +60,25 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Map<String, String>> logout(jakarta.servlet.http.HttpServletResponse response) {
+    public ResponseEntity<Map<String, String>> logout(jakarta.servlet.http.HttpServletRequest request,
+                                                       jakarta.servlet.http.HttpServletResponse response) {
+        // RC-4: Blacklist del token actual para revocación server-side
+        if (request.getCookies() != null) {
+            for (jakarta.servlet.http.Cookie c : request.getCookies()) {
+                if ("jwt".equals(c.getName()) && c.getValue() != null && !c.getValue().isBlank()) {
+                    try {
+                        io.jsonwebtoken.Claims claims = jwtService.extraerClaims(c.getValue());
+                        tokenBlacklistService.blacklist(c.getValue(), claims.getExpiration().getTime());
+                    } catch (Exception ignored) {
+                        // Token inválido o expirado — no hace falta blacklistear
+                    }
+                }
+            }
+        }
+
         jakarta.servlet.http.Cookie cookie = new jakarta.servlet.http.Cookie("jwt", "");
         cookie.setHttpOnly(true);
-        cookie.setSecure(false); // Cambiar a true en Producción con HTTPS
+        cookie.setSecure(cookieSecure);
         cookie.setPath("/");
         cookie.setMaxAge(0);
 

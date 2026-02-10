@@ -61,6 +61,10 @@ public class JwtService {
         return getClaims(token).getSubject();
     }
 
+    public Claims extraerClaims(String token) {
+        return getClaims(token);
+    }
+
     public boolean esTokenValido(String token, UserDetails userDetails) {
         String username = extraerUsername(token);
         return username.equals(userDetails.getUsername()) && !tokenExpirado(token);
