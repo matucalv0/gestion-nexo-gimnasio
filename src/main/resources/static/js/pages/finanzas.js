@@ -3,6 +3,16 @@ import { authFetch } from "../api/api.js";
 import { Alerta } from "../ui/alerta.js";
 import { renderPagination } from "../ui/pagination.js";
 
+import { byId, removeAll, setVisible } from "./finanzas/dom.js";
+import { formatCurrency, formatVariation, formatDate } from "./finanzas/formatters.js";
+import {
+  detalleRowIds,
+  movimientoMainRowHtml,
+  movimientoDetailRowHtml,
+  detalleIngresoHtml,
+  detalleGastoHtml,
+} from "./finanzas/templates.js";
+
 const API = "/finanzas";
 
 checkAuth();
@@ -17,58 +27,255 @@ let movimientosData = [];
 let currentPage = 0;
 const pageSize = 20;
 
+const uiState = {
+  kpisLoading: true,
+  tablaLoading: true,
+  donutLoading: true,
+  evolucionLoading: true,
+};
+
+// cache DOM (MPA)
+const dom = {
+  filtroEvolucion: null,
+  btnHome: null,
+  btnNuevoGasto: null,
+  btnFiltrarFecha: null,
+  btnLimpiarFiltros: null,
+  filtroDesde: null,
+  filtroHasta: null,
+  tablaMovimientos: null,
+  emptyState: null,
+  pagination: null,
+
+  // UI helpers
+  kpisLoading: null,
+  kpisContent: null,
+  filtrosBanner: null,
+  filtrosTexto: null,
+  finanzasError: null,
+
+  tablaContainer: null,
+  tablaLoading: null,
+
+  donutContainer: null,
+  donutLoading: null,
+
+  evolucionContainer: null,
+  evolucionLoading: null,
+};
+
 // ==========================
 // INIT
 // ==========================
 
 document.addEventListener("DOMContentLoaded", () => {
+  cacheDom();
   initEventos();
-  cargarKPIs();
+
+  // Inicializamos skeletons/estados
+  setKpisLoading(true);
+  setTablaLoading(true);
+  setDonutLoading(true);
+  setEvolucionLoading(true);
+  setError(null);
 
   // Init params
   const hoy = new Date();
   const hace30dias = new Date();
   hace30dias.setDate(hoy.getDate() - 30);
 
-  if (document.getElementById("filtroHasta"))
-    document.getElementById("filtroHasta").value = hoy.toISOString().split("T")[0];
-  if (document.getElementById("filtroDesde"))
-    document.getElementById("filtroDesde").value = hace30dias.toISOString().split("T")[0];
+  if (dom.filtroHasta) dom.filtroHasta.value = hoy.toISOString().split("T")[0];
+  if (dom.filtroDesde) dom.filtroDesde.value = hace30dias.toISOString().split("T")[0];
 
+  updateFiltrosBanner();
+
+  // Cargas iniciales
+  cargarKPIs();
   cargarMovimientosPaginados();
   cargarDistribucionMensual();
   cargarEvolucion("7dias");
 });
+
+function cacheDom() {
+  dom.filtroEvolucion = byId("filtroEvolucion");
+  dom.btnHome = byId("btnHome");
+  dom.btnNuevoGasto = byId("btnNuevoGasto");
+  dom.btnFiltrarFecha = byId("btnFiltrarFecha");
+  dom.btnLimpiarFiltros = byId("btnLimpiarFiltros");
+  dom.filtroDesde = byId("filtroDesde");
+  dom.filtroHasta = byId("filtroHasta");
+  dom.tablaMovimientos = byId("tablaMovimientos");
+  dom.emptyState = byId("emptyStateFinanzas");
+  dom.pagination = byId("paginationContainer");
+
+  dom.kpisLoading = byId("kpisLoading");
+  dom.kpisContent = byId("kpisContent");
+  dom.filtrosBanner = byId("filtrosBanner");
+  dom.filtrosTexto = byId("filtrosTexto");
+  dom.finanzasError = byId("finanzasError");
+
+  dom.tablaContainer = byId("tablaContainer");
+  dom.tablaLoading = byId("tablaLoading");
+
+  dom.donutContainer = byId("donutContainer");
+  dom.donutLoading = byId("donutLoading");
+
+  dom.evolucionContainer = byId("evolucionContainer");
+  dom.evolucionLoading = byId("evolucionLoading");
+}
+
+// ==========================
+// UI helpers
+// ==========================
+
+function setError(message) {
+  if (!dom.finanzasError) return;
+  if (!message) {
+    dom.finanzasError.textContent = "";
+    setVisible(dom.finanzasError, false);
+    return;
+  }
+
+  dom.finanzasError.textContent = message;
+  setVisible(dom.finanzasError, true);
+}
+
+function setKpisLoading(isLoading) {
+  uiState.kpisLoading = isLoading;
+  setVisible(dom.kpisLoading, isLoading);
+  setVisible(dom.kpisContent, !isLoading);
+}
+
+function setTablaLoading(isLoading) {
+  uiState.tablaLoading = isLoading;
+  setVisible(dom.tablaLoading, isLoading);
+  if (dom.tablaContainer) dom.tablaContainer.setAttribute("aria-busy", String(isLoading));
+}
+
+function setDonutLoading(isLoading) {
+  uiState.donutLoading = isLoading;
+  setVisible(dom.donutLoading, isLoading);
+  if (dom.donutContainer) dom.donutContainer.setAttribute("aria-busy", String(isLoading));
+}
+
+function setEvolucionLoading(isLoading) {
+  uiState.evolucionLoading = isLoading;
+  setVisible(dom.evolucionLoading, isLoading);
+  if (dom.evolucionContainer) dom.evolucionContainer.setAttribute("aria-busy", String(isLoading));
+}
+
+function updateFiltrosBanner() {
+  const desde = dom.filtroDesde?.value;
+  const hasta = dom.filtroHasta?.value;
+
+  const parts = [];
+  if (desde) parts.push(`Desde ${formatDate(desde)}`);
+  if (hasta) parts.push(`Hasta ${formatDate(hasta)}`);
+
+  if (!dom.filtrosBanner || !dom.filtrosTexto) return;
+
+  if (!parts.length) {
+    setVisible(dom.filtrosBanner, false);
+    dom.filtrosTexto.textContent = "";
+    return;
+  }
+
+  dom.filtrosTexto.textContent = parts.join(" · ");
+  setVisible(dom.filtrosBanner, true);
+}
 
 // ==========================
 // EVENTOS
 // ==========================
 
 function initEventos() {
-  document
-    .getElementById("filtroEvolucion")
-    ?.addEventListener("change", (e) => {
-      cargarEvolucion(e.target.value);
-    });
+  dom.filtroEvolucion?.addEventListener("change", (e) => {
+    setEvolucionLoading(true);
+    cargarEvolucion(e.target.value);
+  });
 
-  document.getElementById("btnHome")?.addEventListener("click", () => {
+  dom.btnHome?.addEventListener("click", () => {
     window.location.href = "home.html";
   });
 
-  document.getElementById("btnNuevoGasto")?.addEventListener("click", () => {
+  dom.btnNuevoGasto?.addEventListener("click", () => {
     window.location.href = "registrar-gasto.html";
   });
 
-  document.getElementById("btnFiltrarFecha")?.addEventListener("click", () => {
+  dom.btnFiltrarFecha?.addEventListener("click", () => {
     currentPage = 0;
+    updateFiltrosBanner();
+    setTablaLoading(true);
     cargarMovimientosPaginados();
   });
 
-  document.getElementById("btnLimpiarFiltros")?.addEventListener("click", () => {
-    if (document.getElementById("filtroDesde")) document.getElementById("filtroDesde").value = "";
-    if (document.getElementById("filtroHasta")) document.getElementById("filtroHasta").value = "";
+  dom.btnLimpiarFiltros?.addEventListener("click", () => {
+    if (dom.filtroDesde) dom.filtroDesde.value = "";
+    if (dom.filtroHasta) dom.filtroHasta.value = "";
     currentPage = 0;
+    updateFiltrosBanner();
+    setTablaLoading(true);
     cargarMovimientosPaginados();
+  });
+
+  // UX: actualizar banner al cambiar fecha (sin tocar backend)
+  dom.filtroDesde?.addEventListener("change", updateFiltrosBanner);
+  dom.filtroHasta?.addEventListener("change", updateFiltrosBanner);
+
+  // Event delegation para acciones en tabla
+  dom.tablaMovimientos?.addEventListener("click", onTablaClick);
+}
+
+function onTablaClick(e) {
+  const btn = e.target?.closest?.("button[data-action]");
+  if (!btn) return;
+
+  const id = btn.dataset.id;
+  const tipo = btn.dataset.tipo;
+  const action = btn.dataset.action;
+
+  if (!id || !tipo || !action) return;
+
+  if (action === "detalle") {
+    onVerDetalleClick({ id, tipo });
+    return;
+  }
+
+  if (action === "eliminar") {
+    onEliminarClick({ id, tipo });
+  }
+}
+
+async function onVerDetalleClick({ id, tipo }) {
+  const row = byId(`detalle-${id}-${tipo}`);
+  const contentDiv = byId(`detalle-content-${id}-${tipo}`);
+  if (!row || !contentDiv) return;
+
+  row.classList.toggle("hidden");
+
+  // Si se está mostrando, cargar los detalles
+  if (!row.classList.contains("hidden")) {
+    if (tipo === "INGRESO") {
+      await cargarDetallesPago(id, contentDiv);
+    } else {
+      const movimiento = movimientosData.find(
+        (m) => m.idReferencia === parseInt(id) && m.tipoMovimiento === "EGRESO",
+      );
+      if (movimiento) {
+        contentDiv.innerHTML = detalleGastoHtml(movimiento);
+      }
+    }
+  }
+}
+
+function onEliminarClick({ id, tipo }) {
+  Alerta.confirm({
+    titulo: `¿Eliminar ${tipo === "INGRESO" ? "pago" : "gasto"}?`,
+    mensaje: `¿Seguro que deseas eliminar este ${tipo === "INGRESO" ? "pago" : "gasto"}?`,
+    textoConfirmar: "Eliminar",
+    onConfirm: async () => {
+      await eliminarMovimiento(id, tipo);
+    },
   });
 }
 
@@ -77,11 +284,14 @@ function initEventos() {
 // ==========================
 
 async function cargarKPIs() {
+  setKpisLoading(true);
+  setError(null);
+
   try {
     const [resHoy, resSemana, resMes] = await Promise.all([
       authFetch(`${API}/ganancias-hoy`),
       authFetch(`${API}/ganancias-semana`),
-      authFetch(`${API}/estadisticas/mes-completo`)
+      authFetch(`${API}/estadisticas/mes-completo`),
     ]);
 
     const hoy = await resHoy.json();
@@ -91,36 +301,38 @@ async function cargarKPIs() {
     setValor("kpiGananciaHoy", hoy);
     setValor("kpiGananciaSemana", semana);
 
-    // Ganancia Mes + Variación
     setValor("kpiGananciaMes", statsMes.gananciaMes);
     renderVariacion("varGananciaMes", statsMes.variacionMensual);
 
+    setKpisLoading(false);
   } catch (e) {
     console.error("Error cargando KPIs", e);
+    setKpisLoading(false);
+    // No bloqueamos la UI; solo informamos
+    setError("No se pudieron cargar las métricas. Reintentá en unos segundos.");
   }
 }
 
-async function fetchValor(endpoint) {
-  const res = await authFetch(endpoint);
-  return res.json();
-}
-
 function setValor(id, valor) {
-  const el = document.getElementById(id);
+  const el = byId(id);
   if (!el) return;
-  el.innerText = `$${(Number(valor) || 0).toLocaleString("es-AR")}`;
+  el.innerText = formatCurrency(valor);
 }
 
 function renderVariacion(elementId, variacion) {
-  const el = document.getElementById(elementId);
-  if (!el || variacion == null) return;
+  const el = byId(elementId);
+  if (!el) return;
 
-  const esPositivo = variacion >= 0;
-  const color = esPositivo ? "text-green-500" : "text-red-500";
-  const icono = esPositivo ? "▲" : "▼";
+  const v = formatVariation(variacion);
+  if (!v) {
+    el.innerHTML = "";
+    el.className = "";
+    return;
+  }
 
+  const color = v.esPositivo ? "text-green-500" : "text-red-500";
   el.className = `text-xs font-bold ${color} ml-2`;
-  el.innerHTML = `${icono} ${Math.abs(variacion).toFixed(1)}%`;
+  el.innerHTML = `${v.icono} ${v.value}%`;
 }
 
 // ==========================
@@ -128,9 +340,12 @@ function renderVariacion(elementId, variacion) {
 // ==========================
 
 async function cargarMovimientosPaginados() {
+  setTablaLoading(true);
+  setError(null);
+
   try {
-    const desde = document.getElementById("filtroDesde")?.value;
-    const hasta = document.getElementById("filtroHasta")?.value;
+    const desde = dom.filtroDesde?.value;
+    const hasta = dom.filtroHasta?.value;
 
     let url = `${API}?page=${currentPage}&size=${pageSize}`;
     if (desde) url += `&desde=${desde}`;
@@ -142,172 +357,84 @@ async function cargarMovimientosPaginados() {
     movimientosData = pageData.content;
     renderMovimientos(pageData.content);
 
-    renderPagination(
-      document.getElementById("paginationContainer"),
-      pageData.page,
-      pageData.totalPages,
-      (newPage) => {
-        currentPage = newPage;
-        cargarMovimientosPaginados();
-      }
-    );
+    renderPagination(dom.pagination, pageData.page, pageData.totalPages, (newPage) => {
+      currentPage = newPage;
+      cargarMovimientosPaginados();
+    });
 
+    setTablaLoading(false);
   } catch (e) {
     console.error("Error cargando movimientos", e);
+    setTablaLoading(false);
+    setError("No se pudieron cargar los movimientos. Verificá tu conexión o volvé a intentar.");
   }
 }
 
 async function cargarDistribucionMensual() {
+  setDonutLoading(true);
+
   try {
     const res = await authFetch(`${API}/distribucion-mensual`);
     const data = await res.json();
 
-    console.log(data);
+    if (!data) {
+      setDonutLoading(false);
+      return;
+    }
 
-    if (!data) return;
+    const ingresos = Number(data.ingresos) || 0;
+    const gastos = Number(data.gastos) || 0;
 
-    renderDonut(data.ingresos || 0, data.gastos || 0);
+    renderDonut(ingresos, gastos);
+    renderDonutResumen(ingresos, gastos);
+
+    setDonutLoading(false);
   } catch (e) {
     console.error("Error cargando distribución mensual", e);
+    setDonutLoading(false);
   }
 }
 
-// ==========================
-// EVOLUCIÓN (GRÁFICO)
-// ==========================
-
 function renderMovimientos(movimientos) {
-  const tbody = document.getElementById("tablaMovimientos");
-  const emptyState = document.getElementById('emptyStateFinanzas');
+  const tbody = dom.tablaMovimientos;
+  if (!tbody) return;
 
-  // Limpiar filas existentes (excepto el empty state)
-  const rows = tbody.querySelectorAll('tr:not(#emptyStateFinanzas)');
-  rows.forEach(row => row.remove());
+  removeAll(tbody, "tr:not(#emptyStateFinanzas)");
 
-  if (!movimientos.length) {
-    // Mostrar empty state
-    if (emptyState) emptyState.classList.remove('hidden');
+  if (!movimientos?.length) {
+    setVisible(dom.emptyState, true);
     return;
   }
 
-  // Ocultar empty state y mostrar datos
-  if (emptyState) emptyState.classList.add('hidden');
+  setVisible(dom.emptyState, false);
 
-  movimientos.forEach((m, index) => {
-    // ---------- FILA PRINCIPAL ----------
+  const fragment = document.createDocumentFragment();
+
+  movimientos.forEach((m) => {
     const tr = document.createElement("tr");
     tr.className = `
       border-b border-[var(--input-border)]
       hover:bg-[#1a1a1a] transition
     `;
+    tr.innerHTML = movimientoMainRowHtml(m);
+    fragment.appendChild(tr);
 
-    const badgeColor =
-      m.tipoMovimiento === "INGRESO" ? "text-green-400" : "text-red-400";
-
-    tr.innerHTML = `
-      <td class="px-6 py-4">${formatearFecha(m.fecha)}</td>
-
-      <td class="px-6 py-4">
-        <span class="px-3 py-1 text-xs rounded-full border ${badgeColor}">
-          ${m.tipoMovimiento}
-        </span>
-      </td>
-
-      <td class="px-6 py-4 font-semibold text-[var(--beige)]">
-        $ ${Number(m.monto).toLocaleString()}
-      </td>
-
-      <td class="px-6 py-4 flex gap-3">
-        <button
-        class="text-[var(--orange)] font-semibold hover:underline"
-        data-id="${m.idReferencia}"
-        data-tipo="${m.tipoMovimiento}">
-        Ver detalle
-        </button>
-        <button
-        class="text-red-500 font-semibold hover:underline btn-eliminar"
-        data-id="${m.idReferencia}"
-        data-tipo="${m.tipoMovimiento}">
-        Eliminar
-        </button>
-      </td>
-    `;
-
-    tbody.appendChild(tr);
-
-    // ---------- FILA DETALLE ----------
     const trDetalle = document.createElement("tr");
-    trDetalle.id = `detalle-${m.idReferencia}-${m.tipoMovimiento}`;
+    const { rowId } = detalleRowIds(m);
+    trDetalle.id = rowId;
     trDetalle.className = "hidden";
-
-    trDetalle.innerHTML = `
-  <td colspan="4" class="px-6 py-4 bg-[#0f0f0f]">
-    <div
-      id="detalle-content-${m.idReferencia}-${m.tipoMovimiento}"
-      class="bg-[#121212] border border-[var(--input-border)]
-             rounded-xl p-5 shadow-inner text-sm text-gray-400">
-      Cargando detalle...
-    </div>
-  </td>
-`;
-
-    tbody.appendChild(trDetalle);
+    trDetalle.innerHTML = movimientoDetailRowHtml(m);
+    fragment.appendChild(trDetalle);
   });
 
-  // ---------- VER DETALLE ----------
-  tbody.querySelectorAll("button[data-id]:not(.btn-eliminar)").forEach((btn) => {
-    btn.addEventListener("click", async () => {
-      const id = btn.dataset.id;
-      const tipo = btn.dataset.tipo;
-      const row = document.getElementById(`detalle-${id}-${tipo}`);
-      const contentDiv = document.getElementById(`detalle-content-${id}-${tipo}`);
-
-      row.classList.toggle("hidden");
-
-      // Si se está mostrando, cargar los detalles
-      if (!row.classList.contains("hidden")) {
-        if (tipo === "INGRESO") {
-          await cargarDetallesPago(id, contentDiv);
-        } else {
-          // Para gastos, buscar el movimiento en movimientosData
-          // Nota: movimientosData ahora es current page content
-          const movimiento = movimientosData.find(m =>
-            m.idReferencia === parseInt(id) && m.tipoMovimiento === "EGRESO"
-          );
-          if (movimiento) {
-            contentDiv.innerHTML = renderDetalleGasto(movimiento);
-          }
-        }
-      }
-    });
-  });
-
-  // ---------- ELIMINAR ----------
-  tbody.querySelectorAll(".btn-eliminar").forEach((btn) => {
-    btn.addEventListener("click", async () => {
-      const id = btn.dataset.id;
-      const tipo = btn.dataset.tipo;
-
-      Alerta.confirm({
-        titulo: `¿Eliminar ${tipo === "INGRESO" ? "pago" : "gasto"}?`,
-        mensaje: `¿Seguro que deseas eliminar este ${tipo === "INGRESO" ? "pago" : "gasto"}?`,
-        textoConfirmar: "Eliminar",
-        onConfirm: async () => {
-          await eliminarMovimiento(id, tipo);
-        }
-      });
-    });
-  });
+  tbody.appendChild(fragment);
 }
-
-
 
 async function eliminarMovimiento(id, tipo) {
   try {
     let endpoint;
 
     if (tipo === "INGRESO") {
-      // Ahora usamos DELETE físico para pagos
       endpoint = `/pagos/${id}`;
     } else {
       endpoint = `/gastos/${id}`;
@@ -319,17 +446,18 @@ async function eliminarMovimiento(id, tipo) {
       throw new Error("Error al eliminar movimiento");
     }
 
-    // Mostrar alerta de éxito
     Alerta.success(`${tipo === "INGRESO" ? "Pago" : "Gasto"} eliminado correctamente`);
 
-    // Recargar datos
+    setTablaLoading(true);
+
     await cargarMovimientosPaginados();
     await cargarKPIs();
     await cargarDistribucionMensual();
-
   } catch (e) {
     console.error("Error eliminando movimiento", e);
     Alerta.error("No se pudo eliminar el movimiento");
+  } finally {
+    setTablaLoading(false);
   }
 }
 
@@ -343,83 +471,30 @@ async function cargarDetallesPago(id, contentDiv) {
     }
 
     const pago = await res.json();
-    contentDiv.innerHTML = renderDetalleIngreso(pago);
-
+    contentDiv.innerHTML = detalleIngresoHtml(pago);
   } catch (e) {
     console.error("Error cargando detalles del pago", e);
     contentDiv.innerHTML = `<p class="text-red-400">No se pudieron cargar los detalles</p>`;
   }
 }
 
-function renderDetalleMovimiento(m) {
-  if (m.tipoMovimiento === "INGRESO") {
-    return renderDetalleIngreso(m);
-  }
-
-  return renderDetalleGasto(m);
-}
-
-function renderDetalleIngreso(m) {
-  console.log(m);
-  if (!m.detalles || !m.detalles.length) {
-    return `<p class="text-sm text-gray-400">Sin detalle.</p>`;
-  }
-
-  return `
-    <div class="space-y-3">
-      ${m.detalles
-      .map(
-        (d) => `
-        <div class="
-          bg-[#181818]
-          border border-[var(--input-border)]
-          rounded-lg
-          p-3
-          flex justify-between
-        ">
-          <div>
-            <p class="text-xs text-gray-400">${d.tipo}</p>
-            <p class="font-medium">${d.nombre}</p>
-            <p class="text-xs text-gray-400">Cantidad: ${d.cantidad}</p>
-          </div>
-
-          <div class="text-right">
-            <p class="text-sm text-gray-400">Unitario</p>
-            <p class="font-semibold">$ ${d.precioUnitario}</p>
-          </div>
-        </div>
-      `,
-      )
-      .join("")}
-    </div>
-  `;
-}
-
-function renderDetalleGasto(m) {
-  return `
-    <div class="text-sm space-y-2">
-      <p>
-        <span class="text-gray-400">Tipo:</span><br>
-        ${m.categoria?.trim() || "Sin categoria"}
-      </p>
-
-      <p>
-        <span class="text-gray-400">Descripción:</span><br>
-        ${m.proveedor?.trim() || "Sin descripción"}
-      </p>
-    </div>
-  `;
-}
+// ==========================
+// EVOLUCIÓN (GRÁFICO)
+// ==========================
 
 async function cargarEvolucion(filtro) {
+  setEvolucionLoading(true);
+
   try {
-    const endpoint =
-      filtro === "7dias" ? `${API}/balance-semanal` : `${API}/balance-mensual`;
+    const endpoint = filtro === "7dias" ? `${API}/balance-semanal` : `${API}/balance-mensual`;
 
     const res = await authFetch(endpoint);
     const data = await res.json();
 
-    if (!Array.isArray(data)) return;
+    if (!Array.isArray(data)) {
+      setEvolucionLoading(false);
+      return;
+    }
 
     renderChart({
       labels: mapLabels(data, filtro),
@@ -428,6 +503,8 @@ async function cargarEvolucion(filtro) {
     });
   } catch (e) {
     console.error("Error cargando evolución", e);
+  } finally {
+    setEvolucionLoading(false);
   }
 }
 
@@ -438,7 +515,7 @@ async function cargarEvolucion(filtro) {
 function renderChart({ labels, ingresos, egresos }) {
   if (chartEvolucion) chartEvolucion.destroy();
 
-  const ctx = document.getElementById("chartEvolucion");
+  const ctx = byId("chartEvolucion");
 
   chartEvolucion = new Chart(ctx, {
     type: "line",
@@ -489,8 +566,7 @@ function chartOptions() {
         bodyColor: "#e5e7eb",
         padding: 10,
         callbacks: {
-          label: (ctx) =>
-            `${ctx.dataset.label}: $${ctx.parsed.y.toLocaleString()}`,
+          label: (ctx) => `${ctx.dataset.label}: ${formatCurrency(ctx.parsed.y)}`,
         },
       },
     },
@@ -503,7 +579,7 @@ function chartOptions() {
       y: {
         ticks: {
           color: "#9ca3af",
-          callback: (v) => `$${v.toLocaleString()}`,
+          callback: (v) => `${formatCurrency(v)}`,
         },
         grid: { color: "#1f2937" },
       },
@@ -514,7 +590,7 @@ function chartOptions() {
 function renderDonut(ingresos, gastos) {
   if (chartDonut) chartDonut.destroy();
 
-  const ctx = document.getElementById("donutIngresos").getContext("2d");
+  const ctx = byId("donutIngresos").getContext("2d");
 
   chartDonut = new Chart(ctx, {
     type: "doughnut",
@@ -565,19 +641,44 @@ function renderDonut(ingresos, gastos) {
   });
 }
 
+function renderDonutResumen(ingresos, gastos) {
+  const elIngresos = byId("donutResumenIngresos");
+  const elGastos = byId("donutResumenGastos");
+  const elNeto = byId("donutResumenNeto");
+  const elPct = byId("donutResumenPct");
+
+  if (elIngresos) elIngresos.textContent = formatCurrency(ingresos);
+  if (elGastos) elGastos.textContent = formatCurrency(gastos);
+
+  const neto = ingresos - gastos;
+  if (elNeto) {
+    elNeto.textContent = formatCurrency(neto);
+    elNeto.classList.toggle("text-green-400", neto >= 0);
+    elNeto.classList.toggle("text-red-400", neto < 0);
+  }
+
+  if (elPct) {
+    const total = ingresos + gastos;
+    if (!total) {
+      elPct.textContent = "";
+      return;
+    }
+
+    const pctIngresos = (ingresos / total) * 100;
+    const pctGastos = (gastos / total) * 100;
+    elPct.textContent = `${pctIngresos.toFixed(0)}% ingresos · ${pctGastos.toFixed(0)}% gastos`;
+  }
+}
+
 // ==========================
 // UTILS
 // ==========================
 
 function mapLabels(data, filtro) {
-  return filtro === "7dias"
-    ? data.map((d) => d.fecha, {
-      day: "2-digit",
-      month: "2-digit",
-    })
-    : data.map((d) => `${String(d.mes).padStart(2, "0")}/${d.anio}`);
+  if (filtro === "7dias") {
+    return data.map((d) => (d.fecha ? formatDate(d.fecha) : ""));
+  }
+
+  return data.map((d) => `${String(d.mes).padStart(2, "0")}/${d.anio}`);
 }
 
-function formatearFecha(fecha) {
-  return new Date(fecha).toLocaleDateString("es-AR");
-}

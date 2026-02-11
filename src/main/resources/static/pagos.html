@@ -67,10 +67,10 @@
       </header>
 
       <!-- LAYOUT PRINCIPAL -->
-      <div class="flex flex-col lg:flex-row gap-6">
+      <div class="flex flex-col lg:flex-row gap-6 lg:items-start">
 
         <!-- PANEL IZQUIERDO -->
-        <section class="flex-1 flex flex-col gap-6">
+        <section class="flex-1 flex flex-col gap-6 lg:gap-5">
 
           <!-- KPIs -->
           <div class="bg-[#121212] p-6 rounded-xl
@@ -123,6 +123,7 @@
                 Evolución de recaudación
               </h2>
 
+              <label for="filtroRecaudado" class="sr-only">Filtro de recaudación</label>
               <select id="filtroRecaudado" class="bg-transparent border border-[var(--input-border)]
                        text-gray-300 text-sm rounded-md px-3 py-1
                        focus:outline-none focus:border-[var(--orange)]
@@ -134,14 +135,14 @@
 
             <div class="border border-[var(--input-border)]
                         rounded-lg p-3">
-              <canvas id="pagosDiaChart" class="w-full h-64"></canvas>
+              <canvas id="pagosDiaChart" class="w-full h-40"></canvas>
             </div>
           </div>
 
         </section>
 
         <!-- PANEL DERECHO -->
-        <aside class="lg:w-1/3 flex flex-col gap-6">
+        <aside class="lg:w-1/3 flex flex-col gap-6 lg:sticky lg:top-20 self-start">
 
           <!-- DONUT -->
           <div class="bg-[#121212] p-6 rounded-xl
@@ -209,12 +210,12 @@
           <!-- Filtros de fecha -->
           <div class="bg-[#1a1a1a] p-4 border-b border-[var(--input-border)] flex flex-wrap gap-4 items-end">
             <div>
-              <label class="block text-xs text-gray-400 mb-1">Desde</label>
+              <label for="filtroDesde" class="block text-xs text-gray-400 mb-1">Desde</label>
               <input type="date" id="filtroDesde"
                 class="bg-[#121212] border border-[var(--input-border)] rounded px-3 py-1 text-sm text-[var(--beige)] focus:outline-none focus:border-[var(--orange)]">
             </div>
             <div>
-              <label class="block text-xs text-gray-400 mb-1">Hasta</label>
+              <label for="filtroHasta" class="block text-xs text-gray-400 mb-1">Hasta</label>
               <input type="date" id="filtroHasta"
                 class="bg-[#121212] border border-[var(--input-border)] rounded px-3 py-1 text-sm text-[var(--beige)] focus:outline-none focus:border-[var(--orange)]">
             </div>
