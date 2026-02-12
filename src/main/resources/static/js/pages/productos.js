@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   cargarProductos(tablaBody);
 
-  if (btnHome) btnHome.addEventListener("click", () => window.location.href = "home.html");
+  if (btnHome) btnHome.addEventListener("click", () => history.back());
   if (btnLogout) btnLogout.addEventListener("click", logout);
   if (btnNuevoProducto) btnNuevoProducto.addEventListener("click", () => window.location.href = "registrar-producto.html");
 

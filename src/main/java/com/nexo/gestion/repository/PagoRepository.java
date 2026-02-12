@@ -17,7 +17,7 @@ import java.util.Optional;
 public interface PagoRepository extends JpaRepository<Pago, Integer> {
     @Query(value = "SELECT SUM(D.SUBTOTAL) FROM DETALLE_PAGO D WHERE D.ID_PAGO = :idPago",  nativeQuery = true)
     BigDecimal sumarSubtotales(@Param("idPago") Integer id_pago);
-    @Query(value = "SELECT * FROM PAGO P WHERE P.DNI_SOCIO = :dni AND P.ESTADO NOT IN ('ELIMINADO', 'ANULADO')", nativeQuery = true)
+    @Query(value = "SELECT * FROM PAGO P WHERE P.DNI_SOCIO = :dni AND P.ESTADO NOT IN ('ELIMINADO', 'ANULADO') ORDER BY P.FECHA DESC", nativeQuery = true)
     List<Pago> buscarPagosPorSocio(@Param("dni") String dni);
     @Query("SELECT new com.nexo.gestion.dto.PagoPorFechaDTO(p.fecha, SUM(p.monto)) " +
             "FROM Pago p " +

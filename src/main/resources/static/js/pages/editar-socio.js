@@ -15,9 +15,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const dni = params.get("dni");
 
   if (btnVolver) {
-    btnVolver.addEventListener("click", () => {
-      window.location.href = `socio-detalle.html?dni=${dni}`
-    });
+    btnVolver.addEventListener("click", () => history.back());
   }
 
   if (!dni) {

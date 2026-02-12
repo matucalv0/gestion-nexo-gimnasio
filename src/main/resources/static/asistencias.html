@@ -123,23 +123,22 @@
             </div>
 
             <!-- Barra de Filtros Unificada -->
-            <div
-              class="bg-[#1a1a1a] p-4 rounded-lg border border-[var(--input-border)] mb-6 flex flex-wrap gap-4 items-end">
+            <div class="bg-[#1a1a1a] p-4 rounded-lg border border-[var(--input-border)] mb-6 flex flex-wrap gap-4 items-end">
               <!-- Buscador -->
               <div class="flex-1 min-w-[200px]">
-                <label class="block text-xs text-gray-400 mb-1">Buscar (DNI o Nombre)</label>
+                <label for="inputBusqueda" class="block text-xs text-gray-400 mb-1">Buscar (DNI o Nombre)</label>
                 <input type="text" id="inputBusqueda" placeholder="Ej: 12345678"
                   class="w-full bg-[#121212] border border-[var(--input-border)] rounded px-3 py-1.5 text-sm text-[var(--beige)] focus:outline-none focus:border-[var(--orange)]">
               </div>
 
               <!-- Fechas -->
               <div>
-                <label class="block text-xs text-gray-400 mb-1">Desde</label>
+                <label for="filtroDesde" class="block text-xs text-gray-400 mb-1">Desde</label>
                 <input type="date" id="filtroDesde"
                   class="bg-[#121212] border border-[var(--input-border)] rounded px-3 py-1.5 text-sm text-[var(--beige)] focus:outline-none focus:border-[var(--orange)]">
               </div>
               <div>
-                <label class="block text-xs text-gray-400 mb-1">Hasta</label>
+                <label for="filtroHasta" class="block text-xs text-gray-400 mb-1">Hasta</label>
                 <input type="date" id="filtroHasta"
                   class="bg-[#121212] border border-[var(--input-border)] rounded px-3 py-1.5 text-sm text-[var(--beige)] focus:outline-none focus:border-[var(--orange)]">
               </div>
@@ -165,6 +164,24 @@
                   </tr>
                 </thead>
                 <tbody id="tablaAsistenciasBody" class="bg-[#121212]">
+                  <!-- Empty state -->
+                  <tr id="emptyStateAsistencias" class="hidden">
+                    <td colspan="3" class="px-6 py-16 text-center">
+                      <div class="flex flex-col items-center gap-4 animate-fade-in">
+                        <div class="w-16 h-16 rounded-full bg-primary-500/10 flex items-center justify-center">
+                          <svg class="w-8 h-8 text-[var(--orange)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2" />
+                          </svg>
+                        </div>
+
+                        <div>
+                          <h3 class="text-lg font-semibold text-[var(--beige)] mb-1">Sin asistencias</h3>
+                          <p class="text-sm text-gray-400">Probá cambiando el rango de fechas o el buscador.</p>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
                   <!-- filas dinámicas -->
                 </tbody>
               </table>
@@ -186,6 +203,7 @@
                 Asistencias por mes
               </h2>
 
+              <label for="filtroMesAsistencias" class="sr-only">Mes</label>
               <input type="month" id="filtroMesAsistencias" class="bg-transparent border border-[var(--input-border)]
            text-gray-300 text-sm rounded-md px-3 py-1
            focus:outline-none focus:border-[var(--orange)]" />

@@ -167,6 +167,13 @@ public interface AsistenciaRepository extends JpaRepository<Asistencia, Asistenc
             @Param("dni") String dni, 
             @Param("limiteInferior") LocalDate limiteInferior);
 
+    // Contar asistencias de HOY
+    @Query(value = """
+            SELECT COUNT(*) FROM asistencia a
+            WHERE a.fecha_hora::date = CURRENT_DATE
+            """, nativeQuery = true)
+    Integer contarAsistenciasHoy();
+
 }
 
 

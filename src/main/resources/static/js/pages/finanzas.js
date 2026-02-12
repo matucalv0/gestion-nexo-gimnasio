@@ -62,6 +62,8 @@ const dom = {
 
   evolucionContainer: null,
   evolucionLoading: null,
+
+  filtroTipoMovimiento: null,
 };
 
 // ==========================
@@ -102,6 +104,7 @@ function cacheDom() {
   dom.btnNuevoGasto = byId("btnNuevoGasto");
   dom.btnFiltrarFecha = byId("btnFiltrarFecha");
   dom.btnLimpiarFiltros = byId("btnLimpiarFiltros");
+  dom.btnExportarMovimientos = byId("btnExportarMovimientos");
   dom.filtroDesde = byId("filtroDesde");
   dom.filtroHasta = byId("filtroHasta");
   dom.tablaMovimientos = byId("tablaMovimientos");
@@ -122,6 +125,8 @@ function cacheDom() {
 
   dom.evolucionContainer = byId("evolucionContainer");
   dom.evolucionLoading = byId("evolucionLoading");
+
+  dom.filtroTipoMovimiento = byId("filtroTipoMovimiento");
 }
 
 // ==========================
@@ -167,10 +172,12 @@ function setEvolucionLoading(isLoading) {
 function updateFiltrosBanner() {
   const desde = dom.filtroDesde?.value;
   const hasta = dom.filtroHasta?.value;
+  const tipo = dom.filtroTipoMovimiento?.value;
 
   const parts = [];
   if (desde) parts.push(`Desde ${formatDate(desde)}`);
   if (hasta) parts.push(`Hasta ${formatDate(hasta)}`);
+  if (tipo) parts.push(`Tipo ${tipo === "INGRESO" ? "Ingreso" : "Egreso"}`);
 
   if (!dom.filtrosBanner || !dom.filtrosTexto) return;
 
@@ -195,7 +202,7 @@ function initEventos() {
   });
 
   dom.btnHome?.addEventListener("click", () => {
-    window.location.href = "home.html";
+    history.back();
   });
 
   dom.btnNuevoGasto?.addEventListener("click", () => {
@@ -212,15 +219,25 @@ function initEventos() {
   dom.btnLimpiarFiltros?.addEventListener("click", () => {
     if (dom.filtroDesde) dom.filtroDesde.value = "";
     if (dom.filtroHasta) dom.filtroHasta.value = "";
+    if (dom.filtroTipoMovimiento) dom.filtroTipoMovimiento.value = "";
     currentPage = 0;
     updateFiltrosBanner();
     setTablaLoading(true);
     cargarMovimientosPaginados();
   });
 
+  dom.btnExportarMovimientos?.addEventListener("click", exportarMovimientos);
+
   // UX: actualizar banner al cambiar fecha (sin tocar backend)
   dom.filtroDesde?.addEventListener("change", updateFiltrosBanner);
   dom.filtroHasta?.addEventListener("change", updateFiltrosBanner);
+
+  dom.filtroTipoMovimiento?.addEventListener("change", () => {
+    currentPage = 0;
+    updateFiltrosBanner();
+    setTablaLoading(true);
+    cargarMovimientosPaginados();
+  });
 
   // Event delegation para acciones en tabla
   dom.tablaMovimientos?.addEventListener("click", onTablaClick);
@@ -346,6 +363,7 @@ async function cargarMovimientosPaginados() {
   try {
     const desde = dom.filtroDesde?.value;
     const hasta = dom.filtroHasta?.value;
+    const tipo = dom.filtroTipoMovimiento?.value; // "" | "INGRESO" | "EGRESO"
 
     let url = `${API}?page=${currentPage}&size=${pageSize}`;
     if (desde) url += `&desde=${desde}`;
@@ -354,9 +372,15 @@ async function cargarMovimientosPaginados() {
     const res = await authFetch(url);
     const pageData = await res.json();
 
-    movimientosData = pageData.content;
-    renderMovimientos(pageData.content);
+    // Filtro en frontend para no depender de cambios backend
+    const content = Array.isArray(pageData.content) ? pageData.content : [];
+    const filteredContent = tipo ? content.filter((m) => m.tipoMovimiento === tipo) : content;
 
+    movimientosData = filteredContent;
+    renderMovimientos(filteredContent);
+
+    // Paginación: mantenemos la del backend. Si el filtro deja pocas filas,
+    // se verá una página con menos resultados (esperado sin cambios backend).
     renderPagination(dom.pagination, pageData.page, pageData.totalPages, (newPage) => {
       currentPage = newPage;
       cargarMovimientosPaginados();
@@ -680,5 +704,44 @@ function mapLabels(data, filtro) {
   }
 
   return data.map((d) => `${String(d.mes).padStart(2, "0")}/${d.anio}`);
+}
+
+// ==========================
+// EXPORTAR
+// ==========================
+
+async function exportarMovimientos() {
+  try {
+    const desde = dom.filtroDesde?.value || "";
+    const hasta = dom.filtroHasta?.value || "";
+
+    let url = `/exportar/movimientos?`;
+    if (desde) url += `desde=${desde}&`;
+    if (hasta) url += `hasta=${hasta}`;
+
+    const res = await authFetch(url);
+    if (!res.ok) {
+      if (res.status === 403) {
+        Alerta.error("Solo administradores pueden exportar");
+        return;
+      }
+      throw new Error("Error al exportar");
+    }
+
+    const blob = await res.blob();
+    const urlBlob = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = urlBlob;
+    a.download = `movimientos_${desde || 'inicio'}_a_${hasta || 'hoy'}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(urlBlob);
+
+    Alerta.success("Archivo exportado correctamente");
+  } catch (err) {
+    console.error("Error exportando", err);
+    Alerta.error("No se pudo exportar el archivo");
+  }
 }
 

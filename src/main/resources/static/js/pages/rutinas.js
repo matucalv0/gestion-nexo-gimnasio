@@ -1,5 +1,6 @@
 import { authFetch } from "../api/api.js";
 import { Alerta } from "../ui/alerta.js";
+import { parseDate, formatDate } from "../utils/date-utils.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     cargarRutinas();
@@ -143,8 +144,8 @@ function renderAsignadas(rutinas) {
     const rutinasActivas = new Set();
     Object.values(rutinasPorSocio).forEach(rutinasDelSocio => {
         const masReciente = rutinasDelSocio.reduce((prev, current) => {
-            const prevDate = new Date(prev.fecha);
-            const currentDate = new Date(current.fecha);
+            const prevDate = parseDate(prev.fecha);
+            const currentDate = parseDate(current.fecha);
             return currentDate > prevDate ? current : prev;
         });
         rutinasActivas.add(masReciente.idRutina);
@@ -156,11 +157,7 @@ function renderAsignadas(rutinas) {
         tr.className = `hover:bg-white/5 transition-colors ${esActiva ? 'bg-primary-500/5' : ''}`;
 
         // Format date
-        const fecha = r.fecha ? new Date(r.fecha).toLocaleDateString('es-AR', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric'
-        }) : '-';
+        const fecha = formatDate(r.fecha);
 
         tr.innerHTML = `
             <td class="px-6 py-4">

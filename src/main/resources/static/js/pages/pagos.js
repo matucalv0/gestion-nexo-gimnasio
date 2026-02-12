@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
   inputDesde.value = hace30dias.toISOString().split("T")[0];
 
   document.getElementById("btnHome")
-    .addEventListener("click", () => window.location.href = "home.html");
+    .addEventListener("click", () => history.back());
 
   document.getElementById("btnNuevoPago")
     .addEventListener("click", () => window.location.href = "registrar-pago.html");
@@ -51,6 +51,9 @@ document.addEventListener("DOMContentLoaded", () => {
     currentPage = 0;
     cargarPagos(tablaBody);
   });
+
+  // Botón Exportar CSV
+  document.getElementById("btnExportarPagos")?.addEventListener("click", exportarPagos);
 
   // Cargar tabla inicial
   cargarPagos(tablaBody);
@@ -532,3 +535,41 @@ function renderVariacion(elementId, variacion) {
   el.className = `text-xs font-bold ${color} ml-2`;
   el.innerHTML = `${icono} ${Math.abs(variacion).toFixed(1)}%`;
 }
+
+/* ================== EXPORTAR ================== */
+
+async function exportarPagos() {
+  try {
+    const desde = document.getElementById("filtroDesde").value || "";
+    const hasta = document.getElementById("filtroHasta").value || "";
+
+    let url = `/exportar/pagos?`;
+    if (desde) url += `desde=${desde}&`;
+    if (hasta) url += `hasta=${hasta}`;
+
+    const res = await authFetch(url);
+    if (!res.ok) {
+      if (res.status === 403) {
+        Alerta.error("Solo administradores pueden exportar");
+        return;
+      }
+      throw new Error("Error al exportar");
+    }
+
+    const blob = await res.blob();
+    const urlBlob = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = urlBlob;
+    a.download = `pagos_${desde || 'inicio'}_a_${hasta || 'hoy'}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(urlBlob);
+
+    Alerta.success("Archivo exportado correctamente");
+  } catch (err) {
+    console.error("Error exportando", err);
+    Alerta.error("No se pudo exportar el archivo");
+  }
+}
+

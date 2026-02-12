@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     await cargarMediosPago();
 
-    btnHome.addEventListener("click", () => window.location.href = "home.html");
+    btnHome.addEventListener("click", () => history.back());
     btnLogout.addEventListener("click", logout);
 
     gastoForm.addEventListener("submit", registrarGasto);

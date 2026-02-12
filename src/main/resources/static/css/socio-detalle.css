@@ -1,0 +1,26 @@
+/* ========================================
+   SOCIO DETALLE - ESTILOS COMPLEMENTARIOS
+   Solo mejoras de UX que no rompen coherencia
+   ======================================== */
+
+/* Animación sutil para el punto de estado activo */
+@keyframes pulse-status {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Efecto pulse en el badge de estado activo */
+#statusBadge .animate-pulse {
+  animation: pulse-status 2s ease-in-out infinite;
+}
+
+/* Mejora visual para montos en tabla */
+.font-tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Hover más visible en filas de tabla de pagos */
+#tablaPagosBody tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+

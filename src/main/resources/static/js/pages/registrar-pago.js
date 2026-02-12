@@ -14,14 +14,16 @@ let socioSeleccionado = null;
 /* ================== INIT ================== */
 document.addEventListener("DOMContentLoaded", async () => {
 
-  await cargarMediosPago();
-  await cargarMembresias();
-  await cargarProductos();
-  await cargarEmpleados();
+  // Cargar datos en paralelo para mayor velocidad
+  await Promise.all([
+    cargarMediosPago(),
+    cargarMembresias(),
+    cargarProductos(),
+    cargarEmpleados()
+  ]);
 
   const params = new URLSearchParams(window.location.search);
   const dniFromFicha = params.get("dni");
-  const esCuota = params.get("cuota") === "true";
 
 
   tipoDetalle.addEventListener("change", onTipoDetalleChange);
@@ -32,13 +34,37 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   buscarSocio.addEventListener("input", buscarSocioHandler);
 
-  btnHome.addEventListener("click", () => window.location.href = "home.html");
+  // Enter en búsqueda de socio selecciona el primero
+  buscarSocio.addEventListener("keydown", async (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const items = resultadosSocio.querySelectorAll("li");
+      if (items.length > 0) {
+        items[0].click();
+      }
+    }
+  });
+
+  btnHome.addEventListener("click", () => history.back());
   btnLogout.addEventListener("click", logout);
+
+
+  // Atajos de teclado
+  document.addEventListener("keydown", (e) => {
+    // Ctrl+Enter = Registrar pago
+    if (e.ctrlKey && e.key === "Enter") {
+      e.preventDefault();
+      pagoForm.dispatchEvent(new Event("submit"));
+    }
+  });
 
   onTipoDetalleChange();
 
-  /* ===== FLUJO CUOTA DESDE FICHA ===== */
-  if (dniFromFicha && esCuota) {
+  // Foco inicial en búsqueda de socio
+  buscarSocio?.focus();
+
+  /* ===== PRESELECCIONAR SOCIO DESDE FICHA ===== */
+  if (dniFromFicha) {
     await preseleccionarSocioDesdeFicha(dniFromFicha);
   }
 
@@ -60,9 +86,10 @@ async function cargarMediosPago() {
   const res = await authFetch("/mediosdepago");
   const data = await res.json();
   medioPago.innerHTML = `<option value="">Seleccione...</option>`;
-  data.forEach(mp =>
-    medioPago.innerHTML += `<option value="${mp.idMedioPago}">${mp.nombre}</option>`
-  );
+  data.forEach((mp, index) => {
+    const selected = index === 0 ? 'selected' : ''; // Seleccionar el primero (generalmente Efectivo)
+    medioPago.innerHTML += `<option value="${mp.idMedioPago}" ${selected}>${mp.nombre}</option>`;
+  });
 }
 
 async function cargarProductos() {
@@ -87,9 +114,13 @@ async function cargarEmpleados() {
   const res = await authFetch("/empleados");
   const data = await res.json();
   empleado.innerHTML = `<option value="">Seleccione...</option>`;
+  let primeroSeleccionado = false;
   data.forEach(e => {
-    if (e.activo)
-      empleado.innerHTML += `<option value="${e.dni}">${e.nombre}</option>`;
+    if (e.activo) {
+      const selected = !primeroSeleccionado ? 'selected' : '';
+      primeroSeleccionado = true;
+      empleado.innerHTML += `<option value="${e.dni}" ${selected}>${e.nombre}</option>`;
+    }
   });
 }
 
@@ -151,6 +182,16 @@ function cargarPrecioProducto() {
 function cargarPrecioMembresia() {
   const m = membresiasCache.find(m => m.idMembresia == membresia.value);
   precioMembresia.value = m ? m.precio ?? m.precioSugerido ?? 0 : 0;
+
+  // Auto-agregar membresía cuando se selecciona (si hay socio seleccionado)
+  if (m && socioSeleccionado) {
+    // Verificar que no haya ya una membresía en los detalles
+    const yaTieneMembresia = detalles.some(d => d.idMembresia != null);
+    if (!yaTieneMembresia) {
+      agregarDetalleSilencioso();
+      Alerta.success(`Agregado: ${m.nombre}`);
+    }
+  }
 }
 
 /* ================== DETALLES ================== */

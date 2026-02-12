@@ -1,5 +1,6 @@
 package com.nexo.gestion.services;
 
+import com.nexo.gestion.config.MembresiaConfig;
 import com.nexo.gestion.dto.*;
 import com.nexo.gestion.entity.*;
 import com.nexo.gestion.exceptions.*;
@@ -20,16 +21,19 @@ public class SocioService {
     private final PagoRepository pagoRepository;
     private final AsistenciaRepository asistenciaRepository;
     private final RutinaRepository rutinaRepository;
+    private final MembresiaConfig membresiaConfig;
 
     public SocioService(AsistenciaRepository asistenciaRepository, PagoRepository pagoRepository,
             SocioRepository socioRepository, MembresiaRepository membresiaRepository,
-            SocioMembresiaRepository socioMembresiaRepository, RutinaRepository rutinaRepository) {
+            SocioMembresiaRepository socioMembresiaRepository, RutinaRepository rutinaRepository,
+            MembresiaConfig membresiaConfig) {
         this.socioRepository = socioRepository;
         this.membresiaRepository = membresiaRepository;
         this.socioMembresiaRepository = socioMembresiaRepository;
         this.pagoRepository = pagoRepository;
         this.asistenciaRepository = asistenciaRepository;
         this.rutinaRepository = rutinaRepository;
+        this.membresiaConfig = membresiaConfig;
     }
 
     private AsistenciaSocioIdDTO convertirAAsistenciaSocioIdDTO(AsistenciaSocioId a) {
@@ -238,17 +242,33 @@ public class SocioService {
     public AsistenciaSocioIdDTO registrarAsistencia(String dni) {
         Socio socio = socioRepository.findById(dni).orElseThrow(() -> new ObjetoNoEncontradoException(dni));
 
-        if (!socioMembresiaRepository.estaActivoHoy(dni)) {
+        int periodoGracia = membresiaConfig.getPeriodoGracia();
+        boolean tieneMembresiasActiva = socioMembresiaRepository.estaActivoHoy(dni);
+        boolean estaEnGracia = socioMembresiaRepository.estaEnPeriodoGracia(dni, periodoGracia);
+
+        // Si no tiene membresía activa y no está en período de gracia
+        if (!tieneMembresiasActiva && !estaEnGracia) {
+            // Registrar como pendiente
             Asistencia nuevaAsistencia = new Asistencia(socio, false);
             Asistencia guardada = asistenciaRepository.save(nuevaAsistencia);
             return convertirAAsistenciaSocioIdDTO(guardada.getIdAsistencia());
         }
 
+        // Verificar si ya asistió hoy
         if (asistenciaRepository.socioVinoHoy(socio.getDni())) {
             throw new AsistenciaDiariaException();
         }
 
-        if (socioMembresiaRepository.estaActivoHoy(dni) && asistenciasDisponibles(dni) == 0) {
+        // Si está en período de gracia (membresía vencida pero dentro del período)
+        if (!tieneMembresiasActiva && estaEnGracia) {
+            // Registrar como pendiente (período de gracia = asistencia válida pero sin consumir de membresía nueva)
+            Asistencia nuevaAsistencia = new Asistencia(socio, false);
+            Asistencia guardada = asistenciaRepository.save(nuevaAsistencia);
+            return convertirAAsistenciaSocioIdDTO(guardada.getIdAsistencia());
+        }
+
+        // Si tiene membresía activa pero no tiene asistencias disponibles
+        if (tieneMembresiasActiva && asistenciasDisponibles(dni) == 0) {
             throw new SocioSinAsistenciasDisponiblesException();
         }
 
@@ -396,5 +416,80 @@ public class SocioService {
                 rutina.getFecha(),
                 rutina.getPersonalizada() != null ? rutina.getPersonalizada() : false,
                 null);
+    }
+
+    public PageResponseDTO<SocioListadoDTO> buscarSociosExtendidos(int page, int size, String q, Boolean activo) {
+        if (q != null && !q.trim().isEmpty()) {
+            q = "%" + q.trim().toLowerCase() + "%";
+        } else {
+            q = null;
+        }
+
+        int offset = page * size;
+        List<Object[]> rows = socioRepository.buscarSociosExtendidos(q, activo, size, offset);
+        Long total = socioRepository.contarSociosExtendidos(q, activo);
+        if (total == null) total = 0L;
+
+        List<SocioListadoDTO> content = new ArrayList<>();
+        for (Object[] row : rows) {
+            try {
+                String dni = (String) row[0];
+                String nombre = (String) row[1];
+                String telefono = (String) row[2];
+                String email = (String) row[3];
+
+                LocalDate fechaNacimiento = null;
+                if (row[4] != null) {
+                    if (row[4] instanceof java.sql.Date) {
+                        fechaNacimiento = ((java.sql.Date) row[4]).toLocalDate();
+                    } else if (row[4] instanceof java.time.LocalDate) {
+                        fechaNacimiento = (java.time.LocalDate) row[4];
+                    }
+                }
+
+                String nombreMembresia = (String) row[5];
+
+                LocalDate fechaVencimiento = null;
+                if (row[6] != null) {
+                    if (row[6] instanceof java.sql.Date) {
+                        fechaVencimiento = ((java.sql.Date) row[6]).toLocalDate();
+                    } else if (row[6] instanceof java.time.LocalDate) {
+                        fechaVencimiento = (java.time.LocalDate) row[6];
+                    }
+                }
+
+                Integer diasRestantes = row[7] != null ? ((Number) row[7]).intValue() : null;
+
+                java.time.LocalDateTime ultimaAsistencia = null;
+                Integer diasSinAsistir = null;
+                if (row[8] != null) {
+                    if (row[8] instanceof java.sql.Timestamp) {
+                        ultimaAsistencia = ((java.sql.Timestamp) row[8]).toLocalDateTime();
+                    } else if (row[8] instanceof java.time.OffsetDateTime) {
+                        ultimaAsistencia = ((java.time.OffsetDateTime) row[8]).toLocalDateTime();
+                    } else if (row[8] instanceof java.time.LocalDateTime) {
+                        ultimaAsistencia = (java.time.LocalDateTime) row[8];
+                    }
+                    if (ultimaAsistencia != null) {
+                        diasSinAsistir = (int) java.time.temporal.ChronoUnit.DAYS.between(
+                            ultimaAsistencia.toLocalDate(), LocalDate.now());
+                    }
+                }
+
+                boolean esActivo = nombreMembresia != null;
+
+                content.add(new SocioListadoDTO(
+                        dni, nombre, telefono, email, fechaNacimiento, esActivo,
+                        nombreMembresia, fechaVencimiento, diasRestantes,
+                        ultimaAsistencia, diasSinAsistir
+                ));
+            } catch (Exception e) {
+                // Log error pero continuar con los demás registros
+                System.err.println("Error procesando socio: " + e.getMessage());
+            }
+        }
+
+        int totalPages = (int) Math.ceil((double) total / size);
+        return new PageResponseDTO<>(content, page, size, total, totalPages);
     }
 }

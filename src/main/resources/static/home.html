@@ -82,6 +82,65 @@
       </header>
 
 
+      <!-- DASHBOARD EJECUTIVO - KPIs Principales -->
+      <section id="dashboardKpis" class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <!-- KPI: Recaudación HOY -->
+        <div class="bg-[#121212] border border-gray-700 rounded-xl p-4 hover:border-green-500/50 transition">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs text-gray-400 uppercase tracking-wide">Recaudación HOY</span>
+            <div class="p-1.5 bg-green-500/10 rounded-lg">
+              <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+          </div>
+          <p id="kpiRecaudacionHoy" class="text-2xl font-bold text-green-400">$0</p>
+          <p class="text-xs text-gray-500 mt-1">Ingresos del día</p>
+        </div>
+
+        <!-- KPI: Socios Activos -->
+        <div class="bg-[#121212] border border-gray-700 rounded-xl p-4 hover:border-secondary-500/50 transition">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs text-gray-400 uppercase tracking-wide">Socios Activos</span>
+            <div class="p-1.5 bg-secondary-500/10 rounded-lg">
+              <svg class="w-4 h-4 text-secondary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+            </div>
+          </div>
+          <p id="kpiSociosActivos" class="text-2xl font-bold text-secondary-400">0</p>
+          <p class="text-xs text-gray-500 mt-1">Con membresía vigente</p>
+        </div>
+
+        <!-- KPI: Por Vencer -->
+        <div class="bg-[#121212] border border-gray-700 rounded-xl p-4 hover:border-yellow-500/50 transition cursor-pointer" id="kpiPorVencerCard">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs text-gray-400 uppercase tracking-wide">Por Vencer</span>
+            <div class="p-1.5 bg-yellow-500/10 rounded-lg">
+              <svg class="w-4 h-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+          </div>
+          <p id="kpiPorVencer" class="text-2xl font-bold text-yellow-400">0</p>
+          <p class="text-xs text-gray-500 mt-1">En los próximos 7 días</p>
+        </div>
+
+        <!-- KPI: Asistencias HOY -->
+        <div class="bg-[#121212] border border-gray-700 rounded-xl p-4 hover:border-primary-500/50 transition">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs text-gray-400 uppercase tracking-wide">Asistencias HOY</span>
+            <div class="p-1.5 bg-primary-500/10 rounded-lg">
+              <svg class="w-4 h-4 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+          </div>
+          <p id="kpiAsistenciasHoy" class="text-2xl font-bold text-primary-400">0</p>
+          <p class="text-xs text-gray-500 mt-1">Ingresos registrados</p>
+        </div>
+      </section>
+
       <!-- ATAJOS - Botones Energéticos -->
       <section class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
         <!-- Registrar Asistencia - Naranja (principal) -->
@@ -340,6 +399,33 @@
 
     </div>
   </main>
+
+  <!-- MODAL: Socios por vencer -->
+  <div id="modalPorVencer" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-[#121212] border border-gray-700 rounded-xl w-full max-w-lg max-h-[80vh] overflow-hidden">
+      <div class="flex items-center justify-between p-4 border-b border-gray-700">
+        <h3 class="text-lg font-bold text-[var(--beige)]">Membresías por vencer (próximos 7 días)</h3>
+        <button id="cerrarModalPorVencer" class="text-gray-400 hover:text-white transition">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div id="listaPorVencer" class="p-4 overflow-y-auto max-h-96 space-y-2">
+        <!-- Se llena dinámicamente -->
+      </div>
+    </div>
+  </div>
+
+  <!-- TOOLTIP: Atajos de teclado -->
+  <div id="tooltipAtajos" class="fixed bottom-4 right-4 bg-[#1a1a1a] border border-gray-700 rounded-lg p-3 text-xs text-gray-400 shadow-xl z-40">
+    <p class="font-semibold text-gray-300 mb-2">⌨️ Atajos rápidos</p>
+    <div class="space-y-1">
+      <p><kbd class="bg-gray-700 px-1.5 py-0.5 rounded text-[10px]">F2</kbd> Asistencia</p>
+      <p><kbd class="bg-gray-700 px-1.5 py-0.5 rounded text-[10px]">F3</kbd> Nuevo pago</p>
+      <p><kbd class="bg-gray-700 px-1.5 py-0.5 rounded text-[10px]">F4</kbd> Buscar socio</p>
+    </div>
+  </div>
 
   <script type="module" src="js/pages/home.js"></script>
 </body>

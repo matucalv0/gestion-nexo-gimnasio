@@ -103,11 +103,7 @@ public class PagoService {
     }
 
     private SocioMembresia renovarMembresia(Socio socio, Membresia membresia) {
-        if (!socioRepository.existsById(socio.getDni())){
-            throw new ObjetoNoEncontradoException("No existe el socio con el dni: " + socio.getDni());
-        }
-
-
+        // El socio ya viene validado del método que llama, no necesitamos verificar de nuevo
 
         LocalDate ultimoVencimiento =
                 socioMembresiaRepository.findUltimoVencimientoVigente(socio.getDni());
@@ -118,9 +114,8 @@ public class PagoService {
 
         Integer asistenciasPendientes = asistenciaRepository.asistenciasPendientesSocio(socio.getDni());
 
-        if (asistenciasPendientes > 0){
+        if (asistenciasPendientes != null && asistenciasPendientes > 0) {
             // Solo considerar asistencias pendientes dentro de la duración de la membresía
-            // Ejemplo: si compra plan de 30 días, solo mirar pendientes de los últimos 30 días
             LocalDate limiteInferior = LocalDate.now().minusDays(membresia.getDuracionDias());
             
             java.time.Instant fechaInstant = asistenciaRepository
@@ -129,28 +124,33 @@ public class PagoService {
             if (fechaInstant != null) {
                 inicio = fechaInstant.atZone(java.time.ZoneId.systemDefault()).toLocalDate();
             }
-            // Si no hay pendientes dentro del rango, inicio queda como estaba (hoy o ultimoVencimiento+1)
         }
 
         LocalDate vencimiento = inicio.plusDays(membresia.getDuracionDias());
 
         SocioMembresia nuevaSuscripcion = new SocioMembresia(socio, membresia, inicio, vencimiento);
 
-        List<Asistencia> pendientes = asistenciaRepository
-                .findPendientesEnRango(
-                        socio.getDni(),
-                        inicio.atStartOfDay(),
-                        vencimiento.atTime(java.time.LocalTime.MAX)
-                );
+        // Guardar la membresía primero
+        SocioMembresia guardada = socioMembresiaRepository.save(nuevaSuscripcion);
 
+        // Validar asistencias pendientes solo si había alguna
+        if (asistenciasPendientes != null && asistenciasPendientes > 0) {
+            List<Asistencia> pendientes = asistenciaRepository
+                    .findPendientesEnRango(
+                            socio.getDni(),
+                            inicio.atStartOfDay(),
+                            vencimiento.atTime(java.time.LocalTime.MAX)
+                    );
 
-
-        for (Asistencia asistencia : pendientes) {
-            asistencia.setEstadoAsistencia(EstadoAsistencia.VALIDA);
+            if (!pendientes.isEmpty()) {
+                for (Asistencia asistencia : pendientes) {
+                    asistencia.setEstadoAsistencia(EstadoAsistencia.VALIDA);
+                }
+                asistenciaRepository.saveAll(pendientes);
+            }
         }
 
-        asistenciaRepository.saveAll(pendientes);
-        return socioMembresiaRepository.save(nuevaSuscripcion);
+        return guardada;
     }
 
 
@@ -169,20 +169,29 @@ public class PagoService {
                     .orElseThrow(() -> new ObjetoNoEncontradoException("dni_socio"));
         }
 
-        Empleado empleado = empleadoRepository.findById(dto.getDniEmpleado()).orElseThrow(() -> new ObjetoNoEncontradoException("No se encontró el empleado con el dni " + dto.getDniEmpleado()));
+        Empleado empleado = empleadoRepository.findById(dto.getDniEmpleado())
+                .orElseThrow(() -> new ObjetoNoEncontradoException("No se encontró el empleado con el dni " + dto.getDniEmpleado()));
 
         MedioPago medioPago = medioPagoRepository.findById(dto.getIdMedioPago())
                 .orElseThrow(() -> new ObjetoNoEncontradoException("id_mediopago"));
 
+        // Calcular monto antes de crear el pago
+        BigDecimal monto = dto.getDetalles().stream()
+                .map(d -> d.getPrecioUnitario().multiply(BigDecimal.valueOf(d.getCantidad())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
         Pago pago = new Pago(dto.getEstado(), socio, medioPago, empleado);
-        // Primer save para obtener el ID (necesario para DetallePagoId)
-        pagoRepository.save(pago);
+        pago.setMonto(monto);
+
+        // Un solo save inicial para obtener el ID
+        pago = pagoRepository.save(pago);
 
         int numero = 1;
+        List<Producto> productosAActualizar = new ArrayList<>();
 
         for (DetallePagoCreateDTO dDTO : dto.getDetalles()) {
 
-            if (dDTO.getCantidad() == 0){
+            if (dDTO.getCantidad() == 0) {
                 throw new CantidadCeroDetalle();
             }
 
@@ -197,41 +206,37 @@ public class PagoService {
                         .orElseThrow(() -> new ObjetoNoEncontradoException("producto"));
                 detalle.setProducto(p);
                 p.restarStock(dDTO.getCantidad());
-                productoRepository.save(p);
+                productosAActualizar.add(p);
             }
 
             if (dDTO.getIdMembresia() != null) {
-                if (socio == null){
+                if (socio == null) {
                     throw new ObjetoNoEncontradoException("dni del socio");
                 }
 
-                if (pago.getEstado() == EstadoPago.PAGADO) {
-                     Membresia membresia = membresiaRepository.findById(dDTO.getIdMembresia())
+                Membresia membresia = membresiaRepository.findById(dDTO.getIdMembresia())
                         .orElseThrow(() -> new ObjetoNoEncontradoException("membresia"));
 
-                     SocioMembresia nuevaSuscripcion = renovarMembresia(socio, membresia);
-                     socio.setActivo(true);
-                     detalle.setSocioMembresia(nuevaSuscripcion);
-                } else {
-                     membresiaRepository.findById(dDTO.getIdMembresia())
-                        .orElseThrow(() -> new ObjetoNoEncontradoException("membresia"));
+                if (pago.getEstado() == EstadoPago.PAGADO) {
+                    SocioMembresia nuevaSuscripcion = renovarMembresia(socio, membresia);
+                    socio.setActivo(true);
+                    detalle.setSocioMembresia(nuevaSuscripcion);
                 }
             }
 
             pago.agregarDetalle(detalle);
         }
 
-        if (pago.hayMasDeUnaMembresiaEnDetalle()){
+        if (pago.hayMasDeUnaMembresiaEnDetalle()) {
             throw new MasDeUnaMembresiaEnDetalleException();
         }
 
-        BigDecimal monto = dto.getDetalles().stream()
-                .map(d -> d.getPrecioUnitario().multiply(BigDecimal.valueOf(d.getCantidad())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        // Guardar todos los productos modificados de una vez
+        if (!productosAActualizar.isEmpty()) {
+            productoRepository.saveAll(productosAActualizar);
+        }
 
-        pago.setMonto(monto);
-
-        // Segundo save para persistir el monto calculado y los detalles
+        // Save final con los detalles
         pagoRepository.save(pago);
 
         return convertirAPagoDTO(pago);

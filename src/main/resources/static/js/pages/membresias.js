@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Botones Home y Logout
   document.getElementById("btnHome")
-    .addEventListener("click", () => window.location.href = "home.html");
+    .addEventListener("click", () => history.back());
 
   document.getElementById("btnLogout")
     .addEventListener("click", logout);

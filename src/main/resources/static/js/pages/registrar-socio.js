@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* ===== Navegación ===== */
-  btnHome.addEventListener("click", () => window.location.href = "socios.html");
+  btnHome.addEventListener("click", () => history.back());
   btnLogout.addEventListener("click", logout);
 
   /* ===== Submit ===== */

@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnLogout = document.getElementById("btnLogout");
 
   /* ===== Navegación ===== */
-  btnHome.addEventListener("click", () => window.location.href = "productos.html");
+  btnHome.addEventListener("click", () => history.back());
   btnLogout.addEventListener("click", logout);
 
   /* ===== Submit ===== */

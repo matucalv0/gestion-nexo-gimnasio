@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document
     .getElementById("btnVolver")
-    .addEventListener("click", () => (window.location.href = "membresias.html"));
+    .addEventListener("click", () => history.back());
 
   document
     .getElementById("btnLogout")

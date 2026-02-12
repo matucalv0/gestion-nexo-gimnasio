@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const btnHome = document.getElementById("btnHome");
   const btnLogout = document.getElementById("btnLogout");
 
-  btnHome.addEventListener("click", () => window.location.href = "productos.html");
+  btnHome.addEventListener("click", () => history.back());
   btnLogout.addEventListener("click", logout);
 
   const params = new URLSearchParams(window.location.search);

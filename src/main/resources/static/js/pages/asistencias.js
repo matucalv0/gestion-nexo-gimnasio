@@ -2,6 +2,7 @@ import { checkAuth } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
 import { Alerta } from "../ui/alerta.js";
 import { renderPagination } from "../ui/pagination.js";
+import { formatDateTime } from "../utils/date-utils.js";
 
 checkAuth();
 
@@ -22,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnBuscar = document.getElementById("btnBuscar");
   const btnLimpiar = document.getElementById("btnLimpiarFiltros");
 
-  // Filtro Mes (KPIs)
+  // Filtro Mes (solo gráfico)
   const inputMes = document.getElementById("filtroMesAsistencias");
 
   // Inicializar fechas (últimos 30 días)
@@ -30,10 +31,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const hace30dias = new Date();
   hace30dias.setDate(hoy.getDate() - 30);
 
-  inputHasta.value = hoy.toISOString().split("T")[0];
-  inputDesde.value = hace30dias.toISOString().split("T")[0];
+  if (inputHasta) inputHasta.value = hoy.toISOString().split("T")[0];
+  if (inputDesde) inputDesde.value = hace30dias.toISOString().split("T")[0];
 
-  document.getElementById("btnHome")?.addEventListener("click", () => window.location.href = "home.html");
+  document.getElementById("btnHome")?.addEventListener("click", () => history.back());
 
   // Botón Buscar / Filtrar
   btnBuscar?.addEventListener("click", () => {
@@ -51,19 +52,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Botón Limpiar
   btnLimpiar?.addEventListener("click", () => {
-    inputBusqueda.value = "";
-    inputDesde.value = "";
-    inputHasta.value = "";
+    if (inputBusqueda) inputBusqueda.value = "";
+    if (inputDesde) inputDesde.value = "";
+    if (inputHasta) inputHasta.value = "";
     currentPage = 0;
     cargarAsistencias(tablaBody);
   });
 
-  // set mes actual por defecto para KPIs
+  // set mes actual por defecto para el gráfico
   if (inputMes) inputMes.value = mesActualISO();
 
-  // listeners KPIs
+  // listener: el mes impacta SOLO en el gráfico
   inputMes?.addEventListener("change", () => {
-    cargarKPIs();
     cargarGrafico();
   });
 
@@ -77,9 +77,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function cargarAsistencias(tablaBody) {
   try {
-    const q = document.getElementById("inputBusqueda").value;
-    const desde = document.getElementById("filtroDesde").value;
-    const hasta = document.getElementById("filtroHasta").value;
+    if (!tablaBody) return;
+
+    const q = document.getElementById("inputBusqueda")?.value || "";
+    const desde = document.getElementById("filtroDesde")?.value || "";
+    const hasta = document.getElementById("filtroHasta")?.value || "";
 
     let url = `${API_URL}?page=${currentPage}&size=${pageSize}`;
     if (q) url += `&q=${encodeURIComponent(q)}`;
@@ -135,7 +137,7 @@ function renderTabla(tablaBody, asistencias) {
     tr.innerHTML = `
       <td class="px-6 py-4">${a.nombre}</td>
       <td class="px-6 py-4">${a.dni}</td>
-      <td class="px-6 py-4">${new Date(a.fechaHora).toLocaleString("es-AR")}</td>
+      <td class="px-6 py-4">${formatDateTime(a.fechaHora)}</td>
     `;
 
     tablaBody.appendChild(tr);
@@ -353,9 +355,4 @@ function renderVariacion(elementId, variacion) {
   el.className = `text-xs font-bold ${color} ml-2`;
   el.innerHTML = `${icono} ${Math.abs(variacion).toFixed(1)}%`;
 }
-
-
-
-
-
 

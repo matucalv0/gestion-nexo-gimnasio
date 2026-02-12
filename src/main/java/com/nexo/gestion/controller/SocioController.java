@@ -142,4 +142,14 @@ public class SocioController {
         return ResponseEntity.ok(rutina);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
+    @GetMapping("/listado-extendido")
+    public ResponseEntity<PageResponseDTO<SocioListadoDTO>> mostrarSociosExtendido(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) Boolean activo) {
+        return ResponseEntity.ok(socioService.buscarSociosExtendidos(page, size, q, activo));
+    }
+
 }

@@ -1,6 +1,7 @@
 import { authFetch } from "../api/api.js";
 import { checkAuth } from "../auth/auth.js";
 import { Alerta } from "../ui/alerta.js";
+import { formatDate } from "../utils/date-utils.js";
 
 checkAuth();
 
@@ -73,8 +74,7 @@ function renderRutina(rutina) {
 
     // Format Date
     if (rutina.fecha) {
-        const date = new Date(rutina.fecha);
-        document.getElementById("rutinaFecha").textContent = date.toLocaleDateString();
+        document.getElementById("rutinaFecha").textContent = formatDate(rutina.fecha);
     }
 
     // PROCESS DETAILS
