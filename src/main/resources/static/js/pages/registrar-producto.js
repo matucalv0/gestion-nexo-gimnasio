@@ -12,8 +12,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnLogout = document.getElementById("btnLogout");
 
   /* ===== Navegación ===== */
-  btnHome.addEventListener("click", () => history.back());
-  btnLogout.addEventListener("click", logout);
+  btnHome?.addEventListener("click", () => history.back());
+  btnLogout?.addEventListener("click", logout);
 
   /* ===== Submit ===== */
   form.addEventListener("submit", registrarProducto);

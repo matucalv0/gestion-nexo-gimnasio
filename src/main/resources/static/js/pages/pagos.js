@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
   inputDesde.value = hace30dias.toISOString().split("T")[0];
 
   document.getElementById("btnHome")
-    .addEventListener("click", () => history.back());
+    ?.addEventListener("click", () => history.back());
 
   document.getElementById("btnNuevoPago")
     .addEventListener("click", () => window.location.href = "registrar-pago.html");

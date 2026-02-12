@@ -17,13 +17,13 @@ services:
     depends_on:
       - db
     environment:
+      SPRING_PROFILES_ACTIVE: prod
       DB_URL: jdbc:postgresql://db:5432/${DB_NAME}
       DB_USER: ${DB_USER:-admin}
       DB_PASS: ${DB_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
-      app.cookie.secure: ${COOKIE_SECURE}
+      COOKIE_SECURE: ${COOKIE_SECURE}
     ports:
       - "8080:8080"
-
 volumes:
   db_data:

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -9,6 +9,7 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/sidebar.css">
     <link rel="preload" as="image" href="../assets/nexofondo.jpg">
 </head>
 
@@ -31,11 +32,7 @@
                         <p class="header-subtitle">Nuevo egreso</p>
                     </div>
                 </div>
-                <div class="header-actions">
-                    <button id="btnHome" class="btn-secondary px-4 py-2 text-sm">← Volver</button>
-                    <button id="btnLogout" class="btn-danger px-4 py-2 text-sm">Cerrar sesión</button>
-                </div>
-            </header>
+</header>
 
             <!-- Alertas -->
             <div id="alert-container" class="mb-4"></div>
@@ -97,6 +94,7 @@
     </main>
 
     <script type="module" src="../js/pages/registrar-gasto.js"></script>
+  <script src="../js/ui/sidebar.js"></script>
 </body>
 
 </html>

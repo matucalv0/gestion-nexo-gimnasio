@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class RateLimitFilter implements Filter {
 
-    private static final int MAX_ATTEMPTS = 5;
+    private static final int MAX_ATTEMPTS = 30;
     private static final long WINDOW_MS = 5 * 60 * 1000L; // 5 minutos
 
     private final ConcurrentHashMap<String, CopyOnWriteArrayList<Long>> attempts = new ConcurrentHashMap<>();

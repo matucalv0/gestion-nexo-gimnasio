@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -48,7 +48,7 @@
       },
     }
   </script>
-  <script src="https://cdn.tailwindcss.com"></script>
+
 
   <!-- Google Fonts - Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -56,6 +56,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/sidebar.css">
   <link rel="preload" as="image" href="../assets/nexofondo.jpg">
 </head>
 
@@ -73,12 +74,6 @@
             <p class="header-subtitle">NEXO</p>
           </div>
         </div>
-
-        <div class="header-actions">
-          <button id="btnLogout" class="btn-danger px-4 py-2 text-sm">
-            Cerrar sesión
-          </button>
-        </div>
       </header>
 
 
@@ -90,7 +85,8 @@
             <span class="text-xs text-gray-400 uppercase tracking-wide">Recaudación HOY</span>
             <div class="p-1.5 bg-green-500/10 rounded-lg">
               <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
           </div>
@@ -104,7 +100,8 @@
             <span class="text-xs text-gray-400 uppercase tracking-wide">Socios Activos</span>
             <div class="p-1.5 bg-secondary-500/10 rounded-lg">
               <svg class="w-4 h-4 text-secondary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
             </div>
           </div>
@@ -113,12 +110,15 @@
         </div>
 
         <!-- KPI: Por Vencer -->
-        <div class="bg-[#121212] border border-gray-700 rounded-xl p-4 hover:border-yellow-500/50 transition cursor-pointer" id="kpiPorVencerCard">
+        <div
+          class="bg-[#121212] border border-gray-700 rounded-xl p-4 hover:border-yellow-500/50 transition cursor-pointer"
+          id="kpiPorVencerCard">
           <div class="flex items-center justify-between mb-2">
             <span class="text-xs text-gray-400 uppercase tracking-wide">Por Vencer</span>
             <div class="p-1.5 bg-yellow-500/10 rounded-lg">
               <svg class="w-4 h-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
           </div>
@@ -132,7 +132,8 @@
             <span class="text-xs text-gray-400 uppercase tracking-wide">Asistencias HOY</span>
             <div class="p-1.5 bg-primary-500/10 rounded-lg">
               <svg class="w-4 h-4 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
           </div>
@@ -407,7 +408,7 @@
         <h3 class="text-lg font-bold text-[var(--beige)]">Membresías por vencer (próximos 7 días)</h3>
         <button id="cerrarModalPorVencer" class="text-gray-400 hover:text-white transition">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>
@@ -418,7 +419,8 @@
   </div>
 
   <!-- TOOLTIP: Atajos de teclado -->
-  <div id="tooltipAtajos" class="fixed bottom-4 right-4 bg-[#1a1a1a] border border-gray-700 rounded-lg p-3 text-xs text-gray-400 shadow-xl z-40">
+  <div id="tooltipAtajos"
+    class="fixed bottom-4 right-4 bg-[#1a1a1a] border border-gray-700 rounded-lg p-3 text-xs text-gray-400 shadow-xl z-40">
     <p class="font-semibold text-gray-300 mb-2">⌨️ Atajos rápidos</p>
     <div class="space-y-1">
       <p><kbd class="bg-gray-700 px-1.5 py-0.5 rounded text-[10px]">F2</kbd> Asistencia</p>
@@ -428,6 +430,7 @@
   </div>
 
   <script type="module" src="js/pages/home.js"></script>
+  <script src="../js/ui/sidebar.js"></script>
 </body>
 
 </html>

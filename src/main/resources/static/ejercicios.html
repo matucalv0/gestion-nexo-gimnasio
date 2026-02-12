@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -23,6 +23,7 @@
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/sidebar.css">
 </head>
 
 <body class="text-gray-100 min-h-screen font-sans selection:bg-[var(--cyan)] selection:text-white">
@@ -56,9 +57,6 @@
                         </svg>
                         Nuevo Ejercicio
                     </button>
-                    <a href="home.html" class="btn-secondary px-4 py-2 text-sm flex items-center gap-2">
-                        ← Volver
-                    </a>
                 </div>
             </header>
 
@@ -91,7 +89,8 @@
                                 <th scope="col" class="px-6 py-3 font-semibold tracking-wider">Ejercicio</th>
                                 <th scope="col" class="px-6 py-3 font-semibold tracking-wider">Grupo Muscular</th>
                                 <th scope="col" class="px-6 py-3 font-semibold tracking-wider">Video</th>
-                                <th scope="col" class="px-6 py-3 font-semibold tracking-wider text-right">Acciones</th>
+                                <th scope="col" class="px-6 py-3 font-semibold tracking-wider text-right">Acciones
+                                </th>
                             </tr>
                         </thead>
                         <tbody id="tablaEjerciciosBody" class="divide-y divide-gray-800">
@@ -163,6 +162,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="js/pages/ejercicios.js"></script>
+    <script src="../js/ui/sidebar.js"></script>
 </body>
 
 </html>

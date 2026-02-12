@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -9,6 +9,7 @@
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/sidebar.css">
   <link rel="preload" as="image" href="../assets/nexofondo.jpg">
 </head>
 
@@ -22,15 +23,7 @@
         class="flex justify-between items-center mb-8 bg-[#121212] px-6 py-4 rounded-xl border border-[var(--input-border)] shadow-xl">
         <h1 class="text-xl font-bold tracking-wide text-[var(--beige)]">Editar producto</h1>
         <div class="flex gap-2">
-          <button id="btnHome"
-            class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">
-            Volver
-          </button>
-          <button id="btnLogout"
-            class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-4 py-2 rounded-md">
-            Cerrar sesión
-          </button>
-        </div>
+</div>
       </header>
 
 
@@ -75,6 +68,7 @@
   </main>
 
   <script type="module" src="../js/pages/editar-producto.js"></script>
+  <script src="../js/ui/sidebar.js"></script>
 </body>
 
 </html>

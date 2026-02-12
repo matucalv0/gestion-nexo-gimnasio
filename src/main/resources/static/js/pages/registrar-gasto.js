@@ -8,8 +8,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     await cargarMediosPago();
 
-    btnHome.addEventListener("click", () => history.back());
-    btnLogout.addEventListener("click", logout);
+    document.getElementById("btnHome")?.addEventListener("click", () => history.back());
+    document.getElementById("btnLogout")?.addEventListener("click", logout);
 
     gastoForm.addEventListener("submit", registrarGasto);
 });

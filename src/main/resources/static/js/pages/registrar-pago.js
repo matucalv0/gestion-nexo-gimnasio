@@ -45,8 +45,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  btnHome.addEventListener("click", () => history.back());
-  btnLogout.addEventListener("click", logout);
+  document.getElementById("btnHome")?.addEventListener("click", () => history.back());
+  document.getElementById("btnLogout")?.addEventListener("click", logout);
 
 
   // Atajos de teclado

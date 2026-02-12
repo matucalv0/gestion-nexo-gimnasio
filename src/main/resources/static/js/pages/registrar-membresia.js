@@ -9,13 +9,11 @@ const API_URL = "/membresias";
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("registrarMembresiaForm");
 
-  document
-    .getElementById("btnVolver")
-    .addEventListener("click", () => history.back());
+  document.getElementById("btnVolver")?.addEventListener("click", () => history.back());
 
   document
     .getElementById("btnLogout")
-    .addEventListener("click", logout);
+    ?.addEventListener("click", logout);
 
   form.addEventListener("submit", registrarMembresia);
 

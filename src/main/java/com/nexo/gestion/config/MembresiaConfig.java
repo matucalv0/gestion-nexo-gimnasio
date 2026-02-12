@@ -12,7 +12,7 @@ public class MembresiaConfig {
      * Durante este período, el socio puede asistir aunque su membresía
      * haya vencido (queda como asistencia pendiente).
      */
-    private int periodoGracia = 3;
+    private int periodoGracia = 0;
 
     public int getPeriodoGracia() {
         return periodoGracia;

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -7,6 +7,7 @@
   <link rel="icon" type="image/png" href="../assets/nexologo.png" />
   <title>NEXO · SOCIOS</title>
 
+  <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -21,11 +22,11 @@
       },
     }
   </script>
-  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/sidebar.css">
   <link rel="preload" as="image" href="../assets/nexofondo.jpg">
 </head>
 
@@ -52,12 +53,6 @@
           <button id="btnNuevoSocio" class="btn-primary px-4 py-2 text-sm">
             + Nuevo Socio
           </button>
-          <button id="btnHome" class="btn-secondary px-4 py-2 text-sm">
-            ← Volver
-          </button>
-          <button id="btnLogout" class="btn-danger px-4 py-2 text-sm">
-            Cerrar sesión
-          </button>
         </div>
       </header>
 
@@ -68,9 +63,11 @@
         <!-- Título y botón -->
         <div class="flex justify-between items-center mb-6">
           <h2 class="text-2xl font-bold text-[var(--beige)]">Gestión de Socios</h2>
-          <button id="btnExportar" class="flex items-center gap-2 px-3 py-1.5 bg-green-600/20 border border-green-600/50 text-green-400 hover:bg-green-600/30 rounded text-sm font-medium transition">
+          <button id="btnExportar"
+            class="flex items-center gap-2 px-3 py-1.5 bg-green-600/20 border border-green-600/50 text-green-400 hover:bg-green-600/30 rounded text-sm font-medium transition">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
             Exportar CSV
           </button>
@@ -167,6 +164,7 @@
   </main>
 
   <script type="module" src="../js/pages/socios.js"></script>
+  <script src="../js/ui/sidebar.js"></script>
 </body>
 
 </html>

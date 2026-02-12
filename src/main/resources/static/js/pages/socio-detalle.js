@@ -31,11 +31,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     cargarHistorialPagos(dni);
 
     // Botones
-    document.getElementById("btnVolver").addEventListener("click", () => history.back());
-    document.getElementById("btnEditar").addEventListener("click", () => window.location.href = `editar-socio.html?dni=${dni}`);
-    document.getElementById("btnRegistrarPago").addEventListener("click", () => window.location.href = `registrar-pago.html?dni=${dni}`);
-    document.getElementById("btnRegistrarAsistencia").addEventListener("click", () => { window.location.href = `asistencia.html?dni=${dni}&asistencia=true`; });
-    document.getElementById("btnRenovarMembresia").addEventListener("click", () => renovarMembresia(dni));
+    // Botones
+    document.getElementById("btnVolver")?.addEventListener("click", () => history.back());
+    document.getElementById("btnEditar")?.addEventListener("click", () => window.location.href = `editar-socio.html?dni=${dni}`);
+    document.getElementById("btnRegistrarPago")?.addEventListener("click", () => window.location.href = `registrar-pago.html?dni=${dni}`);
+    document.getElementById("btnRegistrarAsistencia")?.addEventListener("click", () => { window.location.href = `asistencia.html?dni=${dni}&asistencia=true`; });
+    document.getElementById("btnRenovarMembresia")?.addEventListener("click", () => renovarMembresia(dni));
 
     // Modal de anulación
     document.getElementById("btnCancelarAnular")?.addEventListener("click", cerrarModalAnular);

@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ===== NAVEGACIÓN =====
-  document.getElementById("btnLogout").addEventListener("click", logout);
+  document.getElementById("btnLogout")?.addEventListener("click", logout);
 
   document.getElementById("btnSocios")?.addEventListener("click", () => go("socios.html"));
   document.getElementById("btnAsistencias")?.addEventListener("click", () => go("asistencias.html"));
@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Solo si no estamos escribiendo en un input
     if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
 
-    switch(e.key) {
+    switch (e.key) {
       case "F2":
         e.preventDefault();
         go("asistencia.html");

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -19,9 +19,10 @@
       },
     }
   </script>
-  <script src="https://cdn.tailwindcss.com"></script>
+
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/sidebar.css">
   <link rel="preload" as="image" href="../assets/nexofondo.jpg">
 </head>
 
@@ -47,12 +48,6 @@
         <div class="header-actions">
           <button id="btnNuevoProducto" class="btn-primary px-4 py-2 text-sm">
             + Nuevo Producto
-          </button>
-          <button id="btnHome" class="btn-secondary px-4 py-2 text-sm">
-            ← Volver
-          </button>
-          <button id="btnLogout" class="btn-danger px-4 py-2 text-sm">
-            Cerrar sesión
           </button>
         </div>
       </header>
@@ -129,6 +124,7 @@
   </main>
 
   <script type="module" src="../js/pages/productos.js"></script>
+  <script src="../js/ui/sidebar.js"></script>
 </body>
 
 </html>

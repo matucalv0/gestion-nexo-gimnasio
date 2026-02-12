@@ -35,8 +35,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* ===== Navegación ===== */
-  btnHome.addEventListener("click", () => history.back());
-  btnLogout.addEventListener("click", logout);
+  btnHome?.addEventListener("click", () => history.back());
+  btnLogout?.addEventListener("click", logout);
 
   /* ===== Submit ===== */
   form.addEventListener("submit", registrarSocio);

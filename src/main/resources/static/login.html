@@ -2,59 +2,124 @@
 <html lang="es">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" type="image/png" href="../assets/nexologo.png" />
-  <title>NEXO · LOGIN</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEXO · Iniciar Sesión</title>
+  <link rel="icon" type="image/png" href="assets/nexologo.png" />
+
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { DEFAULT: '#FF6B2C', 400: '#FFA373', 500: '#FF6B2C', 600: '#E85A1F' },
+          },
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Main CSS (provides variables and background) -->
+  <link rel="stylesheet" href="css/main.css">
+
   <style>
-    :root {
-      --orange: #E9561E;
-      --beige: #ECD9BA;
-      --dark-bg: #1f2e38;
-      --input-bg: #16222b;
-      --input-border: #2f3e48;
+    /* Login specific overrides */
+    .login-card {
+      background: rgba(18, 18, 18, 0.8);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
-    body::before {
-      content: "";
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: url('../assets/nexofondo.jpg') center/cover no-repeat;
-      filter: blur(8px) brightness(0.4);
-      z-index: -1;
+    .input-icon-wrapper {
+      position: relative;
+    }
+
+    .input-icon-wrapper svg {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6b7280;
+      transition: color 0.3s ease;
+      pointer-events: none;
+    }
+
+    .login-input:focus+svg,
+    .login-input:not(:placeholder-shown)+svg {
+      color: var(--orange);
     }
   </style>
 </head>
 
-<body class="flex items-center justify-center min-h-screen bg-black">
+<body class="flex items-center justify-center min-h-screen">
+  <!-- Background is handled by main.css body::before -->
 
-  <main class="w-full max-w-sm p-8 rounded-3xl shadow-xl flex flex-col items-center"
-    style="background-color: rgba(31, 46, 56, 0.85);">
+  <main class="w-full max-w-md p-6">
 
-    <img src="../assets/nexologo.png" alt="Nexo Logo" class="w-32 mb-4" />
-    <p class="text-beige text-center mb-6" style="color: var(--beige); font-weight:500;">
-      Entrená. Conectá. Avanzá.
-    </p>
+    <!-- Animated Entry -->
+    <div class="flex flex-col items-center mb-8 animate-fade-in-down">
+      <img src="assets/nexologo.png" alt="NEXO"
+        class="h-24 mb-4 drop-shadow-2xl hover:scale-105 transition-transform duration-500">
+      <h1 class="text-3xl font-bold text-[var(--beige)] tracking-tight">Bienvenido</h1>
+      <p class="text-gray-400 font-medium tracking-wide text-sm mt-1 uppercase opacity-80">Entrená. Conectá.
+        Avanzá.</p>
+    </div>
 
-    <form id="loginForm" class="w-full flex flex-col gap-4">
-      <input type="text" id="username" name="username" placeholder="Usuario" required
-        class="w-full px-4 py-2 rounded-lg focus:outline-none"
-        style="background-color: var(--input-bg); border: 1px solid var(--input-border); color: var(--beige);" />
-      <input type="password" id="password" name="password" placeholder="Contraseña" required
-        class="w-full px-4 py-2 rounded-lg focus:outline-none"
-        style="background-color: var(--input-bg); border: 1px solid var(--input-border); color: var(--beige);" />
-      <button type="submit"
-        class="w-full py-2 rounded-lg text-white font-semibold transition-all duration-200 hover:opacity-90"
-        style="background-color: var(--orange);">
-        Ingresar
-      </button>
-    </form>
+    <!-- Login Card -->
+    <div class="login-card p-8 rounded-2xl shadow-2xl relative overflow-hidden group">
 
-    <p id="loginError" class="text-red-500 text-sm mt-3 text-center"></p>
+      <!-- Decorational Glow -->
+      <div
+        class="absolute -top-32 -right-32 w-64 h-64 bg-[var(--orange)]/20 rounded-full blur-[80px] pointer-events-none mix-blend-screen">
+      </div>
+
+      <form id="loginForm" class="space-y-5 relative z-10">
+
+        <!-- Username -->
+        <div class="input-icon-wrapper">
+          <input type="text" id="username" name="username" placeholder="Usuario" required
+            class="login-input w-full pl-12 pr-4 py-3.5 bg-[#0a0a0a]/60 border border-[var(--input-border)] rounded-xl text-[var(--beige)] placeholder-gray-600 focus:outline-none focus:border-[var(--orange)] focus:ring-1 focus:ring-[var(--orange)]/50 transition-all duration-300">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+          </svg>
+        </div>
+
+        <!-- Password -->
+        <div class="input-icon-wrapper">
+          <input type="password" id="password" name="password" placeholder="Contraseña" required
+            class="login-input w-full pl-12 pr-4 py-3.5 bg-[#0a0a0a]/60 border border-[var(--input-border)] rounded-xl text-[var(--beige)] placeholder-gray-600 focus:outline-none focus:border-[var(--orange)] focus:ring-1 focus:ring-[var(--orange)]/50 transition-all duration-300">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+            </path>
+          </svg>
+        </div>
+
+        <!-- Button -->
+        <button type="submit"
+          class="w-full py-3.5 mt-2 rounded-xl bg-gradient-to-r from-[var(--orange)] to-[#ff8f5e] hover:to-[var(--orange)] text-white font-bold tracking-wide shadow-lg shadow-orange-900/30 transform transition-all duration-300 hover:scale-[1.01] hover:shadow-orange-900/50 flex justify-center items-center gap-2 group">
+          <span>Ingresar</span>
+          <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor"
+            viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+          </svg>
+        </button>
+
+      </form>
+    </div>
+
+    <div id="loginError"
+      class="mt-6 text-center text-red-500 text-sm font-medium min-h-[1.25rem] transition-all duration-300">
+    </div>
+
   </main>
 
   <script type="module" src="js/pages/login.js"></script>

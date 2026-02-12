@@ -11,10 +11,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Botones Home y Logout
   document.getElementById("btnHome")
-    .addEventListener("click", () => history.back());
+    ?.addEventListener("click", () => history.back());
 
   document.getElementById("btnLogout")
-    .addEventListener("click", logout);
+    ?.addEventListener("click", logout);
 
   // Botón Nueva Membresía
   document.getElementById("btnNuevaMembresia")

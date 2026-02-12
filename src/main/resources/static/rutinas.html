@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -22,6 +22,7 @@
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/sidebar.css">
 </head>
 
 <body class="text-gray-100 min-h-screen font-sans selection:bg-[var(--orange)] selection:text-white">
@@ -52,9 +53,6 @@
                             </path>
                         </svg>
                         Importar
-                    </a>
-                    <a href="home.html" class="btn-secondary px-4 py-2 text-sm flex items-center gap-2">
-                        ← Volver
                     </a>
                 </div>
             </header>
@@ -144,7 +142,8 @@
                             </thead>
                             <tbody id="tablaRutinasBody" class="divide-y divide-gray-800">
                                 <tr>
-                                    <td colspan="5" class="px-6 py-8 text-center text-gray-500">Cargando rutinas...</td>
+                                    <td colspan="5" class="px-6 py-8 text-center text-gray-500">Cargando rutinas...
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -193,6 +192,7 @@
             cargarRutinas();
         });
     </script>
+    <script src="../js/ui/sidebar.js"></script>
 </body>
 
 </html>
