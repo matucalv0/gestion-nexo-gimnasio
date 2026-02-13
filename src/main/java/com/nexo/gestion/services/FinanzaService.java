@@ -32,7 +32,7 @@ public class FinanzaService {
 
         int offset = page * size;
 
-        // FIXED: Explicit casting for PostgreSQL compatibility in UNION
+
         String sql = """
             SELECT * FROM (
                 SELECT id_pago as ref_id, 'INGRESO' as tipo, monto, fecha, CAST('Pago' AS VARCHAR) as cat, CAST(NULL AS VARCHAR) as prov FROM pago WHERE estado NOT IN ('ELIMINADO', 'ANULADO')
@@ -53,7 +53,7 @@ public class FinanzaService {
             WHERE fecha >= :desde AND fecha <= :hasta
             """;
 
-        // Execute Content Query
+
         jakarta.persistence.Query query = entityManager.createNativeQuery(sql);
         query.setParameter("desde", java.sql.Date.valueOf(desde));
         query.setParameter("hasta", java.sql.Date.valueOf(hasta));
@@ -68,7 +68,7 @@ public class FinanzaService {
             String tipoStr = (String) row[1];
             BigDecimal monto = (BigDecimal) row[2];
             
-            // FIXED: Safe Date Handling (handles java.sql.Date or java.sql.Timestamp)
+
             LocalDate fecha;
             if (row[3] instanceof java.sql.Timestamp) {
                 fecha = ((java.sql.Timestamp) row[3]).toLocalDateTime().toLocalDate();
@@ -81,7 +81,7 @@ public class FinanzaService {
 
             TipoMovimiento tipo = TipoMovimiento.valueOf(tipoStr);
             
-            // FIXED: Map Category Enum for Expenses (EGRESO)
+
             com.nexo.gestion.entity.CategoriaGasto categoriaEnum = null;
             String proveedor = null;
             
@@ -90,7 +90,7 @@ public class FinanzaService {
                     try {
                         categoriaEnum = com.nexo.gestion.entity.CategoriaGasto.valueOf(categoriaStr);
                     } catch (IllegalArgumentException e) {
-                        // Handle unknown categories gracefully if needed, or leave null
+
                     }
                 }
                 proveedor = proveedorRaw;
