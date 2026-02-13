@@ -9,7 +9,7 @@ COPY . .
 RUN ./mvnw clean package -DskipTests
 
 # ===== Stage 2: runtime =====
-FROM eclipse-temurin:21-jdk-alpine
+FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
 # Copiamos solo el jar final

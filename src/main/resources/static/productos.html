@@ -7,16 +7,20 @@
   <link rel="icon" type="image/png" href="../assets/nexologo.png" />
   <title>NEXO · PRODUCTOS</title>
 
+  <script src="https://cdn.tailwindcss.com"></script>
+
   <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            primary: { DEFAULT: '#FF6B2C', 500: '#FF6B2C', 600: '#E85A1F' },
+    if (typeof tailwind !== 'undefined') {
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: { DEFAULT: '#FF6B2C', 500: '#FF6B2C', 600: '#E85A1F' },
+            },
+            fontFamily: { sans: ['Inter', '-apple-system', 'sans-serif'] },
           },
-          fontFamily: { sans: ['Inter', '-apple-system', 'sans-serif'] },
         },
-      },
+      }
     }
   </script>
 

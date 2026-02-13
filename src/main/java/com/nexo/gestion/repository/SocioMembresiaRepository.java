@@ -191,6 +191,18 @@ AND sm.fechaHasta >= CURRENT_DATE
         """, nativeQuery = true)
     Integer contarSociosActivosHoy();
 
+    // Batch query: obtener todos los DNIs activos de una lista (evita N+1)
+    @Query(value = """
+        SELECT DISTINCT sm.dni_socio
+        FROM socio_membresia sm
+        WHERE sm.dni_socio IN :dnis
+          AND sm.activo = true
+          AND sm.fecha_inicio < CURRENT_DATE + INTERVAL '1 day'
+          AND (sm.fecha_hasta IS NULL
+               OR sm.fecha_hasta >= date_trunc('month', CURRENT_DATE))
+        """, nativeQuery = true)
+    List<String> findDnisActivosEnElMes(@Param("dnis") List<String> dnis);
+
 }
 
 

@@ -41,12 +41,13 @@ public class AuthController {
         log.debug("Intentando login para usuario: {}", usuarioLoginDTO.username());
         String token = authService.login(usuarioLoginDTO);
         
-        // Crear Cookie HttpOnly
+        // Crear Cookie HttpOnly con SameSite=Strict para prevenir CSRF
         jakarta.servlet.http.Cookie cookie = new jakarta.servlet.http.Cookie("jwt", token);
         cookie.setHttpOnly(true);
         cookie.setSecure(cookieSecure);
         cookie.setPath("/");
         cookie.setMaxAge(10 * 60 * 60); // 10 horas (alineado con JWT expiration)
+        cookie.setAttribute("SameSite", "Strict");
 
         response.addCookie(cookie);
 
@@ -85,6 +86,7 @@ public class AuthController {
         cookie.setSecure(cookieSecure);
         cookie.setPath("/");
         cookie.setMaxAge(0);
+        cookie.setAttribute("SameSite", "Strict");
 
         response.addCookie(cookie);
         return ResponseEntity.ok(Map.of("mensaje", "Logout exitoso"));

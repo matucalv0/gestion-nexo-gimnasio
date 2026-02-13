@@ -7,51 +7,66 @@ import com.nexo.gestion.repository.MedioPagoRepository;
 import com.nexo.gestion.repository.UsuarioRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+/**
+ * Inicializa datos por defecto después de que Flyway complete las migraciones.
+ * Spring Boot garantiza que Flyway se ejecute antes que cualquier ApplicationRunner.
+ */
 @Component
-public class DataInitializer implements CommandLineRunner {
+@Order(1)
+public class DataInitializer implements ApplicationRunner {
 
     private static final Logger log = LoggerFactory.getLogger(DataInitializer.class);
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final MedioPagoRepository medioPagoRepository;
 
-    public DataInitializer(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, MedioPagoRepository medioPagoRepository) {
+    public DataInitializer(UsuarioRepository usuarioRepository,
+                          PasswordEncoder passwordEncoder,
+                          MedioPagoRepository medioPagoRepository) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
         this.medioPagoRepository = medioPagoRepository;
     }
 
     @Override
-    public void run(String... args) throws Exception {
-        initializeAdminUser();
-        initializePaymentMethods();
+    public void run(ApplicationArguments args) throws Exception {
+        try {
+            initializeAdminUser();
+            initializePaymentMethods();
+            log.info("Inicialización de datos completada correctamente.");
+        } catch (Exception e) {
+            log.error("Error durante la inicialización de datos: {}", e.getMessage());
+            throw e;
+        }
     }
 
     private void initializeAdminUser() {
         if (usuarioRepository.findByUsername("admin").isEmpty()) {
-            log.info("Iniciando creación de usuario administrador por defecto...");
+            String adminPassword = System.getenv("ADMIN_INITIAL_PASSWORD");
+            if (adminPassword == null || adminPassword.length() < 8) {
+                log.warn("ADMIN_INITIAL_PASSWORD no configurada. Usando password temporal 'admin123'. CAMBIAR EN PRODUCCIÓN.");
+                adminPassword = "admin123";
+            }
+
+            log.info("Creando usuario administrador por defecto...");
             Usuario admin = new Usuario();
             admin.setUsername("admin");
-            admin.setPassword(passwordEncoder.encode("admin123"));
+            admin.setPassword(passwordEncoder.encode(adminPassword));
             admin.setRol(Rol.ADMIN);
             admin.setActivo(true);
             
             usuarioRepository.save(admin);
-            log.info("Usuario administrador creado exitosamente: admin / admin123");
+            log.info("Usuario administrador creado exitosamente.");
         } else {
-            log.info("El usuario administrador ya existe. Saltando inicialización.");
-            
-            // Forzar actualización de contraseña si algo salió mal manualmente
-            Usuario admin = usuarioRepository.findByUsername("admin").get();
-            admin.setPassword(passwordEncoder.encode("admin123"));
-            usuarioRepository.save(admin);
-            log.info("Contraseña de admin reiniciada para asegurar compatibilidad.");
+            log.debug("El usuario administrador ya existe.");
         }
     }
 
@@ -59,7 +74,7 @@ public class DataInitializer implements CommandLineRunner {
         List<String> defaultMethods = List.of("EFECTIVO", "TRANSFERENCIA");
         for (String methodName : defaultMethods) {
             if (!medioPagoRepository.existsByNombre(methodName)) {
-                log.info("Creando medio de pago por defecto: {}", methodName);
+                log.info("Creando medio de pago: {}", methodName);
                 MedioPago medioPago = new MedioPago(methodName);
                 medioPagoRepository.save(medioPago);
             }

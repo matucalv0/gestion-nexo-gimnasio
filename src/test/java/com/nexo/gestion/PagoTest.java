@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -87,7 +88,7 @@ public class PagoTest {
         Membresia membresia = new Membresia("plan basico", 28, new BigDecimal(50000), 2, TipoMembresia.MUSCULACION);
         MembresiaDTO guardada = membresiaService.registrarMembresia(new MembresiaCreateDTO(membresia.getDuracionDias(), membresia.getPrecioSugerido(), membresia.getNombre(), membresia.getAsistenciasPorSemana(), membresia.getTipoMembresia()));
 
-        MedioPago medioPago = new MedioPago("TRANSFERENCIA");
+        MedioPago medioPago = new MedioPago("MP_" + UUID.randomUUID().toString().substring(0, 8));
         MedioPagoDTO medioPagoGuardado = medioPagoService.registrarMedioPago(new MedioPagoDTO(medioPago.getNombre()));
 
         Puesto puesto = new Puesto("Instructor");
@@ -113,7 +114,7 @@ public class PagoTest {
         Membresia membresia = new Membresia("plan basico", 28, new BigDecimal(50000), 2, TipoMembresia.MUSCULACION);
         MembresiaDTO guardada = membresiaService.registrarMembresia(new MembresiaCreateDTO(membresia.getDuracionDias(), membresia.getPrecioSugerido(), membresia.getNombre(), membresia.getAsistenciasPorSemana(), membresia.getTipoMembresia()));
 
-        MedioPago medioPago = new MedioPago("TRANSFERENCIA");
+        MedioPago medioPago = new MedioPago("MP_" + UUID.randomUUID().toString().substring(0, 8));
         MedioPagoDTO medioPagoGuardado = medioPagoService.registrarMedioPago(new MedioPagoDTO(medioPago.getNombre()));
 
         Puesto puesto = new Puesto("Instructor");
@@ -140,7 +141,7 @@ public class PagoTest {
         Membresia membresia = new Membresia("plan basico", 28, new BigDecimal(50000), 2, TipoMembresia.MUSCULACION);
         MembresiaDTO guardada = membresiaService.registrarMembresia(new MembresiaCreateDTO(membresia.getDuracionDias(), membresia.getPrecioSugerido(), membresia.getNombre(), membresia.getAsistenciasPorSemana(), membresia.getTipoMembresia()));
 
-        MedioPago medioPago = new MedioPago("TRANSFERENCIA");
+        MedioPago medioPago = new MedioPago("MP_" + UUID.randomUUID().toString().substring(0, 8));
         MedioPagoDTO medioPagoGuardado = medioPagoService.registrarMedioPago(new MedioPagoDTO(medioPago.getNombre()));
 
         Puesto puesto = new Puesto("Instructor");
@@ -176,7 +177,7 @@ public class PagoTest {
         );
 
         MedioPagoDTO medioPago = medioPagoService.registrarMedioPago(
-                new MedioPagoDTO("EFECTIVO")
+                new MedioPagoDTO("MP_" + UUID.randomUUID().toString().substring(0, 8))
         );
 
         PuestoDTO puesto = puestoService.registrarPuesto(
@@ -264,7 +265,7 @@ public class PagoTest {
         );
 
         MedioPagoDTO medioPago = medioPagoService.registrarMedioPago(
-                new MedioPagoDTO("EFECTIVO")
+                new MedioPagoDTO("MP_" + UUID.randomUUID().toString().substring(0, 8))
         );
 
         PuestoDTO puesto = puestoService.registrarPuesto(
@@ -324,7 +325,7 @@ public class PagoTest {
         );
 
         MedioPagoDTO medioPago = medioPagoService.registrarMedioPago(
-                new MedioPagoDTO("EFECTIVO")
+                new MedioPagoDTO("MP_" + UUID.randomUUID().toString().substring(0, 8))
         );
 
         PuestoDTO puesto = puestoService.registrarPuesto(
@@ -410,7 +411,7 @@ public class PagoTest {
         );
 
         MedioPagoDTO medioPago = medioPagoService.registrarMedioPago(
-                new MedioPagoDTO("EFECTIVO")
+                new MedioPagoDTO("MP_" + UUID.randomUUID().toString().substring(0, 8))
         );
 
         PuestoDTO puesto = puestoService.registrarPuesto(
@@ -516,7 +517,7 @@ public class PagoTest {
 
         // 3. Registrar Pago de Membresia
         MembresiaDTO membresia = membresiaService.registrarMembresia(new MembresiaCreateDTO(30, new BigDecimal("50000"), "Plan Test", 30, TipoMembresia.MUSCULACION));
-        MedioPagoDTO medioPago = medioPagoService.registrarMedioPago(new MedioPagoDTO("EFECTIVO"));
+        MedioPagoDTO medioPago = medioPagoService.registrarMedioPago(new MedioPagoDTO("MP_" + UUID.randomUUID().toString().substring(0, 8)));
         PuestoDTO puesto = puestoService.registrarPuesto(new PuestoDTO("Vendedor"));
         EmpleadoDTO empleado = empleadoService.registrarEmpleado(new EmpleadoDTO("11122233", "Vendedor", "111", "vend@test.com", LocalDate.now(), true, puesto.idPuesto()));
 
@@ -554,7 +555,7 @@ public class PagoTest {
 
         // 3. Registrar Pago de Membresia de 30 días
         MembresiaDTO membresia = membresiaService.registrarMembresia(new MembresiaCreateDTO(30, new BigDecimal("50000"), "Plan 30 dias", 30, TipoMembresia.MUSCULACION));
-        MedioPagoDTO medioPago = medioPagoService.registrarMedioPago(new MedioPagoDTO("EFECTIVO_VIEJO"));
+        MedioPagoDTO medioPago = medioPagoService.registrarMedioPago(new MedioPagoDTO("MP_" + UUID.randomUUID().toString().substring(0, 8)));
         PuestoDTO puesto = puestoService.registrarPuesto(new PuestoDTO("Recepcion"));
         EmpleadoDTO empleado = empleadoService.registrarEmpleado(new EmpleadoDTO("22233344", "Recep", "222", "recep@test.com", LocalDate.now(), true, puesto.idPuesto()));
 
@@ -601,7 +602,7 @@ public class PagoTest {
 
         // 4. Registrar Pago de Membresia de 30 días
         MembresiaDTO membresia = membresiaService.registrarMembresia(new MembresiaCreateDTO(30, new BigDecimal("60000"), "Plan Mixto", 30, TipoMembresia.MUSCULACION));
-        MedioPagoDTO medioPago = medioPagoService.registrarMedioPago(new MedioPagoDTO("EFECTIVO_MIXTO"));
+        MedioPagoDTO medioPago = medioPagoService.registrarMedioPago(new MedioPagoDTO("MP_" + UUID.randomUUID().toString().substring(0, 8)));
         PuestoDTO puesto = puestoService.registrarPuesto(new PuestoDTO("Caja"));
         EmpleadoDTO empleado = empleadoService.registrarEmpleado(new EmpleadoDTO("33344455", "Cajero", "333", "caja@test.com", LocalDate.now(), true, puesto.idPuesto()));
 

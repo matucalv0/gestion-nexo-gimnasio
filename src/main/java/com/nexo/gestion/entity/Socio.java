@@ -1,9 +1,6 @@
 package com.nexo.gestion.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -19,6 +16,7 @@ public class Socio {
     @Column(name = "fecha_nacimiento")
     private LocalDate fechaNacimiento;
     private boolean activo = false;
+
     @OneToMany(mappedBy = "socio")
 
     List<SocioMembresia> membresias = new ArrayList<>();

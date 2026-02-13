@@ -98,6 +98,24 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(ex.getReason()));
     }
 
+    @ExceptionHandler(org.springframework.orm.ObjectOptimisticLockingFailureException.class)
+    public ResponseEntity<ErrorResponse> manejarConflictoConcurrente(
+            org.springframework.orm.ObjectOptimisticLockingFailureException ex) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse(
+                        "Los datos fueron modificados por otro usuario. Por favor, recargue la página e intente de nuevo."));
+    }
+
+    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> manejarViolacionIntegridad(
+            org.springframework.dao.DataIntegrityViolationException ex) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse(
+                        "No se pudo completar la operación: los datos ingresados violan una restricción (posible duplicado o referencia inválida)."));
+    }
+
     // SOLO para errores realmente inesperados
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> manejarRuntime(RuntimeException ex) {

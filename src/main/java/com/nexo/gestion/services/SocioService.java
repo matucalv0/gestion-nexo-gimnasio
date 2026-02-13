@@ -7,14 +7,19 @@ import com.nexo.gestion.exceptions.*;
 import com.nexo.gestion.repository.*;
 import com.nexo.gestion.repository.AsistenciaRepository;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 @Service
 public class SocioService {
+    private static final Logger log = LoggerFactory.getLogger(SocioService.class);
     private final SocioRepository socioRepository;
     private final MembresiaRepository membresiaRepository;
     private final SocioMembresiaRepository socioMembresiaRepository;
@@ -153,14 +158,14 @@ public class SocioService {
     }
 
     public SocioDTO bajaSocio(String dni) {
-        Socio socio = socioRepository.findById(dni).orElseThrow(() -> new ObjetoNoEncontradoException("dni"));
+        Socio socio = socioRepository.findById(dni).orElseThrow(() -> new ObjetoNoEncontradoException("socio con DNI " + dni));
         socio.setActivo(false);
         Socio guardado = socioRepository.save(socio);
         return convertirASocioDTO(guardado);
     }
 
     public SocioDTO patchSocio(String dni, SocioPatchDTO socioPatch) {
-        Socio socio = socioRepository.findById(dni).orElseThrow(() -> new ObjetoNoEncontradoException("dni"));
+        Socio socio = socioRepository.findById(dni).orElseThrow(() -> new ObjetoNoEncontradoException("socio con DNI " + dni));
 
         if (socioPatch.getDni() != null && !socioPatch.getDni().equals(dni)) {
             throw new IllegalStateException("No se permite modificar el DNI de un socio existente");
@@ -171,6 +176,9 @@ public class SocioService {
         }
 
         if (socioPatch.getEmail() != null) {
+            if (socioRepository.existsByEmail(socioPatch.getEmail())) {
+                throw new ObjetoDuplicadoException("El email " + socioPatch.getEmail() + " ya existe");
+            }
             socio.setEmail(socioPatch.getEmail());
         }
         if (socioPatch.getTelefono() != null) {
@@ -349,14 +357,12 @@ public class SocioService {
 
     public Map<String, Boolean> listadoSociosActivosEnELMes(List<String> dnis) {
         Map<String, Boolean> resultado = new HashMap<>();
+        // Batch query: una sola consulta en vez de N queries individuales
+        List<String> dnisActivos = socioMembresiaRepository.findDnisActivosEnElMes(dnis);
+        Set<String> activosSet = new HashSet<>(dnisActivos);
         for (String dni : dnis) {
-            if (socioMembresiaRepository.estaActivoEnElMesActual(dni)) {
-                resultado.put(dni, true);
-            } else {
-                resultado.put(dni, false);
-            }
+            resultado.put(dni, activosSet.contains(dni));
         }
-
         return resultado;
     }
 
@@ -485,7 +491,7 @@ public class SocioService {
                 ));
             } catch (Exception e) {
                 // Log error pero continuar con los demás registros
-                System.err.println("Error procesando socio: " + e.getMessage());
+                log.error("Error procesando socio: {}", e.getMessage(), e);
             }
         }
 

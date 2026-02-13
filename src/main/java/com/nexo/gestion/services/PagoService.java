@@ -166,14 +166,14 @@ public class PagoService {
         Socio socio = null;
         if (dto.getDniSocio() != null) {
             socio = socioRepository.findById(dto.getDniSocio())
-                    .orElseThrow(() -> new ObjetoNoEncontradoException("dni_socio"));
+                    .orElseThrow(() -> new ObjetoNoEncontradoException("socio con DNI " + dto.getDniSocio()));
         }
 
         Empleado empleado = empleadoRepository.findById(dto.getDniEmpleado())
                 .orElseThrow(() -> new ObjetoNoEncontradoException("No se encontró el empleado con el dni " + dto.getDniEmpleado()));
 
         MedioPago medioPago = medioPagoRepository.findById(dto.getIdMedioPago())
-                .orElseThrow(() -> new ObjetoNoEncontradoException("id_mediopago"));
+                .orElseThrow(() -> new ObjetoNoEncontradoException("medio de pago seleccionado"));
 
         // Calcular monto antes de crear el pago
         BigDecimal monto = dto.getDetalles().stream()
@@ -203,7 +203,7 @@ public class PagoService {
 
             if (dDTO.getIdProducto() != null) {
                 Producto p = productoRepository.findById(dDTO.getIdProducto())
-                        .orElseThrow(() -> new ObjetoNoEncontradoException("producto"));
+                        .orElseThrow(() -> new ObjetoNoEncontradoException("producto seleccionado"));
                 detalle.setProducto(p);
                 p.restarStock(dDTO.getCantidad());
                 productosAActualizar.add(p);
@@ -211,11 +211,11 @@ public class PagoService {
 
             if (dDTO.getIdMembresia() != null) {
                 if (socio == null) {
-                    throw new ObjetoNoEncontradoException("dni del socio");
+                    throw new ObjetoNoEncontradoException("socio (se requiere DNI para membresías)");
                 }
 
                 Membresia membresia = membresiaRepository.findById(dDTO.getIdMembresia())
-                        .orElseThrow(() -> new ObjetoNoEncontradoException("membresia"));
+                        .orElseThrow(() -> new ObjetoNoEncontradoException("membresía seleccionada"));
 
                 if (pago.getEstado() == EstadoPago.PAGADO) {
                     SocioMembresia nuevaSuscripcion = renovarMembresia(socio, membresia);
@@ -248,7 +248,7 @@ public class PagoService {
     @Transactional(readOnly = true)
     public PagoDTO obtenerPago(Integer id) {
         Pago pago = pagoRepository.findById(id)
-                .orElseThrow(() -> new ObjetoNoEncontradoException("pago"));
+                .orElseThrow(() -> new ObjetoNoEncontradoException("pago indicado"));
         return convertirAPagoDTO(pago);
     }
 
@@ -298,7 +298,7 @@ public class PagoService {
     @Transactional
     public void anularPago(Integer id) {
         Pago pago = pagoRepository.findById(id)
-                .orElseThrow(() -> new ObjetoNoEncontradoException("pago"));
+                .orElseThrow(() -> new ObjetoNoEncontradoException("pago indicado"));
 
         if (pago.getEstado() == EstadoPago.ANULADO) {
             throw new IllegalStateException("El pago ya está anulado");
@@ -336,7 +336,7 @@ public class PagoService {
     @Transactional
     public void eliminarPago(Integer id) {
         Pago pago = pagoRepository.findById(id)
-                .orElseThrow(() -> new ObjetoNoEncontradoException("pago"));
+                .orElseThrow(() -> new ObjetoNoEncontradoException("pago indicado"));
 
         if (pago.getEstado() == EstadoPago.ELIMINADO) {
             throw new IllegalStateException("El pago ya está eliminado");
