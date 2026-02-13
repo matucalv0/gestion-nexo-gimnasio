@@ -126,18 +126,13 @@ function renderTabla(tablaBody, asistencias) {
   // Ocultar empty state y mostrar datos
   if (emptyState) emptyState.classList.add('hidden');
 
-  // Agregar animación al tbody
-  tablaBody.classList.add('animate-fade-in');
-
   asistencias.forEach(a => {
     const tr = document.createElement("tr");
-    tr.className =
-      "border-b border-[var(--input-border)] hover:bg-[#1a1a1a] transition";
 
     tr.innerHTML = `
-      <td class="px-6 py-4">${a.nombre}</td>
-      <td class="px-6 py-4">${a.dni}</td>
-      <td class="px-6 py-4">${formatDateTime(a.fechaHora)}</td>
+      <td class="font-medium">${a.nombre}</td>
+      <td class="text-gray-400">${a.dni}</td>
+      <td class="text-gray-400">${formatDateTime(a.fechaHora)}</td>
     `;
 
     tablaBody.appendChild(tr);

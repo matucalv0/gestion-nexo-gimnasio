@@ -73,6 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const modalPorVencer = document.getElementById("modalPorVencer");
   const kpiPorVencerCard = document.getElementById("kpiPorVencerCard");
   const cerrarModalPorVencer = document.getElementById("cerrarModalPorVencer");
+  const backdropPorVencer = modalPorVencer?.querySelector(".modal-backdrop");
 
   kpiPorVencerCard?.addEventListener("click", () => {
     modalPorVencer?.classList.remove("hidden");
@@ -82,10 +83,8 @@ document.addEventListener("DOMContentLoaded", () => {
     modalPorVencer?.classList.add("hidden");
   });
 
-  modalPorVencer?.addEventListener("click", (e) => {
-    if (e.target === modalPorVencer) {
-      modalPorVencer.classList.add("hidden");
-    }
+  backdropPorVencer?.addEventListener("click", () => {
+    modalPorVencer?.classList.add("hidden");
   });
 
   // ESC para cerrar modal
@@ -122,20 +121,20 @@ async function cargarDashboard() {
     if (listaPorVencer && data.listaPorVencer) {
       if (data.listaPorVencer.length === 0) {
         listaPorVencer.innerHTML = `
-          <p class="text-gray-400 text-center py-4">
-            No hay membresías por vencer en los próximos 7 días
-          </p>
+          <div class="empty-state py-6">
+            <p class="text-gray-500 text-sm">No hay membresías por vencer en los próximos 7 días</p>
+          </div>
         `;
       } else {
         listaPorVencer.innerHTML = data.listaPorVencer.map(s => `
-          <div class="flex items-center justify-between p-3 bg-[#1a1a1a] rounded-lg border border-gray-700 hover:border-[var(--orange)] transition cursor-pointer"
+          <div class="detail-item cursor-pointer hover:bg-[#1a1a1a] transition"
                onclick="window.location.href='socio-detalle.html?dni=${s.dni}'">
             <div>
-              <p class="font-semibold text-[var(--beige)]">${s.nombre}</p>
-              <p class="text-xs text-gray-400">${s.nombreMembresia}</p>
+              <p class="detail-item-name">${s.nombre}</p>
+              <p class="detail-item-type">${s.nombreMembresia}</p>
             </div>
             <div class="text-right">
-              <p class="font-bold ${s.diasRestantes <= 2 ? 'text-red-400' : 'text-yellow-400'}">
+              <p class="font-semibold ${s.diasRestantes <= 2 ? 'text-red-400' : 'text-yellow-400'}">
                 ${s.diasRestantes === 0 ? 'Hoy' : s.diasRestantes === 1 ? 'Mañana' : `${s.diasRestantes} días`}
               </p>
               <p class="text-xs text-gray-500">${formatDate(s.fechaVencimiento)}</p>

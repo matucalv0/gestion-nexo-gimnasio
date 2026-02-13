@@ -7,73 +7,60 @@
     <link rel="icon" type="image/png" href="../assets/nexologo.png" />
     <title>NEXO · FINANZAS</title>
 
-    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: { DEFAULT: '#FF6B2C', 500: '#FF6B2C', 600: '#E85A1F' },
-                        secondary: { DEFAULT: '#00D9FF' },
-                    },
-                    fontFamily: { sans: ['Inter', '-apple-system', 'sans-serif'] },
-                },
-            },
-        }
-    </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/main.css">
-  <link rel="stylesheet" href="../css/sidebar.css">
-
-    <!-- Preload fondo -->
+    <link rel="stylesheet" href="../css/sidebar.css">
     <link rel="preload" as="image" href="../assets/nexofondo.jpg">
 </head>
 
 <body class="text-gray-100 min-h-screen font-sans selection:bg-[var(--orange)] selection:text-white">
 
-    <main class="flex justify-center min-h-screen p-6 pt-16">
+    <main class="flex justify-center min-h-screen p-6 pt-8">
         <div class="w-full max-w-7xl">
 
             <!-- HEADER -->
-            <header class="header-nexo">
-                <div class="header-left">
-                    <div class="header-icon bg-blue-500/10">
-                        <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                        </svg>
-                    </div>
-                    <div>
-                        <h1 class="header-title">Finanzas</h1>
-                        <p class="header-subtitle">Balance y movimientos</p>
-                    </div>
+            <header class="page-header mb-6">
+                <div class="page-header-icon">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+                    </svg>
                 </div>
-</header>
+                <div class="page-header-content">
+                    <h1 class="page-header-title">Finanzas</h1>
+                    <p class="page-header-subtitle">Balance y movimientos</p>
+                </div>
+                <div class="page-header-actions">
+                    <button id="btnNuevoGasto" class="btn-outline-danger btn-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                        <span>Nuevo Gasto</span>
+                    </button>
+                </div>
+            </header>
 
-            <!-- LAYOUT (restaurado) -->
-            <div class="flex flex-col lg:flex-row gap-6 lg:items-start">
+            <!-- LAYOUT -->
+            <div class="flex flex-col lg:flex-row gap-5 lg:items-start">
 
                 <!-- IZQUIERDA -->
-                <section class="flex-1 flex flex-col gap-6 lg:gap-5">
+                <section class="flex-1 flex flex-col gap-5">
 
                     <!-- KPIs -->
-                    <div class="bg-[#121212] p-6 rounded-xl border border-[var(--input-border)] shadow-2xl">
-                        <h2 class="text-sm font-semibold text-[var(--beige)] mb-4 tracking-wide">
-                            Ganancias
-                        </h2>
+                    <div class="card-container">
+                        <h2 class="card-section-title mb-4">Ganancias</h2>
 
                         <!-- Loading state KPIs -->
                         <div id="kpisLoading" class="grid grid-cols-3 gap-4" aria-hidden="true">
-                            <div class="border border-[var(--input-border)] rounded-lg p-4">
+                            <div class="kpi-card">
                                 <div class="skeleton h-3 w-12 mb-3"></div>
                                 <div class="skeleton h-7 w-24"></div>
                             </div>
-                            <div class="border border-[var(--input-border)] rounded-lg p-4">
+                            <div class="kpi-card">
                                 <div class="skeleton h-3 w-20 mb-3"></div>
                                 <div class="skeleton h-7 w-24"></div>
                             </div>
-                            <div class="border border-[var(--input-border)] rounded-lg p-4">
+                            <div class="kpi-card">
                                 <div class="skeleton h-3 w-16 mb-3"></div>
                                 <div class="skeleton h-7 w-32"></div>
                                 <div class="skeleton h-3 w-24 mt-3"></div>
@@ -81,43 +68,39 @@
                         </div>
 
                         <div id="kpisContent" class="grid grid-cols-3 gap-4 hidden">
-                            <div class="border border-[var(--input-border)] rounded-lg p-4 hover:border-[var(--orange)]/50 transition">
-                                <p class="text-label text-gray-400 mb-1">Hoy</p>
-                                <p id="kpiGananciaHoy" class="text-metric text-[var(--beige)]">$0</p>
+                            <div class="kpi-card">
+                                <p class="kpi-label">Hoy</p>
+                                <p id="kpiGananciaHoy" class="kpi-value">$0</p>
                             </div>
 
-                            <div class="border border-[var(--input-border)] rounded-lg p-4 hover:border-[var(--orange)]/50 transition">
-                                <p class="text-label text-gray-400 mb-1">esta semana</p>
-                                <p id="kpiGananciaSemana" class="text-metric text-[var(--beige)]">$0</p>
+                            <div class="kpi-card">
+                                <p class="kpi-label">Esta semana</p>
+                                <p id="kpiGananciaSemana" class="kpi-value">$0</p>
                             </div>
 
-                            <div class="border border-[var(--input-border)] rounded-lg p-4 hover:border-[var(--orange)]/50 transition">
-                                <p class="text-label text-gray-400 mb-1">este mes</p>
+                            <div class="kpi-card">
+                                <p class="kpi-label">Este mes</p>
                                 <div class="flex items-baseline gap-2">
-                                    <p id="kpiGananciaMes" class="text-metric text-[var(--beige)]">$0</p>
-                                    <span id="varGananciaMes"></span>
+                                    <p id="kpiGananciaMes" class="kpi-value">$0</p>
+                                    <span id="varGananciaMes" class="text-xs font-bold text-green-500 ml-2 break-words max-w-[80px] overflow-hidden text-ellipsis whitespace-nowrap"></span>
                                 </div>
-                                <p class="text-caption text-gray-500">vs. mes anterior</p>
+                                <p class="kpi-caption">vs. mes anterior</p>
                             </div>
                         </div>
                     </div>
 
                     <!-- EVOLUCIÓN -->
-                    <div class="bg-[#121212] p-6 rounded-xl border border-[var(--input-border)] shadow-2xl">
+                    <div class="card-container">
                         <div class="flex items-center justify-between mb-4">
-                            <h2 class="text-lg font-bold tracking-wide text-[var(--beige)]">
-                                Evolución de movimientos
-                            </h2>
-
-                            <label for="filtroEvolucion" class="sr-only">Filtro de evolución</label>
-                            <select id="filtroEvolucion" class="bg-transparent border border-[var(--input-border)] text-gray-300 text-sm rounded-md px-3 py-1">
+                            <h2 class="card-section-title">Evolución de movimientos</h2>
+                            <select id="filtroEvolucion" class="filter-select" aria-label="Filtro de evolución">
                                 <option value="7dias">Últimos 7 días</option>
                                 <option value="meses">Por mes</option>
                             </select>
                         </div>
 
-                        <div class="border border-[var(--input-border)] rounded-lg p-3 relative" aria-busy="false" id="evolucionContainer">
-                            <div id="evolucionLoading" class="absolute inset-0 bg-[#0f0f0f]/60 rounded-lg flex items-center justify-center hidden">
+                        <div class="chart-container relative" id="evolucionContainer" aria-busy="false">
+                            <div id="evolucionLoading" class="absolute inset-0 bg-[#0a0a0a]/80 rounded-lg flex items-center justify-center hidden">
                                 <div class="w-full px-6">
                                     <div class="skeleton h-4 w-40 mb-4"></div>
                                     <div class="skeleton h-32 w-full"></div>
@@ -130,156 +113,122 @@
                 </section>
 
                 <!-- DERECHA -->
-                <aside class="lg:w-1/3 flex flex-col gap-6 lg:sticky lg:top-20 self-start">
+                <aside class="w-full lg:w-1/3 flex flex-col gap-5 lg:sticky lg:top-20 self-start min-w-0">
                     <!-- DONUT -->
-                    <div class="bg-[#121212] p-6 rounded-xl border border-[var(--input-border)] shadow-2xl">
-                        <h2 class="text-sm font-semibold text-[var(--beige)] mb-4 tracking-wide">
-                            Distribución de movimientos mensual
-                        </h2>
-
-                        <div class="bg-black/60 border border-[var(--input-border)] rounded-lg p-4 flex justify-center relative" aria-busy="false" id="donutContainer">
-                            <div id="donutLoading" class="absolute inset-0 bg-[#0f0f0f]/60 rounded-lg flex items-center justify-center hidden">
-                                <div class="flex flex-col items-center gap-3">
-                                    <div class="skeleton w-28 h-28 rounded-full"></div>
-                                    <div class="skeleton h-4 w-32"></div>
-                                </div>
+                    <div class="card-container">
+                        <h2 class="card-section-title mb-4">Distribución de movimientos mensual</h2>
+                        <div class="chart-container flex justify-center relative" id="donutContainer" aria-busy="false">
+                            <div class="aspect-square w-56 flex items-center justify-center">
+                                <canvas id="donutIngresos" class="w-56 h-56"></canvas>
                             </div>
-                            <canvas id="donutIngresos" class="w-56 h-56"></canvas>
                         </div>
-
-                        <!-- Resumen (nuevo) -->
-                        <div class="mt-4 grid grid-cols-2 gap-3" aria-label="Resumen del mes">
-                            <div class="border border-[var(--input-border)] rounded-lg p-3">
-                                <p class="text-[11px] uppercase tracking-wide text-gray-500">Ingresos</p>
-                                <p id="donutResumenIngresos" class="mt-1 font-bold text-green-400">$0</p>
+                        <!-- Resumen -->
+                        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3" aria-label="Resumen del mes">
+                            <div class="stat-card">
+                                <p class="stat-label">Ingresos</p>
+                                <p id="donutResumenIngresos" class="stat-value text-green-400">$0</p>
                             </div>
-                            <div class="border border-[var(--input-border)] rounded-lg p-3">
-                                <p class="text-[11px] uppercase tracking-wide text-gray-500">Gastos</p>
-                                <p id="donutResumenGastos" class="mt-1 font-bold text-red-400">$0</p>
+                            <div class="stat-card">
+                                <p class="stat-label">Gastos</p>
+                                <p id="donutResumenGastos" class="stat-value text-red-400">$0</p>
                             </div>
-                            <div class="border border-[var(--input-border)] rounded-lg p-3 col-span-2">
+                            <div class="stat-card col-span-1 sm:col-span-2">
                                 <div class="flex items-center justify-between">
-                                    <p class="text-[11px] uppercase tracking-wide text-gray-500">Neto</p>
+                                    <p class="stat-label">Neto</p>
                                     <span id="donutResumenPct" class="text-xs text-gray-400"></span>
                                 </div>
-                                <p id="donutResumenNeto" class="mt-1 font-bold text-[var(--beige)]">$0</p>
+                                <p id="donutResumenNeto" class="stat-value">$0</p>
                             </div>
                         </div>
                     </div>
-
                 </aside>
             </div>
 
             <!-- TABLA -->
-            <section class="mt-4 bg-[#121212] p-6 rounded-xl border border-[var(--input-border)] shadow-2xl" aria-labelledby="movimientos-title">
+            <section class="mt-5 card-container" aria-labelledby="movimientos-title">
 
                 <!-- Banner info filtros -->
-                <div id="filtrosBanner" class="hidden mb-4 px-4 py-3 rounded-lg border border-[var(--input-border)] bg-black/30 text-sm text-gray-300">
+                <div id="filtrosBanner" class="hidden mb-4 info-card">
                     <span class="font-semibold text-[var(--beige)]">Filtros activos:</span>
-                    <span id="filtrosTexto" class="ml-2"></span>
+                    <span id="filtrosTexto" class="ml-2 text-gray-400"></span>
                 </div>
 
                 <!-- Banner error -->
                 <div id="finanzasError" class="hidden mb-4 px-4 py-3 rounded-lg border border-red-500/30 bg-red-500/10 text-sm text-red-300" role="alert"></div>
 
                 <!-- HEADER DE LA SECCIÓN -->
-                <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                    <h2 id="movimientos-title" class="text-lg font-bold text-[var(--beige)] self-start md:self-center">
-                        Movimientos
-                    </h2>
+                <div class="card-toolbar flex-wrap gap-4">
+                    <h2 id="movimientos-title" class="card-toolbar-title">Movimientos</h2>
 
-                    <div class="flex flex-wrap items-center gap-3 w-full md:w-auto" role="group" aria-label="Filtros de movimientos">
-                        <div class="flex items-center gap-2" aria-label="Rango de fechas">
+                    <div class="flex flex-wrap items-center gap-3 ml-auto" role="group" aria-label="Filtros de movimientos">
+                        <div class="filter-group">
                             <label for="filtroDesde" class="sr-only">Desde</label>
-                            <input type="date" id="filtroDesde" class="bg-[#121212] border border-[var(--input-border)] text-gray-300 text-sm rounded px-2 py-1.5 focus:border-[var(--orange)] outline-none">
-                            <span class="text-gray-500" aria-hidden="true">-</span>
+                            <input type="date" id="filtroDesde" class="form-input py-1.5 text-sm">
+                        </div>
+                        <span class="text-gray-500" aria-hidden="true">—</span>
+                        <div class="filter-group">
                             <label for="filtroHasta" class="sr-only">Hasta</label>
-                            <input type="date" id="filtroHasta" class="bg-[#121212] border border-[var(--input-border)] text-gray-300 text-sm rounded px-2 py-1.5 focus:border-[var(--orange)] outline-none">
+                            <input type="date" id="filtroHasta" class="form-input py-1.5 text-sm">
                         </div>
 
-                        <!-- Filtro por tipo -->
-                        <div class="flex items-center gap-2" aria-label="Filtro por tipo">
-                            <label for="filtroTipoMovimiento" class="sr-only">Tipo</label>
-                            <select id="filtroTipoMovimiento" class="bg-[#121212] border border-[var(--input-border)] text-gray-300 text-sm rounded px-2 py-1.5 focus:border-[var(--orange)] outline-none">
-                                <option value="">Todos</option>
-                                <option value="INGRESO">Ingresos</option>
-                                <option value="EGRESO">Egresos</option>
-                            </select>
+                        <select id="filtroTipoMovimiento" class="filter-select" aria-label="Filtro por tipo">
+                            <option value="">Todos</option>
+                            <option value="INGRESO">Ingresos</option>
+                            <option value="EGRESO">Egresos</option>
+                        </select>
+
+                        <div class="filter-actions">
+                            <button id="btnFiltrarFecha" class="btn-action-primary btn-sm">Filtrar</button>
+                            <button id="btnLimpiarFiltros" class="btn-outline btn-sm">Limpiar</button>
+                            <button id="btnExportarMovimientos" class="btn-outline-success btn-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                </svg>
+                                <span>Exportar</span>
+                            </button>
                         </div>
-
-                        <button id="btnFiltrarFecha" type="button" class="px-4 py-1.5 bg-[var(--orange)] hover:bg-[var(--orange)]/80 text-white rounded text-sm font-medium transition">
-                            Filtrar
-                        </button>
-                        <button id="btnLimpiarFiltros" type="button" class="px-4 py-1.5 bg-transparent border border-[var(--input-border)] text-gray-400 hover:text-white rounded text-sm font-medium transition">
-                            Limpiar
-                        </button>
-
-                        <button id="btnExportarMovimientos" type="button" class="flex items-center gap-2 px-3 py-1.5 bg-green-600/20 border border-green-600/50 text-green-400 hover:bg-green-600/30 rounded text-sm font-medium transition">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                            </svg>
-                            Exportar
-                        </button>
-
-                        <button id="btnNuevoGasto" type="button" class="bg-red-500 hover:bg-red-600 ml-auto md:ml-2 text-black font-semibold px-4 py-2 rounded-md transition text-sm">
-                            Nuevo gasto
-                        </button>
                     </div>
                 </div>
 
-                <div class="overflow-x-auto border border-[var(--input-border)] rounded-lg relative" id="tablaContainer" aria-busy="false">
-                    <div id="tablaLoading" class="absolute inset-0 bg-[#0f0f0f]/60 flex items-center justify-center hidden">
+                <div class="table-container relative" id="tablaContainer" aria-busy="false">
+                    <div id="tablaLoading" class="absolute inset-0 bg-[#0a0a0a]/80 flex items-center justify-center hidden z-10">
                         <div class="w-full px-6">
                             <div class="skeleton h-10 w-full mb-3"></div>
                             <div class="skeleton h-10 w-full mb-3"></div>
                             <div class="skeleton h-10 w-full mb-3"></div>
                             <div class="skeleton h-10 w-full mb-3"></div>
-                            <p class="text-xs text-gray-400 mt-2">Cargando movimientos...</p>
+                            <p class="text-xs text-gray-500 mt-2">Cargando movimientos...</p>
                         </div>
                     </div>
 
-                    <table class="w-full min-w-[900px] text-sm text-[var(--beige)]" aria-describedby="movimientos-help">
+                    <table class="data-table" aria-describedby="movimientos-help">
                         <caption class="sr-only">Listado de movimientos financieros (ingresos y gastos)</caption>
-                        <thead class="bg-[#1a1a1a]">
+                        <thead>
                             <tr>
-                                <th class="px-6 py-4 text-left">Fecha</th>
-                                <th class="px-6 py-4 text-left">Tipo</th>
-                                <th class="px-6 py-4 text-left">Monto</th>
-                                <th class="px-6 py-4 text-left">Referencia</th>
+                                <th>Fecha</th>
+                                <th>Tipo</th>
+                                <th>Monto</th>
+                                <th>Referencia</th>
                             </tr>
                         </thead>
-                        <tbody id="tablaMovimientos" class="bg-[#121212]" aria-live="polite">
-
+                        <tbody id="tablaMovimientos" aria-live="polite">
                             <tr id="emptyStateFinanzas" class="hidden">
-                                <td colspan="4" class="px-6 py-16 text-center">
-                                    <div class="flex flex-col items-center gap-4 animate-fade-in">
-                                        <div class="w-16 h-16 rounded-full bg-blue-500/10 flex items-center justify-center">
-                                            <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                <td colspan="4">
+                                    <div class="empty-state">
+                                        <div class="empty-state-icon">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
                                             </svg>
                                         </div>
-
-                                        <div>
-                                            <h3 class="text-lg font-semibold text-[var(--beige)] mb-1">
-                                                Sin movimientos registrados
-                                            </h3>
-                                            <p class="text-sm text-gray-400">
-                                                Los pagos recibidos y gastos registrados aparecerán aquí
-                                            </p>
-                                        </div>
-
-                                        <div class="flex gap-2 mt-2">
-                                            <button class="btn-secondary px-4 py-2 text-sm" onclick="window.location.href='/pagos.html'">
-                                                Ver pagos
-                                            </button>
-                                            <button class="btn-primary px-4 py-2 text-sm" onclick="window.location.href='/registrar-gasto.html'">
-                                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd"
-                                                        d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-                                                        clip-rule="evenodd" />
+                                        <h3 class="empty-state-title">Sin movimientos registrados</h3>
+                                        <p class="empty-state-desc">Los pagos recibidos y gastos registrados aparecerán aquí</p>
+                                        <div class="flex gap-2 mt-4">
+                                            <button class="btn-outline btn-sm" onclick="window.location.href='/pagos.html'">Ver pagos</button>
+                                            <button class="btn-action-primary btn-sm" onclick="window.location.href='/registrar-gasto.html'">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                                                 </svg>
-                                                Registrar gasto
+                                                <span>Registrar gasto</span>
                                             </button>
                                         </div>
                                     </div>
@@ -289,8 +238,7 @@
                     </table>
                 </div>
 
-                <p id="movimientos-help" class="sr-only">Usa los filtros de fecha para limitar resultados. En cada fila puedes ver detalle o eliminar.</p>
-
+                <p id="movimientos-help" class="sr-only">Usa los filtros de fecha para limitar resultados.</p>
                 <div id="paginationContainer" class="mt-4" aria-label="Paginación"></div>
             </section>
 
@@ -299,10 +247,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="module" src="../js/pages/finanzas.js"></script>
-  <script src="../js/ui/sidebar.js"></script>
+    <script src="../js/ui/sidebar.js"></script>
 </body>
 
 </html>
-
-
-

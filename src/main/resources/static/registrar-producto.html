@@ -7,7 +7,6 @@
   <link rel="icon" type="image/png" href="../assets/nexologo.png" />
   <title>NEXO · REGISTRAR PRODUCTO</title>
 
-  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="../css/main.css">
   <link rel="stylesheet" href="../css/sidebar.css">
@@ -16,65 +15,69 @@
 
 <body class="min-h-screen text-gray-300">
 
-  <main class="flex justify-center items-start min-h-screen p-6 pt-16">
-    <div class="w-full max-w-lg">
+  <main class="flex justify-center items-start min-h-screen p-6 pt-8">
+    <div class="w-full max-w-xl">
 
       <!-- HEADER -->
-      <header class="header-nexo">
-        <div class="header-left">
-          <div class="header-icon bg-amber-500/10">
-            <svg class="w-8 h-8 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-            </svg>
-          </div>
-          <div>
-            <h1 class="header-title">Registrar Producto</h1>
-            <p class="header-subtitle">Nuevo item de inventario</p>
-          </div>
+      <header class="page-header mb-6">
+        <div class="page-header-icon">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+          </svg>
         </div>
-        <div class="header-actions">
-          <button id="btnVolver" class="btn-secondary px-4 py-2 text-sm">← Volver</button>
-</div>
+        <div class="page-header-content">
+          <h1 class="page-header-title">Registrar Producto</h1>
+          <p class="page-header-subtitle">Nuevo item de inventario</p>
+        </div>
+        <div class="page-header-actions">
+          <button id="btnVolver" class="btn-outline btn-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+            </svg>
+            <span>Volver</span>
+          </button>
+        </div>
       </header>
 
-
       <!-- CARD PRINCIPAL -->
-      <div class="bg-[#121212] p-6 rounded-xl border border-[var(--input-border)] shadow-2xl">
+      <div class="card-container">
+        <div class="card-toolbar">
+          <h2 class="card-toolbar-title">Datos del producto</h2>
+        </div>
 
-        <h1 class="text-2xl font-bold text-[var(--beige)] mb-6">Registrar producto</h1>
-
-        <form id="registrarProductoForm" class="space-y-4" novalidate>
+        <form id="registrarProductoForm" class="form-container" novalidate>
 
           <!-- NOMBRE -->
-          <div>
-            <label class="block mb-1 text-[var(--beige)] font-semibold">Nombre*</label>
-            <input type="text" name="nombre" class="w-full px-4 py-3 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)]
-                          focus:outline-none focus:border-[var(--orange)] transition" />
-            <span class="error text-red-500 text-sm mt-1 block"></span>
+          <div class="form-group">
+            <label class="form-label" for="nombre">Nombre <span class="text-red-400">*</span></label>
+            <input type="text" name="nombre" id="nombre" class="form-input" placeholder="Ej: Proteína Whey" />
+            <span class="form-error error"></span>
           </div>
 
-          <!-- PRECIO -->
-          <div>
-            <label class="block mb-1 text-[var(--beige)] font-semibold">Precio*</label>
-            <input type="number" name="precio" step="0.01" min="0" class="w-full px-4 py-3 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)]
-                          focus:outline-none focus:border-[var(--orange)] transition" />
-            <span class="error text-red-500 text-sm mt-1 block"></span>
-          </div>
+          <!-- PRECIO Y STOCK -->
+          <div class="grid grid-cols-2 gap-4">
+            <div class="form-group">
+              <label class="form-label" for="precio">Precio <span class="text-red-400">*</span></label>
+              <input type="number" name="precio" id="precio" step="0.01" min="0" class="form-input" placeholder="0.00" />
+              <span class="form-error error"></span>
+            </div>
 
-          <!-- STOCK -->
-          <div>
-            <label class="block mb-1 text-[var(--beige)] font-semibold">Stock*</label>
-            <input type="number" name="stock" min="0" class="w-full px-4 py-3 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)]
-                          focus:outline-none focus:border-[var(--orange)] transition" />
-            <span class="error text-red-500 text-sm mt-1 block"></span>
+            <div class="form-group">
+              <label class="form-label" for="stock">Stock <span class="text-red-400">*</span></label>
+              <input type="number" name="stock" id="stock" min="0" class="form-input" placeholder="0" />
+              <span class="form-error error"></span>
+            </div>
           </div>
 
           <!-- BOTÓN -->
-          <button type="submit"
-            class="w-full bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold py-3 rounded-md transition-colors">
-            Registrar producto
-          </button>
+          <div class="form-actions">
+            <button type="submit" class="btn-action-primary w-full">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              <span>Registrar producto</span>
+            </button>
+          </div>
 
         </form>
 

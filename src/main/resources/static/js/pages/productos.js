@@ -62,18 +62,21 @@ function renderProductos(tablaBody, productos) {
   productos.forEach(producto => {
     const tr = document.createElement("tr");
 
-    // Estilo oscuro para filas y hover
-    tr.className = "border-b border-[var(--input-border)] hover:bg-[#1a1a1a] transition-colors";
+    const stockClass = producto.stock <= 5 ? 'text-red-400' : producto.stock <= 10 ? 'text-yellow-400' : '';
 
     tr.innerHTML = `
-    <td class="px-6 py-4">${producto.idProducto}</td>
-    <td class="px-6 py-4">${producto.nombre}</td>
-    <td class="px-6 py-4">$${producto.precioSugerido?.toFixed(2) ?? "-"}</td>
-    <td class="px-6 py-4">${producto.stock ?? 0}</td>
-    <td class="px-6 py-4">
-      <button class="text-[var(--orange)] font-medium hover:underline transition">Editar</button>
-    </td>
-  `;
+      <td class="font-mono text-xs text-gray-400">${producto.idProducto}</td>
+      <td class="font-medium">${producto.nombre}</td>
+      <td class="font-semibold">$${producto.precioSugerido?.toFixed(2) ?? "-"}</td>
+      <td><span class="${stockClass}">${producto.stock ?? 0}</span></td>
+      <td>
+        <button class="table-action-btn" title="Editar">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+          </svg>
+        </button>
+      </td>
+    `;
 
     tr.querySelector("button").addEventListener("click", () => {
       editarProducto(producto.idProducto);

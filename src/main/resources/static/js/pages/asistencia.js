@@ -188,9 +188,17 @@ document.addEventListener("DOMContentLoaded", async () => {
       socios.forEach((socio, index) => {
         const item = document.createElement("div");
         item.className =
-          "px-4 py-2 cursor-pointer text-[var(--beige)] hover:bg-orange-500/20 transition focus:bg-orange-500/20 outline-none";
+          "search-item";
         item.tabIndex = 0;
-        item.textContent = `${socio.nombre} - ${socio.dni}`;
+        item.innerHTML = `
+          <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+          </svg>
+          <div class="flex-1 min-w-0">
+            <span class="block truncate">${socio.nombre}</span>
+            <span class="text-xs text-gray-500">${socio.dni}</span>
+          </div>
+        `;
 
         item.addEventListener("click", async () => {
           socioSeleccionado = socio;
@@ -285,15 +293,31 @@ document.addEventListener("DOMContentLoaded", async () => {
       asistenciasDisponibles = data.disponibles;
 
       infoSocio.innerHTML = `
-        <strong>${socio.nombre}</strong><br>
-        DNI: ${socio.dni}<br>
-        Asistencias disponibles: <strong class="${data.disponibles <= 2 ? 'text-yellow-400' : 'text-green-400'}">${data.disponibles}</strong>
+        <div class="info-card-header">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+          </svg>
+          <span>Socio</span>
+        </div>
+        <div class="space-y-1">
+          <p><strong>${socio.nombre}</strong></p>
+          <p class="text-gray-400 text-xs">DNI: ${socio.dni}</p>
+          <p class="text-xs">Asistencias disponibles: <strong class="${data.disponibles <= 2 ? 'text-yellow-400' : 'text-green-400'}">${data.disponibles}</strong></p>
+        </div>
       `;
     } catch {
       infoSocio.innerHTML = `
-        <strong>${socio.nombre}</strong><br>
-        DNI: ${socio.dni}<br>
-        <span class="text-yellow-400">Sin membresía activa (quedará como pendiente)</span>
+        <div class="info-card-header">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+          </svg>
+          <span>Socio</span>
+        </div>
+        <div class="space-y-1">
+          <p><strong>${socio.nombre}</strong></p>
+          <p class="text-gray-400 text-xs">DNI: ${socio.dni}</p>
+          <p class="text-yellow-400 text-xs">Sin membresía activa (quedará como pendiente)</p>
+        </div>
       `;
       asistenciasDisponibles = null;
     }
@@ -310,12 +334,27 @@ document.addEventListener("DOMContentLoaded", async () => {
       const membresia = await res.json();
 
       infoMembresia.innerHTML = `
-        <strong>Plan activo</strong><br>
-        Tipo: ${membresia.tipo}<br>
-        Vence: ${membresia.vencimiento}
+        <div class="info-card-header">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
+          </svg>
+          <span>Plan activo</span>
+        </div>
+        <div class="space-y-1">
+          <p><strong>${membresia.tipo}</strong></p>
+          <p class="text-gray-400 text-xs">Vence: ${membresia.vencimiento}</p>
+        </div>
       `;
     } catch {
-      infoMembresia.textContent = "El socio no tiene ningún plan activo";
+      infoMembresia.innerHTML = `
+        <div class="info-card-header">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
+          </svg>
+          <span>Plan activo</span>
+        </div>
+        <p class="text-gray-500 text-xs">El socio no tiene ningún plan activo</p>
+      `;
     }
   }
 
@@ -346,23 +385,23 @@ document.addEventListener("DOMContentLoaded", async () => {
       const data = await res.json();
 
       if (!data.content || data.content.length === 0) {
-        lista.innerHTML = '<p class="text-gray-500 text-sm text-center">No hay asistencias registradas hoy</p>';
+        lista.innerHTML = '<p class="text-gray-500 text-xs text-center py-2">No hay asistencias registradas hoy</p>';
         return;
       }
 
       lista.innerHTML = data.content.map(a => {
         const hora = formatTime(a.fechaHora);
         return `
-          <div class="flex items-center justify-between py-2 px-3 bg-[#121212] rounded hover:bg-[#252525] cursor-pointer transition"
+          <div class="recent-item cursor-pointer"
                onclick="document.getElementById('inputBusqueda').value='${a.dni}'; document.getElementById('inputBusqueda').dispatchEvent(new Event('input'))">
-            <span class="text-[var(--beige)] text-sm truncate">${a.nombreSocio || a.dni}</span>
-            <span class="text-gray-500 text-xs">${hora}</span>
+            <span class="recent-item-name truncate">${a.nombreSocio || a.dni}</span>
+            <span class="recent-item-time">${hora}</span>
           </div>
         `;
       }).join('');
 
     } catch (err) {
-      lista.innerHTML = '<p class="text-gray-500 text-sm">Error cargando asistencias</p>';
+      lista.innerHTML = '<p class="text-gray-500 text-xs text-center py-2">Error cargando asistencias</p>';
     }
   }
 

@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const btnLogout = document.getElementById("btnLogout");
 
   btnHome?.addEventListener("click", () => history.back());
-  btnLogout.addEventListener("click", logout);
+  btnLogout?.addEventListener("click", logout);
 
   const params = new URLSearchParams(window.location.search);
   const idProducto = params.get("id");

@@ -41,9 +41,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Modal de anulación
     document.getElementById("btnCancelarAnular")?.addEventListener("click", cerrarModalAnular);
     document.getElementById("btnConfirmarAnular")?.addEventListener("click", () => confirmarAnularPago(dni));
-    document.getElementById("modalAnularPago")?.addEventListener("click", (e) => {
-        if (e.target.id === "modalAnularPago") cerrarModalAnular();
-    });
+    document.getElementById("modalAnularPago")?.querySelector(".modal-backdrop")?.addEventListener("click", cerrarModalAnular);
 });
 
 async function cargarMembresiasDisponibles() {
@@ -144,15 +142,15 @@ async function cargarKPIs(dni) {
         const kpiEstadoCard = document.getElementById("kpiEstado");
         const estadoEl = kpiEstadoCard.querySelector("p:last-child");
         estadoEl.textContent = activo ? "Activo" : "Inactivo";
-        estadoEl.className = `text-2xl font-bold ${activo ? 'text-green-400' : 'text-red-400'}`;
+        estadoEl.className = `kpi-value ${activo ? 'text-green-400' : 'text-red-400'}`;
 
         // Actualizar Status Badge en Hero
         const statusBadge = document.getElementById("statusBadge");
         const statusText = document.getElementById("statusText");
         if (activo) {
-            statusBadge.className = 'inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wide bg-green-500/15 text-green-400 border border-green-500/30';
+            statusBadge.className = 'status-badge status-badge-success';
         } else {
-            statusBadge.className = 'inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wide bg-red-500/15 text-red-400 border border-red-500/30';
+            statusBadge.className = 'status-badge status-badge-danger';
         }
         statusText.textContent = activo ? 'ACTIVO' : 'INACTIVO';
 
@@ -206,14 +204,14 @@ async function cargarKPIs(dni) {
         } catch (err) {
             if (err.status === 409) {
                 document.getElementById("kpiMembresia").querySelector("p:last-child").textContent = "Vencida";
-                document.getElementById("kpiMembresia").querySelector("p:last-child").className = 'text-2xl font-bold text-red-400';
+                document.getElementById("kpiMembresia").querySelector("p:last-child").className = 'kpi-value text-red-400';
                 document.getElementById("kpiVencimiento").style.display = "none";
                 document.getElementById("expiryInfo").style.display = "none";
 
                 // Actualizar status a vencido
                 const statusBadge = document.getElementById("statusBadge");
                 const statusText = document.getElementById("statusText");
-                statusBadge.className = 'inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wide bg-red-500/15 text-red-400 border border-red-500/30';
+                statusBadge.className = 'status-badge status-badge-danger';
                 statusText.textContent = 'VENCIDO';
             } else {
                 console.error("Error al cargar KPIs de membresía:", err);
@@ -449,12 +447,15 @@ async function cargarHistorialPagos(dni) {
         if (!pagos || pagos.length === 0) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="5" class="px-6 py-12 text-center">
-                        <div class="flex flex-col items-center gap-3">
-                            <svg class="w-12 h-12 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                            </svg>
-                            <p class="text-gray-500">No hay pagos registrados para este socio</p>
+                    <td colspan="5">
+                        <div class="empty-state py-8">
+                            <div class="empty-state-icon">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
+                                </svg>
+                            </div>
+                            <h3 class="empty-state-title">Sin pagos</h3>
+                            <p class="empty-state-desc">No hay pagos registrados para este socio</p>
                         </div>
                     </td>
                 </tr>
@@ -468,30 +469,32 @@ async function cargarHistorialPagos(dni) {
             const monto = `$${pago.monto?.toLocaleString('es-AR') || 0}`;
 
             // Estado con colores semánticos
-            let estadoClass = 'bg-green-500/20 text-green-400';
+            let badgeClass = 'badge-success';
             let estadoTexto = 'Pagado';
             if (pago.estado === 'ANULADO') {
-                estadoClass = 'bg-red-500/20 text-red-400';
+                badgeClass = 'badge-danger';
                 estadoTexto = 'Anulado';
             } else if (pago.estado === 'PENDIENTE') {
-                estadoClass = 'bg-yellow-500/20 text-yellow-400';
+                badgeClass = 'badge-warning';
                 estadoTexto = 'Pendiente';
             }
 
             // Solo mostrar botón anular si está PAGADO
             const btnAnular = pago.estado === 'PAGADO'
-                ? `<button data-id="${pago.idPago}" data-monto="${pago.monto}" class="btn-anular text-red-400 hover:text-red-300 hover:bg-red-500/10 px-2 py-1 rounded text-xs font-medium transition">Anular</button>`
+                ? `<button data-id="${pago.idPago}" data-monto="${pago.monto}" class="btn-anular table-action-btn table-action-btn-danger" title="Anular">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                   </button>`
                 : '<span class="text-gray-600 text-xs">—</span>';
 
             return `
-                <tr class="hover:bg-white/[0.02] transition">
-                    <td class="px-4 py-3 text-sm text-gray-400">${fecha}</td>
-                    <td class="px-4 py-3 text-sm max-w-xs truncate" title="${detalles}">${detalles}</td>
-                    <td class="px-4 py-3 text-sm text-right font-medium">${monto}</td>
-                    <td class="px-4 py-3 text-center">
-                        <span class="px-2.5 py-1 rounded-full text-xs font-semibold ${estadoClass}">${estadoTexto}</span>
-                    </td>
-                    <td class="px-4 py-3 text-center">${btnAnular}</td>
+                <tr>
+                    <td class="text-gray-400">${fecha}</td>
+                    <td class="max-w-xs truncate" title="${detalles}">${detalles}</td>
+                    <td class="font-medium">${monto}</td>
+                    <td><span class="badge ${badgeClass}">${estadoTexto}</span></td>
+                    <td>${btnAnular}</td>
                 </tr>
             `;
         }).join('');
@@ -509,8 +512,10 @@ async function cargarHistorialPagos(dni) {
         console.error("Error cargando pagos:", err);
         tbody.innerHTML = `
             <tr>
-                <td colspan="5" class="px-4 py-8 text-center text-red-400">
-                    Error al cargar los pagos
+                <td colspan="5">
+                    <div class="empty-state py-8">
+                        <p class="text-red-400 text-sm">Error al cargar los pagos</p>
+                    </div>
                 </td>
             </tr>
         `;

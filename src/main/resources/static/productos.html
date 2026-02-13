@@ -8,22 +8,6 @@
   <title>NEXO · PRODUCTOS</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <script>
-    if (typeof tailwind !== 'undefined') {
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              primary: { DEFAULT: '#FF6B2C', 500: '#FF6B2C', 600: '#E85A1F' },
-            },
-            fontFamily: { sans: ['Inter', '-apple-system', 'sans-serif'] },
-          },
-        },
-      }
-    }
-  </script>
-
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/main.css">
   <link rel="stylesheet" href="../css/sidebar.css">
@@ -32,88 +16,83 @@
 
 <body class="text-gray-100 min-h-screen font-sans selection:bg-[var(--orange)] selection:text-white">
 
-  <main class="flex justify-center items-start min-h-screen p-6 pt-16">
+  <main class="flex justify-center items-start min-h-screen p-6 pt-8">
     <div class="w-full max-w-5xl">
 
       <!-- Header -->
-      <header class="header-nexo">
-        <div class="header-left">
-          <div class="header-icon bg-amber-500/10">
-            <svg class="w-8 h-8 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-            </svg>
-          </div>
-          <div>
-            <h1 class="header-title">Productos</h1>
-            <p class="header-subtitle">Inventario y ventas</p>
-          </div>
+      <header class="page-header mb-6">
+        <div class="page-header-icon">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+          </svg>
         </div>
-        <div class="header-actions">
-          <button id="btnNuevoProducto" class="btn-primary px-4 py-2 text-sm">
-            + Nuevo Producto
+        <div class="page-header-content">
+          <h1 class="page-header-title">Productos</h1>
+          <p class="page-header-subtitle">Inventario y ventas</p>
+        </div>
+        <div class="page-header-actions">
+          <button id="btnNuevoProducto" class="btn-action-primary btn-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            <span>Nuevo Producto</span>
           </button>
         </div>
       </header>
 
       <!-- Card principal -->
-      <div class="bg-[#121212] p-6 rounded-xl border border-[var(--input-border)] shadow-2xl">
+      <div class="card-container">
 
-        <!-- Título y botón Nuevo -->
-        <div class="flex justify-between items-center mb-6">
-          <h2 class="text-h3 text-[var(--beige)]">Gestión de Productos</h2>
+        <!-- Toolbar -->
+        <div class="card-toolbar">
+          <h2 class="card-toolbar-title">Gestión de Productos</h2>
         </div>
 
         <!-- Buscador -->
-        <div class="flex gap-3 mb-6">
-          <input type="text" id="inputBusqueda" placeholder="Buscar por nombre o código" class="flex-1 px-4 py-3 rounded-md bg-[#1a1a1a] border border-[var(--input-border)] text-[var(--beige)]
-                        focus:outline-none focus:border-[var(--orange)] transition" />
-          <button id="btnBuscar"
-            class="bg-[var(--orange)] hover:bg-orange-600 text-black font-semibold px-6 py-3 rounded-md">
-            Buscar
-          </button>
+        <div class="filters-section mb-0">
+          <div class="filter-group flex-1">
+            <label class="filter-label" for="inputBusqueda">Buscar</label>
+            <div class="search-input-wrapper">
+              <svg class="search-input-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+              </svg>
+              <input type="text" id="inputBusqueda" placeholder="Buscar por nombre o código" class="search-input" />
+            </div>
+          </div>
+          <div class="filter-actions">
+            <button id="btnBuscar" class="btn-action-primary btn-sm">Buscar</button>
+          </div>
         </div>
 
         <!-- Tabla -->
-        <div class="overflow-x-auto rounded-lg border border-[var(--input-border)]">
-          <table class="w-full text-sm text-left text-[var(--beige)]">
-            <thead class="bg-[#1a1a1a] border-b border-[var(--input-border)]">
+        <div class="table-container mt-5">
+          <table class="data-table">
+            <thead>
               <tr>
-                <th class="px-6 py-3 font-medium">Código</th>
-                <th class="px-6 py-3 font-medium">Nombre</th>
-                <th class="px-6 py-3 font-medium">Precio</th>
-                <th class="px-6 py-3 font-medium">Stock</th>
-                <th class="px-6 py-3 font-medium">Acción</th>
+                <th>Código</th>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>Acción</th>
               </tr>
             </thead>
-            <tbody id="tablaProductosBody" class="divide-y divide-[var(--input-border)]">
+            <tbody id="tablaProductosBody">
               <!-- Empty state -->
               <tr id="emptyStateProductos" class="hidden">
-                <td colspan="5" class="px-6 py-16 text-center">
-                  <div class="flex flex-col items-center gap-4 animate-fade-in">
-                    <div class="w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center">
-                      <svg class="w-8 h-8 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                <td colspan="5">
+                  <div class="empty-state">
+                    <div class="empty-state-icon">
+                      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
                       </svg>
                     </div>
-
-                    <div>
-                      <h3 class="text-lg font-semibold text-[var(--beige)] mb-1">
-                        No hay productos en el catálogo
-                      </h3>
-                      <p class="text-sm text-gray-400">
-                        Agregá productos para vender en el gimnasio
-                      </p>
-                    </div>
-
-                    <button class="btn-primary mt-2" onclick="window.location.href='/registrar-producto.html'">
-                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd"
-                          d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-                          clip-rule="evenodd" />
+                    <h3 class="empty-state-title">No hay productos en el catálogo</h3>
+                    <p class="empty-state-desc">Agregá productos para vender en el gimnasio</p>
+                    <button class="btn-action-primary btn-sm mt-4" onclick="window.location.href='/registrar-producto.html'">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                       </svg>
-                      Registrar producto
+                      <span>Registrar producto</span>
                     </button>
                   </div>
                 </td>

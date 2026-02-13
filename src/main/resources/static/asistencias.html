@@ -8,19 +8,7 @@
   <title>NEXO · ASISTENCIAS</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            primary: { DEFAULT: '#FF6B2C', 500: '#FF6B2C', 600: '#E85A1F' },
-          },
-          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
-        },
-      },
-    }
-  </script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/main.css">
   <link rel="stylesheet" href="../css/sidebar.css">
   <link rel="preload" as="image" href="../assets/nexofondo.jpg">
@@ -28,153 +16,132 @@
 
 <body class="text-gray-100 min-h-screen font-sans selection:bg-[var(--orange)] selection:text-white">
 
-  <main class="flex justify-center min-h-screen p-6 pt-16">
+  <main class="flex justify-center min-h-screen p-6 pt-8">
     <div class="w-full max-w-7xl">
 
       <!-- HEADER -->
-      <header class="header-nexo">
-        <div class="header-left">
-          <div class="header-icon bg-primary-500/10">
-            <svg class="w-8 h-8 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-            </svg>
-          </div>
-          <div>
-            <h1 class="header-title">Asistencias</h1>
-            <p class="header-subtitle">Registros diarios del gimnasio</p>
-          </div>
+      <header class="page-header mb-6">
+        <div class="page-header-icon">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+          </svg>
         </div>
-</header>
-
+        <div class="page-header-content">
+          <h1 class="page-header-title">Asistencias</h1>
+          <p class="page-header-subtitle">Registros diarios del gimnasio</p>
+        </div>
+      </header>
 
       <!-- LAYOUT PRINCIPAL -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
         <!-- COLUMNA IZQUIERDA -->
-        <div class="lg:col-span-2 flex flex-col gap-6">
+        <div class="lg:col-span-2 flex flex-col gap-5">
 
-          <!-- KPIs -->
-          <section class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-            <!-- Asistencias del mes -->
-            <div class="p-6 bg-[#121212] rounded-xl border border-[var(--input-border)] shadow-xl">
-              <h3 class="text-sm font-semibold text-gray-400 mb-2">
-                Asistencias del mes
-              </h3>
-              <div class="flex items-baseline gap-2">
-                <p id="kpiTotalAsistencias" class="text-xl font-bold text-[var(--beige)]">0</p>
-                <span id="varTotalAsistencias"></span>
+          <!-- KPIs Fila 1 -->
+          <div class="card-container">
+            <h2 class="card-section-title mb-4">Métricas del mes</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <!-- Asistencias del mes -->
+              <div class="kpi-card">
+                <p class="kpi-label">Asistencias</p>
+                <div class="flex items-baseline gap-2">
+                  <p id="kpiTotalAsistencias" class="kpi-value">0</p>
+                  <span id="varTotalAsistencias" class="text-xs font-bold text-green-500 ml-2 inline-flex items-center gap-1 max-w-[90px] overflow-hidden whitespace-nowrap">
+                    <!-- El JS debe inyectar aquí: ▲ 100.0% <svg ...> -->
+                  </span>
+                </div>
+                <p class="kpi-caption">vs. mes anterior</p>
               </div>
-              <p class="text-sm text-gray-400">vs. mes anterior</p>
-            </div>
-            <!-- Socios activos -->
-            <div class="p-6 bg-[#121212] rounded-xl border border-[var(--input-border)] shadow-xl">
-              <h3 class="text-sm font-semibold text-gray-400 mb-2">
-                Socios activos
-              </h3>
-              <div class="flex items-baseline gap-2">
-                <p id="kpiSociosActivosTotal" class="text-xl font-bold text-[var(--beige)]">0</p>
-                <span id="varSociosActivos"></span>
+              <!-- Socios activos -->
+              <div class="kpi-card">
+                <p class="kpi-label">Socios activos</p>
+                <div class="flex items-baseline gap-2">
+                  <p id="kpiSociosActivosTotal" class="kpi-value">0</p>
+                  <span id="varSociosActivos" class="text-xs font-bold text-green-500 ml-2 inline-flex items-center gap-1 max-w-[90px] overflow-hidden whitespace-nowrap">
+                    <!-- El JS debe inyectar aquí: ▲ 100.0% <svg ...> -->
+                  </span>
+                </div>
+                <p class="kpi-caption">vs. mes anterior</p>
               </div>
-              <p class="text-sm text-gray-400">vs. mes anterior</p>
-            </div>
-            <!-- Promedio por socio -->
-            <div class="p-6 bg-[#121212] rounded-xl border border-[var(--input-border)] shadow-xl">
-              <h3 class="text-sm font-semibold text-gray-400 mb-2">
-                Promedio por socio
-              </h3>
-              <div class="flex items-baseline gap-2">
-                <p id="kpiPromedio" class="text-xl font-bold text-[var(--beige)]">0</p>
-                <span id="varPromedio"></span>
+              <!-- Promedio por socio -->
+              <div class="kpi-card">
+                <p class="kpi-label">Promedio/socio</p>
+                <div class="flex items-baseline gap-2">
+                  <p id="kpiPromedio" class="kpi-value">0</p>
+                  <span id="varPromedio" class="text-xs font-bold text-green-500 ml-2 inline-flex items-center gap-1 max-w-[90px] overflow-hidden whitespace-nowrap">
+                    <!-- El JS debe inyectar aquí: ▲ 100.0% <svg ...> -->
+                  </span>
+                </div>
+                <p class="kpi-caption">vs. mes anterior</p>
               </div>
-              <p class="text-sm text-gray-400">vs. mes anterior</p>
             </div>
-          </section>
-          <!-- KPIs - Fila 2: Destacados -->
-          <section class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+          </div>
+
+          <!-- KPIs Fila 2: Destacados -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <!-- Hora Pico -->
-            <div
-              class="p-6 bg-[#121212] rounded-xl border border-[var(--orange)]/30 shadow-xl bg-gradient-to-br from-orange-900/40 to-transparent">
-              <div class="flex items-center gap-2 mb-2">
-                <h3 class="text-sm font-semibold text-[var(--beige)]">Hora Pico</h3>
-              </div>
+            <div class="card-container card-highlight">
+              <p class="kpi-label">Hora Pico</p>
               <p id="kpiHoraPico" class="text-2xl font-bold text-[var(--orange)]">--:--</p>
-              <p id="kpiHoraPicoAsistencias" class="text-sm text-gray-400">-- asistencias</p>
+              <p id="kpiHoraPicoAsistencias" class="kpi-caption">-- asistencias</p>
             </div>
             <!-- Socios más activos -->
-            <div class="p-6 bg-[#121212] rounded-xl border border-[var(--input-border)] shadow-xl">
-              <h3 class="text-sm font-semibold text-[var(--beige)] mb-2">Más activos del mes</h3>
+            <div class="card-container">
+              <p class="kpi-label mb-2">Más activos del mes</p>
               <ul id="kpiSociosActivos" class="space-y-1 text-sm text-[var(--beige)]">
                 <!-- dinámico -->
               </ul>
             </div>
-          </section>
+          </div>
 
           <!-- TABLA DE ASISTENCIAS -->
-          <section class="bg-[#121212] p-6 rounded-xl border border-[var(--input-border)] shadow-2xl">
-            <div class="flex justify-between items-center mb-4">
-              <h2 class="text-lg font-bold text-[var(--beige)]">
-                Listado de asistencias
-              </h2>
+          <section class="card-container">
+            <div class="card-toolbar">
+              <h2 class="card-toolbar-title">Listado de asistencias</h2>
             </div>
 
-            <!-- Barra de Filtros Unificada -->
-            <div class="bg-[#1a1a1a] p-4 rounded-lg border border-[var(--input-border)] mb-6 flex flex-wrap gap-4 items-end">
-              <!-- Buscador -->
-              <div class="flex-1 min-w-[200px]">
-                <label for="inputBusqueda" class="block text-xs text-gray-400 mb-1">Buscar (DNI o Nombre)</label>
-                <input type="text" id="inputBusqueda" placeholder="Ej: 12345678"
-                  class="w-full bg-[#121212] border border-[var(--input-border)] rounded px-3 py-1.5 text-sm text-[var(--beige)] focus:outline-none focus:border-[var(--orange)]">
+            <!-- Barra de Filtros -->
+            <div class="filters-section mb-0">
+              <div class="filter-group flex-1 min-w-[200px]">
+                <label class="filter-label" for="inputBusqueda">Buscar (DNI o Nombre)</label>
+                <input type="text" id="inputBusqueda" placeholder="Ej: 12345678" class="form-input py-1.5 text-sm">
               </div>
-
-              <!-- Fechas -->
-              <div>
-                <label for="filtroDesde" class="block text-xs text-gray-400 mb-1">Desde</label>
-                <input type="date" id="filtroDesde"
-                  class="bg-[#121212] border border-[var(--input-border)] rounded px-3 py-1.5 text-sm text-[var(--beige)] focus:outline-none focus:border-[var(--orange)]">
+              <div class="filter-group">
+                <label class="filter-label" for="filtroDesde">Desde</label>
+                <input type="date" id="filtroDesde" class="form-input py-1.5 text-sm">
               </div>
-              <div>
-                <label for="filtroHasta" class="block text-xs text-gray-400 mb-1">Hasta</label>
-                <input type="date" id="filtroHasta"
-                  class="bg-[#121212] border border-[var(--input-border)] rounded px-3 py-1.5 text-sm text-[var(--beige)] focus:outline-none focus:border-[var(--orange)]">
+              <div class="filter-group">
+                <label class="filter-label" for="filtroHasta">Hasta</label>
+                <input type="date" id="filtroHasta" class="form-input py-1.5 text-sm">
               </div>
-
-              <!-- Botones -->
-              <button id="btnBuscar"
-                class="px-4 py-1.5 bg-[var(--orange)] hover:bg-[var(--orange)]/80 text-white rounded text-sm font-medium transition">
-                Buscar / Filtrar
-              </button>
-              <button id="btnLimpiarFiltros"
-                class="px-4 py-1.5 bg-transparent border border-[var(--input-border)] text-gray-400 hover:text-white rounded text-sm font-medium transition">
-                Limpiar
-              </button>
+              <div class="filter-actions">
+                <button id="btnBuscar" class="btn-action-primary btn-sm">Buscar</button>
+                <button id="btnLimpiarFiltros" class="btn-outline btn-sm">Limpiar</button>
+              </div>
             </div>
 
-            <div class="overflow-x-auto rounded-lg border border-[var(--input-border)]">
-              <table class="w-full min-w-[900px] text-sm text-[var(--beige)]">
-                <thead class="bg-[#1a1a1a]">
+            <div class="table-container mt-5 overflow-x-auto">
+              <table class="data-table min-w-full">
+                <thead>
                   <tr>
-                    <th class="px-6 py-4 text-left">Nombre</th>
-                    <th class="px-6 py-4 text-left">DNI</th>
-                    <th class="px-6 py-4 text-left">Fecha / Hora</th>
+                    <th>Nombre</th>
+                    <th>DNI</th>
+                    <th>Fecha / Hora</th>
                   </tr>
                 </thead>
-                <tbody id="tablaAsistenciasBody" class="bg-[#121212]">
+                <tbody id="tablaAsistenciasBody">
                   <!-- Empty state -->
                   <tr id="emptyStateAsistencias" class="hidden">
-                    <td colspan="3" class="px-6 py-16 text-center">
-                      <div class="flex flex-col items-center gap-4 animate-fade-in">
-                        <div class="w-16 h-16 rounded-full bg-primary-500/10 flex items-center justify-center">
-                          <svg class="w-8 h-8 text-[var(--orange)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2" />
+                    <td colspan="3">
+                      <div class="empty-state">
+                        <div class="empty-state-icon">
+                          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
                           </svg>
                         </div>
-
-                        <div>
-                          <h3 class="text-lg font-semibold text-[var(--beige)] mb-1">Sin asistencias</h3>
-                          <p class="text-sm text-gray-400">Probá cambiando el rango de fechas o el buscador.</p>
-                        </div>
+                        <h3 class="empty-state-title">Sin asistencias</h3>
+                        <p class="empty-state-desc">Probá cambiando el rango de fechas o el buscador.</p>
                       </div>
                     </td>
                   </tr>
@@ -190,24 +157,15 @@
         </div>
 
         <!-- COLUMNA DERECHA -->
-        <aside class="lg:col-span-1 flex flex-col gap-6 h-fit">
-          <div class="bg-[#121212] p-6 rounded-xl
-                      border border-[var(--input-border)]
-                      shadow-2xl">
-            <div class="flex items-center justify-between mb-4 gap-3">
-              <h2 class="text-lg font-bold tracking-wide text-[var(--beige)]">
-                Asistencias por mes
-              </h2>
-
-              <label for="filtroMesAsistencias" class="sr-only">Mes</label>
-              <input type="month" id="filtroMesAsistencias" class="bg-transparent border border-[var(--input-border)]
-           text-gray-300 text-sm rounded-md px-3 py-1
-           focus:outline-none focus:border-[var(--orange)]" />
+        <aside class="w-full lg:col-span-1 flex flex-col gap-5 h-fit lg:sticky lg:top-20 min-w-0">
+          <div class="card-container">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="card-section-title">Asistencias por mes</h2>
+              <input type="month" id="filtroMesAsistencias" class="filter-select text-sm" aria-label="Filtrar por mes" />
             </div>
 
-
-            <div class="border border-[var(--input-border)] rounded-lg p-3">
-              <canvas id="AsistenciasDiaChart" class="w-full h-64"></canvas>
+            <div class="chart-container">
+              <canvas id="AsistenciasDiaChart" class="w-full max-w-xs h-auto aspect-square"></canvas>
             </div>
           </div>
         </aside>
@@ -215,6 +173,7 @@
       </div>
     </div>
   </main>
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script type="module" src="../js/pages/asistencias.js"></script>
   <script src="../js/ui/sidebar.js"></script>

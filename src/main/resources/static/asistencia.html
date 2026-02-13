@@ -21,63 +21,67 @@
 <body class="min-h-screen text-gray-300">
 
   <!-- CONTENIDO -->
-  <main class="flex justify-center items-start min-h-screen p-6 pt-16">
+  <main class="flex justify-center items-start min-h-screen p-6 pt-8">
     <div class="w-full max-w-xl">
 
       <!-- HEADER -->
-      <header class="header-nexo">
-        <div class="header-left">
-          <div class="header-icon bg-primary-500/10">
-            <svg class="w-8 h-8 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <div>
-            <h1 class="header-title">Registrar Asistencia</h1>
-            <p class="header-subtitle">Marcar ingreso de socio</p>
-          </div>
+      <header class="page-header mb-6">
+        <div class="page-header-icon">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
         </div>
-</header>
+        <div class="page-header-content">
+          <h1 class="page-header-title">Registrar Asistencia</h1>
+          <p class="page-header-subtitle">Marcar ingreso de socio</p>
+        </div>
+      </header>
 
       <!-- CARD PRINCIPAL -->
-      <div class="bg-[#121212] p-6 rounded-xl border border-[var(--input-border)]
-                  shadow-2xl">
+      <div class="card-container">
 
         <!-- Buscador -->
         <div class="relative mb-4">
-          <input type="text" id="inputBusqueda" placeholder="Buscar por nombre o dni" autocomplete="off" autofocus class="w-full px-4 py-3 rounded-md bg-[#1a1a1a]
-                   border border-[var(--input-border)]
-                   text-[var(--beige)] text-lg
-                   focus:outline-none focus:border-[var(--orange)]
-                   transition" />
+          <div class="search-input-wrapper">
+            <svg class="search-input-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
+            <input type="text" id="inputBusqueda" placeholder="Buscar por nombre o DNI..." autocomplete="off" autofocus
+                   class="search-input" />
+          </div>
 
           <!-- Resultados -->
-          <div id="resultadosBusqueda" class="absolute w-full mt-1 bg-[#121212] border border-[var(--input-border)] 
-    rounded-md shadow-lg z-20 overflow-hidden text-[var(--beige)] hidden">
-          </div>
+          <div id="resultadosBusqueda" class="search-results hidden"></div>
         </div>
 
         <!-- Botón Registrar -->
-        <button id="btnRegistrarAsistencia" class="w-full bg-[var(--orange)] hover:bg-orange-600
-                 text-black font-semibold py-3 rounded-md mb-4 text-lg">
-          Registrar asistencia
+        <button id="btnRegistrarAsistencia" class="btn-action-primary">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>Registrar asistencia</span>
         </button>
 
         <!-- Alertas -->
-        <div id="alert-container" class="mb-4"></div>
+        <div id="alert-container" class="mt-4"></div>
 
         <!-- Info socio -->
-        <div id="infoSocio" class="hidden bg-[#1a1a1a] text-[var(--beige)] p-4 rounded-md mb-3 text-sm">
-        </div>
+        <div id="infoSocio" class="hidden info-card mt-4"></div>
 
-        <div id="infoMembresia" class="hidden bg-[#1a1a1a] text-[var(--beige)] p-4 rounded-md text-sm mb-4">
-        </div>
+        <div id="infoMembresia" class="hidden info-card mt-3"></div>
+
+        <!-- Separador -->
+        <div class="divider"></div>
 
         <!-- Últimas asistencias del día -->
-        <div id="ultimasAsistencias" class="bg-[#1a1a1a] rounded-lg p-4 border border-[var(--input-border)]">
-          <h3 class="text-sm font-semibold text-gray-400 mb-3">Últimas asistencias de hoy</h3>
-          <div id="listaUltimasAsistencias" class="space-y-2 max-h-48 overflow-y-auto">
+        <div class="recent-section">
+          <div class="recent-header">
+            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h3 class="recent-title">Últimas asistencias de hoy</h3>
+          </div>
+          <div id="listaUltimasAsistencias" class="recent-list">
             <p class="text-gray-500 text-sm">Cargando...</p>
           </div>
         </div>

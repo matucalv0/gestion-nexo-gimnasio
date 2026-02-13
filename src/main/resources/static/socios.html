@@ -8,20 +8,6 @@
   <title>NEXO · SOCIOS</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            primary: { DEFAULT: '#FF6B2C', 400: '#FFA373', 500: '#FF6B2C', 600: '#E85A1F' },
-            secondary: { DEFAULT: '#00D9FF', 500: '#00D9FF', 600: '#00B8DB' },
-          },
-          fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'] },
-          boxShadow: { 'glow-primary': '0 0 20px rgba(255, 107, 44, 0.3)' },
-        },
-      },
-    }
-  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -32,62 +18,61 @@
 
 <body class="text-gray-100 min-h-screen font-sans selection:bg-[var(--orange)] selection:text-white">
 
-  <main class="flex justify-center items-start min-h-screen p-6 pt-16">
+  <main class="flex justify-center items-start min-h-screen p-6 pt-8">
     <div class="w-full max-w-7xl">
 
       <!-- HEADER -->
-      <header class="header-nexo">
-        <div class="header-left">
-          <div class="header-icon bg-secondary-500/10">
-            <svg class="w-8 h-8 text-secondary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
-          </div>
-          <div>
-            <h1 class="header-title">Socios</h1>
-            <p class="header-subtitle">Gestión de miembros activos</p>
-          </div>
+      <header class="page-header mb-6">
+        <div class="page-header-icon">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+          </svg>
         </div>
-        <div class="header-actions">
-          <button id="btnNuevoSocio" class="btn-primary px-4 py-2 text-sm">
-            + Nuevo Socio
+        <div class="page-header-content">
+          <h1 class="page-header-title">Socios</h1>
+          <p class="page-header-subtitle">Gestión de miembros activos</p>
+        </div>
+        <div class="page-header-actions">
+          <button id="btnNuevoSocio" class="btn-action-primary btn-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            <span>Nuevo Socio</span>
           </button>
         </div>
       </header>
 
       <!-- CARD PRINCIPAL -->
-      <div class="bg-[#121212] p-6 rounded-xl border border-[var(--input-border)]
-                  shadow-2xl">
+      <div class="card-container">
 
-        <!-- Título y botón -->
-        <div class="flex justify-between items-center mb-6">
-          <h2 class="text-2xl font-bold text-[var(--beige)]">Gestión de Socios</h2>
-          <button id="btnExportar"
-            class="flex items-center gap-2 px-3 py-1.5 bg-green-600/20 border border-green-600/50 text-green-400 hover:bg-green-600/30 rounded text-sm font-medium transition">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        <!-- Toolbar -->
+        <div class="card-toolbar">
+          <h2 class="card-toolbar-title">Gestión de Socios</h2>
+          <button id="btnExportar" class="btn-outline-success btn-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
             </svg>
-            Exportar CSV
+            <span>Exportar CSV</span>
           </button>
         </div>
 
         <!-- Filtros -->
-        <div
-          class="bg-[#1a1a1a] p-4 rounded-lg border border-[var(--input-border)] mb-6 flex flex-wrap gap-4 items-end">
+        <div class="filters-section">
           <!-- Buscador -->
-          <div class="flex-1 min-w-[200px]">
-            <label class="block text-xs text-gray-400 mb-1">Buscar (DNI o Nombre)</label>
-            <input type="text" id="inputBusqueda" placeholder="Ej: Juan Perez"
-              class="w-full bg-[#121212] border border-[var(--input-border)] rounded px-3 py-1.5 text-sm text-[var(--beige)] focus:outline-none focus:border-[var(--orange)]">
+          <div class="filter-group flex-1 min-w-[200px]">
+            <label class="filter-label">Buscar (DNI o Nombre)</label>
+            <div class="search-input-wrapper">
+              <svg class="search-input-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+              </svg>
+              <input type="text" id="inputBusqueda" placeholder="Ej: Juan Perez" class="search-input">
+            </div>
           </div>
 
           <!-- Filtro Estado -->
-          <div>
-            <label class="block text-xs text-gray-400 mb-1">Estado</label>
-            <select id="filtroActivo"
-              class="bg-[#121212] border border-[var(--input-border)] rounded px-3 py-1.5 text-sm text-[var(--beige)] focus:outline-none focus:border-[var(--orange)] w-32">
+          <div class="filter-group">
+            <label class="filter-label">Estado</label>
+            <select id="filtroActivo" class="filter-select">
               <option value="">Todos</option>
               <option value="true" selected>Activos</option>
               <option value="false">Bajas</option>
@@ -95,57 +80,42 @@
           </div>
 
           <!-- Botones -->
-          <button id="btnBuscar"
-            class="px-4 py-1.5 bg-[var(--orange)] hover:bg-[var(--orange)]/80 text-white rounded text-sm font-medium transition">
-            Buscar
-          </button>
-          <button id="btnLimpiar"
-            class="px-4 py-1.5 bg-transparent border border-[var(--input-border)] text-gray-400 hover:text-white rounded text-sm font-medium transition">
-            Limpiar
-          </button>
+          <div class="filter-actions">
+            <button id="btnBuscar" class="btn-action-primary btn-sm">Buscar</button>
+            <button id="btnLimpiar" class="btn-outline btn-sm">Limpiar</button>
+          </div>
         </div>
 
         <!-- Tabla -->
-        <div class="overflow-x-auto rounded-lg border border-[var(--input-border)]">
-          <table class="w-full text-sm text-[var(--beige)]">
-            <thead class="bg-[#1a1a1a] border-b border-[var(--input-border)]">
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
               <tr>
-                <th class="px-4 py-3 text-left">DNI</th>
-                <th class="px-4 py-3 text-left">Nombre</th>
-                <th class="px-4 py-3 text-left">Teléfono</th>
-                <th class="px-4 py-3 text-left">Email</th>
-                <th class="px-4 py-3 text-left">Estado</th>
-                <th class="px-4 py-3 text-left">Acción</th>
+                <th>DNI</th>
+                <th>Nombre</th>
+                <th>Teléfono</th>
+                <th>Email</th>
+                <th>Estado</th>
+                <th>Acción</th>
               </tr>
             </thead>
-            <tbody id="tablaSociosBody" class="bg-[#121212]">
+            <tbody id="tablaSociosBody">
               <!-- Empty state -->
               <tr id="emptyStateSocios" class="hidden">
-                <td colspan="6" class="px-6 py-16 text-center">
-                  <div class="flex flex-col items-center gap-4 animate-fade-in">
-                    <div class="w-16 h-16 rounded-full bg-purple-500/10 flex items-center justify-center">
-                      <svg class="w-8 h-8 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                <td colspan="6">
+                  <div class="empty-state">
+                    <div class="empty-state-icon">
+                      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
                       </svg>
                     </div>
-
-                    <div>
-                      <h3 class="text-lg font-semibold text-[var(--beige)] mb-1">
-                        No hay socios registrados
-                      </h3>
-                      <p class="text-sm text-gray-400">
-                        Registrá el primer socio para comenzar a gestionar membresías
-                      </p>
-                    </div>
-
-                    <button class="btn-primary mt-2" onclick="window.location.href='/registrar-socio.html'">
-                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd"
-                          d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-                          clip-rule="evenodd" />
+                    <h3 class="empty-state-title">No hay socios registrados</h3>
+                    <p class="empty-state-desc">Registrá el primer socio para comenzar a gestionar membresías</p>
+                    <button class="btn-action-primary btn-sm mt-4" onclick="window.location.href='/registrar-socio.html'">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                       </svg>
-                      Registrar socio
+                      <span>Registrar socio</span>
                     </button>
                   </div>
                 </td>

@@ -62,7 +62,7 @@ function llenarSelectGrupos() {
 
 async function cargarEjercicios() {
     const tbody = document.getElementById("tablaEjerciciosBody");
-    tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8">Cargando...</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state py-8"><p class="text-gray-500 text-sm">Cargando...</p></div></td></tr>`;
 
     try {
         const res = await authFetch("/ejercicios");
@@ -70,11 +70,11 @@ async function cargarEjercicios() {
             ejerciciosCache = await res.json();
             renderTabla();
         } else {
-            tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-red-500">Error cargando datos</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state py-8"><p class="text-red-400 text-sm">Error cargando datos</p></div></td></tr>`;
         }
     } catch (e) {
         console.error(e);
-        tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-red-500">Error de conexión</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state py-8"><p class="text-red-400 text-sm">Error de conexión</p></div></td></tr>`;
     }
 }
 
@@ -92,37 +92,38 @@ function renderTabla() {
     });
 
     if (filtrados.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-gray-500">No se encontraron ejercicios</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state py-8"><p class="text-gray-500 text-sm">No se encontraron ejercicios</p></div></td></tr>`;
         return;
     }
 
     filtrados.forEach(ej => {
         const tr = document.createElement("tr");
-        tr.className = "hover:bg-white/5 transition-colors group";
 
         const grupoNombre = gruposCache.find(g => g.idGrupo === ej.idGrupoMuscular)?.nombre || 'Desconocido';
         const videoLink = ej.video
-            ? `<a href="${ej.video}" target="_blank" class="text-secondary-400 hover:text-secondary-300 underline text-xs">Ver Video</a>`
-            : '<span class="text-gray-600 text-xs">-</span>';
+            ? `<a href="${ej.video}" target="_blank" class="text-blue-400 hover:text-blue-300 text-sm">Ver Video</a>`
+            : '<span class="text-gray-600 text-sm">—</span>';
 
         tr.innerHTML = `
-            <td class="px-6 py-4 font-medium text-gray-200">
-                ${ej.nombre}
+            <td>
+                <div class="font-medium">${ej.nombre}</div>
                 ${ej.descripcion ? `<div class="text-xs text-gray-500 truncate max-w-xs mt-0.5">${ej.descripcion}</div>` : ''}
             </td>
-            <td class="px-6 py-4">
-                <span class="bg-gray-800 text-gray-300 text-xs px-2 py-1 rounded border border-gray-700">
-                    ${grupoNombre}
-                </span>
-            </td>
-            <td class="px-6 py-4">${videoLink}</td>
-            <td class="px-6 py-4 text-right">
-                <button class="btn-edit text-gray-400 hover:text-white mr-2 transition" data-id="${ej.idEjercicio}">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                </button>
-                <button class="btn-delete text-gray-400 hover:text-red-500 transition" data-id="${ej.idEjercicio}">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                </button>
+            <td><span class="badge">${grupoNombre}</span></td>
+            <td>${videoLink}</td>
+            <td>
+                <div class="flex gap-1">
+                    <button class="btn-edit table-action-btn" data-id="${ej.idEjercicio}" title="Editar">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                        </svg>
+                    </button>
+                    <button class="btn-delete table-action-btn table-action-btn-danger" data-id="${ej.idEjercicio}" title="Eliminar">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                        </svg>
+                    </button>
+                </div>
             </td>
         `;
 

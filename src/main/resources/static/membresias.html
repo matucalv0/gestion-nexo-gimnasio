@@ -8,19 +8,6 @@
   <title>NEXO · PLANES</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            primary: { DEFAULT: '#FF6B2C', 500: '#FF6B2C', 600: '#E85A1F' },
-            accent: { DEFAULT: '#A855F7', 500: '#A855F7' },
-          },
-          fontFamily: { sans: ['Inter', '-apple-system', 'sans-serif'] },
-        },
-      },
-    }
-  </script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/main.css">
   <link rel="stylesheet" href="../css/sidebar.css">
@@ -29,80 +16,69 @@
 
 <body class="text-gray-100 min-h-screen font-sans selection:bg-[var(--orange)] selection:text-white">
 
-  <main class="flex justify-center items-start min-h-screen p-6 pt-16">
+  <main class="flex justify-center items-start min-h-screen p-6 pt-8">
     <div class="w-full max-w-5xl">
 
       <!-- HEADER -->
-      <header class="header-nexo">
-        <div class="header-left">
-          <div class="header-icon bg-accent-500/10">
-            <svg class="w-8 h-8 text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-            </svg>
-          </div>
-          <div>
-            <h1 class="header-title">Membresías</h1>
-            <p class="header-subtitle">Planes y suscripciones</p>
-          </div>
+      <header class="page-header mb-6">
+        <div class="page-header-icon">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
+          </svg>
         </div>
-        <div class="header-actions">
-          <button id="btnNuevaMembresia" class="btn-primary px-4 py-2 text-sm">
-            + Nuevo Plan
+        <div class="page-header-content">
+          <h1 class="page-header-title">Membresías</h1>
+          <p class="page-header-subtitle">Planes y suscripciones</p>
+        </div>
+        <div class="page-header-actions">
+          <button id="btnNuevaMembresia" class="btn-action-primary btn-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            <span>Nuevo Plan</span>
           </button>
         </div>
       </header>
 
       <!-- CARD PRINCIPAL -->
-      <div class="bg-[#121212] p-6 rounded-xl border border-[var(--input-border)] shadow-2xl">
+      <div class="card-container">
 
-        <!-- Título y botón Nuevo -->
-        <div class="flex justify-between items-center mb-6">
-          <h2 class="text-h3 text-[var(--beige)]">Gestión de Planes</h2>
+        <!-- Toolbar -->
+        <div class="card-toolbar">
+          <h2 class="card-toolbar-title">Gestión de Planes</h2>
         </div>
 
         <!-- Tabla -->
-        <div class="overflow-x-auto rounded-lg border border-[var(--input-border)]">
-          <table class="w-full text-sm text-left text-[var(--beige)] border-collapse">
-            <thead class="bg-[#1a1a1a] border-b border-[var(--input-border)]">
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
               <tr>
-                <th class="px-6 py-3 font-medium">Nombre</th>
-                <th class="px-6 py-3 font-medium">Duración</th>
-                <th class="px-6 py-3 font-medium">Asistencias</th>
-                <th class="px-6 py-3 font-medium">Precio</th>
-                <th class="px-6 py-3 font-medium">Tipo</th>
-                <th class="px-6 py-3 font-medium">Estado</th>
-                <th class="px-6 py-3 font-medium">Acción</th>
+                <th>Nombre</th>
+                <th>Duración</th>
+                <th>Asistencias</th>
+                <th>Precio</th>
+                <th>Tipo</th>
+                <th>Estado</th>
+                <th>Acción</th>
               </tr>
             </thead>
-            <tbody id="tablaMembresiasBody" class="divide-y divide-[var(--input-border)]">
+            <tbody id="tablaMembresiasBody">
               <!-- Empty state -->
               <tr id="emptyStateMembresias" class="hidden">
-                <td colspan="7" class="px-6 py-16 text-center">
-                  <div class="flex flex-col items-center gap-4 animate-fade-in">
-                    <div class="w-16 h-16 rounded-full bg-indigo-500/10 flex items-center justify-center">
-                      <svg class="w-8 h-8 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                <td colspan="7">
+                  <div class="empty-state">
+                    <div class="empty-state-icon">
+                      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
                       </svg>
                     </div>
-
-                    <div>
-                      <h3 class="text-lg font-semibold text-[var(--beige)] mb-1">
-                        No hay planes configurados
-                      </h3>
-                      <p class="text-sm text-gray-400">
-                        Creá los planes de membresía para que los socios puedan suscribirse
-                      </p>
-                    </div>
-
-                    <button class="btn-primary mt-2" onclick="window.location.href='/registrar-membresia.html'">
-                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd"
-                          d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-                          clip-rule="evenodd" />
+                    <h3 class="empty-state-title">No hay planes configurados</h3>
+                    <p class="empty-state-desc">Creá los planes de membresía para que los socios puedan suscribirse</p>
+                    <button class="btn-action-primary btn-sm mt-4" onclick="window.location.href='/registrar-membresia.html'">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                       </svg>
-                      Crear plan
+                      <span>Crear plan</span>
                     </button>
                   </div>
                 </td>

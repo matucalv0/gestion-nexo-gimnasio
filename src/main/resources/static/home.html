@@ -62,137 +62,89 @@
 
 <body class="text-gray-100 min-h-screen font-sans selection:bg-[var(--orange)] selection:text-white">
 
-  <main class="flex justify-center items-start min-h-screen p-6 pt-16">
+  <main class="flex justify-center items-start min-h-screen p-6 pt-8">
     <div class="w-full max-w-7xl">
 
       <!-- HEADER -->
-      <header class="header-nexo">
-        <div class="header-left">
-          <img src="../assets/nexologo.png" alt="NEXO" class="h-12 drop-shadow-lg">
-          <div>
-            <h1 class="header-title">Panel Principal</h1>
-            <p class="header-subtitle">NEXO</p>
-          </div>
+      <header class="page-header mb-6">
+        <div class="page-header-icon">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+          </svg>
+        </div>
+        <div class="page-header-content">
+          <h1 class="page-header-title">Panel Principal</h1>
+          <p class="page-header-subtitle">NEXO</p>
         </div>
       </header>
 
 
       <!-- DASHBOARD EJECUTIVO - KPIs Principales -->
-      <section id="dashboardKpis" class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <!-- KPI: Recaudación HOY -->
-        <div class="bg-[#121212] border border-gray-700 rounded-xl p-4 hover:border-green-500/50 transition">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs text-gray-400 uppercase tracking-wide">Recaudación HOY</span>
-            <div class="p-1.5 bg-green-500/10 rounded-lg">
-              <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
+      <section class="card-container mb-6">
+        <h2 class="card-section-title mb-5">Resumen del día</h2>
+        <div id="dashboardKpis" class="grid grid-cols-2 lg:grid-cols-4 gap-5">
+          <!-- KPI: Recaudación HOY -->
+          <div class="kpi-card">
+            <p class="kpi-label">Recaudación HOY</p>
+            <p id="kpiRecaudacionHoy" class="kpi-value text-green-400">$0</p>
+            <p class="kpi-caption">Ingresos del día</p>
           </div>
-          <p id="kpiRecaudacionHoy" class="text-2xl font-bold text-green-400">$0</p>
-          <p class="text-xs text-gray-500 mt-1">Ingresos del día</p>
-        </div>
 
-        <!-- KPI: Socios Activos -->
-        <div class="bg-[#121212] border border-gray-700 rounded-xl p-4 hover:border-secondary-500/50 transition">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs text-gray-400 uppercase tracking-wide">Socios Activos</span>
-            <div class="p-1.5 bg-secondary-500/10 rounded-lg">
-              <svg class="w-4 h-4 text-secondary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-            </div>
+          <!-- KPI: Socios Activos -->
+          <div class="kpi-card">
+            <p class="kpi-label">Socios Activos</p>
+            <p id="kpiSociosActivos" class="kpi-value text-blue-400">0</p>
+            <p class="kpi-caption">Con membresía vigente</p>
           </div>
-          <p id="kpiSociosActivos" class="text-2xl font-bold text-secondary-400">0</p>
-          <p class="text-xs text-gray-500 mt-1">Con membresía vigente</p>
-        </div>
 
-        <!-- KPI: Por Vencer -->
-        <div
-          class="bg-[#121212] border border-gray-700 rounded-xl p-4 hover:border-yellow-500/50 transition cursor-pointer"
-          id="kpiPorVencerCard">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs text-gray-400 uppercase tracking-wide">Por Vencer</span>
-            <div class="p-1.5 bg-yellow-500/10 rounded-lg">
-              <svg class="w-4 h-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
+          <!-- KPI: Por Vencer -->
+          <div class="kpi-card kpi-card-warning cursor-pointer" id="kpiPorVencerCard">
+            <p class="kpi-label">Por Vencer</p>
+            <p id="kpiPorVencer" class="kpi-value text-yellow-400">0</p>
+            <p class="kpi-caption">En los próximos 7 días</p>
           </div>
-          <p id="kpiPorVencer" class="text-2xl font-bold text-yellow-400">0</p>
-          <p class="text-xs text-gray-500 mt-1">En los próximos 7 días</p>
-        </div>
 
-        <!-- KPI: Asistencias HOY -->
-        <div class="bg-[#121212] border border-gray-700 rounded-xl p-4 hover:border-primary-500/50 transition">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs text-gray-400 uppercase tracking-wide">Asistencias HOY</span>
-            <div class="p-1.5 bg-primary-500/10 rounded-lg">
-              <svg class="w-4 h-4 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
+          <!-- KPI: Asistencias HOY -->
+          <div class="kpi-card">
+            <p class="kpi-label">Asistencias HOY</p>
+            <p id="kpiAsistenciasHoy" class="kpi-value">0</p>
+            <p class="kpi-caption">Ingresos registrados</p>
           </div>
-          <p id="kpiAsistenciasHoy" class="text-2xl font-bold text-primary-400">0</p>
-          <p class="text-xs text-gray-500 mt-1">Ingresos registrados</p>
         </div>
       </section>
 
-      <!-- ATAJOS - Botones Energéticos -->
-      <section class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
-        <!-- Registrar Asistencia - Naranja (principal) -->
-        <button id="quickAsistencia" class="group relative overflow-hidden bg-gradient-to-br from-primary-500 to-primary-600 
-                       hover:from-primary-400 hover:to-primary-500 text-white font-bold py-6 rounded-2xl 
-                       shadow-lg hover:shadow-glow-primary transition-all duration-300 
-                       hover:scale-105 active:scale-95 border border-primary-400/30">
-          <div class="relative z-10 flex flex-col items-center gap-2">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      <!-- ATAJOS RÁPIDOS -->
+      <section class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
+        <!-- Registrar Asistencia - Principal -->
+        <button id="quickAsistencia" class="quick-action-btn quick-action-primary group">
+          <div class="quick-action-icon">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <span class="text-lg">Registrar Asistencia</span>
           </div>
-          <!-- Efecto de brillo al hover -->
-          <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent 
-                      translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+          <span class="quick-action-label">Registrar Asistencia</span>
+          <kbd class="quick-action-kbd">F2</kbd>
         </button>
 
-        <!-- Nuevo Socio - Cyan (secundario) -->
-        <button id="quickSocio" class="group relative overflow-hidden bg-[#121212] 
-                       hover:from-secondary-600 hover:to-secondary-700 text-white font-semibold py-6 rounded-2xl 
-                       shadow-lg hover:shadow-glow-secondary transition-all duration-300 
-                       hover:scale-105 active:scale-95 border-2 border-gray-700 hover:border-secondary-500">
-          <div class="relative z-10 flex flex-col items-center gap-2">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+        <!-- Nuevo Socio -->
+        <button id="quickSocio" class="quick-action-btn group">
+          <div class="quick-action-icon">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
             </svg>
-            <span class="text-lg">Nuevo Socio</span>
           </div>
-          <!-- Efecto de brillo al hover -->
-          <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent 
-                      translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+          <span class="quick-action-label">Nuevo Socio</span>
         </button>
 
-        <!-- Nuevo Pago - Púrpura (acento) -->
-        <button id="quickPago" class="group relative overflow-hidden bg-[#121212] 
-                       hover:from-accent-500 hover:to-accent-600 text-white font-semibold py-6 rounded-2xl 
-                       shadow-lg hover:shadow-xl transition-all duration-300 
-                       hover:scale-105 active:scale-95 border-2 border-gray-700 hover:border-accent-500">
-          <div class="relative z-10 flex flex-col items-center gap-2">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+        <!-- Nuevo Pago -->
+        <button id="quickPago" class="quick-action-btn group">
+          <div class="quick-action-icon">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <span class="text-lg">Nuevo Pago</span>
           </div>
-          <!-- Efecto de brillo al hover -->
-          <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent 
-                      translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+          <span class="quick-action-label">Nuevo Pago</span>
+          <kbd class="quick-action-kbd">F3</kbd>
         </button>
       </section>
 
@@ -214,187 +166,131 @@
       <!-- CARDS DE NAVEGACIÓN - Módulos del Sistema -->
       <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
         <!-- Card: Asistencias -->
-        <a href="asistencias.html" class="group bg-[#121212]
-                  hover:from-primary-500/20 hover:to-primary-600/20 
-                  border-2 border-gray-700 hover:border-primary-500
-                  rounded-2xl p-6 transition-all duration-300 hover:scale-105 hover:shadow-2xl
-                  hover:shadow-primary-500/20 active:scale-95">
-          <div class="flex flex-col items-center text-center gap-3">
-            <div class="p-4 bg-primary-500/10 rounded-xl group-hover:bg-primary-500/20 transition-colors">
-              <svg class="w-10 h-10 text-primary-400 group-hover:text-primary-300 transition-colors" fill="none"
-                stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-              </svg>
-            </div>
-            <h3 class="text-lg font-bold text-white group-hover:text-primary-300 transition-colors">
-              Asistencias
-            </h3>
-            <p class="text-xs text-gray-400 group-hover:text-gray-300">
-              Registros diarios
-            </p>
+        <a href="asistencias.html" class="nav-card group">
+          <div class="nav-card-icon">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
           </div>
+          <div class="nav-card-content">
+            <h3 class="nav-card-title">Asistencias</h3>
+            <p class="nav-card-desc">Registros diarios</p>
+          </div>
+          <svg class="nav-card-arrow" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+          </svg>
         </a>
 
         <!-- Card: Socios -->
-        <a href="socios.html" class="group bg-[#121212]
-                  hover:from-secondary-500/20 hover:to-secondary-600/20 
-                  border-2 border-gray-700 hover:border-secondary-500
-                  rounded-2xl p-6 transition-all duration-300 hover:scale-105 hover:shadow-2xl
-                  hover:shadow-secondary-500/20 active:scale-95">
-          <div class="flex flex-col items-center text-center gap-3">
-            <div class="p-4 bg-secondary-500/10 rounded-xl group-hover:bg-secondary-500/20 transition-colors">
-              <svg class="w-10 h-10 text-secondary-400 group-hover:text-secondary-300 transition-colors" fill="none"
-                stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-            </div>
-            <h3 class="text-lg font-bold text-white group-hover:text-secondary-300 transition-colors">
-              Socios
-            </h3>
-            <p class="text-xs text-gray-400 group-hover:text-gray-300">
-              Gestión de miembros
-            </p>
+        <a href="socios.html" class="nav-card group">
+          <div class="nav-card-icon">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+            </svg>
           </div>
+          <div class="nav-card-content">
+            <h3 class="nav-card-title">Socios</h3>
+            <p class="nav-card-desc">Gestión de miembros</p>
+          </div>
+          <svg class="nav-card-arrow" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+          </svg>
         </a>
 
         <!-- Card: Pagos -->
-        <a href="pagos.html" class="group bg-[#121212]
-                  hover:from-green-500/20 hover:to-green-600/20 
-                  border-2 border-gray-700 hover:border-green-500
-                  rounded-2xl p-6 transition-all duration-300 hover:scale-105 hover:shadow-2xl
-                  hover:shadow-green-500/20 active:scale-95">
-          <div class="flex flex-col items-center text-center gap-3">
-            <div class="p-4 bg-green-500/10 rounded-xl group-hover:bg-green-500/20 transition-colors">
-              <svg class="w-10 h-10 text-green-400 group-hover:text-green-300 transition-colors" fill="none"
-                stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-            </div>
-            <h3 class="text-lg font-bold text-white group-hover:text-green-300 transition-colors">
-              Pagos
-            </h3>
-            <p class="text-xs text-gray-400 group-hover:text-gray-300">
-              Ingresos y cuotas
-            </p>
+        <a href="pagos.html" class="nav-card group">
+          <div class="nav-card-icon">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
+            </svg>
           </div>
+          <div class="nav-card-content">
+            <h3 class="nav-card-title">Pagos</h3>
+            <p class="nav-card-desc">Ingresos y cuotas</p>
+          </div>
+          <svg class="nav-card-arrow" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+          </svg>
         </a>
 
         <!-- Card: Finanzas -->
-        <a href="finanzas.html" class="group bg-[#121212]
-                  hover:from-blue-500/20 hover:to-blue-600/20 
-                  border-2 border-gray-700 hover:border-blue-500
-                  rounded-2xl p-6 transition-all duration-300 hover:scale-105 hover:shadow-2xl
-                  hover:shadow-blue-500/20 active:scale-95">
-          <div class="flex flex-col items-center text-center gap-3">
-            <div class="p-4 bg-blue-500/10 rounded-xl group-hover:bg-blue-500/20 transition-colors">
-              <svg class="w-10 h-10 text-blue-400 group-hover:text-blue-300 transition-colors" fill="none"
-                stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-            </div>
-            <h3 class="text-lg font-bold text-white group-hover:text-blue-300 transition-colors">
-              Finanzas
-            </h3>
-            <p class="text-xs text-gray-400 group-hover:text-gray-300">
-              Balance y gastos
-            </p>
+        <a href="finanzas.html" class="nav-card group">
+          <div class="nav-card-icon">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+            </svg>
           </div>
+          <div class="nav-card-content">
+            <h3 class="nav-card-title">Finanzas</h3>
+            <p class="nav-card-desc">Balance y métricas</p>
+          </div>
+          <svg class="nav-card-arrow" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+          </svg>
         </a>
 
-        <!-- Card: Rutinas (New) -->
-        <a href="rutinas.html" class="group bg-[#121212]
-                  hover:from-purple-500/20 hover:to-purple-600/20 
-                  border-2 border-gray-700 hover:border-purple-500
-                  rounded-2xl p-6 transition-all duration-300 hover:scale-105 hover:shadow-2xl
-                  hover:shadow-purple-500/20 active:scale-95">
-          <div class="flex flex-col items-center text-center gap-3">
-            <div class="p-4 bg-purple-500/10 rounded-xl group-hover:bg-purple-500/20 transition-colors">
-              <svg class="w-10 h-10 text-purple-400 group-hover:text-purple-300 transition-colors" fill="none"
-                stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
-            </div>
-            <h3 class="text-lg font-bold text-white group-hover:text-purple-300 transition-colors">
-              Rutinas
-            </h3>
-            <p class="text-xs text-gray-400 group-hover:text-gray-300">
-              Planes de entrenamiento
-            </p>
+        <!-- Card: Rutinas -->
+        <a href="rutinas.html" class="nav-card group">
+          <div class="nav-card-icon">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+            </svg>
           </div>
+          <div class="nav-card-content">
+            <h3 class="nav-card-title">Rutinas</h3>
+            <p class="nav-card-desc">Planes de entrenamiento</p>
+          </div>
+          <svg class="nav-card-arrow" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+          </svg>
         </a>
 
-        <!-- Card: Ejercicios (New) -->
-        <a href="ejercicios.html" class="group bg-[#121212]
-                  hover:from-pink-500/20 hover:to-pink-600/20 
-                  border-2 border-gray-700 hover:border-pink-500
-                  rounded-2xl p-6 transition-all duration-300 hover:scale-105 hover:shadow-2xl
-                  hover:shadow-pink-500/20 active:scale-95">
-          <div class="flex flex-col items-center text-center gap-3">
-            <div class="p-4 bg-pink-500/10 rounded-xl group-hover:bg-pink-500/20 transition-colors">
-              <svg class="w-10 h-10 text-pink-400 group-hover:text-pink-300 transition-colors" fill="none"
-                stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-              </svg>
-            </div>
-            <h3 class="text-lg font-bold text-white group-hover:text-pink-300 transition-colors">
-              Ejercicios
-            </h3>
-            <p class="text-xs text-gray-400 group-hover:text-gray-300">
-              Catálogo y videos
-            </p>
+        <!-- Card: Ejercicios -->
+        <a href="ejercicios.html" class="nav-card group">
+          <div class="nav-card-icon">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
+            </svg>
           </div>
+          <div class="nav-card-content">
+            <h3 class="nav-card-title">Ejercicios</h3>
+            <p class="nav-card-desc">Catálogo y videos</p>
+          </div>
+          <svg class="nav-card-arrow" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+          </svg>
         </a>
 
         <!-- Card: Productos -->
-        <a href="productos.html" class="group bg-[#121212]
-                  hover:from-amber-500/20 hover:to-amber-600/20 
-                  border-2 border-gray-700 hover:border-amber-500
-                  rounded-2xl p-6 transition-all duration-300 hover:scale-105 hover:shadow-2xl
-                  hover:shadow-amber-500/20 active:scale-95">
-          <div class="flex flex-col items-center text-center gap-3">
-            <div class="p-4 bg-amber-500/10 rounded-xl group-hover:bg-amber-500/20 transition-colors">
-              <svg class="w-10 h-10 text-amber-400 group-hover:text-amber-300 transition-colors" fill="none"
-                stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-              </svg>
-            </div>
-            <h3 class="text-lg font-bold text-white group-hover:text-amber-300 transition-colors">
-              Productos
-            </h3>
-            <p class="text-xs text-gray-400 group-hover:text-gray-300">
-              Inventario y ventas
-            </p>
+        <a href="productos.html" class="nav-card group">
+          <div class="nav-card-icon">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+            </svg>
           </div>
+          <div class="nav-card-content">
+            <h3 class="nav-card-title">Productos</h3>
+            <p class="nav-card-desc">Inventario y ventas</p>
+          </div>
+          <svg class="nav-card-arrow" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+          </svg>
         </a>
 
         <!-- Card: Membresías -->
-        <a href="membresias.html" class="group bg-[#121212]
-                  hover:from-accent-500/20 hover:to-accent-600/20 
-                  border-2 border-gray-700 hover:border-accent-500
-                  rounded-2xl p-6 transition-all duration-300 hover:scale-105 hover:shadow-2xl
-                  hover:shadow-accent-500/20 active:scale-95">
-          <div class="flex flex-col items-center text-center gap-3">
-            <div class="p-4 bg-accent-500/10 rounded-xl group-hover:bg-accent-500/20 transition-colors">
-              <svg class="w-10 h-10 text-accent-400 group-hover:text-accent-300 transition-colors" fill="none"
-                stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-              </svg>
-            </div>
-            <h3 class="text-lg font-bold text-white group-hover:text-accent-300 transition-colors">
-              Membresías
-            </h3>
-            <p class="text-xs text-gray-400 group-hover:text-gray-300">
-              Planes disponibles
-            </p>
+        <a href="membresias.html" class="nav-card group">
+          <div class="nav-card-icon">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
+            </svg>
           </div>
+          <div class="nav-card-content">
+            <h3 class="nav-card-title">Membresías</h3>
+            <p class="nav-card-desc">Planes disponibles</p>
+          </div>
+          <svg class="nav-card-arrow" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+          </svg>
         </a>
       </section>
 
@@ -402,32 +298,29 @@
   </main>
 
   <!-- MODAL: Socios por vencer -->
-  <div id="modalPorVencer" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-[#121212] border border-gray-700 rounded-xl w-full max-w-lg max-h-[80vh] overflow-hidden">
-      <div class="flex items-center justify-between p-4 border-b border-gray-700">
-        <h3 class="text-lg font-bold text-[var(--beige)]">Membresías por vencer (próximos 7 días)</h3>
-        <button id="cerrarModalPorVencer" class="text-gray-400 hover:text-white transition">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+  <div id="modalPorVencer" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content max-w-lg">
+      <div class="modal-header">
+        <div class="flex items-center gap-2">
+          <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+          </svg>
+          <h3 class="modal-title">Membresías por vencer</h3>
+        </div>
+        <button id="cerrarModalPorVencer" class="modal-close">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>
-      <div id="listaPorVencer" class="p-4 overflow-y-auto max-h-96 space-y-2">
+      <p class="px-6 pt-2 text-sm text-gray-500">Próximos 7 días</p>
+      <div id="listaPorVencer" class="modal-body space-y-2">
         <!-- Se llena dinámicamente -->
       </div>
     </div>
   </div>
 
-  <!-- TOOLTIP: Atajos de teclado -->
-  <div id="tooltipAtajos"
-    class="fixed bottom-4 right-4 bg-[#1a1a1a] border border-gray-700 rounded-lg p-3 text-xs text-gray-400 shadow-xl z-40">
-    <p class="font-semibold text-gray-300 mb-2">⌨️ Atajos rápidos</p>
-    <div class="space-y-1">
-      <p><kbd class="bg-gray-700 px-1.5 py-0.5 rounded text-[10px]">F2</kbd> Asistencia</p>
-      <p><kbd class="bg-gray-700 px-1.5 py-0.5 rounded text-[10px]">F3</kbd> Nuevo pago</p>
-      <p><kbd class="bg-gray-700 px-1.5 py-0.5 rounded text-[10px]">F4</kbd> Buscar socio</p>
-    </div>
-  </div>
 
   <script type="module" src="js/pages/home.js"></script>
   <script src="../js/ui/sidebar.js"></script>

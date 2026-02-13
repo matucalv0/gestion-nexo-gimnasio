@@ -123,47 +123,23 @@ function renderPagos(tablaBody, pagos) {
 
     // Fila principal
     const tr = document.createElement("tr");
-    tr.className = `
-      border-b border-[var(--input-border)]
-      hover:bg-[#1a1a1a] transition
-    `;
 
     tr.innerHTML = `
-  <td class="px-6 py-4 whitespace-nowrap text-sm text-left">
-    ${p.fecha}
-  </td>
-
-  <td class="px-6 py-4 whitespace-nowrap text-left">
-    <span class="
-      inline-block
-      px-3 py-1
-      text-xs font-semibold
-      rounded-full
-      bg-[#1a1a1a]
-      border border-[var(--input-border)]
-    ">
-      ${p.estado}
-    </span>
-  </td>
-
-  <td class="
-    px-6 py-4
-    whitespace-nowrap
-    font-semibold
-    text-[var(--beige)]
-    text-left
-  ">
-    $ ${p.monto}
-  </td>
-
-  <td class="px-6 py-4 whitespace-nowrap text-left">
-    <button
-      class="text-[var(--orange)] font-semibold hover:underline"
-      data-index="${index}">
-      Ver detalle
-    </button>
-  </td>
-`;
+      <td>${p.fecha}</td>
+      <td>
+        <span class="badge ${p.estado === 'PAGADO' ? 'badge-success' : p.estado === 'ANULADO' ? 'badge-danger' : 'badge-warning'}">
+          ${p.estado}
+        </span>
+      </td>
+      <td class="font-semibold text-[var(--beige)]">$ ${p.monto}</td>
+      <td>
+        <button class="table-action-btn" data-index="${index}" title="Ver detalle">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+          </svg>
+        </button>
+      </td>
+    `;
 
 
     tablaBody.appendChild(tr);
@@ -174,22 +150,13 @@ function renderPagos(tablaBody, pagos) {
     trDetalle.id = `detalle-${index}`;
 
     trDetalle.innerHTML = `
-  <td colspan="4" class="px-6 py-4 bg-[#0f0f0f]">
-    <div class="
-      bg-[#121212]
-      border border-[var(--input-border)]
-      rounded-xl
-      p-5
-      shadow-inner
-    ">
-      <h4 class="text-sm font-semibold text-[var(--beige)] mb-4">
-        Detalle del pago
-      </h4>
-
-      ${renderDetalle(p.detalles)}
-    </div>
-  </td>
-`;
+      <td colspan="4" class="p-0">
+        <div class="detail-panel">
+          <h4 class="detail-panel-title">Detalle del pago</h4>
+          ${renderDetalle(p.detalles)}
+        </div>
+      </td>
+    `;
     tablaBody.appendChild(trDetalle);
   });
 
@@ -220,11 +187,11 @@ async function cargarNombres() {
 
 function renderDetalle(detallePagos) {
   if (!detallePagos || !detallePagos.length) {
-    return `<p class="text-sm text-gray-400">No hay detalle.</p>`;
+    return `<p class="text-sm text-gray-500">No hay detalle.</p>`;
   }
 
   return `
-    <div class="space-y-3">
+    <div class="detail-items">
       ${detallePagos.map(d => {
     const tipo = d.idProducto ? "Producto" : "Membresía";
     const nombre = d.idProducto
@@ -232,20 +199,15 @@ function renderDetalle(detallePagos) {
       : membresiasMap[d.idMembresia] || "Desconocida";
 
     return `
-          <div class="flex justify-between items-start
-                      bg-[#181818] border border-[var(--input-border)]
-                      rounded-lg p-3">
+          <div class="detail-item">
             <div>
-              <p class="text-xs text-gray-400 uppercase">${tipo}</p>
-              <p class="font-medium text-gray-200">${nombre}</p>
-              <p class="text-xs text-gray-400">Cantidad: ${d.cantidad}</p>
+              <p class="detail-item-type">${tipo}</p>
+              <p class="detail-item-name">${nombre}</p>
+              <p class="detail-item-qty">Cantidad: ${d.cantidad}</p>
             </div>
-
             <div class="text-right">
-              <p class="text-sm text-gray-400">Unitario</p>
-              <p class="font-semibold text-[var(--beige)]">
-                $ ${d.precioUnitario}
-              </p>
+              <p class="detail-item-label">Unitario</p>
+              <p class="detail-item-price">$ ${d.precioUnitario}</p>
             </div>
           </div>
         `;

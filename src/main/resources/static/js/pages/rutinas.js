@@ -25,7 +25,7 @@ export async function cargarRutinas() {
 async function cargarPlantillas(page = 0) {
     state.plantillas.page = page;
     const tbody = document.getElementById("tablaPlantillasBody");
-    tbody.innerHTML = `<tr><td colspan="3" class="px-6 py-8 text-center text-gray-500">Cargando plantillas...</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="3"><div class="empty-state py-8"><p class="text-gray-500 text-sm">Cargando plantillas...</p></div></td></tr>`;
 
     try {
         const res = await authFetch(`/rutinas/plantillas?page=${page}&size=${state.plantillas.size}`);
@@ -35,11 +35,11 @@ async function cargarPlantillas(page = 0) {
             renderPlantillas(data.content);
             renderPagination("paginacionPlantillas", state.plantillas, cargarPlantillas);
         } else {
-            tbody.innerHTML = `<tr><td colspan="3" class="px-6 py-8 text-center text-red-500">Error cargando plantillas</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="3"><div class="empty-state py-8"><p class="text-red-400 text-sm">Error cargando plantillas</p></div></td></tr>`;
         }
     } catch (e) {
         console.error(e);
-        tbody.innerHTML = `<tr><td colspan="3" class="px-6 py-8 text-center text-red-500">Error de conexión</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="3"><div class="empty-state py-8"><p class="text-red-400 text-sm">Error de conexión</p></div></td></tr>`;
     }
 }
 
@@ -48,45 +48,39 @@ function renderPlantillas(plantillas) {
     tbody.innerHTML = "";
 
     if (!plantillas || plantillas.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="3" class="px-6 py-8 text-center text-gray-500">No hay plantillas importadas.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="3"><div class="empty-state py-8"><p class="text-gray-500 text-sm">No hay plantillas importadas.</p></div></td></tr>`;
         return;
     }
 
     plantillas.forEach(r => {
         const tr = document.createElement("tr");
-        tr.className = "hover:bg-white/5 transition-colors group";
         tr.innerHTML = `
-            <td class="px-6 py-4">
-                <span class="text-[var(--orange)] font-bold text-base">${r.nombre}</span>
-            </td>
-            <td class="px-6 py-4 text-gray-400 text-xs max-w-xs truncate">
-                ${r.descripcion || '-'}
-            </td>
-            <td class="px-6 py-4">
-                <div class="flex items-center justify-center gap-2 flex-wrap">
-                    <button onclick="window.mostrarVistaPrevia(${r.idRutina})" 
-                        class="p-1.5 text-gray-400 hover:text-white transition" title="Vista rápida">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+            <td class="font-medium">${r.nombre}</td>
+            <td class="text-gray-400 text-sm">${r.descripcion || '-'}</td>
+            <td>
+                <div class="flex items-center gap-1">
+                    <button onclick="window.mostrarVistaPrevia(${r.idRutina})" class="table-action-btn" title="Vista rápida">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
                     </button>
-                    <a href="registrar-rutina.html?id=${r.idRutina}" 
-                        class="p-1.5 text-gray-400 hover:text-[var(--orange)] transition" title="Editar">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    <a href="registrar-rutina.html?id=${r.idRutina}" class="table-action-btn" title="Editar">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                        </svg>
                     </a>
-                    <button onclick="window.duplicarPlantilla(${r.idRutina}, '${r.nombre}')" 
-                        class="p-1.5 text-gray-400 hover:text-secondary-500 transition" title="Duplicar">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                    <button onclick="window.duplicarPlantilla(${r.idRutina}, '${r.nombre}')" class="table-action-btn" title="Duplicar">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" />
+                        </svg>
                     </button>
-                    <button onclick="window.verSociosAsignados(${r.idRutina}, '${r.nombre}')" 
-                        class="text-xs bg-gray-800 text-gray-300 hover:text-white px-3 py-1.5 rounded border border-gray-700 hover:border-gray-500 transition">
-                        Ver Usos
-                    </button>
-                    <button onclick="window.asignarRutina(${r.idRutina}, '${r.nombre}')" 
-                        class="text-xs bg-primary-600/20 text-[var(--orange)] hover:bg-primary-600/40 px-3 py-1.5 rounded border border-primary-500/30 hover:border-primary-500 transition font-bold flex items-center gap-1">
-                        + Asignar
-                    </button>
-                    <button onclick="window.eliminarRutina(${r.idRutina}, '${r.nombre}')" 
-                        class="p-1.5 text-gray-500 hover:text-red-500 transition opacity-0 group-hover:opacity-100" title="Eliminar">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    <button onclick="window.verSociosAsignados(${r.idRutina}, '${r.nombre}')" class="btn-outline btn-sm text-xs">Ver Usos</button>
+                    <button onclick="window.asignarRutina(${r.idRutina}, '${r.nombre}')" class="btn-action-primary btn-sm text-xs">+ Asignar</button>
+                    <button onclick="window.eliminarRutina(${r.idRutina}, '${r.nombre}')" class="table-action-btn table-action-btn-danger" title="Eliminar">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                        </svg>
                     </button>
                 </div>
             </td>
@@ -100,7 +94,7 @@ function renderPlantillas(plantillas) {
 async function cargarAsignadas(page = 0) {
     state.asignadas.page = page;
     const tbody = document.getElementById("tablaRutinasBody");
-    tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-gray-500">Cargando rutinas...</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state py-8"><p class="text-gray-500 text-sm">Cargando rutinas...</p></div></td></tr>`;
 
     try {
         const res = await authFetch(`/rutinas/asignadas?page=${page}&size=${state.asignadas.size}`);
@@ -112,11 +106,11 @@ async function cargarAsignadas(page = 0) {
             renderPagination("paginacionAsignadas", state.asignadas, cargarAsignadas);
             setupFiltros(); // Re-bind filter input
         } else {
-            tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-red-500">Error cargando rutinas</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state py-8"><p class="text-red-400 text-sm">Error cargando rutinas</p></div></td></tr>`;
         }
     } catch (e) {
         console.error(e);
-        tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-red-500">Error de conexión</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state py-8"><p class="text-red-400 text-sm">Error de conexión</p></div></td></tr>`;
     }
 }
 
@@ -125,7 +119,7 @@ function renderAsignadas(rutinas) {
     tbody.innerHTML = "";
 
     if (!rutinas || rutinas.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-gray-500">No hay rutinas asignadas.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state py-8"><p class="text-gray-500 text-sm">No hay rutinas asignadas.</p></div></td></tr>`;
         return;
     }
 
@@ -154,41 +148,43 @@ function renderAsignadas(rutinas) {
     rutinas.forEach(r => {
         const tr = document.createElement("tr");
         const esActiva = rutinasActivas.has(r.idRutina);
-        tr.className = `hover:bg-white/5 transition-colors ${esActiva ? 'bg-primary-500/5' : ''}`;
 
         // Format date
         const fecha = formatDate(r.fecha);
 
         tr.innerHTML = `
-            <td class="px-6 py-4">
-                 <div class="flex flex-col">
-                     <span class="text-white font-bold">${r.nombreSocio || 'Socio desconocido'}</span>
-                     <span class="text-xs text-gray-500">${r.dniSocio || ''}</span>
+            <td>
+                <div class="flex flex-col">
+                    <span class="font-medium">${r.nombreSocio || 'Socio desconocido'}</span>
+                    <span class="text-xs text-gray-500">${r.dniSocio || ''}</span>
                 </div>
             </td>
-            <td class="px-6 py-4">
+            <td>
                 <div class="flex items-center gap-2 flex-wrap">
-                    <span class="font-medium text-gray-300">${r.nombre}</span>
-                    ${esActiva ? '<span class="text-[10px] bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full border border-green-500/30 font-bold">ACTIVA</span>' : ''}
-                    ${r.personalizada ? '<span class="text-[10px] bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded-full border border-purple-500/30 font-bold">PERSONALIZADA</span>' : '<span class="text-[10px] bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full border border-blue-500/30 font-bold">ORIGINAL</span>'}
+                    <span class="text-gray-300">${r.nombre}</span>
+                    ${esActiva ? '<span class="badge badge-success">ACTIVA</span>' : ''}
+                    ${r.personalizada ? '<span class="badge" style="background: rgba(168, 85, 247, 0.15); color: #c084fc;">PERSONALIZADA</span>' : '<span class="badge" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa;">ORIGINAL</span>'}
                 </div>
             </td>
-            <td class="px-6 py-4 text-gray-400 text-xs">
-                ${fecha}
-            </td>
-            <td class="px-6 py-4 text-gray-400 text-xs">
-                ${r.nombreEmpleado || '-'}
-            </td>
-            <td class="px-6 py-4">
-                <div class="flex gap-2">
-                    <button onclick="window.mostrarVistaPrevia(${r.idRutina})" class="text-gray-400 hover:text-white transition" title="Vista rápida">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+            <td class="text-gray-400 text-sm">${fecha}</td>
+            <td class="text-gray-400 text-sm">${r.nombreEmpleado || '-'}</td>
+            <td>
+                <div class="flex gap-1">
+                    <button onclick="window.mostrarVistaPrevia(${r.idRutina})" class="table-action-btn" title="Vista rápida">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
                     </button>
-                    <a href="registrar-rutina.html?id=${r.idRutina}" class="text-gray-400 hover:text-[var(--orange)] transition" title="Editar / Personalizar">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    <a href="registrar-rutina.html?id=${r.idRutina}" class="table-action-btn" title="Editar">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                        </svg>
                     </a>
-                    <button onclick="window.eliminarRutina(${r.idRutina}, '${r.nombre} (de ${r.nombreSocio})')" class="text-gray-400 hover:text-red-500 transition" title="Eliminar">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    <button onclick="window.eliminarRutina(${r.idRutina}, '${r.nombre} (de ${r.nombreSocio})')" class="table-action-btn table-action-btn-danger" title="Eliminar">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                        </svg>
                     </button>
                 </div>
             </td>
