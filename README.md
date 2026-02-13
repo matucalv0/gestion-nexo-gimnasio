@@ -4,7 +4,6 @@
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.5-brightgreen?logo=springboot)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue?logo=postgresql)
 ![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker)
-![License](https://img.shields.io/badge/license-MIT-green)
 
 > **API REST desarrollada para un cliente real** que necesitaba migrar su operación diaria desde planillas Excel a un sistema centralizado, auditable y escalable.
 
