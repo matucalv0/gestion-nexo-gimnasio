@@ -57,7 +57,7 @@ Sistema web con **API REST** que centraliza toda la operación:
 - ✅ Contraseñas hasheadas con **BCrypt**
 
 ### Validaciones de Negocio
-- ✅ No se permite registrar asistencia con membresía vencida
+- ✅ Gestion de asistencias pendientes si el socio quiere ingresar sin membresía activa
 - ✅ Control de asistencias disponibles según tipo de membresía
 - ✅ Un socio no puede tener más de una membresía activa simultáneamente
 - ✅ Validación de datos con **Hibernate Validator** (Bean Validation)
