@@ -54,32 +54,21 @@ function renderPlantillas(plantillas) {
 
     plantillas.forEach(r => {
         const tr = document.createElement("tr");
+        tr.className = "hover:bg-[#1f2937] transition-colors"; // Row hover effect
         tr.innerHTML = `
-            <td class="font-medium">${r.nombre}</td>
-            <td class="text-gray-400 text-sm">${r.descripcion || '-'}</td>
+            <td class="font-medium text-white">${r.nombre}</td>
+            <td class="text-gray-400 text-sm max-w-md truncate">${r.descripcion || '-'}</td>
             <td>
-                <div class="flex items-center gap-1">
-                    <button onclick="window.mostrarVistaPrevia(${r.idRutina})" class="table-action-btn" title="Vista rápida">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
+                <div class="flex items-center gap-3 relative">
+                    <!-- Primary Action -->
+                    <button onclick="window.asignarRutina(${r.idRutina}, '${r.nombre}')" class="btn-action-primary btn-sm text-xs shadow-lg shadow-orange-900/20">
+                        + Asignar
                     </button>
-                    <a href="registrar-rutina.html?id=${r.idRutina}" class="table-action-btn" title="Editar">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                        </svg>
-                    </a>
-                    <button onclick="window.duplicarPlantilla(${r.idRutina}, '${r.nombre}')" class="table-action-btn" title="Duplicar">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" />
-                        </svg>
-                    </button>
-                    <button onclick="window.verSociosAsignados(${r.idRutina}, '${r.nombre}')" class="btn-outline btn-sm text-xs">Ver Usos</button>
-                    <button onclick="window.asignarRutina(${r.idRutina}, '${r.nombre}')" class="btn-action-primary btn-sm text-xs">+ Asignar</button>
-                    <button onclick="window.eliminarRutina(${r.idRutina}, '${r.nombre}')" class="table-action-btn table-action-btn-danger" title="Eliminar">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+
+                    <!-- Kebab Menu Trigger -->
+                    <button onclick="window.toggleDropdown(event, ${r.idRutina}, '${r.nombre}')" class="p-1.5 text-gray-400 hover:text-white rounded-full hover:bg-gray-700 transition relative z-10 focus:outline-none">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
                         </svg>
                     </button>
                 </div>
@@ -88,6 +77,82 @@ function renderPlantillas(plantillas) {
         tbody.appendChild(tr);
     });
 }
+
+// SINGLE GLOBAL DROPDOWN (AVOIDS OVERFLOW CLIPPING)
+const globalDropdown = document.createElement('div');
+globalDropdown.id = "globalActionsDropdown";
+globalDropdown.className = "hidden fixed w-48 bg-[#1a1a1a] border border-[#2f3e48] rounded-lg shadow-xl z-[9999] overflow-hidden text-sm animate-scale-in origin-top-right";
+document.body.appendChild(globalDropdown);
+
+// Close dropdown on outside click
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('#globalActionsDropdown') && !e.target.closest('button[onclick^="window.toggleDropdown"]')) {
+        globalDropdown.classList.add('hidden');
+    }
+});
+
+// Update window resize/scroll to hide dropdown (simpler than repositioning)
+window.addEventListener('scroll', () => globalDropdown.classList.add('hidden'), true);
+window.addEventListener('resize', () => globalDropdown.classList.add('hidden'));
+
+window.toggleDropdown = (e, id, nombre) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const btn = e.currentTarget;
+    const rect = btn.getBoundingClientRect();
+
+    // Toggle if clicking same button, otherwise open
+    if (globalDropdown.dataset.lastBtn === btn.id && !globalDropdown.classList.contains('hidden')) {
+        globalDropdown.classList.add('hidden');
+        return;
+    }
+
+    // Populate Content
+    globalDropdown.innerHTML = `
+        <button onclick="window.mostrarVistaPrevia(${id}); document.getElementById('globalActionsDropdown').classList.add('hidden')" class="w-full text-left px-4 py-2.5 text-gray-300 hover:bg-[#252525] hover:text-white flex items-center gap-2 transition-colors">
+            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+            Vista Rápida
+        </button>
+        <a href="registrar-rutina.html?id=${id}" class="w-full text-left px-4 py-2.5 text-gray-300 hover:bg-[#252525] hover:text-white flex items-center gap-2 transition-colors block">
+            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+            Editar
+        </a>
+        <button onclick="window.duplicarPlantilla(${id}, '${nombre}'); document.getElementById('globalActionsDropdown').classList.add('hidden')" class="w-full text-left px-4 py-2.5 text-gray-300 hover:bg-[#252525] hover:text-white flex items-center gap-2 transition-colors">
+            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+            Duplicar
+        </button>
+        <button onclick="window.verSociosAsignados(${id}, '${nombre}'); document.getElementById('globalActionsDropdown').classList.add('hidden')" class="w-full text-left px-4 py-2.5 text-gray-300 hover:bg-[#252525] hover:text-white flex items-center gap-2 transition-colors">
+            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+            Ver Usos
+        </button>
+        <div class="h-px bg-gray-700 my-1"></div>
+        <button onclick="window.eliminarRutina(${id}, '${nombre}'); document.getElementById('globalActionsDropdown').classList.add('hidden')" class="w-full text-left px-4 py-2.5 text-red-400 hover:bg-red-900/20 hover:text-red-300 flex items-center gap-2 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+            Eliminar
+        </button>
+    `;
+
+    // Position Calculator
+    // Align top-right of dropdown to bottom-right of button
+    const dropdownWidth = 192; // w-48 = 12rem = 192px
+    let left = rect.right - dropdownWidth;
+    let top = rect.bottom + 8; // 8px gap
+
+    // Boundary Check (Right edge)
+    if (left + dropdownWidth > window.innerWidth) {
+        left = window.innerWidth - dropdownWidth - 10;
+    }
+
+    // Boundary check (Bottom edge) - flip if needed
+    // Not critical for now
+
+    globalDropdown.style.top = `${top}px`;
+    globalDropdown.style.left = `${left}px`;
+
+    globalDropdown.classList.remove('hidden');
+    globalDropdown.dataset.lastBtn = btn.id; // Store to toggle off 
+};
 
 
 // --- ASIGNADAS ---

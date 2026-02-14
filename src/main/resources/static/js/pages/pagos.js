@@ -2,6 +2,7 @@ import { checkAuth } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
 import { renderPagination } from "../ui/pagination.js";
 import { Alerta } from "../ui/alerta.js";
+import { formatCurrency, formatVariation } from "./finanzas/formatters.js";
 
 checkAuth();
 
@@ -219,6 +220,28 @@ function renderDetalle(detallePagos) {
 
 
 
+function setValor(id, valor) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.innerText = formatCurrency(valor);
+}
+
+function renderVariacion(elementId, variacion) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+
+  const v = formatVariation(variacion);
+  if (!v) {
+    el.innerHTML = "";
+    el.className = "";
+    return;
+  }
+
+  const color = v.esPositivo ? "text-green-500" : "text-red-500";
+  el.className = `text-xs font-bold ${color} ml-2`;
+  el.innerHTML = `${v.icono} ${v.value}%`;
+}
+
 async function cargarKPIsRecaudado() {
   try {
     const [resHoy, resSemana, resMesCompleto] = await Promise.all([
@@ -231,15 +254,9 @@ async function cargarKPIsRecaudado() {
     const totalSemana = await resSemana.json();
     const statsMes = await resMesCompleto.json();
 
-    document.getElementById("kpiDia").textContent =
-      `$${Number(totalHoy).toLocaleString("es-AR")}`;
-
-    document.getElementById("kpiSemana").textContent =
-      `$${Number(totalSemana).toLocaleString("es-AR")}`;
-
-    document.getElementById("kpiMes").textContent =
-      `$${Number(statsMes.totalMes).toLocaleString("es-AR")}`;
-
+    setValor("kpiDia", totalHoy);
+    setValor("kpiSemana", totalSemana);
+    setValor("kpiMes", statsMes.totalMes);
     renderVariacion("varMes", statsMes.variacionMensual);
 
   } catch (err) {
@@ -486,18 +503,6 @@ async function cargarRecaudado(filtro = "7dias") {
 
 /* ================== UTIL ================== */
 
-function renderVariacion(elementId, variacion) {
-  const el = document.getElementById(elementId);
-  if (!el || variacion == null) return;
-
-  const esPositivo = variacion >= 0;
-  const color = esPositivo ? "text-green-500" : "text-red-500";
-  const icono = esPositivo ? "▲" : "▼";
-
-  el.className = `text-xs font-bold ${color} ml-2`;
-  el.innerHTML = `${icono} ${Math.abs(variacion).toFixed(1)}%`;
-}
-
 /* ================== EXPORTAR ================== */
 
 async function exportarPagos() {
@@ -534,4 +539,3 @@ async function exportarPagos() {
     Alerta.error("No se pudo exportar el archivo");
   }
 }
-

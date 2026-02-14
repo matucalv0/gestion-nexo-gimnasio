@@ -29,7 +29,8 @@ async function init() {
 
     if (id) {
         currentRutinaId = id;
-        document.querySelector(".header-title").textContent = "Editar Rutina";
+        const titleEl = document.querySelector(".page-header-title");
+        if (titleEl) titleEl.textContent = "Editar Rutina";
         await cargarRutina(id);
     } else {
         // Initial Row for Day 1 (Only if new)
@@ -45,11 +46,6 @@ async function init() {
     document.getElementById("btnAddEjercicio").addEventListener("click", () => agregarFila());
     document.getElementById("btnDuplicarEjercicio").addEventListener("click", duplicarFilaSeleccionada);
     document.getElementById("btnImportarExcel").addEventListener("click", mostrarImportarExcel);
-
-    // Initial Row for Day 1 logic moved up to handle edit mode properly
-
-    // ... rest of init listeners
-
 
     // Modal Video - Cerrar
     const closeModal = () => {
@@ -185,9 +181,6 @@ async function cargarRutina(id) {
 // ==========================================
 // LOGICA DE TABS Y DIAS
 // ==========================================
-// ==========================================
-// LOGICA DE TABS Y DIAS
-// ==========================================
 function renderTabs() {
     const container = document.getElementById("daysTabsContainer");
     container.innerHTML = "";
@@ -199,10 +192,11 @@ function renderTabs() {
         const isActive = day === currentDay;
 
         // ESTILOS STANDARDIZADOS
-        // Active: Primary filled. Inactive: Dark BG + Border.
-        btn.className = isActive
-            ? "px-4 py-2 bg-[var(--orange)] text-black font-bold rounded-t-lg text-sm transition border border-[var(--orange)]"
-            : "px-4 py-2 bg-[#1a1a1a] hover:bg-[#252525] text-gray-500 hover:text-gray-300 rounded-t-lg transition text-sm border border-transparent hover:border-[var(--input-border)]";
+        if (isActive) {
+            btn.className = "px-4 py-2 bg-[var(--orange)] text-black font-bold rounded-t-lg text-sm transition border border-[var(--orange)]";
+        } else {
+            btn.className = "px-4 py-2 bg-[#1a1a1a] hover:bg-[#252525] text-gray-500 hover:text-gray-300 rounded-t-lg transition text-sm border border-transparent hover:border-[var(--input-border)]";
+        }
 
         // Label logic
         btn.innerHTML = `Día ${day}`;
@@ -224,7 +218,7 @@ function renderTabs() {
 
     // Button to add new day
     const btnAdd = document.createElement("button");
-    btnAdd.className = "px-3 py-2 bg-[#1a1a1a] hover:bg-gray-800 text-[var(--orange)] font-bold rounded-lg transition text-lg flex items-center justify-center h-full ml-1 border border-dashed border-[var(--input-border)]";
+    btnAdd.className = "px-3 py-2 bg-[#1a1a1a] hover:bg-gray-800 text-[var(--orange)] font-bold rounded-lg transition text-lg flex items-center justify-center border border-dashed border-[var(--input-border)]";
     btnAdd.textContent = "+";
     btnAdd.title = "Agregar día";
     btnAdd.onclick = agregarDia;
@@ -324,7 +318,7 @@ function agregarFila(data = null) {
 function crearInputNumerico(field, rowData, tr) {
     const input = document.createElement("input");
     input.type = "text";
-    input.classList.add("table-input"); // ADDED CLASS
+    input.classList.add("table-input");
     input.placeholder = field === "series" ? "4" : field === "repeticiones" ? "6-10" : "100";
     input.value = rowData[field] || "";
 
@@ -523,7 +517,7 @@ function agregarFilaConIndice(rowIndex, data) {
     // Crear fila de la tabla
     const tr = document.createElement("tr");
     tr.dataset.rowIndex = rowIndex;
-    tr.className = "hover:bg-gray-800 transition-colors"; // Hover effect
+    tr.className = "hover:bg-gray-800 transition-colors";
 
     // Celda de número de fila
     const tdNum = document.createElement("td");
@@ -534,7 +528,7 @@ function agregarFilaConIndice(rowIndex, data) {
     // Celda de Ejercicio (select)
     const tdEjercicio = document.createElement("td");
     const selectEjercicio = document.createElement("select");
-    selectEjercicio.className = "table-input cursor-pointer"; // Class added
+    selectEjercicio.className = "table-input cursor-pointer";
     selectEjercicio.innerHTML = '<option value="">-- Seleccionar --</option>';
 
     if (Array.isArray(ejerciciosCache) && ejerciciosCache.length > 0) {
@@ -573,7 +567,7 @@ function agregarFilaConIndice(rowIndex, data) {
     // Series
     const tdSeries = document.createElement("td");
     const inputSeries = crearInputNumerico("series", data, tr);
-    inputSeries.classList.add("text-center"); // Center align
+    inputSeries.classList.add("text-center");
     tdSeries.appendChild(inputSeries);
     tr.appendChild(tdSeries);
 
@@ -595,7 +589,7 @@ function agregarFilaConIndice(rowIndex, data) {
     const tdDescanso = document.createElement("td");
     const inputDescanso = document.createElement("input");
     inputDescanso.type = "text";
-    inputDescanso.className = "table-input text-center"; // Class added
+    inputDescanso.className = "table-input text-center";
     inputDescanso.placeholder = "60s";
     inputDescanso.value = data.descanso || "";
     inputDescanso.addEventListener("change", (e) => {
@@ -609,7 +603,7 @@ function agregarFilaConIndice(rowIndex, data) {
     const tdRPE = document.createElement("td");
     const inputRPE = document.createElement("input");
     inputRPE.type = "text";
-    inputRPE.className = "table-input text-center"; // Class added
+    inputRPE.className = "table-input text-center";
     inputRPE.placeholder = "7";
     inputRPE.value = data.rpe || "";
     inputRPE.addEventListener("change", (e) => {
@@ -623,7 +617,7 @@ function agregarFilaConIndice(rowIndex, data) {
     const tdNotas = document.createElement("td");
     const inputNotas = document.createElement("input");
     inputNotas.type = "text";
-    inputNotas.className = "table-input"; // Class added
+    inputNotas.className = "table-input";
     inputNotas.placeholder = "Notas...";
     inputNotas.value = data.observacion || "";
     inputNotas.addEventListener("change", (e) => {
@@ -642,7 +636,7 @@ function agregarFilaConIndice(rowIndex, data) {
 
     const btnMover = document.createElement("button");
     btnMover.type = "button";
-    btnMover.className = "btn-row-action text-gray-500 hover:text-white hover:bg-gray-700 p-1 rounded transition"; // Styled
+    btnMover.className = "text-gray-500 hover:text-white hover:bg-gray-700 p-1 rounded transition";
     btnMover.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path></svg>`;
     btnMover.title = "Mover (Ctrl+↑/↓)";
     btnMover.addEventListener("click", (e) => {
@@ -653,7 +647,7 @@ function agregarFilaConIndice(rowIndex, data) {
 
     const btnDelete = document.createElement("button");
     btnDelete.type = "button";
-    btnDelete.className = "btn-row-action delete text-gray-500 hover:text-red-500 hover:bg-gray-700 p-1 rounded transition"; // Styled
+    btnDelete.className = "text-gray-500 hover:text-red-500 hover:bg-gray-700 p-1 rounded transition";
     btnDelete.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>`;
     btnDelete.title = "Eliminar (Delete)";
     btnDelete.addEventListener("click", (e) => {
@@ -733,11 +727,6 @@ async function guardarRutina() {
         const rows = daysData[dayNum];
         rows.forEach((data, idx) => {
             // VALIDATION: Check for "NO DISPONIBLE" exercises
-            // We check the DOM or the cache. If idEjercicio is set but not in cache/valid.
-            // Actually, the select value is the ID. If the select showed "NO DISPONIBLE", the value is still the ID.
-            // But we need to force user to fix it.
-            // Let's check against ejerciciosCache.
-
             if (data.idEjercicio && data.idEjercicio !== "" && !isNaN(data.idEjercicio)) {
                 const exists = ejerciciosCache.some(e => (e.idEjercicio || e.id) == data.idEjercicio);
                 if (!exists) {
@@ -753,7 +742,7 @@ async function guardarRutina() {
                     series: data.series || null,
                     repeticiones: data.repeticiones || null,
                     carga: data.carga || null,
-                    descanso: data.descanso || null, // typo fix if any
+                    descanso: data.descanso || null,
                     observacion: data.observacion || null
                 });
             }
@@ -798,11 +787,12 @@ async function guardarRutina() {
             setTimeout(() => window.location.href = "rutinas.html", 2000);
         } else {
             const err = await res.text();
+            console.error("Error al guardar:", err);
             Alerta.error("No se pudo guardar: " + err);
         }
     } catch (e) {
-        console.error(e);
-        Alerta.error("Error de conexión");
+        console.error("Error de conexión:", e);
+        Alerta.error("Error de conexión al guardar");
     }
 }
 
@@ -841,7 +831,7 @@ function abrirModalNuevoEjercicio() {
     });
 
     modal.classList.remove("hidden");
-    modal.classList.add("flex");
+    modal.classList.add("flex"); // Ensure flex display for standard modal behavior
 }
 
 function cerrarModalNuevoEjercicio() {

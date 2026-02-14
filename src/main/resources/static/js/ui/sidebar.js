@@ -1,14 +1,9 @@
-/**
- * NEXO Sidebar Navigation Component
- * Auto-injects a collapsible sidebar into every page that includes this script.
- * Does NOT use ES modules — loaded as a regular <script> so it self-initializes.
- */
 (function () {
     'use strict';
 
     const STORAGE_KEY = 'nexo-sidebar-collapsed';
 
-    // Navigation items configuration
+
     const NAV_ITEMS = [
         {
             section: 'Principal',
@@ -32,6 +27,7 @@
                 { label: 'Productos', href: '/productos.html', icon: 'cube', pages: ['productos.html', 'registrar-producto.html', 'editar-producto.html'] },
                 { label: 'Rutinas', href: '/rutinas.html', icon: 'clipboard', pages: ['rutinas.html', 'registrar-rutina.html', 'ver-rutina.html', 'importar-rutina.html'] },
                 { label: 'Ejercicios', href: '/ejercicios.html', icon: 'dumbbell', pages: ['ejercicios.html'] },
+                { label: 'Descuentos', href: '/descuentos.html', icon: 'tag', pages: ['descuentos.html'] },
             ]
         },
         {
@@ -42,7 +38,7 @@
         }
     ];
 
-    // SVG icons (stroke-based, 24x24 viewBox)
+
     const ICONS = {
         'home': '<path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>',
         'check-circle': '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>',
@@ -56,7 +52,8 @@
         'bar-chart': '<path stroke-linecap="round" stroke-linejoin="round" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>',
         'logout': '<path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>',
         'collapse': '<path stroke-linecap="round" stroke-linejoin="round" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/>',
-        'menu': '<path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>'
+        'menu': '<path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>',
+        'tag': '<path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />'
     };
 
     function svgIcon(name, cls) {
@@ -131,21 +128,21 @@
     }
 
     function init() {
-        // Don't inject on login page
+
         const currentPage = getCurrentPage();
         if (currentPage === 'login.html' || currentPage === 'index.html') return;
 
-        // Inject HTML
+
         const container = document.createElement('div');
         container.innerHTML = buildSidebarHTML();
         while (container.firstChild) {
             document.body.insertBefore(container.firstChild, document.body.firstChild);
         }
 
-        // Add body class
+
         document.body.classList.add('has-sidebar');
 
-        // Restore collapsed state
+
         const sidebar = document.getElementById('nexoSidebar');
         const isCollapsed = localStorage.getItem(STORAGE_KEY) === 'true';
         if (isCollapsed) {
@@ -153,7 +150,7 @@
             document.body.classList.add('sidebar-collapsed');
         }
 
-        // Collapse toggle
+
         const collapseBtn = document.getElementById('sidebarCollapseBtn');
         collapseBtn.addEventListener('click', () => {
             const willCollapse = !sidebar.classList.contains('collapsed');
@@ -162,21 +159,21 @@
             localStorage.setItem(STORAGE_KEY, willCollapse);
         });
 
-        // Logout
+
         const logoutBtn = document.getElementById('sidebarLogout');
         logoutBtn.addEventListener('click', () => {
-            // Clear cookie
+
             document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 
-            // Clear localStorage
+
             localStorage.removeItem('token');
             localStorage.removeItem('user');
-            localStorage.removeItem('user_data'); // Matches auth.js
+            localStorage.removeItem('user_data');
 
             window.location.href = '/login.html';
         });
 
-        // Mobile hamburger
+
         const hamburger = document.getElementById('sidebarHamburger');
         const overlay = document.getElementById('sidebarOverlay');
 
@@ -194,11 +191,11 @@
 
         overlay.addEventListener('click', closeMobile);
 
-        // Keyboard shortcut: Ctrl+B to toggle collapse
+
         document.addEventListener('keydown', (e) => {
             if (e.ctrlKey && e.key === 'b') {
                 e.preventDefault();
-                // On mobile, toggle mobile-open instead
+
                 if (window.innerWidth <= 768) {
                     if (sidebar.classList.contains('mobile-open')) {
                         closeMobile();
@@ -211,14 +208,14 @@
             }
         });
 
-        // Close mobile sidebar on Escape
+
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && sidebar.classList.contains('mobile-open')) {
                 closeMobile();
             }
         });
 
-        // Close mobile sidebar on link click
+
         sidebar.querySelectorAll('.sidebar-item[href]').forEach((link) => {
             link.addEventListener('click', () => {
                 if (window.innerWidth <= 768) {
@@ -228,7 +225,7 @@
         });
     }
 
-    // Initialize when DOM is ready
+
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
     } else {

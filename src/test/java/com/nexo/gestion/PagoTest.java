@@ -723,4 +723,29 @@ public class PagoTest {
             ))
         );
     }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void verificarQueSeAplicaDescuentoCorrespondienteAMembresia(){
+        Socio socio = new Socio("78452365", "Eduardo", "11478523211", "edu@gmail.com", LocalDate.of(1986,1,28));
+        SocioDTO socioGuardado = socioService.registrarSocio(new SocioCreateDTO(socio.getDni(), socio.getNombre(), socio.getTelefono(), socio.getEmail(), socio.getFechaNacimiento()));
+
+        Membresia membresia = new Membresia("plan basico", 28, new BigDecimal(50000), 2, TipoMembresia.MUSCULACION);
+        MembresiaDTO guardada = membresiaService.registrarMembresia(new MembresiaCreateDTO(membresia.getDuracionDias(), membresia.getPrecioSugerido(), membresia.getNombre(), membresia.getAsistenciasPorSemana(), membresia.getTipoMembresia()));
+
+        MedioPago medioPago = new MedioPago("MP_" + UUID.randomUUID().toString().substring(0, 8));
+        MedioPagoDTO medioPagoGuardado = medioPagoService.registrarMedioPago(new MedioPagoDTO(medioPago.getNombre()));
+
+        Puesto puesto = new Puesto("Instructor");
+        PuestoDTO puestoGuardado = puestoService.registrarPuesto(new PuestoDTO(puesto.getNombre()));
+
+        Empleado empleado = new Empleado("37895175", "Felipe", "1156687896", "felipruski@gmail.com", LocalDate.of(2001,8,4));
+        EmpleadoDTO empleadoGuardado = empleadoService.registrarEmpleado(new EmpleadoDTO(empleado.getDni(), empleado.getNombre(), empleado.getTelefono(), empleado.getEmail(), empleado.getFechaNacimiento(), empleado.isActivo(), puestoGuardado.idPuesto()));
+
+        pagoService.crearPago(new PagoCreateDTO(EstadoPago.PAGADO, socioGuardado.dni(), medioPagoGuardado.idMedioPago(), empleadoGuardado.dni(), List.of(new DetallePagoCreateDTO(1, BigDecimal.valueOf(35000), null, socioGuardado.dni(), guardada.idMembresia()))));
+
+        MembresiaVigenteDTO membresiaVigente = socioService.membresiaVigenteSocio(socioGuardado.dni());
+
+    }
 }

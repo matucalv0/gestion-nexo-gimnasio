@@ -98,14 +98,6 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(ex.getReason()));
     }
 
-    @ExceptionHandler(org.springframework.orm.ObjectOptimisticLockingFailureException.class)
-    public ResponseEntity<ErrorResponse> manejarConflictoConcurrente(
-            org.springframework.orm.ObjectOptimisticLockingFailureException ex) {
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(new ErrorResponse(
-                        "Los datos fueron modificados por otro usuario. Por favor, recargue la página e intente de nuevo."));
-    }
 
     @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> manejarViolacionIntegridad(

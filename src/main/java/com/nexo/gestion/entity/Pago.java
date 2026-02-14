@@ -31,6 +31,10 @@ public class Pago {
     @JoinColumn(name = "id_mediopago")
     private MedioPago medioPago;
 
+    @ManyToOne
+    @JoinColumn(name = "id_descuento")
+    private Descuento descuento;
+
     @OneToMany(mappedBy = "pago", cascade = CascadeType.ALL, orphanRemoval = true)
     List<DetallePago> detalles = new ArrayList<>();
 
@@ -156,5 +160,13 @@ public class Pago {
 
     public void setMedioPago(MedioPago medioPago) {
         this.medioPago = medioPago;
+    }
+
+    public Descuento getDescuento() {
+        return descuento;
+    }
+
+    public void setDescuento(Descuento descuento) {
+        this.descuento = descuento;
     }
 }

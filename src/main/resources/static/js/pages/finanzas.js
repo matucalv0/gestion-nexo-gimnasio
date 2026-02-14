@@ -17,9 +17,7 @@ const API = "/finanzas";
 
 checkAuth();
 
-// ==========================
-// STATE
-// ==========================
+
 
 let chartEvolucion = null;
 let chartDonut = null;
@@ -34,7 +32,6 @@ const uiState = {
   evolucionLoading: true,
 };
 
-// cache DOM (MPA)
 const dom = {
   filtroEvolucion: null,
   btnHome: null,
@@ -47,7 +44,7 @@ const dom = {
   emptyState: null,
   pagination: null,
 
-  // UI helpers
+
   kpisLoading: null,
   kpisContent: null,
   filtrosBanner: null,
@@ -66,9 +63,7 @@ const dom = {
   filtroTipoMovimiento: null,
 };
 
-// ==========================
-// INIT
-// ==========================
+
 
 document.addEventListener("DOMContentLoaded", () => {
   cacheDom();
@@ -81,7 +76,6 @@ document.addEventListener("DOMContentLoaded", () => {
   setEvolucionLoading(true);
   setError(null);
 
-  // Init params
   const hoy = new Date();
   const hace30dias = new Date();
   hace30dias.setDate(hoy.getDate() - 30);
@@ -129,9 +123,7 @@ function cacheDom() {
   dom.filtroTipoMovimiento = byId("filtroTipoMovimiento");
 }
 
-// ==========================
-// UI helpers
-// ==========================
+
 
 function setError(message) {
   if (!dom.finanzasError) return;
@@ -191,9 +183,9 @@ function updateFiltrosBanner() {
   setVisible(dom.filtrosBanner, true);
 }
 
-// ==========================
+
 // EVENTOS
-// ==========================
+
 
 function initEventos() {
   dom.filtroEvolucion?.addEventListener("change", (e) => {
@@ -228,7 +220,7 @@ function initEventos() {
 
   dom.btnExportarMovimientos?.addEventListener("click", exportarMovimientos);
 
-  // UX: actualizar banner al cambiar fecha (sin tocar backend)
+  // actualizar banner al cambiar fecha (sin tocar backend)
   dom.filtroDesde?.addEventListener("change", updateFiltrosBanner);
   dom.filtroHasta?.addEventListener("change", updateFiltrosBanner);
 
@@ -239,7 +231,7 @@ function initEventos() {
     cargarMovimientosPaginados();
   });
 
-  // Event delegation para acciones en tabla
+
   dom.tablaMovimientos?.addEventListener("click", onTablaClick);
 }
 
@@ -296,9 +288,9 @@ function onEliminarClick({ id, tipo }) {
   });
 }
 
-// ==========================
+
 // KPIs
-// ==========================
+
 
 async function cargarKPIs() {
   setKpisLoading(true);
@@ -352,9 +344,9 @@ function renderVariacion(elementId, variacion) {
   el.innerHTML = `${v.icono} ${v.value}%`;
 }
 
-// ==========================
+
 // MOVIMIENTOS
-// ==========================
+
 
 async function cargarMovimientosPaginados() {
   setTablaLoading(true);
@@ -380,7 +372,7 @@ async function cargarMovimientosPaginados() {
     renderMovimientos(filteredContent);
 
     // Paginación: mantenemos la del backend. Si el filtro deja pocas filas,
-    // se verá una página con menos resultados (esperado sin cambios backend).
+    // se verá una página con menos resultados (esperado sin cambios backend)
     renderPagination(dom.pagination, pageData.page, pageData.totalPages, (newPage) => {
       currentPage = newPage;
       cargarMovimientosPaginados();
@@ -502,9 +494,9 @@ async function cargarDetallesPago(id, contentDiv) {
   }
 }
 
-// ==========================
-// EVOLUCIÓN (GRÁFICO)
-// ==========================
+
+// EVOLUCION (GRAFICO)
+
 
 async function cargarEvolucion(filtro) {
   setEvolucionLoading(true);
@@ -532,9 +524,9 @@ async function cargarEvolucion(filtro) {
   }
 }
 
-// ==========================
+
 // CHART
-// ==========================
+
 
 function renderChart({ labels, ingresos, egresos }) {
   if (chartEvolucion) chartEvolucion.destroy();
@@ -694,9 +686,9 @@ function renderDonutResumen(ingresos, gastos) {
   }
 }
 
-// ==========================
+
 // UTILS
-// ==========================
+
 
 function mapLabels(data, filtro) {
   if (filtro === "7dias") {
@@ -706,9 +698,9 @@ function mapLabels(data, filtro) {
   return data.map((d) => `${String(d.mes).padStart(2, "0")}/${d.anio}`);
 }
 
-// ==========================
+
 // EXPORTAR
-// ==========================
+
 
 async function exportarMovimientos() {
   try {

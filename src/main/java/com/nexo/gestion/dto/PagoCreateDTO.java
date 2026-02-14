@@ -23,6 +23,7 @@ public class PagoCreateDTO {
     private Integer idMedioPago;
     @NotBlank
     private String dniEmpleado;
+    private Integer idDescuento;
     @NotNull
     @Valid
     private List<DetallePagoCreateDTO> detalles = new ArrayList<>();
@@ -73,6 +74,14 @@ public class PagoCreateDTO {
 
     public void setDetalles(List<DetallePagoCreateDTO> detalles) {
         this.detalles = detalles;
+    }
+
+    public Integer getIdDescuento() {
+        return idDescuento;
+    }
+
+    public void setIdDescuento(Integer idDescuento) {
+        this.idDescuento = idDescuento;
     }
 }
 

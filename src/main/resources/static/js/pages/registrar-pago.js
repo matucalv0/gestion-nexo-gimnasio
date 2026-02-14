@@ -9,6 +9,7 @@ checkAuth();
 let detalles = [];
 let productosCache = [];
 let membresiasCache = [];
+let descuentosCache = [];
 let socioSeleccionado = null;
 
 /* ================== INIT ================== */
@@ -19,7 +20,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     cargarMediosPago(),
     cargarMembresias(),
     cargarProductos(),
-    cargarEmpleados()
+    cargarEmpleados(),
+    cargarDescuentos()
   ]);
 
   const params = new URLSearchParams(window.location.search);
@@ -30,6 +32,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   producto.addEventListener("change", cargarPrecioProducto);
   membresia.addEventListener("change", cargarPrecioMembresia);
   btnAgregarDetalle.addEventListener("click", agregarDetalle);
+
+  const descuentoSelect = document.getElementById("descuento");
+  if (descuentoSelect) {
+    descuentoSelect.addEventListener("change", actualizarPrecioMembresiaPorDescuento);
+  }
   pagoForm.addEventListener("submit", registrarPago);
 
   buscarSocio.addEventListener("input", buscarSocioHandler);
@@ -124,6 +131,24 @@ async function cargarEmpleados() {
   });
 }
 
+async function cargarDescuentos() {
+  const descuentoSelect = document.getElementById("descuento");
+  if (!descuentoSelect) return;
+
+  try {
+    const res = await authFetch("/descuentos/activos");
+    if (res.ok) {
+      descuentosCache = await res.json();
+      descuentoSelect.innerHTML = `<option value="">Ninguno</option>`;
+      descuentosCache.forEach(d => {
+        descuentoSelect.innerHTML += `<option value="${d.idDescuento}">${d.nombre} (${d.porcentaje}%)</option>`;
+      });
+    }
+  } catch (e) {
+    console.error("Error al cargar descuentos", e);
+  }
+}
+
 /* ================== BUSCAR SOCIO ================== */
 async function buscarSocioHandler() {
   const q = buscarSocio.value.trim();
@@ -171,6 +196,14 @@ function onTipoDetalleChange() {
 
   precio.value = "";
   precioMembresia.value = "";
+
+  // Bloquear descuento si es producto
+  const descuentoSelect = document.getElementById("descuento");
+  if (descuentoSelect) {
+    descuentoSelect.disabled = tipoDetalle.value === "PRODUCTO";
+    // Opcional: Si es producto y no hay membresías en el carrito, limpiar descuento?
+    // Mejor no tocar el valor para no perder contextos mixtos.
+  }
 }
 
 /* ================== PRECIOS ================== */
@@ -181,17 +214,76 @@ function cargarPrecioProducto() {
 
 function cargarPrecioMembresia() {
   const m = membresiasCache.find(m => m.idMembresia == membresia.value);
-  precioMembresia.value = m ? m.precio ?? m.precioSugerido ?? 0 : 0;
+  // Siempre usamos el precio BASE original
+  let precioBase = m ? Number(m.precio ?? m.precioSugerido ?? 0) : 0;
 
-  // Auto-agregar membresía cuando se selecciona (si hay socio seleccionado)
-  if (m && socioSeleccionado) {
-    // Verificar que no haya ya una membresía en los detalles
-    const yaTieneMembresia = detalles.some(d => d.idMembresia != null);
-    if (!yaTieneMembresia) {
-      agregarDetalleSilencioso();
-      Alerta.success(`Agregado: ${m.nombre}`);
+  // Asignamos el precio base al input (SIN DESCUENTO)
+  precioMembresia.value = precioBase;
+
+  // Solo calculamos el descuento para mostrarlo visualmente en el texto
+  actualizarInfoVisualDescuento(precioBase);
+}
+
+// Actualizar el input con el precio final
+precioMembresia.value = precioFinal;
+
+// Mostrar info del descuento
+const spanInfo = document.getElementById("infoDescuentoMembresia");
+if (spanInfo) {
+  if (descuentoSelect && descuentoSelect.value && precioBase > 0) {
+    const descId = Number(descuentoSelect.value);
+    const descObj = descuentosCache.find(d => d.idDescuento === descId);
+    if (descObj) {
+      const montoDesc = (precioBase * descObj.porcentaje) / 100;
+      spanInfo.textContent = `Descuento aplicado: -$${montoDesc.toFixed(2)} (${descObj.porcentaje}%)`;
+    } else {
+      spanInfo.textContent = "";
+    }
+  } else {
+    spanInfo.textContent = "";
+  }
+}
+
+
+function actualizarInfoVisualDescuento(precioBase) {
+  const descuentoSelect = document.getElementById("descuento");
+  const spanInfo = document.getElementById("infoDescuentoMembresia");
+
+  if (!spanInfo) return;
+
+  // Limpiar mensaje si no hay datos
+  spanInfo.textContent = "";
+
+  if (descuentoSelect && descuentoSelect.value && precioBase > 0) {
+    const descId = Number(descuentoSelect.value);
+    const descObj = descuentosCache.find(d => d.idDescuento === descId);
+
+    if (descObj) {
+      const montoDesc = (precioBase * descObj.porcentaje) / 100;
+      const precioFinalEstimado = precioBase - montoDesc;
+
+      // Mostramos cuánto se descontará, pero NO tocamos el input precioMembresia
+      spanInfo.innerHTML = `
+        <span class="text-green-400">-${descObj.porcentaje}% ($${montoDesc.toFixed(2)})</span> 
+        <span class="text-gray-400 text-sm">Final: $${precioFinalEstimado.toFixed(2)}</span>
+      `;
     }
   }
+}
+
+// Tambien debemos actualizar el precio al cambiar el descuento
+function actualizarPrecioMembresiaPorDescuento() {
+  // 1. Actualizar la info visual del input de membresía (si hay una seleccionada)
+  if (tipoDetalle.value === "MEMBRESIA" && precioMembresia.value) {
+    const precioActual = Number(precioMembresia.value);
+    actualizarInfoVisualDescuento(precioActual);
+  } else {
+    const spanInfo = document.getElementById("infoDescuentoMembresia");
+    if (spanInfo) spanInfo.textContent = "";
+  }
+
+  // 2. Recalcular los totales del carrito (Subtotal - Descuento Global)
+  calcularTotales();
 }
 
 /* ================== DETALLES ================== */
@@ -230,35 +322,90 @@ function agregarDetalle() {
 
   detalles.push(detalle);
   renderDetalles();
+
+  // Limpiar los inputs después de agregar el detalle
+  producto.value = "";
+  membresia.value = "";
+  cantidad.value = tipo === "MEMBRESIA" ? 1 : "";
+  precio.value = "";
+  precioMembresia.value = "";
 }
 
+/* Ocultar tabla si no hay detalles */
 function renderDetalles() {
-  renderTabla(
-    detallesBody,
-    detalles,
-    [
-      d => (d.idProducto ? "Producto" : "Membresía"),
-      d =>
-        d.idProducto
-          ? productosCache.find(p => p.idProducto === d.idProducto)?.nombre ??
-          "Desconocido"
-          : membresiasCache.find(m => m.idMembresia === d.idMembresia)?.nombre ??
-          "Desconocido",
-      d => d.cantidad,
-      d => `$${d.precioUnitario}`
-    ],
-    (d, i) => {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "text-orange-600 font-medium hover:underline";
-      btn.textContent = "Eliminar";
-      btn.addEventListener("click", () => {
-        detalles.splice(i, 1);
-        renderDetalles();
-      });
-      return btn;
+  const tableContainer = document.querySelector(".table-container");
+  if (detalles.length === 0) {
+    if (tableContainer) tableContainer.classList.add("hidden");
+  } else {
+    if (tableContainer) tableContainer.classList.remove("hidden");
+
+    renderTabla(
+      detallesBody,
+      detalles,
+      [
+        d => (d.idProducto ? "Producto" : "Membresía"),
+        d =>
+          d.idProducto
+            ? productosCache.find(p => p.idProducto === d.idProducto)?.nombre ??
+            "Desconocido"
+            : membresiasCache.find(m => m.idMembresia === d.idMembresia)?.nombre ??
+            "Desconocido",
+        d => d.cantidad,
+        d => `$${d.precioUnitario}`
+      ],
+      (d, i) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "text-orange-600 font-medium hover:underline";
+        btn.textContent = "Eliminar";
+        btn.addEventListener("click", () => {
+          detalles.splice(i, 1);
+          renderDetalles();
+        });
+        return btn;
+      }
+    );
+  }
+  calcularTotales();
+}
+
+function calcularTotales() {
+  const descuentoSelect = document.getElementById("descuento");
+  const lblSubtotal = document.getElementById("lblSubtotal");
+  const lblDescuento = document.getElementById("lblDescuento");
+  const lblTotal = document.getElementById("lblTotal");
+
+  // 1. Calcular Subtotal
+  const subtotal = detalles.reduce((acc, d) => acc + (d.cantidad * d.precioUnitario), 0);
+
+  // 2. Calcular Descuento (Solo sobre membresías)
+  let descuentoMonto = 0;
+
+  if (descuentoSelect && descuentoSelect.value) {
+    const descId = Number(descuentoSelect.value);
+    const descObj = descuentosCache.find(d => d.idDescuento === descId);
+
+    if (descObj) {
+      // Filtrar solo ítems de tipo Membresía
+      // En el frontend, d.idProducto existe para productos, y d.idMembresia para membresías.
+      const montoMembresias = detalles
+        .filter(d => d.idMembresia != null)
+        .reduce((acc, d) => acc + (d.cantidad * d.precioUnitario), 0);
+
+      const porcentaje = descObj.porcentaje;
+
+      if (montoMembresias > 0) {
+        descuentoMonto = (montoMembresias * porcentaje) / 100;
+      }
     }
-  );
+  }
+
+  const total = subtotal - descuentoMonto;
+
+  // 3. Render
+  if (lblSubtotal) lblSubtotal.textContent = `$${subtotal.toFixed(2)}`;
+  if (lblDescuento) lblDescuento.textContent = `-$${descuentoMonto.toFixed(2)}`;
+  if (lblTotal) lblTotal.textContent = `$${total.toFixed(2)}`;
 }
 
 /* Versión silenciosa de agregarDetalle que retorna true/false */
@@ -347,6 +494,7 @@ async function registrarPago(e) {
     dniSocio: socioSeleccionado ? socioSeleccionado.dni : null,
     idMedioPago: Number(medioPago.value),
     dniEmpleado: empleado.value,
+    idDescuento: document.getElementById("descuento").value ? Number(document.getElementById("descuento").value) : null,
     detalles
   };
 
@@ -376,16 +524,12 @@ async function registrarPago(e) {
 
     renderDetalles();
     pagoForm.reset();
+    document.getElementById("descuento").value = "";
+    document.getElementById("infoDescuentoMembresia").textContent = ""; // Limpiar info descuento
+    calcularTotales();
     onTipoDetalleChange();
 
   } catch {
     Alerta.error("No se pudo conectar con el servidor");
   }
 }
-
-
-
-
-
-
-

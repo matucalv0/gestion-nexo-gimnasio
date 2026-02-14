@@ -10,18 +10,24 @@ export function renderTabla(tbodyEl, data, columns, actionBtnFn) {
   tbodyEl.innerHTML = "";
 
   data.forEach((item, i) => {
-    const rowBg = i % 2 === 0 ? "bg-white" : "bg-gray-50";
+    // Alternancia de colores en modo oscuro
+    const rowBg = i % 2 === 0 ? "bg-gray-800" : "bg-gray-700/50";
 
     const row = document.createElement("tr");
-    row.className = `${rowBg} border-b border-gray-200 hover:bg-gray-100`;
+    row.className = `${rowBg} border-b border-gray-700 hover:bg-gray-700 transition-colors`;
 
     // Columnas
     columns.forEach(col => {
       const td = document.createElement("td");
-      td.className = "px-6 py-4 text-gray-800";
+      td.className = "px-6 py-4 text-gray-300";
 
       if (typeof col === "function") {
-        td.innerHTML = col(item, i);
+        const content = col(item, i);
+        if (content instanceof Node) {
+          td.appendChild(content);
+        } else {
+          td.innerHTML = content;
+        }
       } else if (typeof col === "string") {
         td.textContent = item[col] ?? "";
       }
@@ -34,7 +40,8 @@ export function renderTabla(tbodyEl, data, columns, actionBtnFn) {
     actionTd.className = "px-6 py-4";
 
     if (actionBtnFn) {
-      actionTd.appendChild(actionBtnFn(item, i));
+      const btn = actionBtnFn(item, i);
+      if (btn) actionTd.appendChild(btn);
     }
 
     row.appendChild(actionTd);

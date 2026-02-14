@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,7 @@ public class PagoService {
     private final SocioMembresiaRepository socioMembresiaRepository;
     private final MembresiaRepository membresiaRepository;
     private final AsistenciaRepository asistenciaRepository;
+    private final DescuentoRepository descuentoRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -42,7 +44,8 @@ public class PagoService {
             MedioPagoRepository medioPagoRepository,
             ProductoRepository productoRepository,
             SocioMembresiaRepository socioMembresiaRepository,
-            AsistenciaRepository asistenciaRepository
+            AsistenciaRepository asistenciaRepository,
+            DescuentoRepository descuentoRepository
     ) {
         this.pagoRepository = pagoRepository;
         this.socioRepository = socioRepository;
@@ -52,6 +55,7 @@ public class PagoService {
         this.socioMembresiaRepository = socioMembresiaRepository;
         this.membresiaRepository = membresiaRepository;
         this.asistenciaRepository = asistenciaRepository;
+        this.descuentoRepository = descuentoRepository;
     }
 
     private DetallePagoDTO convertirDetallePagoADTO(DetallePago detallePago) {
@@ -158,85 +162,115 @@ public class PagoService {
     @Transactional
     public PagoDTO crearPago(PagoCreateDTO dto) {
 
-        // RC-2: Solo se permite crear pagos en estado PAGADO o PENDIENTE
+        // 1. Validaciones iniciales
         if (dto.getEstado() != EstadoPago.PAGADO && dto.getEstado() != EstadoPago.PENDIENTE) {
-            throw new IllegalStateException("Estado de pago no válido para creación. Solo se permite PAGADO o PENDIENTE.");
+            throw new IllegalStateException("Estado no válido. Solo PAGADO o PENDIENTE.");
         }
 
-        Socio socio = null;
-        if (dto.getDniSocio() != null) {
-            socio = socioRepository.findById(dto.getDniSocio())
-                    .orElseThrow(() -> new ObjetoNoEncontradoException("socio con DNI " + dto.getDniSocio()));
-        }
+        Socio socio = dto.getDniSocio() != null ?
+                socioRepository.findById(dto.getDniSocio()).orElseThrow(() -> new ObjetoNoEncontradoException("socio")) : null;
 
         Empleado empleado = empleadoRepository.findById(dto.getDniEmpleado())
-                .orElseThrow(() -> new ObjetoNoEncontradoException("No se encontró el empleado con el dni " + dto.getDniEmpleado()));
+                .orElseThrow(() -> new ObjetoNoEncontradoException("empleado"));
 
         MedioPago medioPago = medioPagoRepository.findById(dto.getIdMedioPago())
-                .orElseThrow(() -> new ObjetoNoEncontradoException("medio de pago seleccionado"));
+                .orElseThrow(() -> new ObjetoNoEncontradoException("medio de pago"));
 
-        // Calcular monto antes de crear el pago
-        BigDecimal monto = dto.getDetalles().stream()
-                .map(d -> d.getPrecioUnitario().multiply(BigDecimal.valueOf(d.getCantidad())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
+        // 2. Preparamos el Pago (Aún sin monto final)
         Pago pago = new Pago(dto.getEstado(), socio, medioPago, empleado);
-        pago.setMonto(monto);
+        pago = pagoRepository.save(pago); // Guardamos para tener ID
 
-        // Un solo save inicial para obtener el ID
-        pago = pagoRepository.save(pago);
+        // Variables acumuladoras para cálculo REAL
+        BigDecimal montoBrutoTotal = BigDecimal.ZERO;
+        BigDecimal montoBaseParaDescuento = BigDecimal.ZERO;
 
-        int numero = 1;
+        int numeroLinea = 1;
         List<Producto> productosAActualizar = new ArrayList<>();
 
+        // 3. Procesamos los detalles UNO por UNO
         for (DetallePagoCreateDTO dDTO : dto.getDetalles()) {
-
-            if (dDTO.getCantidad() == 0) {
-                throw new CantidadCeroDetalle();
-            }
+            if (dDTO.getCantidad() <= 0) throw new CantidadCeroDetalle();
 
             DetallePago detalle = new DetallePago();
             detalle.setPago(pago);
             detalle.setCantidad(dDTO.getCantidad());
-            detalle.setPrecioUnitario(dDTO.getPrecioUnitario());
-            detalle.setIdDetallePago(new DetallePagoId(pago.getIdPago(), numero++));
+            detalle.setIdDetallePago(new DetallePagoId(pago.getIdPago(), numeroLinea++));
 
+            BigDecimal precioRealUnitario; //  el precio de la DB
+
+            // CASO A: Es Producto
             if (dDTO.getIdProducto() != null) {
                 Producto p = productoRepository.findById(dDTO.getIdProducto())
-                        .orElseThrow(() -> new ObjetoNoEncontradoException("producto seleccionado"));
+                        .orElseThrow(() -> new ObjetoNoEncontradoException("producto " + dDTO.getIdProducto()));
+
+                // USAMOS PRECIO DE DB, NO EL DEL DTO
+                precioRealUnitario = p.getPrecioSugerido();
+
                 detalle.setProducto(p);
                 p.restarStock(dDTO.getCantidad());
                 productosAActualizar.add(p);
             }
+            // CASO B: Es Membresía
+            else if (dDTO.getIdMembresia() != null) {
+                if (socio == null) throw new ObjetoNoEncontradoException("Se requiere socio para membresía");
 
-            if (dDTO.getIdMembresia() != null) {
-                if (socio == null) {
-                    throw new ObjetoNoEncontradoException("socio (se requiere DNI para membresías)");
-                }
+                Membresia m = membresiaRepository.findById(dDTO.getIdMembresia())
+                        .orElseThrow(() -> new ObjetoNoEncontradoException("membresía " + dDTO.getIdMembresia()));
 
-                Membresia membresia = membresiaRepository.findById(dDTO.getIdMembresia())
-                        .orElseThrow(() -> new ObjetoNoEncontradoException("membresía seleccionada"));
+                // USAMOS PRECIO DE DB
+                precioRealUnitario = m.getPrecioSugerido();
+
+                // Acumulamos para el cálculo del descuento luego
+                BigDecimal subtotalMembresia = precioRealUnitario.multiply(BigDecimal.valueOf(dDTO.getCantidad()));
+                montoBaseParaDescuento = montoBaseParaDescuento.add(subtotalMembresia);
 
                 if (pago.getEstado() == EstadoPago.PAGADO) {
-                    SocioMembresia nuevaSuscripcion = renovarMembresia(socio, membresia);
+                    SocioMembresia nuevaSuscripcion = renovarMembresia(socio, m);
                     socio.setActivo(true);
                     detalle.setSocioMembresia(nuevaSuscripcion);
                 }
+            } else {
+                throw new IllegalStateException("El detalle debe tener producto o membresía");
             }
+
+            // Asignamos el precio real al detalle y sumamos al bruto
+            detalle.setPrecioUnitario(precioRealUnitario);
+            montoBrutoTotal = montoBrutoTotal.add(precioRealUnitario.multiply(BigDecimal.valueOf(dDTO.getCantidad())));
 
             pago.agregarDetalle(detalle);
         }
 
+        // 4. Aplicar Descuento (Calculado sobre precios reales de DB)
+        BigDecimal montoFinal = montoBrutoTotal;
+
+        if (dto.getIdDescuento() != null) {
+            Descuento descuento = descuentoRepository.findById(dto.getIdDescuento())
+                    .orElseThrow(() -> new ObjetoNoEncontradoException("descuento"));
+
+            if (!descuento.getActivo()) throw new IllegalStateException("Descuento inactivo");
+
+            // Solo aplicamos si hay monto de membresías
+            if (montoBaseParaDescuento.compareTo(BigDecimal.ZERO) > 0) {
+                // Formula: (MontoMembresias * Porcentaje) / 100
+                BigDecimal montoADescontar = montoBaseParaDescuento
+                        .multiply(descuento.getPorcentaje())
+                        .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP); // Importante: RoundingMode
+
+                montoFinal = montoFinal.subtract(montoADescontar);
+                pago.setDescuento(descuento);
+            }
+        }
+
+        // 5. Validar consistencia y Guardar final
         if (pago.hayMasDeUnaMembresiaEnDetalle()) {
             throw new MasDeUnaMembresiaEnDetalleException();
         }
 
-        // Guardar todos los productos modificados de una vez
         if (!productosAActualizar.isEmpty()) {
             productoRepository.saveAll(productosAActualizar);
         }
 
-        // Save final con los detalles
+        pago.setMonto(montoFinal);
         pagoRepository.save(pago);
 
         return convertirAPagoDTO(pago);

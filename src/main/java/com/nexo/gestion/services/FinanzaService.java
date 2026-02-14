@@ -39,7 +39,7 @@ public class FinanzaService {
                 UNION ALL
                 SELECT id_gasto as ref_id, 'EGRESO' as tipo, monto, fecha, CAST(categoria AS VARCHAR) as cat, proveedor as prov FROM gasto WHERE (activo IS NULL OR activo = true)
             ) as movimientos
-            WHERE fecha >= :desde AND fecha <= :hasta
+            WHERE fecha >= :desde AND fecha < (CAST(:hasta AS DATE) + 1)
             ORDER BY fecha DESC
             LIMIT :limit OFFSET :offset
             """;
@@ -50,7 +50,7 @@ public class FinanzaService {
                 UNION ALL
                 SELECT fecha FROM gasto WHERE (activo IS NULL OR activo = true)
             ) as movimientos
-            WHERE fecha >= :desde AND fecha <= :hasta
+            WHERE fecha >= :desde AND fecha < (CAST(:hasta AS DATE) + 1)
             """;
 
 
