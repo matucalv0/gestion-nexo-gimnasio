@@ -324,12 +324,16 @@ src/main/resources/
 ### Modelo de Datos (DER)
 <img width="2367" alt="derGym" src="https://github.com/user-attachments/assets/1ee53a5a-7c6f-4975-a67f-cf5c03871caf" />
 
-### Dashboard de Métricas
-<img width="1919" alt="kpis" src="https://github.com/user-attachments/assets/7a98fe85-0cbd-4b7e-affa-fb14bef365e1" />
-<img width="1919" alt="kpi-asistencias" src="https://github.com/user-attachments/assets/738914d6-51a6-4bfe-8a38-60a11a8258de" />
-
 ### Interfaz del Sistema
-<img width="1919" alt="panel-nexo" src="https://github.com/user-attachments/assets/d61e7562-65fa-473f-91ba-012336ff5143" />
+<img width="1440" height="900" alt="localhost_8080_home html Desktop HD (2026-02-14 00 46 46)" src="https://github.com/user-attachments/assets/785a996f-0a01-4e92-85d8-daa10cd5bcca" />
+
+### Dashboard de Métricas
+<img width="1440" height="900" alt="localhost_8080_finanzas html Desktop HD (2026-02-14 01 04 22)" src="https://github.com/user-attachments/assets/748511fb-6082-452a-8034-27b336d55b31" />
+<img width="1440" height="900" alt="localhost_8080_asistencias html Desktop HD (2026-02-14 01 04 55)" src="https://github.com/user-attachments/assets/5b3c2cdd-080c-4bb8-a8da-059934354476" />
+<img width="1440" height="900" alt="localhost_8080_pagos html Desktop HD (2026-02-14 01 03 24)" src="https://github.com/user-attachments/assets/9235736c-4e43-4919-a052-709676ee7fb5" />
+
+
+
 
 ---
 
