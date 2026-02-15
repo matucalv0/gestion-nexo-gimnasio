@@ -248,8 +248,6 @@ El proyecto incluye tests de integración que validan los flujos principales:
 | `ProductoTest.java` | Gestión de inventario |
 | `RutinaTest.java` | Asignación de rutinas a socios |
 
-Los tests usan **H2 en memoria** para no depender de PostgreSQL.
-
 ---
 
 ## 📁 Estructura del Proyecto
