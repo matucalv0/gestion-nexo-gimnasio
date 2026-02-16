@@ -107,7 +107,7 @@ public class PagoService {
     }
 
     private SocioMembresia renovarMembresia(Socio socio, Membresia membresia) {
-        // El socio ya viene validado del método que llama, no necesitamos verificar de nuevo
+    
 
         LocalDate ultimoVencimiento =
                 socioMembresiaRepository.findUltimoVencimientoVigente(socio.getDni());
@@ -119,7 +119,6 @@ public class PagoService {
         Integer asistenciasPendientes = asistenciaRepository.asistenciasPendientesSocio(socio.getDni());
 
         if (asistenciasPendientes != null && asistenciasPendientes > 0) {
-            // Solo considerar asistencias pendientes dentro de la duración de la membresía
             LocalDate limiteInferior = LocalDate.now().minusDays(membresia.getDuracionDias());
             
             java.time.Instant fechaInstant = asistenciaRepository
@@ -134,10 +133,10 @@ public class PagoService {
 
         SocioMembresia nuevaSuscripcion = new SocioMembresia(socio, membresia, inicio, vencimiento);
 
-        // Guardar la membresía primero
+        /
         SocioMembresia guardada = socioMembresiaRepository.save(nuevaSuscripcion);
 
-        // Validar asistencias pendientes solo si había alguna
+       
         if (asistenciasPendientes != null && asistenciasPendientes > 0) {
             List<Asistencia> pendientes = asistenciaRepository
                     .findPendientesEnRango(
@@ -162,7 +161,7 @@ public class PagoService {
     @Transactional
     public PagoDTO crearPago(PagoCreateDTO dto) {
 
-        // 1. Validaciones iniciales
+        
         if (dto.getEstado() != EstadoPago.PAGADO && dto.getEstado() != EstadoPago.PENDIENTE) {
             throw new IllegalStateException("Estado no válido. Solo PAGADO o PENDIENTE.");
         }
@@ -176,18 +175,18 @@ public class PagoService {
         MedioPago medioPago = medioPagoRepository.findById(dto.getIdMedioPago())
                 .orElseThrow(() -> new ObjetoNoEncontradoException("medio de pago"));
 
-        // 2. Preparamos el Pago (Aún sin monto final)
+        
         Pago pago = new Pago(dto.getEstado(), socio, medioPago, empleado);
-        pago = pagoRepository.save(pago); // Guardamos para tener ID
+        pago = pagoRepository.save(pago); 
 
-        // Variables acumuladoras para cálculo REAL
+    
         BigDecimal montoBrutoTotal = BigDecimal.ZERO;
         BigDecimal montoBaseParaDescuento = BigDecimal.ZERO;
 
         int numeroLinea = 1;
         List<Producto> productosAActualizar = new ArrayList<>();
 
-        // 3. Procesamos los detalles UNO por UNO
+        
         for (DetallePagoCreateDTO dDTO : dto.getDetalles()) {
             if (dDTO.getCantidad() <= 0) throw new CantidadCeroDetalle();
 
@@ -196,31 +195,31 @@ public class PagoService {
             detalle.setCantidad(dDTO.getCantidad());
             detalle.setIdDetallePago(new DetallePagoId(pago.getIdPago(), numeroLinea++));
 
-            BigDecimal precioRealUnitario; //  el precio de la DB
+            BigDecimal precioRealUnitario; 
 
-            // CASO A: Es Producto
+            
             if (dDTO.getIdProducto() != null) {
                 Producto p = productoRepository.findById(dDTO.getIdProducto())
                         .orElseThrow(() -> new ObjetoNoEncontradoException("producto " + dDTO.getIdProducto()));
 
-                // USAMOS PRECIO DE DB, NO EL DEL DTO
+                
                 precioRealUnitario = p.getPrecioSugerido();
 
                 detalle.setProducto(p);
                 p.restarStock(dDTO.getCantidad());
                 productosAActualizar.add(p);
             }
-            // CASO B: Es Membresía
+            
             else if (dDTO.getIdMembresia() != null) {
                 if (socio == null) throw new ObjetoNoEncontradoException("Se requiere socio para membresía");
 
                 Membresia m = membresiaRepository.findById(dDTO.getIdMembresia())
                         .orElseThrow(() -> new ObjetoNoEncontradoException("membresía " + dDTO.getIdMembresia()));
 
-                // USAMOS PRECIO DE DB
+                
                 precioRealUnitario = m.getPrecioSugerido();
 
-                // Acumulamos para el cálculo del descuento luego
+                
                 BigDecimal subtotalMembresia = precioRealUnitario.multiply(BigDecimal.valueOf(dDTO.getCantidad()));
                 montoBaseParaDescuento = montoBaseParaDescuento.add(subtotalMembresia);
 
@@ -233,14 +232,14 @@ public class PagoService {
                 throw new IllegalStateException("El detalle debe tener producto o membresía");
             }
 
-            // Asignamos el precio real al detalle y sumamos al bruto
+            
             detalle.setPrecioUnitario(precioRealUnitario);
             montoBrutoTotal = montoBrutoTotal.add(precioRealUnitario.multiply(BigDecimal.valueOf(dDTO.getCantidad())));
 
             pago.agregarDetalle(detalle);
         }
 
-        // 4. Aplicar Descuento (Calculado sobre precios reales de DB)
+        
         BigDecimal montoFinal = montoBrutoTotal;
 
         if (dto.getIdDescuento() != null) {
@@ -249,19 +248,18 @@ public class PagoService {
 
             if (!descuento.getActivo()) throw new IllegalStateException("Descuento inactivo");
 
-            // Solo aplicamos si hay monto de membresías
+            
             if (montoBaseParaDescuento.compareTo(BigDecimal.ZERO) > 0) {
-                // Formula: (MontoMembresias * Porcentaje) / 100
+               
                 BigDecimal montoADescontar = montoBaseParaDescuento
                         .multiply(descuento.getPorcentaje())
-                        .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP); // Importante: RoundingMode
+                        .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP); 
 
                 montoFinal = montoFinal.subtract(montoADescontar);
                 pago.setDescuento(descuento);
             }
         }
 
-        // 5. Validar consistencia y Guardar final
         if (pago.hayMasDeUnaMembresiaEnDetalle()) {
             throw new MasDeUnaMembresiaEnDetalleException();
         }
@@ -297,12 +295,11 @@ public class PagoService {
 
     @Transactional(readOnly = true)
     public PageResponseDTO<PagoDTO> buscarPagosPaginados(int page, int size, LocalDate desde, LocalDate hasta) {
-        // Si no se especifica 'hasta', es hoy
+        
         if (hasta == null) {
             hasta = LocalDate.now();
         }
-        // Si no se especifica 'desde', mostrar TODO el historial (desde 1970)
-        // Esto permite que "Limpiar filtros" muestre todos los pagos.
+        
         if (desde == null) {
             desde = LocalDate.of(1970, 1, 1);
         }
@@ -340,15 +337,15 @@ public class PagoService {
 
         pago.setEstado(EstadoPago.ANULADO);
 
-        // Revertir membresías y stock
+        
         for (DetallePago detalle : pago.getDetalles()) {
             if (detalle.getSocioMembresia() != null) {
-                // Desactivar la membresía asociada
+               
                 SocioMembresia sm = detalle.getSocioMembresia();
                 sm.setActivo(false);
                 socioMembresiaRepository.save(sm);
                 
-                // También desactivar el socio si ya no tiene membresías activas
+                
                 Socio socio = sm.getSocio();
                 if (socio != null && !socioMembresiaRepository.estaActivoHoy(socio.getDni())) {
                     socio.setActivo(false);
@@ -357,7 +354,7 @@ public class PagoService {
             }
             
             if (detalle.getProducto() != null && detalle.getCantidad() != null) {
-                // Restaurar stock del producto
+               
                 Producto producto = detalle.getProducto();
                 producto.setStock(producto.getStock() + detalle.getCantidad());
                 productoRepository.save(producto);
@@ -376,18 +373,18 @@ public class PagoService {
             throw new IllegalStateException("El pago ya está eliminado");
         }
 
-        // Soft-delete: marcar como ELIMINADO en vez de borrar físicamente
+       
         pago.setEstado(EstadoPago.ELIMINADO);
 
-        // Revertir membresías y stock
+        
         for (DetallePago detalle : pago.getDetalles()) {
             if (detalle.getSocioMembresia() != null) {
-                // Desactivar la membresía asociada (no eliminar)
+              
                 SocioMembresia sm = detalle.getSocioMembresia();
                 sm.setActivo(false);
                 socioMembresiaRepository.save(sm);
 
-                // Desactivar el socio si ya no tiene membresías activas
+                
                 Socio socio = sm.getSocio();
                 if (socio != null && !socioMembresiaRepository.estaActivoHoy(socio.getDni())) {
                     socio.setActivo(false);
@@ -396,7 +393,7 @@ public class PagoService {
             }
 
             if (detalle.getProducto() != null && detalle.getCantidad() != null) {
-                // Restaurar stock del producto
+              
                 Producto producto = detalle.getProducto();
                 producto.setStock(producto.getStock() + detalle.getCantidad());
                 productoRepository.save(producto);
@@ -424,9 +421,9 @@ public class PagoService {
 
         return pagos.stream()
                 .map(r -> new PagoPorMesDTO(
-                        ((Number) r[0]).intValue(), // anio
-                        ((Number) r[1]).intValue(), // mes
-                        ((BigDecimal) r[2]) // total
+                        ((Number) r[0]).intValue(), 
+                        ((Number) r[1]).intValue(), 
+                        ((BigDecimal) r[2]) 
                 ))
                 .collect(Collectors.toList());
     }
@@ -488,7 +485,6 @@ public class PagoService {
     public PagoMesStatsDTO obtenerEstadisticasMensuales() {
         BigDecimal totalMesActual = recaudadoMes();
         
-        // Obtener historial de meses
         List<PagoPorMesDTO> historico = recaudadoMeses();
         
         LocalDate fechaActual = LocalDate.now();
@@ -502,7 +498,6 @@ public class PagoService {
             anioAnterior--;
         }
 
-        // Buscar total del mes anterior
         final int finalMesAnterior = mesAnterior;
         final int finalAnioAnterior = anioAnterior;
         
@@ -515,18 +510,13 @@ public class PagoService {
         Double variacion = null;
 
         if (totalMesAnterior.compareTo(BigDecimal.ZERO) > 0) {
-            // ((Actual - Anterior) / Anterior) * 100
             BigDecimal diferencia = totalMesActual.subtract(totalMesAnterior);
             BigDecimal var = diferencia.divide(totalMesAnterior, 4, java.math.RoundingMode.HALF_UP)
                                        .multiply(BigDecimal.valueOf(100));
             variacion = var.doubleValue();
         } else if (totalMesActual.compareTo(BigDecimal.ZERO) > 0) {
-            // Si el mes anterior fue 0 y este tiene ventas, es un aumento "infinito", 
-            // pero lo representaremos como 100% o null según regla de negocio. 
-            // El usuario pidió que se muestre > 100% si aplica.
             variacion = 100.0; 
         } else {
-            // 0 vs 0 es 0% variación
             variacion = 0.0;
         }
 

@@ -50,13 +50,13 @@ public class AsistenciaController {
         return ResponseEntity.ok(asistenciaService.totalAsistenciasPorDia(mes));
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLEADO')")
     @GetMapping("estadisticas/hora-pico")
     public ResponseEntity<HoraPicoDTO> horaPico(){
         return ResponseEntity.ok(asistenciaService.obtenerHoraPico());
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLEADO')")
     @GetMapping("estadisticas/distribucion-horaria")
     public ResponseEntity<List<HoraPicoDTO>> distribucionHoraria(){
         return ResponseEntity.ok(asistenciaService.obtenerDistribucionPorHora());

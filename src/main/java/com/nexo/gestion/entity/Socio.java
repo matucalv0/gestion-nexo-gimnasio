@@ -18,7 +18,6 @@ public class Socio {
     private boolean activo = false;
 
     @OneToMany(mappedBy = "socio")
-
     List<SocioMembresia> membresias = new ArrayList<>();
 
     public Socio(){}

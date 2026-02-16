@@ -66,7 +66,7 @@ public class PagoTest {
         puestoRepository.save(puesto);
         Socio socio = new Socio("44048664", "Mateo", "1156686238", "matucalv@gmail.com", LocalDate.of(2002,1,28));
         socioRepository.save(socio);
-        MedioPago medioPago = new MedioPago("Mercado Pete");
+        MedioPago medioPago = new MedioPago("Mercado Pago");
         medioPagoRepository.save(medioPago);
         Empleado empleado = new Empleado("37895175", "Felipe", "1156687896", "felipruski@gmail.com", LocalDate.of(2001,8,4), puesto);
         empleadoRepository.save(empleado);
@@ -625,12 +625,11 @@ public class PagoTest {
             "Debería quedar 1 asistencia pendiente (la vieja), la reciente se validó");
     }
 
-    // ==================== ERROR HANDLING TESTS ====================
 
     @Test
     @Transactional
     @Rollback
-    public void crearPago_lanzaExcepcionSiSocioNoExiste() {
+    public void crearPagoLanzaExcepcionSiSocioNoExiste() {
         MedioPagoDTO medioPago = medioPagoService.registrarMedioPago(new MedioPagoDTO("TEST_MP"));
         PuestoDTO puesto = puestoService.registrarPuesto(new PuestoDTO("TestPuesto"));
         EmpleadoDTO empleado = empleadoService.registrarEmpleado(
@@ -654,7 +653,7 @@ public class PagoTest {
     @Test
     @Transactional
     @Rollback
-    public void crearPago_lanzaExcepcionSiMedioPagoNoExiste() {
+    public void crearPagoLanzaExcepcionSiMedioPagoNoExiste() {
         SocioDTO socio = socioService.registrarSocio(
             new SocioCreateDTO("88887777", "Test", "111", "test@test.com", LocalDate.of(1990, 1, 1))
         );
@@ -680,7 +679,7 @@ public class PagoTest {
     @Test
     @Transactional
     @Rollback
-    public void crearPago_lanzaExcepcionSiEmpleadoNoExiste() {
+    public void crearPagoLanzaExcepcionSiEmpleadoNoExiste() {
         SocioDTO socio = socioService.registrarSocio(
             new SocioCreateDTO("77776666", "Test", "111", "test@test.com", LocalDate.of(1990, 1, 1))
         );
@@ -703,7 +702,7 @@ public class PagoTest {
     @Test
     @Transactional
     @Rollback
-    public void crearPago_lanzaExcepcionSiMembresiaNoExiste() {
+    public void crearPagoLanzaExcepcionSiMembresiaNoExiste() {
         SocioDTO socio = socioService.registrarSocio(
             new SocioCreateDTO("66665555", "Test", "111", "test@test.com", LocalDate.of(1990, 1, 1))
         );
