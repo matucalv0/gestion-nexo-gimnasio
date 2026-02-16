@@ -53,7 +53,6 @@ Sistema web con **API REST** que centraliza toda la operación:
 - ✅ Autenticación stateless con **JWT** (tokens en cookies HttpOnly)
 - ✅ Autorización basada en roles con **Spring Security** y `@PreAuthorize`
 - ✅ **Rate limiting** en endpoint de login (5 intentos / 5 minutos por IP)
-- ✅ **Token blacklist** para invalidación de sesiones en logout
 - ✅ Contraseñas hasheadas con **BCrypt**
 
 ### Validaciones de Negocio
@@ -61,17 +60,6 @@ Sistema web con **API REST** que centraliza toda la operación:
 - ✅ Control de asistencias disponibles según tipo de membresía
 - ✅ Un socio no puede tener más de una membresía activa simultáneamente
 - ✅ Validación de datos con **Hibernate Validator** (Bean Validation)
-
-### Persistencia y Performance
-- ✅ Migraciones versionadas con **Flyway**
-- ✅ **Índices optimizados** para consultas frecuentes (búsquedas, filtros por fecha)
-- ✅ Paginación en todos los listados
-- ✅ Queries nativas optimizadas para reportes financieros
-
-### Observabilidad
-- ✅ Endpoints de salud con **Spring Actuator**
-- ✅ Logging estructurado por niveles
-- ✅ Documentación automática con **Swagger/OpenAPI**
 
 ---
 
@@ -105,16 +93,6 @@ Sistema web con **API REST** que centraliza toda la operación:
 | **Seguridad** | Filtros encadenados: `RateLimitFilter` → `JwtAuthFilter` → Spring Security |
 | **Migraciones** | Versionado incremental con Flyway (`V1__schema_inicial.sql`, `V2__indices_rendimiento.sql`) |
 
-### Decisiones Técnicas Clave
-
-1. **PostgreSQL sobre MySQL**: Elegí PostgreSQL por su mejor soporte para constraints CHECK, índices parciales y funciones de fecha para reportes.
-
-2. **JWT en cookies HttpOnly**: Más seguro que localStorage, previene XSS. El token viaja automáticamente en cada request.
-
-3. **Rate limiting sin Redis**: Implementación liviana con `ConcurrentHashMap` y cleanup periódico. Suficiente para el volumen esperado, evita dependencia adicional.
-
-4. **Flyway sobre Liquibase**: Más simple para SQL puro, sin overhead de XML/YAML.
-
 ---
 
 ## 🛠️ Stack Tecnológico
@@ -131,7 +109,7 @@ Sistema web con **API REST** que centraliza toda la operación:
 | **jjwt** | 0.11.5 | Generación y validación de JWT |
 | **SpringDoc OpenAPI** | 2.2.0 | Documentación Swagger |
 | **Docker** | - | Containerización |
-| **H2** | (test) | Base de datos en memoria para tests |
+
 
 ---
 
@@ -269,8 +247,6 @@ El proyecto incluye tests de integración que validan los flujos principales:
 | `FinanzaTest.java` | Cálculo de balances y métricas |
 | `ProductoTest.java` | Gestión de inventario |
 | `RutinaTest.java` | Asignación de rutinas a socios |
-
-Los tests usan **H2 en memoria** para no depender de PostgreSQL.
 
 ---
 
