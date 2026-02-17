@@ -1,4 +1,4 @@
-# Gestión Nexo – Sistema de Gestión para Gimnasios
+# Nexo - Aplicación web para gestion de un gimnasio local
 
 ![Java](https://img.shields.io/badge/Java-17-orange?logo=openjdk)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.5-brightgreen?logo=springboot)
