@@ -157,6 +157,7 @@ public class SocioService {
         return convertirASocioDTO(guardado);
     }
 
+    @Transactional
     public SocioDTO bajaSocio(String dni) {
         Socio socio = socioRepository.findById(dni).orElseThrow(() -> new ObjetoNoEncontradoException("socio con DNI " + dni));
         socio.setActivo(false);
@@ -164,6 +165,7 @@ public class SocioService {
         return convertirASocioDTO(guardado);
     }
 
+    @Transactional
     public SocioDTO patchSocio(String dni, SocioPatchDTO socioPatch) {
         Socio socio = socioRepository.findById(dni).orElseThrow(() -> new ObjetoNoEncontradoException("socio con DNI " + dni));
 

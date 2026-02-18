@@ -133,7 +133,7 @@ public class PagoService {
 
         SocioMembresia nuevaSuscripcion = new SocioMembresia(socio, membresia, inicio, vencimiento);
 
-        /
+        
         SocioMembresia guardada = socioMembresiaRepository.save(nuevaSuscripcion);
 
        
