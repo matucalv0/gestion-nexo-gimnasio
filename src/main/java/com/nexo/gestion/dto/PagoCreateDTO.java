@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
+import java.time.LocalDate;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +26,7 @@ public class PagoCreateDTO {
     @NotBlank
     private String dniEmpleado;
     private Integer idDescuento;
+    private LocalDate fechaInicioMembresia; // opcional: si se indica, se usa como inicio de la nueva membresía
     @NotNull
     @Valid
     private List<DetallePagoCreateDTO> detalles = new ArrayList<>();
@@ -82,6 +85,14 @@ public class PagoCreateDTO {
 
     public void setIdDescuento(Integer idDescuento) {
         this.idDescuento = idDescuento;
+    }
+
+    public LocalDate getFechaInicioMembresia() {
+        return fechaInicioMembresia;
+    }
+
+    public void setFechaInicioMembresia(LocalDate fechaInicioMembresia) {
+        this.fechaInicioMembresia = fechaInicioMembresia;
     }
 }
 

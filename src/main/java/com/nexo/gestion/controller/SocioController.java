@@ -152,4 +152,11 @@ public class SocioController {
         return ResponseEntity.ok(socioService.buscarSociosExtendidos(page, size, q, activo));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
+    @GetMapping("/{dni}/ultimo-vencimiento")
+    public ResponseEntity<Map<String, Object>> ultimoVencimiento(@PathVariable String dni) {
+        Map<String, Object> resultado = socioService.obtenerUltimoVencimiento(dni);
+        return ResponseEntity.ok(resultado);
+    }
+
 }

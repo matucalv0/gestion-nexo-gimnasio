@@ -41,6 +41,12 @@ AND sm.fechaHasta >= CURRENT_DATE
 """)
     LocalDate findUltimoVencimiento(String dni);
 
+    @Query("""
+    SELECT MAX(sm.fechaHasta)
+    FROM SocioMembresia sm
+    WHERE sm.socio.dni = :dni AND sm.activo = true
+    """)
+    LocalDate findUltimoVencimientoGeneral(@Param("dni") String dni);
 
     List<SocioMembresia> findBySocioDniOrderByFechaInicioAsc(@NotBlank String dni);
 
@@ -202,6 +208,16 @@ AND sm.fechaHasta >= CURRENT_DATE
                OR sm.fecha_hasta >= date_trunc('month', CURRENT_DATE))
         """, nativeQuery = true)
     List<String> findDnisActivosEnElMes(@Param("dnis") List<String> dnis);
+
+    @Query(value = """
+        SELECT DISTINCT sm.dni_socio
+        FROM socio_membresia sm
+        WHERE sm.dni_socio IN :dnis
+          AND sm.activo = true
+          AND sm.fecha_inicio <= CURRENT_DATE
+          AND (sm.fecha_hasta IS NULL OR sm.fecha_hasta >= CURRENT_DATE)
+        """, nativeQuery = true)
+    List<String> findDnisActivosHoy(@Param("dnis") List<String> dnis);
 
 }
 

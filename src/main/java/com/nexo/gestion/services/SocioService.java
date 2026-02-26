@@ -47,7 +47,7 @@ public class SocioService {
                 a.getFechaHora());
     }
 
-    private SocioDTO convertirASocioDTO(Socio socio, Rutina rutina) {
+    private SocioDTO convertirASocioDTO(Socio socio, Rutina rutina, boolean isActivo) {
         RutinaDTO rutinaActiva = null;
         if (rutina != null) {
             rutinaActiva = new RutinaDTO(
@@ -68,13 +68,14 @@ public class SocioService {
                 socio.getTelefono(),
                 socio.getEmail(),
                 socio.getFechaNacimiento(),
-                socio.isActivo(),
+                isActivo,
                 rutinaActiva);
     }
 
     private SocioDTO convertirASocioDTO(Socio socio) {
         Rutina rutina = rutinaRepository.findFirstBySocioDniOrderByIdRutinaDesc(socio.getDni()).orElse(null);
-        return convertirASocioDTO(socio, rutina);
+        boolean isActivo = socioMembresiaRepository.estaActivoHoy(socio.getDni());
+        return convertirASocioDTO(socio, rutina, isActivo);
     }
 
     private SocioMembresiaDTO convertirASocioMembresiaDTO(SocioMembresia socioMembresia) {
@@ -154,15 +155,20 @@ public class SocioService {
         Socio socio = new Socio(socioDTO.getDni(), socioDTO.getNombre(), socioDTO.getTelefono(), socioDTO.getEmail(),
                 socioDTO.getFechaNacimiento());
         Socio guardado = socioRepository.save(socio);
-        return convertirASocioDTO(guardado);
+        return convertirASocioDTO(guardado, null, false);
     }
 
     @Transactional
     public SocioDTO bajaSocio(String dni) {
         Socio socio = socioRepository.findById(dni).orElseThrow(() -> new ObjetoNoEncontradoException("socio con DNI " + dni));
         socio.setActivo(false);
+        // También dar de baja la membresía vigente para que dinámicamente quede inactivo
+        socioMembresiaRepository.findActivaBySocio(dni).ifPresent(sm -> {
+            sm.setActivo(false);
+            socioMembresiaRepository.save(sm);
+        });
         Socio guardado = socioRepository.save(socio);
-        return convertirASocioDTO(guardado);
+        return convertirASocioDTO(guardado, null, false);
     }
 
     @Transactional
@@ -211,8 +217,11 @@ public class SocioService {
         Map<String, Rutina> rutinasMap = rutinaRepository.findLatestBySocioDnis(dnis).stream()
                 .collect(Collectors.toMap(r -> r.getSocio().getDni(), r -> r));
 
+        List<String> dnisActivos = socioMembresiaRepository.findDnisActivosHoy(dnis);
+        Set<String> activosSet = new HashSet<>(dnisActivos);
+
         return socios.stream()
-                .map(s -> convertirASocioDTO(s, rutinasMap.get(s.getDni())))
+                .map(s -> convertirASocioDTO(s, rutinasMap.get(s.getDni()), activosSet.contains(s.getDni())))
                 .collect(Collectors.toList());
     }
 
@@ -229,7 +238,6 @@ public class SocioService {
         membresia.agregarSocio(socioMembresia);
 
         SocioMembresia guardada = socioMembresiaRepository.save(socioMembresia);
-        socio.setActivo(true);
 
         return convertirASocioMembresiaDTO(guardada);
     }
@@ -499,5 +507,19 @@ public class SocioService {
 
         int totalPages = (int) Math.ceil((double) total / size);
         return new PageResponseDTO<>(content, page, size, total, totalPages);
+    }
+
+    public Map<String, Object> obtenerUltimoVencimiento(String dni) {
+        if (!socioRepository.existsById(dni)) {
+            throw new ObjetoNoEncontradoException("socio con DNI " + dni);
+        }
+
+        LocalDate ultimoVencimientoGeneral = socioMembresiaRepository.findUltimoVencimientoGeneral(dni);
+        LocalDate ultimoVencimientoVigente = socioMembresiaRepository.findUltimoVencimientoVigente(dni);
+
+        Map<String, Object> resultado = new HashMap<>();
+        resultado.put("ultimoVencimiento", ultimoVencimientoGeneral);
+        resultado.put("vigente", ultimoVencimientoVigente != null);
+        return resultado;
     }
 }

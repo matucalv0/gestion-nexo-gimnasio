@@ -11,6 +11,7 @@ let productosCache = [];
 let membresiasCache = [];
 let descuentosCache = [];
 let socioSeleccionado = null;
+let vencimientoInfo = null; // { ultimoVencimiento, vigente }
 
 /* ================== INIT ================== */
 document.addEventListener("DOMContentLoaded", async () => {
@@ -84,6 +85,7 @@ async function preseleccionarSocioDesdeFicha(dni) {
   socioSeleccionado = await res.json();
   buscarSocio.value = `${socioSeleccionado.nombre} (${socioSeleccionado.dni})`;
   buscarSocio.disabled = true;
+  await consultarUltimoVencimiento(dni);
 }
 
 
@@ -176,6 +178,7 @@ async function buscarSocioHandler() {
       socioSeleccionado = s;
       buscarSocio.value = `${s.nombre} (${s.dni})`;
       resultadosSocio.classList.add("hidden");
+      consultarUltimoVencimiento(s.dni);
     });
 
     resultadosSocio.appendChild(li);
@@ -197,12 +200,13 @@ function onTipoDetalleChange() {
   precio.value = "";
   precioMembresia.value = "";
 
+  // Mostrar/ocultar selector de fecha inicio según tipo
+  actualizarVisibilidadFechaInicio();
+
   // Bloquear descuento si es producto
   const descuentoSelect = document.getElementById("descuento");
   if (descuentoSelect) {
     descuentoSelect.disabled = tipoDetalle.value === "PRODUCTO";
-    // Opcional: Si es producto y no hay membresías en el carrito, limpiar descuento?
-    // Mejor no tocar el valor para no perder contextos mixtos.
   }
 }
 
@@ -495,6 +499,7 @@ async function registrarPago(e) {
     idMedioPago: Number(medioPago.value),
     dniEmpleado: empleado.value,
     idDescuento: document.getElementById("descuento").value ? Number(document.getElementById("descuento").value) : null,
+    fechaInicioMembresia: obtenerFechaInicioSeleccionada(),
     detalles
   };
 
@@ -517,10 +522,12 @@ async function registrarPago(e) {
 
     detalles = [];
     socioSeleccionado = null;
+    vencimientoInfo = null;
     buscarSocio.value = "";
     buscarSocio.disabled = false;
     resultadosSocio.innerHTML = "";
     resultadosSocio.classList.add("hidden");
+    document.getElementById("fechaInicioGroup").classList.add("hidden");
 
     renderDetalles();
     pagoForm.reset();
@@ -532,4 +539,72 @@ async function registrarPago(e) {
   } catch {
     Alerta.error("No se pudo conectar con el servidor");
   }
+}
+
+/* ================== FECHA INICIO MEMBRESÍA ================== */
+async function consultarUltimoVencimiento(dni) {
+  try {
+    const res = await authFetch(`/socios/${dni}/ultimo-vencimiento`);
+    if (!res.ok) {
+      vencimientoInfo = null;
+      actualizarVisibilidadFechaInicio();
+      return;
+    }
+    vencimientoInfo = await res.json();
+    actualizarVisibilidadFechaInicio();
+  } catch {
+    vencimientoInfo = null;
+    actualizarVisibilidadFechaInicio();
+  }
+}
+
+function actualizarVisibilidadFechaInicio() {
+  const grupo = document.getElementById("fechaInicioGroup");
+  if (!grupo) return;
+
+  // Mostrar solo si: tipo MEMBRESIA + socio seleccionado + membresía vencida + tiene ultimo vencimiento
+  const mostrar = tipoDetalle.value === "MEMBRESIA"
+    && socioSeleccionado
+    && vencimientoInfo
+    && !vencimientoInfo.vigente
+    && vencimientoInfo.ultimoVencimiento;
+
+  if (mostrar) {
+    const fechaVenc = new Date(vencimientoInfo.ultimoVencimiento + "T00:00:00");
+    const fechaInicioDesdeVenc = new Date(fechaVenc);
+    fechaInicioDesdeVenc.setDate(fechaInicioDesdeVenc.getDate() + 1);
+
+    const hoy = new Date();
+
+    document.getElementById("lblFechaVencimiento").textContent = formatearFecha(fechaInicioDesdeVenc);
+    document.getElementById("lblFechaHoy").textContent = formatearFecha(hoy);
+
+    grupo.classList.remove("hidden");
+  } else {
+    grupo.classList.add("hidden");
+  }
+}
+
+function obtenerFechaInicioSeleccionada() {
+  const grupo = document.getElementById("fechaInicioGroup");
+  if (!grupo || grupo.classList.contains("hidden")) return null;
+
+  const seleccion = document.querySelector('input[name="fechaInicio"]:checked')?.value;
+  if (!seleccion || !vencimientoInfo?.ultimoVencimiento) return null;
+
+  if (seleccion === "vencimiento") {
+    // Día siguiente al último vencimiento
+    const fechaVenc = new Date(vencimientoInfo.ultimoVencimiento + "T00:00:00");
+    fechaVenc.setDate(fechaVenc.getDate() + 1);
+    return fechaVenc.toISOString().split("T")[0]; // yyyy-mm-dd
+  } else {
+    return new Date().toISOString().split("T")[0];
+  }
+}
+
+function formatearFecha(date) {
+  const dd = String(date.getDate()).padStart(2, "0");
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  const yyyy = date.getFullYear();
+  return `${dd}/${mm}/${yyyy}`;
 }

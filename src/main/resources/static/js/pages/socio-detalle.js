@@ -135,8 +135,7 @@ async function cargarKPIs(dni) {
         const resSocio = await authFetch(`${API_URL}/${dni}`);
         const socio = await resSocio.json();
 
-        const activoRes = await authFetch(`${API_URL}/activo-mes?dni=${dni}`);
-        const activo = await activoRes.json();
+        const activo = socio.activo === true;
 
         // Actualizar KPI Estado
         const kpiEstadoCard = document.getElementById("kpiEstado");

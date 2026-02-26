@@ -106,26 +106,34 @@ public class PagoService {
         );
     }
 
-    private SocioMembresia renovarMembresia(Socio socio, Membresia membresia) {
-    
+    private SocioMembresia renovarMembresia(Socio socio, Membresia membresia, LocalDate fechaInicioOverride) {
 
         LocalDate ultimoVencimiento =
                 socioMembresiaRepository.findUltimoVencimientoVigente(socio.getDni());
 
-        LocalDate inicio = (ultimoVencimiento != null)
-                ? ultimoVencimiento.plusDays(1)
-                : LocalDate.now();
+        LocalDate inicio;
 
-        Integer asistenciasPendientes = asistenciaRepository.asistenciasPendientesSocio(socio.getDni());
+        if (ultimoVencimiento != null) {
+            // Membresía vigente: encadenar desde el día siguiente al vencimiento
+            inicio = ultimoVencimiento.plusDays(1);
+        } else if (fechaInicioOverride != null) {
+            // Membresía vencida + operador eligió fecha manual
+            inicio = fechaInicioOverride;
+        } else {
+            // Sin override: lógica automática (asistencias pendientes o hoy)
+            inicio = LocalDate.now();
 
-        if (asistenciasPendientes != null && asistenciasPendientes > 0) {
-            LocalDate limiteInferior = LocalDate.now().minusDays(membresia.getDuracionDias());
-            
-            java.time.Instant fechaInstant = asistenciaRepository
-                    .fechaPrimeraAsistenciaPendienteDentroDeRango(socio.getDni(), limiteInferior);
-            
-            if (fechaInstant != null) {
-                inicio = fechaInstant.atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+            Integer asistenciasPendientesCount = asistenciaRepository.asistenciasPendientesSocio(socio.getDni());
+
+            if (asistenciasPendientesCount != null && asistenciasPendientesCount > 0) {
+                LocalDate limiteInferior = LocalDate.now().minusDays(membresia.getDuracionDias());
+
+                java.time.Instant fechaInstant = asistenciaRepository
+                        .fechaPrimeraAsistenciaPendienteDentroDeRango(socio.getDni(), limiteInferior);
+
+                if (fechaInstant != null) {
+                    inicio = fechaInstant.atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+                }
             }
         }
 
@@ -133,24 +141,21 @@ public class PagoService {
 
         SocioMembresia nuevaSuscripcion = new SocioMembresia(socio, membresia, inicio, vencimiento);
 
-        
         SocioMembresia guardada = socioMembresiaRepository.save(nuevaSuscripcion);
 
-       
-        if (asistenciasPendientes != null && asistenciasPendientes > 0) {
-            List<Asistencia> pendientes = asistenciaRepository
-                    .findPendientesEnRango(
-                            socio.getDni(),
-                            inicio.atStartOfDay(),
-                            vencimiento.atTime(java.time.LocalTime.MAX)
-                    );
+        // Validar asistencias pendientes que caen dentro del rango de la nueva membresía
+        List<Asistencia> pendientes = asistenciaRepository
+                .findPendientesEnRango(
+                        socio.getDni(),
+                        inicio.atStartOfDay(),
+                        vencimiento.atTime(java.time.LocalTime.MAX)
+                );
 
-            if (!pendientes.isEmpty()) {
-                for (Asistencia asistencia : pendientes) {
-                    asistencia.setEstadoAsistencia(EstadoAsistencia.VALIDA);
-                }
-                asistenciaRepository.saveAll(pendientes);
+        if (!pendientes.isEmpty()) {
+            for (Asistencia asistencia : pendientes) {
+                asistencia.setEstadoAsistencia(EstadoAsistencia.VALIDA);
             }
+            asistenciaRepository.saveAll(pendientes);
         }
 
         return guardada;
@@ -224,8 +229,7 @@ public class PagoService {
                 montoBaseParaDescuento = montoBaseParaDescuento.add(subtotalMembresia);
 
                 if (pago.getEstado() == EstadoPago.PAGADO) {
-                    SocioMembresia nuevaSuscripcion = renovarMembresia(socio, m);
-                    socio.setActivo(true);
+                    SocioMembresia nuevaSuscripcion = renovarMembresia(socio, m, dto.getFechaInicioMembresia());
                     detalle.setSocioMembresia(nuevaSuscripcion);
                 }
             } else {
@@ -344,13 +348,6 @@ public class PagoService {
                 SocioMembresia sm = detalle.getSocioMembresia();
                 sm.setActivo(false);
                 socioMembresiaRepository.save(sm);
-                
-                
-                Socio socio = sm.getSocio();
-                if (socio != null && !socioMembresiaRepository.estaActivoHoy(socio.getDni())) {
-                    socio.setActivo(false);
-                    socioRepository.save(socio);
-                }
             }
             
             if (detalle.getProducto() != null && detalle.getCantidad() != null) {
@@ -383,13 +380,6 @@ public class PagoService {
                 SocioMembresia sm = detalle.getSocioMembresia();
                 sm.setActivo(false);
                 socioMembresiaRepository.save(sm);
-
-                
-                Socio socio = sm.getSocio();
-                if (socio != null && !socioMembresiaRepository.estaActivoHoy(socio.getDni())) {
-                    socio.setActivo(false);
-                    socioRepository.save(socio);
-                }
             }
 
             if (detalle.getProducto() != null && detalle.getCantidad() != null) {

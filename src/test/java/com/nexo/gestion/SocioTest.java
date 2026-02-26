@@ -8,6 +8,13 @@ import com.nexo.gestion.repository.AsistenciaRepository;
 import com.nexo.gestion.repository.MembresiaRepository;
 import com.nexo.gestion.repository.SocioMembresiaRepository;
 import com.nexo.gestion.repository.SocioRepository;
+import com.nexo.gestion.dto.SocioCreateDTO;
+import com.nexo.gestion.dto.SocioDTO;
+import com.nexo.gestion.dto.MembresiaCreateDTO;
+import com.nexo.gestion.dto.MembresiaDTO;
+import com.nexo.gestion.services.SocioService;
+import com.nexo.gestion.services.MembresiaService;
+import com.nexo.gestion.entity.TipoMembresia;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,13 +37,17 @@ public class SocioTest {
     private SocioMembresiaRepository socioMembresiaRepository;
     @Autowired
     private AsistenciaRepository asistenciaRepository;
+    @Autowired
+    private SocioService socioService;
+    @Autowired
+    private MembresiaService membresiaService;
 
 
     @Test
     @Transactional
     @Rollback
     public void verificarQueSeGuardaSocio(){
-        Socio socio = new Socio("44048664", "Mateo");
+        Socio socio = new Socio("44048664", "Mateo", "1111111111", "mateo@test.com", LocalDate.of(2000, 1, 1));
         Socio guardado = socioRepository.save(socio);
         assertNotNull(guardado.getDni());
     }
@@ -100,60 +111,58 @@ public class SocioTest {
     @Rollback
     public void verificarFiltradoPorEstado(){
         // Crear membresía base
-        Membresia membresia = new Membresia("Base", 30, BigDecimal.valueOf(1000));
-        membresiaRepository.save(membresia);
+        Membresia membresiaBase = new Membresia("Base", 30, BigDecimal.valueOf(1000));
+        membresiaRepository.save(membresiaBase);
 
         // Crear socio ACTIVO (con membresía vigente)
-        Socio activo = new Socio("11111111", "Socio Activo");
-        activo.setActivo(true);
-        socioRepository.save(activo);
-        
-        SocioMembresia smActiva = new SocioMembresia(activo, membresia);
-        smActiva.setFechaInicio(LocalDate.now().minusDays(5));
-        smActiva.setFechaHasta(LocalDate.now().plusDays(25));
-        socioMembresiaRepository.save(smActiva);
+        Socio activo = new Socio("11111111", "Socio Activo", "11111", "activo@test.com", LocalDate.of(1990, 1, 1));
+        SocioDTO guardado = socioService.registrarSocio(new SocioCreateDTO(activo.getDni(), activo.getNombre(), activo.getTelefono(), activo.getEmail(), activo.getFechaNacimiento()));
+        Membresia membresiaParaAsignar = new Membresia("plan basico", 28, new BigDecimal(50000), 2, TipoMembresia.MUSCULACION);
+        MembresiaDTO memGuardada = membresiaService.registrarMembresia(new MembresiaCreateDTO(membresiaParaAsignar.getDuracionDias(), membresiaParaAsignar.getPrecioSugerido(), membresiaParaAsignar.getNombre(), membresiaParaAsignar.getAsistenciasPorSemana(), membresiaParaAsignar.getTipoMembresia()));
+        socioService.asignarMembresia(guardado.dni(), memGuardada.idMembresia());
 
         // Crear socio INACTIVO (sin membresía vigente)
-        Socio inactivo = new Socio("22222222", "Socio Inactivo");
+        Socio inactivo = new Socio("22222222", "Socio Inactivo", "22222", "inactivo@test.com", LocalDate.of(1990, 1, 1));
         inactivo.setActivo(true); // El flag booleano no debería importar
         socioRepository.save(inactivo);
         
         // Membresía vencida
-        SocioMembresia smVencida = new SocioMembresia(inactivo, membresia);
+        SocioMembresia smVencida = new SocioMembresia(inactivo, membresiaBase);
         smVencida.setFechaInicio(LocalDate.now().minusDays(60));
         smVencida.setFechaHasta(LocalDate.now().minusDays(30));
         socioMembresiaRepository.save(smVencida);
 
         org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(0, 10);
 
-        // Test filtro Activos (true)
+        // Test filtro Activos (true) buscando el DNI específico
         org.springframework.data.domain.Page<Socio> resultadosActivos = 
-            socioRepository.buscarSociosPaginados(null, true, pageable);
+            socioRepository.buscarSociosPaginados("11111111", true, pageable);
         
         long countActivos = resultadosActivos.getContent().stream().filter(s -> s.getDni().equals("11111111")).count();
-        long countInactivosEnActivos = resultadosActivos.getContent().stream().filter(s -> s.getDni().equals("22222222")).count();
-
         assertEquals(1, countActivos, "Debería encontrar al socio con membresía vigente");
-        assertEquals(0, countInactivosEnActivos, "No debería encontrar al socio con membresía vencida");
 
-        // Test filtro Inactivos (false)
+        org.springframework.data.domain.Page<Socio> resultadosActivosInvalido = 
+            socioRepository.buscarSociosPaginados("22222222", true, pageable);
+        assertEquals(0, resultadosActivosInvalido.getTotalElements(), "No debería encontrar al socio inactivo");
+
+        // Test filtro Inactivos (false) buscando el DNI específico
         org.springframework.data.domain.Page<Socio> resultadosInactivos = 
-            socioRepository.buscarSociosPaginados(null, false, pageable);
+            socioRepository.buscarSociosPaginados("22222222", false, pageable);
         
         long countInactivos = resultadosInactivos.getContent().stream().filter(s -> s.getDni().equals("22222222")).count();
-        long countActivosEnInactivos = resultadosInactivos.getContent().stream().filter(s -> s.getDni().equals("11111111")).count();
-
         assertEquals(1, countInactivos, "Debería encontrar al socio con membresía vencida");
-        assertEquals(0, countActivosEnInactivos, "No debería encontrar al socio con membresía vigente");
+
+        org.springframework.data.domain.Page<Socio> resultadosInactivosInvalido = 
+            socioRepository.buscarSociosPaginados("11111111", false, pageable);
+        assertEquals(0, resultadosInactivosInvalido.getTotalElements(), "No debería encontrar al socio activo");
 
         // Test sin filtro (null)
-        org.springframework.data.domain.Page<Socio> resultadosTodos = 
-            socioRepository.buscarSociosPaginados(null, null, pageable);
-        
-        long countTodosActivos = resultadosTodos.getContent().stream().filter(s -> s.getDni().equals("11111111")).count();
-        long countTodosInactivos = resultadosTodos.getContent().stream().filter(s -> s.getDni().equals("22222222")).count();
+        org.springframework.data.domain.Page<Socio> resultadosTodosUno = 
+            socioRepository.buscarSociosPaginados("11111111", null, pageable);
+        assertEquals(1, resultadosTodosUno.getContent().size(), "Debería encontrar al socio activo en búsqueda total");
 
-        assertEquals(1, countTodosActivos, "Debería encontrar al socio activo en búsqueda total");
-        assertEquals(1, countTodosInactivos, "Debería encontrar al socio inactivo en búsqueda total");
+        org.springframework.data.domain.Page<Socio> resultadosTodosDos = 
+            socioRepository.buscarSociosPaginados("22222222", null, pageable);
+        assertEquals(1, resultadosTodosDos.getContent().size(), "Debería encontrar al socio inactivo en búsqueda total");
     }
 }

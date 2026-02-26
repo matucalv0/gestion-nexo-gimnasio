@@ -80,7 +80,6 @@ async function cargarSocios(tablaBody) {
     const q = document.getElementById("inputBusqueda").value;
     const activo = document.getElementById("filtroActivo").value;
 
-    // Usar endpoint básico que funciona
     let url = `${API_URL}?page=${currentPage}&size=${pageSize}`;
     if (q) url += `&q=${encodeURIComponent(q)}`;
     if (activo) url += `&activo=${activo}`;
@@ -91,26 +90,7 @@ async function cargarSocios(tablaBody) {
     }
     const pageData = await res.json();
 
-    // Obtener info de membresías para los socios
-    const dnis = pageData.content.map(s => s.dni);
-    let membresiaInfo = {};
-
-    if (dnis.length > 0) {
-      try {
-        const resMem = await authFetch(`${API_URL}/activo-mes-listado`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(dnis),
-        });
-        if (resMem.ok) {
-          membresiaInfo = await resMem.json();
-        }
-      } catch (e) {
-        console.error("Error obteniendo info de membresías", e);
-      }
-    }
-
-    renderSocios(tablaBody, pageData.content, membresiaInfo);
+    renderSocios(tablaBody, pageData.content);
 
     // Render paginación
     renderPagination(
@@ -129,7 +109,7 @@ async function cargarSocios(tablaBody) {
   }
 }
 
-function renderSocios(tablaBody, socios, membresiaInfo = {}) {
+function renderSocios(tablaBody, socios) {
   const emptyState = document.getElementById('emptyStateSocios');
 
   // Limpiar filas existentes (excepto el empty state)
@@ -145,8 +125,7 @@ function renderSocios(tablaBody, socios, membresiaInfo = {}) {
 
   socios.forEach(s => {
     const tr = document.createElement("tr");
-    const isActivo = membresiaInfo[s.dni] === true;
-
+    const isActivo = s.activo === true;
     tr.innerHTML = `
       <td>${s.dni}</td>
       <td class="font-medium">${s.nombre}</td>
@@ -209,6 +188,8 @@ async function exportarCSV() {
     Alerta.error("No se pudo exportar el archivo");
   }
 }
+
+
 
 
 

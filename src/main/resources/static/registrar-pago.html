@@ -119,6 +119,22 @@
             </div>
           </div>
 
+          <!-- SELECTOR FECHA INICIO MEMBRESÍA -->
+          <div id="fechaInicioGroup" class="form-group hidden">
+            <label class="form-label text-sm">Inicio de membresía</label>
+            <div class="space-y-2 bg-gray-800 p-3 rounded-lg">
+              <label
+                class="flex items-center gap-2 cursor-pointer text-sm text-gray-300 hover:text-white transition-colors">
+                <input type="radio" name="fechaInicio" value="vencimiento" class="accent-orange-500" checked />
+                <span>Desde vencimiento anterior (<span id="lblFechaVencimiento"></span>)</span>
+              </label>
+              <label
+                class="flex items-center gap-2 cursor-pointer text-sm text-gray-300 hover:text-white transition-colors">
+                <input type="radio" name="fechaInicio" value="hoy" class="accent-orange-500" />
+                <span>Desde hoy (<span id="lblFechaHoy"></span>)</span>
+              </label>
+            </div>
+          </div>
           <!-- BOTONES -->
           <div class="grid grid-cols-2 gap-4">
             <button type="button" id="btnAgregarDetalle" class="btn-outline">

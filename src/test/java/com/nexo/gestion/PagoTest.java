@@ -747,4 +747,98 @@ public class PagoTest {
         MembresiaVigenteDTO membresiaVigente = socioService.membresiaVigenteSocio(socioGuardado.dni());
 
     }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void verificarQueMembresiaArrancaEnFechaManualDesdeVencimientoAnterior() {
+        // 1. Crear socio con membresía
+        SocioDTO socio = socioService.registrarSocio(
+                new SocioCreateDTO("50111222", "Vacacionista", "1155556666", "vaca@test.com", LocalDate.of(1990, 6, 15))
+        );
+
+        MembresiaDTO membresia = membresiaService.registrarMembresia(
+                new MembresiaCreateDTO(30, new BigDecimal("50000"), "Plan mensual", 3, TipoMembresia.MUSCULACION)
+        );
+
+        MedioPagoDTO medioPago = medioPagoService.registrarMedioPago(
+                new MedioPagoDTO("MP_" + UUID.randomUUID().toString().substring(0, 8))
+        );
+
+        PuestoDTO puesto = puestoService.registrarPuesto(new PuestoDTO("Recepcion"));
+        EmpleadoDTO empleado = empleadoService.registrarEmpleado(
+                new EmpleadoDTO("50222333", "Recep", "111", "recep2@test.com", LocalDate.now(), true, puesto.idPuesto())
+        );
+
+        // 2. Primer pago: membresía activa
+        pagoService.crearPago(new PagoCreateDTO(
+                EstadoPago.PAGADO, socio.dni(), medioPago.idMedioPago(), empleado.dni(),
+                List.of(new DetallePagoCreateDTO(1, new BigDecimal("50000"), null, socio.dni(), membresia.idMembresia()))
+        ));
+
+        // 3. Forzar vencimiento en el pasado (simular que venció hace 5 días)
+        SocioMembresia primera = socioMembresiaRepository.findBySocioDniOrderByFechaInicioAsc(socio.dni()).get(0);
+        LocalDate vencimientoAnterior = LocalDate.now().minusDays(5);
+        primera.setFechaInicio(vencimientoAnterior.minusDays(30));
+        primera.setFechaHasta(vencimientoAnterior);
+        socioMembresiaRepository.saveAndFlush(primera);
+        entityManager.clear();
+
+        // 4. Segundo pago con fechaInicioMembresia = día siguiente al vencimiento anterior
+        LocalDate fechaManual = vencimientoAnterior.plusDays(1); // hoy - 4 días
+        PagoCreateDTO pagoDTO = new PagoCreateDTO(
+                EstadoPago.PAGADO, socio.dni(), medioPago.idMedioPago(), empleado.dni(),
+                List.of(new DetallePagoCreateDTO(1, new BigDecimal("50000"), null, socio.dni(), membresia.idMembresia()))
+        );
+        pagoDTO.setFechaInicioMembresia(fechaManual);
+        pagoService.crearPago(pagoDTO);
+
+        // 5. Verificar que la nueva membresía arranca en la fecha manual, NO hoy
+        SocioMembresia nueva = socioMembresiaRepository.findBySocioDniOrderByFechaInicioAsc(socio.dni()).get(1);
+        assertEquals(fechaManual, nueva.getFechaInicio(),
+            "La membresía debería arrancar en la fecha manual elegida por el operador");
+        assertEquals(fechaManual.plusDays(30), nueva.getFechaHasta(),
+            "El vencimiento debería ser 30 días después de la fecha manual");
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void verificarQueFechaManualValidaAsistenciasPendientesEnRango() {
+        // 1. Crear socio sin membresía
+        Socio socio = new Socio("60111222", "ConPendientes", "1166667777", "pend@test.com", LocalDate.of(1992, 3, 10));
+        socioService.registrarSocio(new SocioCreateDTO(socio.getDni(), socio.getNombre(), socio.getTelefono(), socio.getEmail(), socio.getFechaNacimiento()));
+
+        // 2. Registrar asistencia pendiente de hace 3 días
+        java.time.LocalDateTime fechaAsistencia = java.time.LocalDateTime.now().minusDays(3).truncatedTo(java.time.temporal.ChronoUnit.SECONDS);
+        AsistenciaSocioId idAsistencia = new AsistenciaSocioId(socio.getDni(), fechaAsistencia);
+        Asistencia asistenciaPendiente = new Asistencia(socio, false);
+        asistenciaPendiente.setIdAsistencia(idAsistencia);
+        asistenciaRepository.saveAndFlush(asistenciaPendiente);
+
+        // 3. Crear membresía, medio pago, empleado
+        MembresiaDTO membresia = membresiaService.registrarMembresia(new MembresiaCreateDTO(30, new BigDecimal("50000"), "Plan Test Manual", 30, TipoMembresia.MUSCULACION));
+        MedioPagoDTO medioPago = medioPagoService.registrarMedioPago(new MedioPagoDTO("MP_" + UUID.randomUUID().toString().substring(0, 8)));
+        PuestoDTO puesto = puestoService.registrarPuesto(new PuestoDTO("CajaTest"));
+        EmpleadoDTO empleado = empleadoService.registrarEmpleado(new EmpleadoDTO("60222333", "CajTest", "222", "caj@test.com", LocalDate.now(), true, puesto.idPuesto()));
+
+        // 4. Pago con fecha manual = hace 5 días (cubre la asistencia pendiente de hace 3)
+        LocalDate fechaManual = LocalDate.now().minusDays(5);
+        PagoCreateDTO pagoDTO = new PagoCreateDTO(
+                EstadoPago.PAGADO, socio.getDni(), medioPago.idMedioPago(), empleado.dni(),
+                List.of(new DetallePagoCreateDTO(1, new BigDecimal("50000"), null, socio.getDni(), membresia.idMembresia()))
+        );
+        pagoDTO.setFechaInicioMembresia(fechaManual);
+        pagoService.crearPago(pagoDTO);
+
+        // 5. Verificar que la membresía arranca en la fecha manual
+        SocioMembresia sm = socioMembresiaRepository.findBySocioDniOrderByFechaInicioAsc(socio.getDni()).get(0);
+        assertEquals(fechaManual, sm.getFechaInicio(),
+            "La membresía debería arrancar en la fecha manual");
+
+        // 6. Verificar que la asistencia pendiente (hace 3 días) fue validada (cae dentro del rango)
+        Integer pendientes = asistenciaRepository.asistenciasPendientesSocio(socio.getDni());
+        assertEquals(0, pendientes,
+            "La asistencia pendiente debería haberse validado porque cae dentro del rango de la membresía");
+    }
 }
