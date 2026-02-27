@@ -25,6 +25,10 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify({ username, password })
       });
 
+      if (res.status === 429) {
+        throw new Error("Demasiados intentos. Esperá unos minutos antes de intentar de nuevo.");
+      }
+
       if (!res.ok) {
         throw new Error("Usuario o contraseña incorrectos");
       }

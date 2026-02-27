@@ -18,10 +18,11 @@ export async function authFetch(endpoint, options = {}) {
   });
 
   if (response.status === 401 || response.status === 403) {
-    logout();
+    await logout();
     console.error("Error de autenticación/autorización en:", endpoint, "Status:", response.status);
     throw new Error("Unauthorized");
   }
 
   return response;
 }
+

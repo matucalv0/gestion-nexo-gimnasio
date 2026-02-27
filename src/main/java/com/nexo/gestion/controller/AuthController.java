@@ -46,7 +46,7 @@ public class AuthController {
         cookie.setHttpOnly(true);
         cookie.setSecure(cookieSecure);
         cookie.setPath("/");
-        cookie.setMaxAge(10 * 60 * 60); // 10 horas (alineado con JWT expiration)
+        cookie.setMaxAge(4 * 60 * 60); // 4 horas (alineado con JWT expiration)
         cookie.setAttribute("SameSite", "Strict");
 
         response.addCookie(cookie);
