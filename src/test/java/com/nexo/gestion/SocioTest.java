@@ -50,6 +50,11 @@ public class SocioTest {
         Socio socio = new Socio("44048664", "Mateo", "1111111111", "mateo@test.com", LocalDate.of(2000, 1, 1));
         Socio guardado = socioRepository.save(socio);
         assertNotNull(guardado.getDni());
+        assertEquals("44048664", guardado.getDni());
+        assertEquals("Mateo", guardado.getNombre());
+        assertEquals("1111111111", guardado.getTelefono());
+        assertEquals("mateo@test.com", guardado.getEmail());
+        assertEquals(LocalDate.of(2000, 1, 1), guardado.getFechaNacimiento());
     }
 
     @Test
@@ -82,13 +87,12 @@ public class SocioTest {
         socioMembresiaRepository.save(nuevaSuscripcion);
         SocioMembresia guardado = socioMembresiaRepository.save(nuevaSuscripcion);
 
-
         assertNotNull(guardado.getIdSm());
-        assertEquals(guardado.getFechaHasta(), guardado.getFechaInicio().plusDays(30)); //verifico cálculo de fechaHasta
-        System.out.println(guardado.getSocio().getNombre());
-        System.out.println(guardado.getMembresia().getNombre());
-        System.out.println(guardado.getFechaInicio());
-        System.out.println(guardado.getFechaHasta());
+        assertEquals(guardado.getFechaHasta(), guardado.getFechaInicio().plusDays(30));
+        assertEquals("Mateo", guardado.getSocio().getNombre());
+        assertEquals("Estandar", guardado.getMembresia().getNombre());
+        assertNotNull(guardado.getFechaInicio());
+        assertNotNull(guardado.getFechaHasta());
     }
 
     @Test
@@ -100,9 +104,9 @@ public class SocioTest {
         Asistencia nuevaAsistencia = new Asistencia(socio, true);
         Asistencia guardado = asistenciaRepository.save(nuevaAsistencia);
 
-
-        System.out.println(guardado.getIdAsistencia());
         assertNotNull(guardado.getIdAsistencia());
+        assertNotNull(guardado.getIdAsistencia().getFechaHora());
+        assertEquals("44048664", guardado.getIdAsistencia().getDniSocio());
 
     }
 

@@ -35,9 +35,21 @@ public class SecurityConfig {
                 .httpBasic(basic -> basic.disable())
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) -> {
-                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                            response.setContentType("application/json");
-                            response.getWriter().write("{\"error\": \"Credenciales inválidas\"}");
+                            String requestUri = request.getRequestURI();
+                            String acceptHeader = request.getHeader("Accept");
+
+                            boolean isHtmlRequest = (acceptHeader != null && acceptHeader.contains("text/html"))
+                                    || requestUri.endsWith(".html")
+                                    || requestUri.equals("/");
+
+                            if (isHtmlRequest) {
+                                response.sendRedirect("/login.html");
+                            } else {
+                                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                                response.setContentType("application/json");
+                                response.setCharacterEncoding("UTF-8");
+                                response.getWriter().write("{\"error\": \"Credenciales inválidas\"}");
+                            }
                         })
                 )
                 .authorizeHttpRequests(auth -> auth

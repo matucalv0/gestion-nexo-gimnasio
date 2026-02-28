@@ -231,6 +231,8 @@ public class PagoService {
                 if (pago.getEstado() == EstadoPago.PAGADO) {
                     SocioMembresia nuevaSuscripcion = renovarMembresia(socio, m, dto.getFechaInicioMembresia());
                     detalle.setSocioMembresia(nuevaSuscripcion);
+                } else {
+                    throw new IllegalStateException("No se puede registrar un pago pendiente para una membresía.");
                 }
             } else {
                 throw new IllegalStateException("El detalle debe tener producto o membresía");

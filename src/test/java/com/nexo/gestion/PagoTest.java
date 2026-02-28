@@ -284,25 +284,25 @@ public class PagoTest {
                 )
         );
 
-        pagoService.crearPago(new PagoCreateDTO(
-                EstadoPago.PENDIENTE,
-                socio.dni(),
-                medioPago.idMedioPago(),
-                empleado.dni(),
-                List.of(
-                        new DetallePagoCreateDTO(
-                                1,
-                                new BigDecimal("50000"),
-                                null,
-                                socio.dni(),
-                                membresia.idMembresia()
-                        )
-                )
-        ));
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
+            pagoService.crearPago(new PagoCreateDTO(
+                    EstadoPago.PENDIENTE,
+                    socio.dni(),
+                    medioPago.idMedioPago(),
+                    empleado.dni(),
+                    List.of(
+                            new DetallePagoCreateDTO(
+                                    1,
+                                    new BigDecimal("50000"),
+                                    null,
+                                    socio.dni(),
+                                    membresia.idMembresia()
+                            )
+                    )
+            ))
+        );
 
-        List<SocioMembresia> membresias = socioMembresiaRepository.findBySocioDniOrderByFechaInicioAsc(socio.dni());
-
-        assertTrue(membresias.isEmpty());
+        assertEquals("No se puede registrar un pago pendiente para una membresía.", exception.getMessage());
     }
 
     @Test

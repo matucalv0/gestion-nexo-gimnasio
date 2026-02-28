@@ -26,6 +26,8 @@ const playSound = (type) => {
   } catch (e) { /* ignore */ }
 };
 
+let timeoutModalExito = null;
+
 document.addEventListener("DOMContentLoaded", () => {
   const go = page => window.location.href = page;
 
@@ -204,6 +206,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       resetInput();
       cargarUltimasAsistencias();
+
+      // ===== Mostrar Modal de Éxito con Info del Socio =====
+      mostrarModalExito(socio);
+
     } catch (err) {
       Alerta.error("No se pudo registrar la asistencia");
       playSound('error');
@@ -255,9 +261,27 @@ document.addEventListener("DOMContentLoaded", () => {
   backdropPorVencer?.addEventListener("click", () => {
     modalPorVencer?.classList.add("hidden");
   });
+
+  // ===== MODAL ASISTENCIA EXITO =====
+  const modalExito = document.getElementById("modalAsistenciaExito");
+  const cerrarModalExito = document.getElementById("cerrarModalExito");
+  const backdropExito = modalExito?.querySelector(".modal-backdrop");
+
+  cerrarModalExito?.addEventListener("click", () => {
+    ocultarModalExito();
+  });
+  backdropExito?.addEventListener("click", () => {
+    ocultarModalExito();
+  });
+
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && !modalPorVencer?.classList.contains("hidden")) {
-      modalPorVencer.classList.add("hidden");
+    if (e.key === "Escape") {
+      if (!modalPorVencer?.classList.contains("hidden")) {
+        modalPorVencer.classList.add("hidden");
+      }
+      if (!modalExito?.classList.contains("hidden")) {
+        ocultarModalExito();
+      }
     }
   });
 
@@ -295,6 +319,106 @@ async function cargarUltimasAsistencias() {
     }).join('');
   } catch (err) {
     lista.innerHTML = '<p class="text-gray-500 text-xs text-center py-2">Error cargando asistencias</p>';
+  }
+}
+
+// ===== FUNCIONES PARA MODAL DE ÉXITO =====
+async function mostrarModalExito(socio) {
+  const modal = document.getElementById("modalAsistenciaExito");
+  if (!modal) return;
+
+  // Clear previous timeout if user rapidly registers another one
+  if (timeoutModalExito) {
+    clearTimeout(timeoutModalExito);
+  }
+
+  await cargarInfoSocioHome(socio);
+  await cargarInfoMembresiaHome(socio);
+
+  modal.classList.remove("hidden");
+
+  // Auto close in 4 seconds
+  timeoutModalExito = setTimeout(() => {
+    ocultarModalExito();
+  }, 4000);
+}
+
+function ocultarModalExito() {
+  const modal = document.getElementById("modalAsistenciaExito");
+  if (modal) modal.classList.add("hidden");
+  if (timeoutModalExito) clearTimeout(timeoutModalExito);
+}
+
+async function cargarInfoSocioHome(socio) {
+  const infoSocio = document.getElementById("homeInfoSocio");
+  infoSocio.textContent = "Cargando información...";
+
+  try {
+    const res = await authFetch(`${API_SOCIOS}/${socio.dni}/asistencias-disponibles`);
+    if (!res.ok) throw new Error();
+
+    const data = await res.json();
+    infoSocio.innerHTML = `
+        <div class="info-card-header">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+          </svg>
+          <span>Socio</span>
+        </div>
+        <div class="space-y-1">
+          <p><strong>${socio.nombre}</strong></p>
+          <p class="text-gray-400 text-xs">DNI: ${socio.dni}</p>
+          <p class="text-xs">Asistencias disponibles: <strong class="${data.disponibles <= 2 ? 'text-yellow-400' : 'text-green-400'}">${data.disponibles}</strong></p>
+        </div>
+      `;
+  } catch {
+    infoSocio.innerHTML = `
+        <div class="info-card-header">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+          </svg>
+          <span>Socio</span>
+        </div>
+        <div class="space-y-1">
+          <p><strong>${socio.nombre}</strong></p>
+          <p class="text-gray-400 text-xs">DNI: ${socio.dni}</p>
+          <p class="text-yellow-400 text-xs">Sin membresía activa (quedará como pendiente)</p>
+        </div>
+      `;
+  }
+}
+
+async function cargarInfoMembresiaHome(socio) {
+  const infoMembresia = document.getElementById("homeInfoMembresia");
+  infoMembresia.textContent = "Cargando información...";
+
+  try {
+    const res = await authFetch(`${API_SOCIOS}/${socio.dni}/membresia-vigente`);
+    if (!res.ok) throw new Error();
+
+    const membresia = await res.json();
+    infoMembresia.innerHTML = `
+        <div class="info-card-header">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
+          </svg>
+          <span>Plan activo</span>
+        </div>
+        <div class="space-y-1">
+          <p><strong>${membresia.tipo}</strong></p>
+          <p class="text-gray-400 text-xs">Vence: ${membresia.vencimiento}</p>
+        </div>
+      `;
+  } catch {
+    infoMembresia.innerHTML = `
+        <div class="info-card-header">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
+          </svg>
+          <span>Plan activo</span>
+        </div>
+        <p class="text-gray-500 text-xs">El socio no tiene ningún plan activo</p>
+      `;
   }
 }
 

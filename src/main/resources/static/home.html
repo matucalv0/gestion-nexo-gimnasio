@@ -93,7 +93,7 @@
 
           <!-- KPI: Socios Activos -->
           <div class="kpi-card">
-            <p class="kpi-label">Socios Activos</p>
+            <p class="kpi-label">Socios activos HOY</p>
             <p id="kpiSociosActivos" class="kpi-value text-blue-400">0</p>
             <p class="kpi-caption">Con membresía vigente</p>
           </div>
@@ -347,27 +347,31 @@
 
   <!-- MODAL: Socios por vencer -->
   <div id="modalPorVencer" class="modal hidden">
+    ...
+  </div>
+
+  <!-- MODAL: Asistencia Exitosa (Info Socio) -->
+  <div id="modalAsistenciaExito" class="modal hidden">
     <div class="modal-backdrop"></div>
-    <div class="modal-content max-w-lg">
-      <div class="modal-header">
-        <div class="flex items-center gap-2">
-          <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" stroke-width="1.75"
-            viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+    <div class="modal-content max-w-lg relative">
+      <button id="cerrarModalExito" class="absolute top-4 right-4 text-gray-400 hover:text-white transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <div class="text-center mb-4">
+        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-green-500/20 text-green-400 mb-2">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
           </svg>
-          <h3 class="modal-title">Membresías por vencer</h3>
         </div>
-        <button id="cerrarModalPorVencer" class="modal-close">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+        <h3 class="modal-title text-green-400">¡Asistencia registrada!</h3>
       </div>
-      <p class="px-6 pt-2 text-sm text-gray-500">Próximos 7 días</p>
-      <div id="listaPorVencer" class="modal-body space-y-2">
-        <!-- Se llena dinámicamente -->
-      </div>
+
+      <!-- Info socio (Replicado de asistencia.html) -->
+      <div id="homeInfoSocio" class="info-card mb-3"></div>
+      <div id="homeInfoMembresia" class="info-card"></div>
     </div>
   </div>
 

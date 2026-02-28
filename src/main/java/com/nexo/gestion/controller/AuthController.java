@@ -37,7 +37,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody UsuarioLoginDTO usuarioLoginDTO, jakarta.servlet.http.HttpServletResponse response) {
+    public ResponseEntity<Map<String, String>> login(@jakarta.validation.Valid @RequestBody UsuarioLoginDTO usuarioLoginDTO, jakarta.servlet.http.HttpServletResponse response) {
         log.debug("Intentando login para usuario: {}", usuarioLoginDTO.username());
         String token = authService.login(usuarioLoginDTO);
         

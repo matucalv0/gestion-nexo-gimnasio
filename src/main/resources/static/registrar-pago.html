@@ -133,6 +133,14 @@
                 <input type="radio" name="fechaInicio" value="hoy" class="accent-orange-500" />
                 <span>Desde hoy (<span id="lblFechaHoy"></span>)</span>
               </label>
+              <label
+                class="flex items-center gap-2 cursor-pointer text-sm text-gray-300 hover:text-white transition-colors">
+                <input type="radio" name="fechaInicio" value="otro" class="accent-orange-500" />
+                <span>Otra fecha...</span>
+              </label>
+              <div id="fechaCustomContainer" class="hidden mt-2 ml-6">
+                <input type="date" id="fechaCustom" class="form-input text-sm" />
+              </div>
             </div>
           </div>
           <!-- BOTONES -->

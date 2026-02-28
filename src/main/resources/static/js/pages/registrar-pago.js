@@ -40,6 +40,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
   pagoForm.addEventListener("submit", registrarPago);
 
+  const radiosFechaInicio = document.querySelectorAll('input[name="fechaInicio"]');
+  radiosFechaInicio.forEach(radio => {
+    radio.addEventListener('change', () => {
+      const customContainer = document.getElementById('fechaCustomContainer');
+      if (customContainer) {
+        customContainer.classList.toggle('hidden', radio.value !== 'otro');
+      }
+    });
+  });
+
   buscarSocio.addEventListener("input", buscarSocioHandler);
 
   // Enter en búsqueda de socio selecciona el primero
@@ -468,6 +478,18 @@ function agregarDetalleSilencioso() {
 async function registrarPago(e) {
   e.preventDefault();
 
+  // Validate custom date if 'otro' is selected
+  const grupoFecha = document.getElementById("fechaInicioGroup");
+  if (grupoFecha && !grupoFecha.classList.contains("hidden")) {
+    const seleccionFecha = document.querySelector('input[name="fechaInicio"]:checked')?.value;
+    if (seleccionFecha === "otro") {
+      const customDate = document.getElementById("fechaCustom")?.value;
+      if (!customDate) {
+        return Alerta.warning("Seleccione una fecha de inicio personalizada");
+      }
+    }
+  }
+
   // Auto-agregar detalle pendiente del formulario si hay algo seleccionado
   const tipo = tipoDetalle.value;
   let tieneDetallePendiente = false;
@@ -579,6 +601,14 @@ function actualizarVisibilidadFechaInicio() {
     document.getElementById("lblFechaVencimiento").textContent = formatearFecha(fechaInicioDesdeVenc);
     document.getElementById("lblFechaHoy").textContent = formatearFecha(hoy);
 
+    // Reset UI for 'otro' option
+    const customContainer = document.getElementById("fechaCustomContainer");
+    if (customContainer) customContainer.classList.add("hidden");
+    const radioVencimiento = document.querySelector('input[name="fechaInicio"][value="vencimiento"]');
+    if (radioVencimiento) radioVencimiento.checked = true;
+    const inputCustom = document.getElementById("fechaCustom");
+    if (inputCustom) inputCustom.value = "";
+
     grupo.classList.remove("hidden");
   } else {
     grupo.classList.add("hidden");
@@ -597,9 +627,13 @@ function obtenerFechaInicioSeleccionada() {
     const fechaVenc = new Date(vencimientoInfo.ultimoVencimiento + "T00:00:00");
     fechaVenc.setDate(fechaVenc.getDate() + 1);
     return fechaVenc.toISOString().split("T")[0]; // yyyy-mm-dd
-  } else {
+  } else if (seleccion === "hoy") {
     return new Date().toISOString().split("T")[0];
+  } else if (seleccion === "otro") {
+    const custom = document.getElementById("fechaCustom")?.value;
+    return custom ? custom : null;
   }
+  return null;
 }
 
 function formatearFecha(date) {
