@@ -62,7 +62,7 @@
 
 <body class="text-gray-100 min-h-screen font-sans selection:bg-[var(--orange)] selection:text-white">
 
-  <main class="flex justify-center items-start min-h-screen p-6 pt-8">
+  <main class="flex justify-center items-start min-h-screen p-4 sm:p-6 pt-6 sm:pt-8">
     <div class="w-full max-w-7xl">
 
       <!-- HEADER -->
@@ -75,15 +75,15 @@
         </div>
         <div class="page-header-content">
           <h1 class="page-header-title">Panel Principal</h1>
-          <p class="page-header-subtitle">NEXO</p>
+          <p id="headerSaludo" class="page-header-subtitle">NEXO</p>
         </div>
       </header>
 
 
       <!-- DASHBOARD EJECUTIVO - KPIs Principales -->
-      <section class="card-container mb-6">
+      <section class="card-container mb-4 sm:mb-6 ring-1 ring-white/5">
         <h2 class="card-section-title mb-5">Resumen del día</h2>
-        <div id="dashboardKpis" class="grid grid-cols-2 lg:grid-cols-4 gap-5">
+        <div id="dashboardKpis" class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
           <!-- KPI: Recaudación HOY -->
           <div class="kpi-card">
             <p class="kpi-label">Recaudación HOY</p>
@@ -102,7 +102,13 @@
           <div class="kpi-card kpi-card-warning cursor-pointer" id="kpiPorVencerCard">
             <p class="kpi-label">Por Vencer</p>
             <p id="kpiPorVencer" class="kpi-value text-yellow-400">0</p>
-            <p class="kpi-caption">En los próximos 7 días</p>
+            <p class="kpi-caption flex items-center gap-1">
+              En los próximos 7 días
+              <svg class="w-3 h-3 text-yellow-500/60 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+              </svg>
+            </p>
           </div>
 
           <!-- KPI: Asistencias HOY -->
@@ -115,11 +121,11 @@
       </section>
 
       <!-- REGISTRO RÁPIDO DE ASISTENCIA -->
-      <section class="card-container mb-6">
+      <section class="card-container mb-4 sm:mb-6">
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-2">
-            <div class="flex items-center justify-center w-8 h-8 rounded-lg" style="background: rgba(233,86,30,0.12)">
-              <svg class="w-4 h-4" style="color: var(--orange)" fill="none" stroke="currentColor" stroke-width="1.75"
+            <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10">
+              <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" stroke-width="1.75"
                 viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round"
                   d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
@@ -127,8 +133,7 @@
             </div>
             <h2 class="text-sm font-semibold uppercase tracking-wider" style="color: var(--beige)">Registro rápido</h2>
           </div>
-          <kbd class="text-xs px-2 py-0.5 rounded"
-            style="background: rgba(107,114,128,0.2); color: #6b7280; font-family: monospace">F2</kbd>
+          <kbd class="text-xs px-2 py-0.5 rounded bg-gray-500/20 text-gray-400 font-mono">F2</kbd>
         </div>
 
         <!-- Buscador inline -->
@@ -139,14 +144,14 @@
                 d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
             </svg>
             <input type="text" id="inputAsistenciaRapida" placeholder="DNI o nombre del socio..." autocomplete="off"
-              autofocus class="search-input" />
+              class="search-input" />
           </div>
           <!-- Dropdown resultados -->
           <div id="resultadosBusquedaHome" class="search-results hidden"></div>
         </div>
 
         <!-- Contenedor alertas inline -->
-        <div id="alertContainerHome" class="mb-3"></div>
+        <div id="alertContainerHome" class="mb-3 empty:mb-0"></div>
 
         <!-- Últimas asistencias de hoy -->
         <div class="recent-section">
@@ -164,7 +169,7 @@
       </section>
 
       <!-- ATAJOS RÁPIDOS -->
-      <section class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-6">
+      <section class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-4 sm:mb-6">
         <!-- Nuevo Socio -->
         <button id="quickSocio" class="quick-action-btn group">
           <div class="quick-action-icon">
@@ -174,6 +179,7 @@
             </svg>
           </div>
           <span class="quick-action-label">Nuevo Socio</span>
+          <kbd class="quick-action-kbd">F4</kbd>
         </button>
 
         <!-- Nuevo Pago -->
@@ -190,22 +196,26 @@
       </section>
 
       <!-- ALERTA SOCIOS INACTIVOS (compacta) -->
-      <section id="seccionSociosInactivos" class="hidden mb-6">
+      <section id="seccionSociosInactivos" class="hidden mb-4 sm:mb-6">
         <details class="glass rounded-lg border-l-4 border-yellow-600 shadow-lg">
           <summary class="flex items-center gap-2 px-4 py-3 cursor-pointer hover:bg-white/5 transition rounded-lg">
-            <span>⚠️</span>
+            <svg class="w-4 h-4 text-yellow-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2"
+              viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+            </svg>
             <span class="text-sm font-medium text-yellow-500">Socios inactivos (+7 días)</span>
             <span id="cantidadInactivos"
               class="bg-yellow-600 text-black text-xs px-2 py-0.5 rounded-full font-bold shadow-lg shadow-yellow-600/20">0</span>
           </summary>
-          <ul id="listaInactivos" class="px-4 pb-3 pt-1 space-y-1 max-h-32 overflow-y-auto text-sm">
+          <ul id="listaInactivos" class="px-4 pb-3 pt-1 space-y-1 max-h-48 overflow-y-auto text-sm">
             <!-- dinámico -->
           </ul>
         </details>
       </section>
 
       <!-- CARDS DE NAVEGACIÓN - Módulos del Sistema -->
-      <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+      <section class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
         <!-- Card: Asistencias -->
         <a href="asistencias.html" class="nav-card group">
           <div class="nav-card-icon">
@@ -345,33 +355,108 @@
     </div>
   </main>
 
-  <!-- MODAL: Socios por vencer -->
-  <div id="modalPorVencer" class="modal hidden">
-    ...
+  <!-- MODAL: Membresías por vencer -->
+  <div id="modalPorVencer" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+    <!-- Backdrop con blur -->
+    <div class="absolute inset-0 bg-black/75 backdrop-blur-sm modal-backdrop"></div>
+
+    <!-- Contenedor del modal -->
+    <div class="relative w-full max-w-lg bg-[#0d0d0d] border border-[#2a2a2a] rounded-2xl shadow-2xl overflow-hidden"
+      style="box-shadow: 0 25px 60px -15px rgba(0,0,0,0.8), 0 0 0 1px rgba(234,179,8,0.08);">
+
+      <!-- Franja top con acento amarillo -->
+      <div class="h-0.5 w-full bg-gradient-to-r from-transparent via-yellow-500/70 to-transparent"></div>
+
+      <!-- Header -->
+      <div class="flex items-start justify-between px-6 pt-6 pb-4">
+        <div class="flex items-center gap-3">
+          <!-- Ícono de alerta -->
+          <div class="relative flex-shrink-0">
+            <div class="absolute inset-0 bg-yellow-500/20 blur-md rounded-full"></div>
+            <div
+              class="relative flex items-center justify-center w-11 h-11 rounded-xl bg-yellow-500/10 border border-yellow-500/25 text-yellow-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+              </svg>
+            </div>
+          </div>
+          <!-- Título y subtítulo -->
+          <div>
+            <h3 class="text-base font-bold text-white leading-tight tracking-tight">Membresías por vencer</h3>
+            <p class="text-xs text-gray-500 mt-0.5 font-medium">Próximos 7 días · Requieren atención</p>
+          </div>
+        </div>
+
+        <!-- Botón cerrar -->
+        <button id="cerrarModalPorVencer"
+          class="flex items-center justify-center w-8 h-8 rounded-lg bg-white/5 border border-white/10 text-gray-500 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all flex-shrink-0">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Separador -->
+      <div class="h-px bg-gradient-to-r from-transparent via-white/5 to-transparent mx-6"></div>
+
+      <!-- Lista dinámica -->
+      <div id="listaPorVencer" class="px-6 py-4 space-y-2 max-h-80 overflow-y-auto">
+        <!-- dinámico desde home.js -->
+      </div>
+
+      <!-- Footer -->
+      <div class="px-6 py-3 border-t border-white/5 flex items-center justify-between bg-black/30">
+        <p class="text-xs text-gray-600">Click en un socio para ver su perfil</p>
+        <button id="cerrarModalPorVencerFooter" class="text-xs text-gray-400 hover:text-white transition font-medium">
+          Cerrar
+        </button>
+      </div>
+    </div>
   </div>
 
-  <!-- MODAL: Asistencia Exitosa (Info Socio) -->
-  <div id="modalAsistenciaExito" class="modal hidden">
-    <div class="modal-backdrop"></div>
-    <div class="modal-content max-w-lg relative">
-      <button id="cerrarModalExito" class="absolute top-4 right-4 text-gray-400 hover:text-white transition">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+  <!-- MODAL: Asistencia Exitosa Premium -->
+  <div id="modalAsistenciaExito"
+    class="fixed inset-0 z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+    <!-- Backdrop oscuro con blur -->
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-md modal-backdrop transition-opacity"></div>
+
+    <!-- Contenedor del modal -->
+    <div
+      class="relative bg-[#111111] border border-[#2a2a2a] rounded-2xl p-6 sm:p-8 w-[95%] max-w-md shadow-2xl transform scale-95 transition-all duration-300 modal-content"
+      style="box-shadow: 0 20px 40px -10px rgba(0, 217, 255, 0.1), 0 0 25px rgba(0,0,0,0.9);">
+
+      <!-- Botón de cierre -->
+      <button id="cerrarModalExito"
+        class="absolute top-4 right-4 text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 p-1.5 rounded-full transition-all z-10">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
 
-      <div class="text-center mb-4">
-        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-green-500/20 text-green-400 mb-2">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <!-- Cabecera / Icono animado -->
+      <div class="text-center mb-6 mt-2 relative">
+        <div class="absolute inset-0 bg-green-500/10 blur-xl rounded-full w-20 h-20 mx-auto -z-10"></div>
+        <div
+          class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-green-400/20 to-green-600/20 border-2 border-green-500/40 text-green-400 mb-4 animate-pulse">
+          <svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h3 class="modal-title text-green-400">¡Asistencia registrada!</h3>
+        <h3 class="text-2xl font-extrabold text-white tracking-tight drop-shadow-md">¡Asistencia registrada!</h3>
+        <p class="text-gray-400 text-sm mt-1">Ingreso autorizado correctamente</p>
       </div>
 
-      <!-- Info socio (Replicado de asistencia.html) -->
-      <div id="homeInfoSocio" class="info-card mb-3"></div>
-      <div id="homeInfoMembresia" class="info-card"></div>
+      <!-- Contenedores para info (se llena desde home.js) -->
+      <div class="space-y-4">
+        <div id="homeInfoSocio"
+          class="relative overflow-hidden p-4 rounded-xl bg-gradient-to-r from-[#1a1a1a] to-[#141414] border border-[#333] shadow-inner transition-all hover:border-primary/50">
+        </div>
+        <div id="homeInfoMembresia"
+          class="relative overflow-hidden p-4 rounded-xl bg-gradient-to-r from-[#1a1a1a] to-[#141414] border border-[#333] shadow-inner transition-all hover:border-secondary/50">
+        </div>
+      </div>
+
     </div>
   </div>
 

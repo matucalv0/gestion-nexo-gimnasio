@@ -7,11 +7,13 @@ import com.nexo.gestion.entity.Membresia;
 import com.nexo.gestion.exceptions.ObjetoNoEncontradoException;
 import com.nexo.gestion.repository.MembresiaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class MembresiaService {
     private final MembresiaRepository membresiaRepository;
 
@@ -32,6 +34,7 @@ public class MembresiaService {
     }
 
 
+    @Transactional
     public MembresiaDTO registrarMembresia(MembresiaCreateDTO membresiaCreateDTO){
         Membresia membresia = new Membresia(membresiaCreateDTO.getNombre(), membresiaCreateDTO.getDuracionDias(), membresiaCreateDTO.getPrecioSugerido(), membresiaCreateDTO.getAsistenciasPorSemana(), membresiaCreateDTO.getTipoMembresia());
         Membresia guardada = membresiaRepository.save(membresia);

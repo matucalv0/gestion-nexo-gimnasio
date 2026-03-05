@@ -49,122 +49,155 @@
         <!-- FORMULARIO -->
         <form id="pagoForm" class="form-container">
 
-          <!-- BUSCAR SOCIO -->
-          <div class="form-group relative">
-            <label class="form-label">Socio <span class="text-red-400">*</span></label>
-            <div class="search-input-wrapper">
-              <svg class="search-input-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                  d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-              </svg>
-              <input type="text" id="buscarSocio" placeholder="Buscar por nombre o DNI" autocomplete="off"
-                class="search-input" />
-            </div>
-            <ul id="resultadosSocio" class="search-results hidden"></ul>
-          </div>
+          <!-- PANEL 1: DATOS GENERALES (Socio, Empleado, Medio Pago) -->
+          <div class="bg-gray-800/30 border border-gray-700/50 p-4 rounded-lg space-y-3">
+            <h3 class="text-white font-semibold border-b border-gray-700/50 pb-2 text-sm tracking-wide uppercase">1.
+              Datos Generales</h3>
 
-          <!-- EMPLEADO Y MEDIO DE PAGO EN LÍNEA -->
-          <div class="grid grid-cols-2 gap-4">
-            <div class="form-group">
-              <label class="form-label text-sm">Empleado</label>
-              <select id="empleado" class="form-input" required></select>
-            </div>
-            <div class="form-group">
-              <label class="form-label text-sm">Medio de pago</label>
-              <select id="medioPago" class="form-input" required></select>
-            </div>
-          </div>
-
-          <!-- TIPO DE DETALLE -->
-          <div class="form-group">
-            <label class="form-label">Ítem</label>
-            <select id="tipoDetalle" class="form-input">
-              <option value="MEMBRESIA">Membresía</option>
-              <option value="PRODUCTO">Producto</option>
-            </select>
-          </div>
-
-          <!-- PRODUCTO -->
-          <div id="productoGroup" class="form-group space-y-3">
-            <label class="form-label">Producto</label>
-            <select id="producto" class="form-input"></select>
-
-            <div class="grid grid-cols-2 gap-4">
-              <div class="form-group">
-                <label class="form-label text-sm">Cantidad</label>
-                <input type="number" id="cantidad" class="form-input" value="1" min="1" />
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
+              <!-- BUSCAR SOCIO -->
+              <div class="form-group relative md:col-span-6">
+                <label class="form-label text-sm mb-1">Socio <span class="text-red-400">*</span></label>
+                <div class="search-input-wrapper">
+                  <svg class="search-input-icon w-4 h-4 ml-2" fill="none" stroke="currentColor" stroke-width="1.75"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                  </svg>
+                  <input type="text" id="buscarSocio" placeholder="Buscar por nombre o DNI" autocomplete="off"
+                    class="search-input text-sm py-2 pl-9" />
+                </div>
+                <ul id="resultadosSocio"
+                  class="search-results hidden absolute w-full z-50 mt-1 max-h-60 overflow-y-auto bg-gray-800 border border-gray-700 rounded-lg shadow-xl drop-shadow-2xl text-sm">
+                </ul>
               </div>
-              <div class="form-group">
-                <label class="form-label text-sm">Precio unitario</label>
-                <input type="number" id="precio" class="form-input" readonly />
+
+              <!-- EMPLEADO -->
+              <div class="form-group md:col-span-3">
+                <label class="form-label text-sm mb-1">Empleado</label>
+                <select id="empleado" class="form-input text-sm py-2" required></select>
+              </div>
+
+              <!-- MEDIO DE PAGO -->
+              <div class="form-group md:col-span-3">
+                <label class="form-label text-sm mb-1">Medio de pago</label>
+                <select id="medioPago" class="form-input text-sm py-2" required></select>
               </div>
             </div>
           </div>
 
-          <!-- MEMBRESÍA -->
-          <div id="membresiaGroup" class="form-group space-y-3 hidden">
-            <label class="form-label">Membresía</label>
-            <select id="membresia" class="form-input"></select>
+          <!-- PANEL 2: CONFIGURACIÓN DEL ÍTEM (Todo en línea) -->
+          <div class="bg-gray-800/30 border border-gray-700/50 p-4 rounded-lg space-y-3">
+            <h3 class="text-white font-semibold border-b border-gray-700/50 pb-2 text-sm tracking-wide uppercase">2.
+              Detalle del Pago</h3>
 
-            <div class="grid grid-cols-2 gap-4">
-              <div class="form-group">
-                <label class="form-label text-sm">Cantidad</label>
-                <input type="number" id="cantidadMembresia" class="form-input" value="1" min="1" disabled />
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+              <!-- TIPO DE DETALLE -->
+              <div class="form-group md:col-span-3">
+                <label class="form-label text-sm mb-1">Ítem a cobrar</label>
+                <select id="tipoDetalle" class="form-input text-sm py-2">
+                  <option value="MEMBRESIA">Membresía</option>
+                  <option value="PRODUCTO">Producto</option>
+                </select>
               </div>
-              <div class="form-group">
-                <label class="form-label text-sm">Precio unitario</label>
-                <input type="number" id="precioMembresia" class="form-input" readonly />
-                <span id="infoDescuentoMembresia" class="text-xs text-green-400 block mt-1"></span>
+
+              <!-- PRODUCTO / MEMBRESÍA (Ocupan el mismo espacio según el caso) -->
+              <div class="md:col-span-9">
+
+                <!-- GRUPO PRODUCTO -->
+                <div id="productoGroup" class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-end">
+                  <div class="form-group sm:col-span-5">
+                    <label class="form-label text-sm mb-1">Seleccionar Producto</label>
+                    <select id="producto" class="form-input text-sm py-2"></select>
+                  </div>
+                  <div class="form-group sm:col-span-2">
+                    <label class="form-label text-sm mb-1">Cantidad</label>
+                    <input type="number" id="cantidad" class="form-input text-sm py-2" value="1" min="1" />
+                  </div>
+                  <div class="form-group sm:col-span-3">
+                    <label class="form-label text-sm mb-1">Precio Unitario</label>
+                    <input type="number" id="precio" class="form-input text-sm py-2" readonly />
+                  </div>
+                  <div class="sm:col-span-2">
+                    <button type="button" id="btnAgregarDetalle" class="btn-outline w-full py-2 text-sm justify-center"
+                      title="Añadir ítem">
+                      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                      </svg>
+                      Añadir
+                    </button>
+                  </div>
+                </div>
+
+                <!-- GRUPO MEMBRESÍA -->
+                <div id="membresiaGroup" class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-end hidden">
+                  <div class="form-group sm:col-span-5">
+                    <label class="form-label text-sm mb-1">Seleccionar Membresía</label>
+                    <select id="membresia" class="form-input text-sm py-2"></select>
+                  </div>
+                  <div class="form-group sm:col-span-2">
+                    <label class="form-label text-sm mb-1">Cantidad</label>
+                    <input type="number" id="cantidadMembresia" class="form-input text-sm py-2" value="1" min="1"
+                      disabled />
+                  </div>
+                  <div class="form-group sm:col-span-3 relative">
+                    <label class="form-label text-sm mb-1">Precio Unitario</label>
+                    <input type="number" id="precioMembresia" class="form-input text-sm py-2" readonly />
+                    <span id="infoDescuentoMembresia"
+                      class="absolute -bottom-5 left-0 text-[10px] text-green-400 whitespace-nowrap hidden sm:block"></span>
+                  </div>
+                  <div class="sm:col-span-2">
+                    <button type="button" id="btnAgregarDetalleM" class="btn-outline w-full py-2 text-sm justify-center"
+                      title="Añadir ítem">
+                      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                      </svg>
+                      Añadir
+                    </button>
+                  </div>
+                  <!-- Descuento visual para móvil si aplica -->
+                  <div class="sm:hidden col-span-12 -mt-2">
+                    <span id="infoDescuentoMembresiaMobile" class="text-xs text-green-400"></span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- SELECTOR FECHA INICIO MEMBRESÍA (Aparece abajo si hace falta) -->
+            <div id="fechaInicioGroup" class="form-group hidden mt-4 pt-3 border-t border-gray-700/50">
+              <label class="form-label text-xs mb-2">Renovación de Membresía:</label>
+              <div
+                class="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3 bg-gray-900/40 p-3 rounded-md border border-gray-700">
+                <label
+                  class="flex items-center gap-2 cursor-pointer text-sm text-gray-300 hover:text-white transition-colors">
+                  <input type="radio" name="fechaInicio" value="vencimiento" class="accent-orange-500" checked />
+                  <span>Desde vencimiento (<span id="lblFechaVencimiento" class="text-orange-400"></span>)</span>
+                </label>
+                <label
+                  class="flex items-center gap-2 cursor-pointer text-sm text-gray-300 hover:text-white transition-colors">
+                  <input type="radio" name="fechaInicio" value="hoy" class="accent-orange-500" />
+                  <span>Desde hoy (<span id="lblFechaHoy"></span>)</span>
+                </label>
+                <label
+                  class="flex items-center gap-2 cursor-pointer text-sm text-gray-300 hover:text-white transition-colors">
+                  <input type="radio" name="fechaInicio" value="otro" class="accent-orange-500" />
+                  <span>Personalizada:</span>
+                </label>
+                <div id="fechaCustomContainer" class="hidden">
+                  <input type="date" id="fechaCustom" class="form-input text-xs py-1 px-2 h-7 w-32" />
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- SELECTOR FECHA INICIO MEMBRESÍA -->
-          <div id="fechaInicioGroup" class="form-group hidden">
-            <label class="form-label text-sm">Inicio de membresía</label>
-            <div class="space-y-2 bg-gray-800 p-3 rounded-lg">
-              <label
-                class="flex items-center gap-2 cursor-pointer text-sm text-gray-300 hover:text-white transition-colors">
-                <input type="radio" name="fechaInicio" value="vencimiento" class="accent-orange-500" checked />
-                <span>Desde vencimiento anterior (<span id="lblFechaVencimiento"></span>)</span>
-              </label>
-              <label
-                class="flex items-center gap-2 cursor-pointer text-sm text-gray-300 hover:text-white transition-colors">
-                <input type="radio" name="fechaInicio" value="hoy" class="accent-orange-500" />
-                <span>Desde hoy (<span id="lblFechaHoy"></span>)</span>
-              </label>
-              <label
-                class="flex items-center gap-2 cursor-pointer text-sm text-gray-300 hover:text-white transition-colors">
-                <input type="radio" name="fechaInicio" value="otro" class="accent-orange-500" />
-                <span>Otra fecha...</span>
-              </label>
-              <div id="fechaCustomContainer" class="hidden mt-2 ml-6">
-                <input type="date" id="fechaCustom" class="form-input text-sm" />
-              </div>
-            </div>
-          </div>
-          <!-- BOTONES -->
-          <div class="grid grid-cols-2 gap-4">
-            <button type="button" id="btnAgregarDetalle" class="btn-outline">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-              </svg>
-              <span>Agregar detalle</span>
-            </button>
-            <button type="submit" class="btn-action-primary">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                  d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span>Registrar pago</span>
-            </button>
-          </div>
+
 
         </form>
 
         <!-- TABLA DE DETALLES -->
-        <section class="mt-6">
-          <div class="table-container">
+        <section class="mt-4">
+          <div class="table-container hidden">
             <table class="data-table">
               <thead>
                 <tr>
@@ -175,41 +208,55 @@
                   <th>Acción</th>
                 </tr>
               </thead>
-              <tbody id="detallesBody">
+              <tbody id="detallesBody" class="text-sm">
                 <!-- Filas dinámicas -->
               </tbody>
             </table>
           </div>
         </section>
 
-        <!-- TOTALES Y DESCUENTO -->
-        <div class="mt-6 border-t border-gray-700 pt-4">
-          <div class="flex flex-col md:flex-row justify-between items-start gap-4">
+        <!-- TOTALES, DESCUENTO Y ACCIÓN FINAL -->
+        <section class="mt-4 border-t border-gray-700 pt-4" aria-label="Resumen del pago">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-center gap-4">
 
-            <div class="w-full md:w-1/3">
-              <label class="form-label text-sm">Descuento</label>
-              <select id="descuento" class="form-input">
+            <!-- DESCUENTO -->
+            <div class="w-full sm:w-52 shrink-0">
+              <label class="form-label text-xs mb-1">Descuento Global</label>
+              <select id="descuento" class="form-input text-sm py-2">
                 <option value="">Ninguno</option>
               </select>
+              <p class="text-[10px] text-gray-600 mt-1">Solo aplica sobre Membresías.</p>
             </div>
 
-            <div class="w-full md:w-1/3 bg-gray-800 p-4 rounded-lg space-y-2">
-              <div class="flex justify-between text-sm">
-                <span class="text-gray-400">Subtotal:</span>
-                <span id="lblSubtotal" class="font-medium">$0.00</span>
+            <!-- BARRA DE TOTALES -->
+            <div
+              class="flex items-stretch divide-x divide-gray-700 bg-gray-800/50 border border-gray-700 rounded-lg overflow-hidden shrink-0">
+              <div class="flex flex-col px-4 py-2.5">
+                <span class="text-[10px] text-gray-500 uppercase tracking-wide mb-0.5">Subtotal</span>
+                <span id="lblSubtotal" class="text-sm font-medium text-gray-300">$0.00</span>
               </div>
-              <div class="flex justify-between text-sm text-green-400">
-                <span>Descuento:</span>
-                <span id="lblDescuento" class="font-medium">-$0.00</span>
+              <div class="flex flex-col px-4 py-2.5">
+                <span class="text-[10px] text-gray-500 uppercase tracking-wide mb-0.5">Descuento</span>
+                <span id="lblDescuento" class="text-sm font-medium text-green-400">-$0.00</span>
               </div>
-              <div class="border-t border-gray-700 my-2 pt-2 flex justify-between text-lg font-bold text-white">
-                <span>Total:</span>
-                <span id="lblTotal">$0.00</span>
+              <div class="flex flex-col px-4 py-2.5 bg-gray-800/80">
+                <span class="text-[10px] text-gray-500 uppercase tracking-wide mb-0.5">Total a cobrar</span>
+                <span id="lblTotal" class="text-lg font-bold text-orange-500">$0.00</span>
               </div>
             </div>
+
+            <!-- BOTÓN CONFIRMAR -->
+            <button type="submit" form="pagoForm"
+              class="btn-action-primary !w-auto text-sm py-2.5 px-5 shadow-md shadow-orange-500/10 shrink-0">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>Confirmar Pago</span>
+            </button>
 
           </div>
-        </div>
+        </section>
 
       </div>
     </div>

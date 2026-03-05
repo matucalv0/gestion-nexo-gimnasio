@@ -5,11 +5,13 @@ import com.nexo.gestion.entity.GrupoMuscular;
 import com.nexo.gestion.exceptions.ObjetoDuplicadoException;
 import com.nexo.gestion.repository.GrupoMuscularRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class GrupoMuscularService {
     private final GrupoMuscularRepository grupoMuscularRepository;
 
@@ -21,6 +23,7 @@ public class GrupoMuscularService {
         return new GrupoMuscularDTO(grupoMuscular.getIdGrupo(), grupoMuscular.getNombre());
     }
 
+    @Transactional
     public GrupoMuscularDTO registrarGrupoMuscular(GrupoMuscularDTO grupoMuscular){
         if (grupoMuscularRepository.existsByNombre(grupoMuscular.nombre())){
             throw new ObjetoDuplicadoException("Ya existe el grupo " + grupoMuscular.nombre());

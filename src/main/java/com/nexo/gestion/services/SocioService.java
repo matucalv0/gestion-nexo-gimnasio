@@ -6,10 +6,10 @@ import com.nexo.gestion.entity.*;
 import com.nexo.gestion.exceptions.*;
 import com.nexo.gestion.repository.*;
 import com.nexo.gestion.repository.AsistenciaRepository;
-import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 public class SocioService {
     private static final Logger log = LoggerFactory.getLogger(SocioService.class);
     private final SocioRepository socioRepository;
@@ -173,10 +174,21 @@ public class SocioService {
 
     @Transactional
     public SocioDTO patchSocio(String dni, SocioPatchDTO socioPatch) {
+        String dniActual = dni;
         Socio socio = socioRepository.findById(dni).orElseThrow(() -> new ObjetoNoEncontradoException("socio con DNI " + dni));
 
-        if (socioPatch.getDni() != null && !socioPatch.getDni().equals(dni)) {
-            throw new IllegalStateException("No se permite modificar el DNI de un socio existente");
+        String dniNuevo = socioPatch.getNuevoDni();
+        if (dniNuevo != null && !dniNuevo.isBlank() && !dniNuevo.equals(dniActual)) {
+            if (socioRepository.existsById(dniNuevo)) {
+                throw new ObjetoDuplicadoException("El DNI " + dniNuevo + " ya pertenece a otro socio");
+            }
+            // Actualizar en DB directo para que salten los CASCADE
+            socioRepository.actualizarDni(dniActual, dniNuevo);
+            // Hacer flush para que el EntityManager limpie el contexto y buscar el nuevo
+            socioRepository.flush();
+            String finalDni = dniNuevo;
+            socio = socioRepository.findById(finalDni).orElseThrow(() -> new ObjetoNoEncontradoException("socio con DNI " + finalDni));
+            dniActual = finalDni; // Actualizar variable local
         }
 
         if (socioPatch.getNombre() != null) {
@@ -184,7 +196,7 @@ public class SocioService {
         }
 
         if (socioPatch.getEmail() != null) {
-            if (socioRepository.existsByEmail(socioPatch.getEmail())) {
+            if (!socio.getEmail().equals(socioPatch.getEmail()) && socioRepository.existsByEmail(socioPatch.getEmail())) {
                 throw new ObjetoDuplicadoException("El email " + socioPatch.getEmail() + " ya existe");
             }
             socio.setEmail(socioPatch.getEmail());
@@ -194,6 +206,9 @@ public class SocioService {
         }
         if (socioPatch.getActivo() != null) {
             socio.setActivo(socioPatch.getActivo());
+        }
+        if (socioPatch.getFechaNacimiento() != null) {
+            socio.setFechaNacimiento(socioPatch.getFechaNacimiento());
         }
 
         Socio guardado = socioRepository.save(socio);
@@ -242,6 +257,7 @@ public class SocioService {
         return convertirASocioMembresiaDTO(guardada);
     }
 
+    @Transactional(readOnly = true)
     public List<PagoDTO> buscarPagosPorDni(String dni) {
         if (!socioRepository.existsById(dni)) {
             throw new ObjetoNoEncontradoException(dni);
@@ -257,6 +273,7 @@ public class SocioService {
         return pagos;
     }
 
+    @Transactional
     public AsistenciaSocioIdDTO registrarAsistencia(String dni) {
         Socio socio = socioRepository.findById(dni).orElseThrow(() -> new ObjetoNoEncontradoException(dni));
 

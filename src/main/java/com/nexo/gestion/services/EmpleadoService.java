@@ -8,11 +8,13 @@ import com.nexo.gestion.exceptions.ObjetoNoEncontradoException;
 import com.nexo.gestion.repository.EmpleadoRepository;
 import com.nexo.gestion.repository.PuestoRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class EmpleadoService {
     private final EmpleadoRepository empleadoRepository;
     private final PuestoRepository puestoRepository;
@@ -34,6 +36,7 @@ public class EmpleadoService {
                 empleado.getPuesto() != null ? empleado.getPuesto().getIdPuesto() : null);
     }
 
+    @Transactional
     public EmpleadoDTO registrarEmpleado(EmpleadoDTO empleadoDTO) {
         if (empleadoRepository.existsById(empleadoDTO.dni())) {
             throw new ObjetoNoEncontradoException(empleadoDTO.dni());

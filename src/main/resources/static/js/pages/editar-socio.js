@@ -34,7 +34,9 @@ async function cargarSocio(dni, form) {
     const res = await authFetch(`${API_URL}/${dni}`);
     const socio = await res.json();
 
+    form.nuevoDni.value = socio.dni ?? "";
     form.nombre.value = socio.nombre ?? "";
+    form.fechaNacimiento.value = socio.fechaNacimiento ?? "";
     form.telefono.value = socio.telefono ?? "";
     form.email.value = socio.email ?? "";
 
@@ -49,7 +51,9 @@ async function editarSocio(e, dni, form) {
   limpiarErrores();
 
   const data = {
+    nuevoDni: form.nuevoDni.value.trim(),
     nombre: form.nombre.value.trim(),
+    fechaNacimiento: form.fechaNacimiento.value.trim(),
     telefono: form.telefono.value.trim(),
     email: form.email.value.trim()
   };
@@ -68,6 +72,12 @@ async function editarSocio(e, dni, form) {
     }
 
     Alerta.success("Socio actualizado correctamente");
+
+    if (data.nuevoDni && data.nuevoDni !== dni) {
+      setTimeout(() => {
+        window.location.replace(`editar-socio.html?dni=${data.nuevoDni}`);
+      }, 1500);
+    }
 
   } catch {
     Alerta.error("No se pudo conectar con el servidor");

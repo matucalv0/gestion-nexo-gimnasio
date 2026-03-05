@@ -8,6 +8,7 @@ import com.nexo.gestion.repository.GastoRepository;
 import com.nexo.gestion.repository.PagoRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
+@Transactional(readOnly = true)
 public class FinanzaService {
     @jakarta.persistence.PersistenceContext
     private jakarta.persistence.EntityManager entityManager;

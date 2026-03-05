@@ -8,11 +8,13 @@ import com.nexo.gestion.exceptions.ObjetoDuplicadoException;
 import com.nexo.gestion.exceptions.ObjetoNoEncontradoException;
 import com.nexo.gestion.repository.ProductoRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class ProductoService {
     private final ProductoRepository productoRepository;
 
@@ -30,6 +32,7 @@ public class ProductoService {
         );
     }
 
+    @Transactional
     public ProductoDTO registrarProducto(ProductoCreateDTO productoCreateDTO) {
         if (productoRepository.existsByNombre(productoCreateDTO.getNombre())) {
             throw new ObjetoDuplicadoException(productoCreateDTO.getNombre());
@@ -62,6 +65,7 @@ public class ProductoService {
         return convertirAProductoDTO(guardado);
     }
 
+    @Transactional
     public ProductoDTO patchProducto(Integer id, ProductoPatchDTO productoDTO){
         Producto producto = productoRepository.findById(id).orElseThrow(()-> new ObjetoNoEncontradoException(String.valueOf(id)));
 

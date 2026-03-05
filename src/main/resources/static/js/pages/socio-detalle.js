@@ -12,6 +12,27 @@ let membresiaActual = null;
 let membresiasDisponibles = [];
 let pagoAAnular = null;
 
+let cacheSocioFetch = null;
+let cacheMembresiaFetch = null;
+let cacheDni = null;
+
+function getSocioFetch(dni) {
+    if (cacheDni !== dni) { cacheSocioFetch = null; cacheMembresiaFetch = null; cacheDni = dni; }
+    if (!cacheSocioFetch) cacheSocioFetch = authFetch(`${API_URL}/${dni}`);
+    return cacheSocioFetch.then(res => res.clone());
+}
+
+function getMembresiaFetch(dni) {
+    if (cacheDni !== dni) { cacheSocioFetch = null; cacheMembresiaFetch = null; cacheDni = dni; }
+    if (!cacheMembresiaFetch) cacheMembresiaFetch = authFetch(`${API_URL}/${dni}/membresia-vigente`);
+    return cacheMembresiaFetch.then(res => res.clone());
+}
+
+function invalidarCaches() {
+    cacheSocioFetch = null;
+    cacheMembresiaFetch = null;
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
     const params = new URLSearchParams(window.location.search);
     const dni = params.get("dni");
@@ -21,14 +42,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
-    // Cargar membresías disponibles para renovación
-    await cargarMembresiasDisponibles();
-
-    cargarKPIs(dni);
-    cargarSocio(dni);
-    cargarMembresiaVigente(dni);
-    cargarRutinaActiva(dni);
-    cargarHistorialPagos(dni);
+    // Cargar membresías disponibles y datos del socio en paralelo
+    await Promise.all([
+        cargarMembresiasDisponibles(),
+        cargarKPIs(dni),
+        cargarSocio(dni),
+        cargarMembresiaVigente(dni),
+        cargarRutinaActiva(dni),
+        cargarHistorialPagos(dni)
+    ]).catch(err => console.error("Error en carga inicial de socio", err));
 
     // Botones
     // Botones
@@ -132,7 +154,7 @@ async function renovarMembresia(dni) {
 
 async function cargarKPIs(dni) {
     try {
-        const resSocio = await authFetch(`${API_URL}/${dni}`);
+        const resSocio = await getSocioFetch(dni);
         const socio = await resSocio.json();
 
         const activo = socio.activo === true;
@@ -160,7 +182,7 @@ async function cargarKPIs(dni) {
 
         // Membresía y vencimiento
         try {
-            const resMembresia = await authFetch(`${API_URL}/${dni}/membresia-vigente`);
+            const resMembresia = await getMembresiaFetch(dni);
             if (resMembresia.status === 409) throw { status: 409 };
             const m = await resMembresia.json();
 
@@ -228,7 +250,7 @@ async function cargarMembresiaVigente(dni) {
     container.innerHTML = "";
 
     try {
-        const res = await authFetch(`${API_URL}/${dni}/membresia-vigente`);
+        const res = await getMembresiaFetch(dni);
         if (res.status === 409) throw { status: 409 };
         const m = await res.json();
 
@@ -269,8 +291,8 @@ async function cargarMembresiaVigente(dni) {
             } catch { }
 
             container.innerHTML = `
-                <div class="col-span-full bg-red-500/10 border border-red-500/30 rounded-lg p-4 flex items-start gap-3">
-                    <svg class="w-6 h-6 text-red-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="col-span-full bg-red-500/10 border border-red-500/30 rounded-lg p-4 flex items-center lg:items-start gap-3">
+                    <svg class="w-6 h-6 text-red-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                     </svg>
                     <div>
@@ -360,7 +382,7 @@ async function cargarRutinaActiva(dni) {
                     </div>
                 </div>
                 <button onclick="window.location.href='ver-rutina.html?id=${rutina.idRutina}'" 
-                    class="bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/40 font-medium px-4 py-2 rounded-md transition">
+                    class="bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-200 hover:text-white border border-indigo-500/40 px-3 py-1.5 text-sm rounded-md transition">
                     Ver rutina completa
                 </button>
             </div>
@@ -382,7 +404,7 @@ async function cargarRutinaActiva(dni) {
 /* ===== DETALLES SOCIO Y MEMBRESÍA ===== */
 async function cargarSocio(dni) {
     try {
-        const res = await authFetch(`${API_URL}/${dni}`);
+        const res = await getSocioFetch(dni);
 
         if (!res.ok) {
             console.error("Error en respuesta:", res.status, res.statusText);
@@ -480,7 +502,7 @@ async function cargarHistorialPagos(dni) {
 
             // Solo mostrar botón anular si está PAGADO
             const btnAnular = pago.estado === 'PAGADO'
-                ? `<button data-id="${pago.idPago}" data-monto="${pago.monto}" class="btn-anular table-action-btn table-action-btn-danger" title="Anular">
+                ? `<button data-id="${pago.idPago}" data-monto="${pago.monto}" class="btn-anular table-action-btn table-action-btn-danger p-2 rounded-md transition-colors" title="Anular">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -493,7 +515,7 @@ async function cargarHistorialPagos(dni) {
                     <td class="max-w-xs truncate" title="${detalles}">${detalles}</td>
                     <td class="font-medium">${monto}</td>
                     <td><span class="badge ${badgeClass}">${estadoTexto}</span></td>
-                    <td>${btnAnular}</td>
+                    <td class="text-right">${btnAnular}</td>
                 </tr>
             `;
         }).join('');
@@ -558,6 +580,7 @@ async function confirmarAnularPago(dni) {
         cerrarModalAnular();
 
         // Recargar datos
+        invalidarCaches();
         cargarHistorialPagos(dni);
         cargarMembresiaVigente(dni);
         cargarKPIs(dni);

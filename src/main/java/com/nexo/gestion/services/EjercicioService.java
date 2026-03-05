@@ -8,11 +8,13 @@ import com.nexo.gestion.exceptions.ObjetoNoEncontradoException;
 import com.nexo.gestion.repository.EjercicioRepository;
 import com.nexo.gestion.repository.GrupoMuscularRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class EjercicioService {
     private final EjercicioRepository ejercicioRepository;
     private final GrupoMuscularRepository grupoMuscularRepository;
@@ -31,6 +33,7 @@ public class EjercicioService {
                 ejercicio.getGrupoMuscular().getIdGrupo());
     }
 
+    @Transactional
     public EjercicioDTO registrarEjercicio(EjercicioDTO ejercicioDTO) {
         if (ejercicioRepository.existsByNombre(ejercicioDTO.nombre())) {
             throw new ObjetoDuplicadoException(ejercicioDTO.nombre());

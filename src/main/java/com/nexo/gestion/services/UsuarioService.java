@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final SocioRepository socioRepository;

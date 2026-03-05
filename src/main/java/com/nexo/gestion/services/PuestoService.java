@@ -5,11 +5,13 @@ import com.nexo.gestion.entity.Puesto;
 import com.nexo.gestion.exceptions.ObjetoDuplicadoException;
 import com.nexo.gestion.repository.PuestoRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class PuestoService {
     private final PuestoRepository puestoRepository;
 
@@ -24,6 +26,7 @@ public class PuestoService {
         );
     }
 
+    @Transactional
     public PuestoDTO registrarPuesto(PuestoDTO puestoDTO){
         if (puestoRepository.existsByNombre(puestoDTO.nombre())){
             throw new ObjetoDuplicadoException(puestoDTO.nombre());

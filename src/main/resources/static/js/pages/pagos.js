@@ -56,14 +56,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // Botón Exportar CSV
   document.getElementById("btnExportarPagos")?.addEventListener("click", exportarPagos);
 
-  // Cargar tabla inicial
-  cargarPagos(tablaBody);
-
-  // Cargar otros datos
-  cargarNombres();
-  cargarKPIsRecaudado();
-  cargarDistribucionIngresos();
-  cargarMasVendidos();
+  // Cargar datos iniciales asegurando el orden correcto para el render de la tabla
+  cargarDatosIniciales(tablaBody);
 
   // Cargar gráfico según filtro seleccionado
   cargarRecaudado(filtroSelect.value);
@@ -73,6 +67,23 @@ document.addEventListener("DOMContentLoaded", () => {
     cargarRecaudado(e.target.value);
   });
 });
+
+async function cargarDatosIniciales(tablaBody) {
+  try {
+    // 1. Primero cargar los nombres (productos y membresías) que necesita la tabla
+    await cargarNombres();
+
+    // 2. Ahora sí podemos cargar los pagos y el resto de los KPIs en paralelo
+    await Promise.all([
+      cargarPagos(tablaBody),
+      cargarKPIsRecaudado(),
+      cargarDistribucionIngresos(),
+      cargarMasVendidos()
+    ]);
+  } catch (err) {
+    console.error("Error en carga inicial de pagos", err);
+  }
+}
 
 async function cargarPagos(tablaBody) {
   try {

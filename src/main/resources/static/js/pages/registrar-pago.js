@@ -181,7 +181,7 @@ async function buscarSocioHandler() {
   socios.forEach(s => {
     const li = document.createElement("li");
     li.className =
-      "px-4 py-2 cursor-pointer hover:bg-gray-700 text-[var(--beige)]";
+      "px-4 py-2 cursor-pointer hover:bg-gray-700 text-[var(--beige)] transition-colors duration-150 ease-in-out";
     li.textContent = `${s.nombre} (${s.dni})`;
 
     li.addEventListener("click", () => {
@@ -199,10 +199,8 @@ async function buscarSocioHandler() {
 
 /* ================== TIPO DETALLE ================== */
 function onTipoDetalleChange() {
-  productoGroup.style.display =
-    tipoDetalle.value === "PRODUCTO" ? "block" : "none";
-  membresiaGroup.style.display =
-    tipoDetalle.value === "MEMBRESIA" ? "block" : "none";
+  productoGroup.classList.toggle("hidden", tipoDetalle.value !== "PRODUCTO");
+  membresiaGroup.classList.toggle("hidden", tipoDetalle.value !== "MEMBRESIA");
 
   cantidad.value = tipoDetalle.value === "MEMBRESIA" ? 1 : cantidad.value;
   cantidad.disabled = tipoDetalle.value === "MEMBRESIA";
@@ -238,25 +236,7 @@ function cargarPrecioMembresia() {
   actualizarInfoVisualDescuento(precioBase);
 }
 
-// Actualizar el input con el precio final
-precioMembresia.value = precioFinal;
 
-// Mostrar info del descuento
-const spanInfo = document.getElementById("infoDescuentoMembresia");
-if (spanInfo) {
-  if (descuentoSelect && descuentoSelect.value && precioBase > 0) {
-    const descId = Number(descuentoSelect.value);
-    const descObj = descuentosCache.find(d => d.idDescuento === descId);
-    if (descObj) {
-      const montoDesc = (precioBase * descObj.porcentaje) / 100;
-      spanInfo.textContent = `Descuento aplicado: -$${montoDesc.toFixed(2)} (${descObj.porcentaje}%)`;
-    } else {
-      spanInfo.textContent = "";
-    }
-  } else {
-    spanInfo.textContent = "";
-  }
-}
 
 
 function actualizarInfoVisualDescuento(precioBase) {
@@ -340,7 +320,7 @@ function agregarDetalle() {
   // Limpiar los inputs después de agregar el detalle
   producto.value = "";
   membresia.value = "";
-  cantidad.value = tipo === "MEMBRESIA" ? 1 : "";
+  cantidad.value = 1;
   precio.value = "";
   precioMembresia.value = "";
 }
@@ -417,9 +397,10 @@ function calcularTotales() {
   const total = subtotal - descuentoMonto;
 
   // 3. Render
-  if (lblSubtotal) lblSubtotal.textContent = `$${subtotal.toFixed(2)}`;
-  if (lblDescuento) lblDescuento.textContent = `-$${descuentoMonto.toFixed(2)}`;
-  if (lblTotal) lblTotal.textContent = `$${total.toFixed(2)}`;
+  const formatter = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' });
+  if (lblSubtotal) lblSubtotal.textContent = formatter.format(subtotal);
+  if (lblDescuento) lblDescuento.textContent = "-" + formatter.format(descuentoMonto);
+  if (lblTotal) lblTotal.textContent = formatter.format(total);
 }
 
 /* Versión silenciosa de agregarDetalle que retorna true/false */

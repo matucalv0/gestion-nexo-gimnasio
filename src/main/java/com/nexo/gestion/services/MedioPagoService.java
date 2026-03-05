@@ -5,11 +5,13 @@ import com.nexo.gestion.entity.MedioPago;
 import com.nexo.gestion.exceptions.ObjetoDuplicadoException;
 import com.nexo.gestion.repository.MedioPagoRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class MedioPagoService {
     private final MedioPagoRepository medioPagoRepository;
 

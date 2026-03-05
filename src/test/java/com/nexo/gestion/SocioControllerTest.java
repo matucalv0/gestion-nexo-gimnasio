@@ -173,7 +173,7 @@ public class SocioControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    // ==================== EXCEPTION HANDLER ====================
+
 
     @Test
     @WithMockUser(roles = "ADMIN")

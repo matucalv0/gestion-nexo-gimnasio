@@ -8,11 +8,13 @@ import com.nexo.gestion.repository.GastoRepository;
 import com.nexo.gestion.repository.MedioPagoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class GastoService {
     private final GastoRepository gastoRepository;
     private final MedioPagoRepository medioPagoRepository;

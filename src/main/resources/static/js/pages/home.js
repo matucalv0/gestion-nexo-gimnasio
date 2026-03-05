@@ -31,6 +31,17 @@ let timeoutModalExito = null;
 document.addEventListener("DOMContentLoaded", () => {
   const go = page => window.location.href = page;
 
+  // ===== HEADER: fecha contextual =====
+  const headerSaludo = document.getElementById("headerSaludo");
+  if (headerSaludo) {
+    const ahora = new Date();
+    const diasSemana = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+    const meses = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+    const dia = diasSemana[ahora.getDay()];
+    const fecha = `${ahora.getDate()} ${meses[ahora.getMonth()]}`;
+    headerSaludo.textContent = `${dia} ${fecha} · NEXO`;
+  }
+
   // ===== NAVEGACIÓN =====
   document.getElementById("btnLogout")?.addEventListener("click", logout);
   document.getElementById("quickSocio")?.addEventListener("click", () => go("registrar-socio.html"));
@@ -117,7 +128,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <span class="block truncate">${socio.nombre}</span>
             <span class="text-xs text-gray-500">${socio.dni}</span>
           </div>
-          <svg class="w-4 h-4 text-gray-600 flex-shrink-0 opacity-0 group-hover:opacity-100" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+          <svg class="w-4 h-4 text-primary transition-colors duration-200 flex-shrink-0 opacity-0 group-hover:opacity-100" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4" />
           </svg>
         `;
@@ -241,7 +252,7 @@ document.addEventListener("DOMContentLoaded", () => {
         break;
       case "F4":
         e.preventDefault();
-        go("socios.html?focus=true");
+        go("registrar-socio.html");
         break;
     }
   });
@@ -250,12 +261,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const modalPorVencer = document.getElementById("modalPorVencer");
   const kpiPorVencerCard = document.getElementById("kpiPorVencerCard");
   const cerrarModalPorVencer = document.getElementById("cerrarModalPorVencer");
+  const cerrarModalPorVencerFooter = document.getElementById("cerrarModalPorVencerFooter");
   const backdropPorVencer = modalPorVencer?.querySelector(".modal-backdrop");
 
   kpiPorVencerCard?.addEventListener("click", () => {
     modalPorVencer?.classList.remove("hidden");
   });
   cerrarModalPorVencer?.addEventListener("click", () => {
+    modalPorVencer?.classList.add("hidden");
+  });
+  cerrarModalPorVencerFooter?.addEventListener("click", () => {
     modalPorVencer?.classList.add("hidden");
   });
   backdropPorVencer?.addEventListener("click", () => {
@@ -286,9 +301,11 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ===== Cargar datos =====
-  cargarDashboard();
-  cargarSociosInactivos();
-  cargarUltimasAsistencias();
+  Promise.all([
+    cargarDashboard(),
+    cargarSociosInactivos(),
+    cargarUltimasAsistencias()
+  ]).catch(err => console.error("Error en carga inicial del home", err));
 });
 
 // ===== Últimas asistencias del día =====
@@ -332,10 +349,23 @@ async function mostrarModalExito(socio) {
     clearTimeout(timeoutModalExito);
   }
 
-  await cargarInfoSocioHome(socio);
-  await cargarInfoMembresiaHome(socio);
+  await Promise.all([
+    cargarInfoSocioHome(socio),
+    cargarInfoMembresiaHome(socio)
+  ]);
 
+  // Animate in
   modal.classList.remove("hidden");
+
+  // Usamos setTimeout en vez de requestAnimationFrame para asegurar que el display: flex se aplique
+  setTimeout(() => {
+    modal.classList.remove("opacity-0");
+    const content = modal.querySelector(".modal-content");
+    if (content) {
+      content.classList.remove("scale-95");
+      content.classList.add("scale-100");
+    }
+  }, 30);
 
   // Auto close in 4 seconds
   timeoutModalExito = setTimeout(() => {
@@ -345,13 +375,25 @@ async function mostrarModalExito(socio) {
 
 function ocultarModalExito() {
   const modal = document.getElementById("modalAsistenciaExito");
-  if (modal) modal.classList.add("hidden");
+  if (!modal) return;
+
+  modal.classList.add("opacity-0");
+  const content = modal.querySelector(".modal-content");
+  if (content) {
+    content.classList.remove("scale-100");
+    content.classList.add("scale-95");
+  }
+
+  setTimeout(() => {
+    modal.classList.add("hidden");
+  }, 300);
+
   if (timeoutModalExito) clearTimeout(timeoutModalExito);
 }
 
 async function cargarInfoSocioHome(socio) {
   const infoSocio = document.getElementById("homeInfoSocio");
-  infoSocio.textContent = "Cargando información...";
+  infoSocio.innerHTML = `<p class="text-sm text-gray-500 animate-pulse text-center">Cargando socio...</p>`;
 
   try {
     const res = await authFetch(`${API_SOCIOS}/${socio.dni}/asistencias-disponibles`);
@@ -359,30 +401,39 @@ async function cargarInfoSocioHome(socio) {
 
     const data = await res.json();
     infoSocio.innerHTML = `
-        <div class="info-card-header">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-          </svg>
-          <span>Socio</span>
+        <div class="absolute left-0 top-0 h-full w-1 bg-primary rounded-l-xl"></div>
+        <div class="flex items-start gap-4 mb-2">
+          <div class="p-2.5 rounded-lg bg-primary/10 text-primary mt-1 border border-primary/20">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+            </svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-white font-bold text-lg leading-tight truncate tracking-wide">${socio.nombre}</p>
+            <p class="text-gray-400 text-sm font-mono mt-0.5">DNI: ${socio.dni}</p>
+          </div>
         </div>
-        <div class="space-y-1">
-          <p><strong>${socio.nombre}</strong></p>
-          <p class="text-gray-400 text-xs">DNI: ${socio.dni}</p>
-          <p class="text-xs">Asistencias disponibles: <strong class="${data.disponibles <= 2 ? 'text-yellow-400' : 'text-green-400'}">${data.disponibles}</strong></p>
+        <div class="mt-4 pt-4 border-t border-white/5 flex justify-between items-center bg-black/20 -mx-4 -mb-4 px-4 py-3 rounded-b-xl">
+          <span class="text-sm font-medium text-gray-400">Asistencias disp.</span>
+          <span class="text-lg font-black px-3 py-0.5 rounded-full shadow-inner border border-white/5 ${data.disponibles <= 2 ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' : 'bg-green-500/20 text-green-400 border-green-500/30'}">${data.disponibles}</span>
         </div>
       `;
   } catch {
     infoSocio.innerHTML = `
-        <div class="info-card-header">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-          </svg>
-          <span>Socio</span>
+        <div class="absolute left-0 top-0 h-full w-1 bg-primary rounded-l-xl"></div>
+        <div class="flex items-start gap-4 mb-2">
+          <div class="p-2.5 rounded-lg bg-primary/10 text-primary mt-1 border border-primary/20">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+            </svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-white font-bold text-lg leading-tight truncate tracking-wide">${socio.nombre}</p>
+            <p class="text-gray-400 text-sm font-mono mt-0.5">DNI: ${socio.dni}</p>
+          </div>
         </div>
-        <div class="space-y-1">
-          <p><strong>${socio.nombre}</strong></p>
-          <p class="text-gray-400 text-xs">DNI: ${socio.dni}</p>
-          <p class="text-yellow-400 text-xs">Sin membresía activa (quedará como pendiente)</p>
+        <div class="mt-4 pt-4 border-t border-yellow-500/20 flex justify-center items-center bg-yellow-500/5 -mx-4 -mb-4 px-4 py-3 rounded-b-xl">
+          <span class="text-xs font-semibold text-yellow-500 w-full text-center">Sin membresía activa (pendiente)</span>
         </div>
       `;
   }
@@ -390,7 +441,7 @@ async function cargarInfoSocioHome(socio) {
 
 async function cargarInfoMembresiaHome(socio) {
   const infoMembresia = document.getElementById("homeInfoMembresia");
-  infoMembresia.textContent = "Cargando información...";
+  infoMembresia.innerHTML = `<p class="text-sm text-gray-500 animate-pulse text-center">Cargando membresía...</p>`;
 
   try {
     const res = await authFetch(`${API_SOCIOS}/${socio.dni}/membresia-vigente`);
@@ -398,26 +449,36 @@ async function cargarInfoMembresiaHome(socio) {
 
     const membresia = await res.json();
     infoMembresia.innerHTML = `
-        <div class="info-card-header">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
-          </svg>
-          <span>Plan activo</span>
+        <div class="absolute left-0 top-0 h-full w-1 bg-secondary rounded-l-xl"></div>
+        <div class="flex items-start gap-4 mb-2">
+          <div class="p-2.5 rounded-lg bg-secondary/10 text-secondary mt-1 border border-secondary/20">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-white font-bold text-md leading-tight truncate tracking-wide">${membresia.tipo}</p>
+            <p class="text-gray-400 text-xs mt-0.5 font-medium uppercase tracking-wider">Plan Activo</p>
+          </div>
         </div>
-        <div class="space-y-1">
-          <p><strong>${membresia.tipo}</strong></p>
-          <p class="text-gray-400 text-xs">Vence: ${membresia.vencimiento}</p>
+        <div class="mt-4 pt-4 border-t border-white/5 flex justify-between items-center bg-black/20 -mx-4 -mb-4 px-4 py-3 rounded-b-xl">
+          <span class="text-sm font-medium text-gray-400">Vencimiento</span>
+          <span class="text-sm font-bold text-white tracking-widest bg-white/5 border border-white/10 px-3 py-1 rounded-md shadow-inner">${membresia.vencimiento}</span>
         </div>
       `;
   } catch {
     infoMembresia.innerHTML = `
-        <div class="info-card-header">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
-          </svg>
-          <span>Plan activo</span>
+        <div class="absolute left-0 top-0 h-full w-1 bg-gray-500 rounded-l-xl"></div>
+        <div class="flex items-start gap-4 mb-2">
+          <div class="p-2.5 rounded-lg bg-gray-500/10 text-gray-400 mt-1 border border-gray-500/20">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <div class="flex-1 min-w-0 flex items-center h-10">
+            <p class="text-gray-400 font-medium text-sm">Ningún plan activo asociado</p>
+          </div>
         </div>
-        <p class="text-gray-500 text-xs">El socio no tiene ningún plan activo</p>
       `;
   }
 }
@@ -444,26 +505,50 @@ async function cargarDashboard() {
     if (listaPorVencer && data.listaPorVencer) {
       if (data.listaPorVencer.length === 0) {
         listaPorVencer.innerHTML = `
-          <div class="empty-state py-6">
-            <p class="text-gray-500 text-sm">No hay membresías por vencer en los próximos 7 días</p>
+          <div class="flex flex-col items-center justify-center py-8 gap-2">
+            <svg class="w-8 h-8 text-gray-700" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p class="text-gray-600 text-sm text-center">Sin membresías por vencer en los próximos 7 días</p>
           </div>
         `;
       } else {
-        listaPorVencer.innerHTML = data.listaPorVencer.map(s => `
-          <div class="detail-item cursor-pointer hover:bg-[#1a1a1a] transition"
+        listaPorVencer.innerHTML = data.listaPorVencer.map(s => {
+          const urgente = s.diasRestantes <= 2;
+          const hoy = s.diasRestantes === 0;
+          const manana = s.diasRestantes === 1;
+
+          const pillClass = hoy || manana
+            ? 'bg-red-500/15 text-red-400 border border-red-500/30'
+            : urgente
+              ? 'bg-orange-500/15 text-orange-400 border border-orange-500/30'
+              : 'bg-yellow-500/15 text-yellow-400 border border-yellow-500/30';
+
+          const diasLabel = hoy ? 'Hoy' : manana ? 'Mañana' : `${s.diasRestantes}d`;
+
+          return `
+          <div class="flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl bg-white/3 border border-white/5 hover:bg-white/5 hover:border-white/10 cursor-pointer transition-all group"
                onclick="window.location.href='socio-detalle.html?dni=${s.dni}'">
-            <div>
-              <p class="detail-item-name">${s.nombre}</p>
-              <p class="detail-item-type">${s.nombreMembresia}</p>
+            <div class="flex items-center gap-2.5 min-w-0">
+              <div class="flex-shrink-0 w-7 h-7 rounded-lg bg-white/5 border border-white/8 flex items-center justify-center">
+                <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                </svg>
+              </div>
+              <div class="min-w-0">
+                <p class="text-sm font-semibold text-gray-200 truncate group-hover:text-white transition-colors">${s.nombre}</p>
+                <p class="text-[10px] text-gray-600 uppercase tracking-wider font-medium truncate">${s.nombreMembresia}</p>
+              </div>
             </div>
-            <div class="text-right">
-              <p class="font-semibold ${s.diasRestantes <= 2 ? 'text-red-400' : 'text-yellow-400'}">
-                ${s.diasRestantes === 0 ? 'Hoy' : s.diasRestantes === 1 ? 'Mañana' : `${s.diasRestantes} días`}
-              </p>
-              <p class="text-xs text-gray-500">${formatDate(s.fechaVencimiento)}</p>
+            <div class="flex items-center gap-2 flex-shrink-0">
+              <span class="text-[10px] text-gray-600">${formatDate(s.fechaVencimiento)}</span>
+              <span class="text-xs font-bold px-2 py-0.5 rounded-full ${pillClass}">${diasLabel}</span>
+              <svg class="w-3.5 h-3.5 text-gray-700 group-hover:text-gray-400 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+              </svg>
             </div>
-          </div>
-        `).join('');
+          </div>`;
+        }).join('');
       }
     }
 
@@ -493,7 +578,7 @@ async function cargarSociosInactivos() {
 
     inactivos.forEach(s => {
       const li = document.createElement("li");
-      li.className = "flex justify-between items-center text-gray-300";
+      li.className = "flex justify-between items-center text-gray-300 py-1.5 border-b border-white/5 last:border-0";
 
       const diasTexto = s.diasSinAsistir >= 999
         ? "Nunca asistió"

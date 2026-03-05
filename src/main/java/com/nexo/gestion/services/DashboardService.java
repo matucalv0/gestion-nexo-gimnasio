@@ -6,6 +6,7 @@ import com.nexo.gestion.repository.AsistenciaRepository;
 import com.nexo.gestion.repository.PagoRepository;
 import com.nexo.gestion.repository.SocioMembresiaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class DashboardService {
 
     private final PagoRepository pagoRepository;

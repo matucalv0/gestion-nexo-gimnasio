@@ -137,5 +137,9 @@ public interface SocioRepository extends JpaRepository<Socio, String> {
             @Param("q") String q,
             @Param("activo") Boolean activo
     );
+
+    @org.springframework.data.jpa.repository.Modifying
+    @Query(value = "UPDATE socio SET dni = :nuevoDni WHERE dni = :dniViejo", nativeQuery = true)
+    void actualizarDni(@Param("dniViejo") String dniViejo, @Param("nuevoDni") String nuevoDni);
 }
 

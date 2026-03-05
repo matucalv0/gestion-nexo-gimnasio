@@ -10,8 +10,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
 public class AuthService {
     private static final Logger log = LoggerFactory.getLogger(AuthService.class);
     private final AuthenticationManager authenticationManager;
@@ -25,6 +27,7 @@ public class AuthService {
         this.userDetailsService = userDetailsService;
     }
 
+    @Transactional
     public String login(UsuarioLoginDTO usuarioLoginDTO) {
         log.debug("AuthService: Intentando autenticar a {}", usuarioLoginDTO.username());
           authenticationManager.authenticate(

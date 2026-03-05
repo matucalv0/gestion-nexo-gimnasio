@@ -7,6 +7,7 @@ import com.nexo.gestion.entity.Socio;
 import com.nexo.gestion.repository.AsistenciaRepository;
 import com.nexo.gestion.repository.SocioMembresiaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -15,6 +16,7 @@ import java.time.YearMonth;
 import java.util.*;
 
 @Service
+@Transactional(readOnly = true)
 public class AsistenciaService {
     private final AsistenciaRepository asistenciaRepository;
     private final SocioMembresiaRepository socioMembresiaRepository;

@@ -1,12 +1,16 @@
 package com.nexo.gestion.dto;
 
 import jakarta.persistence.Column;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 
 public class ProductoPatchDTO {
+    @NotBlank(message = "Debe ingresar un nombre")
     private String nombre;
     @Column(precision = 10, scale = 2)
+    @NotNull(message = "Debe ingresar un precio")
     private BigDecimal precioSugerido;
     private Integer stock;
     private Boolean activo;
