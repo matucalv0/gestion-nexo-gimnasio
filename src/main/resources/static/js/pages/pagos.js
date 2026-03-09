@@ -136,8 +136,14 @@ function renderPagos(tablaBody, pagos) {
     // Fila principal
     const tr = document.createElement("tr");
 
+    let socioHtml = "—";
+    if (p.dniSocio) {
+      socioHtml = `${p.nombreSocio} <span class="text-xs text-gray-400">(${p.dniSocio})</span>`;
+    }
+
     tr.innerHTML = `
       <td>${p.fecha}</td>
+      <td>${socioHtml}</td>
       <td>
         <span class="badge ${p.estado === 'PAGADO' ? 'badge-success' : p.estado === 'ANULADO' ? 'badge-danger' : 'badge-warning'}">
           ${p.estado}
@@ -162,7 +168,7 @@ function renderPagos(tablaBody, pagos) {
     trDetalle.id = `detalle-${index}`;
 
     trDetalle.innerHTML = `
-      <td colspan="4" class="p-0">
+      <td colspan="5" class="p-0">
         <div class="detail-panel">
           <h4 class="detail-panel-title">Detalle del pago</h4>
           ${renderDetalle(p.detalles)}

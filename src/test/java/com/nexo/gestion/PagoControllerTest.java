@@ -190,7 +190,7 @@ public class PagoControllerTest {
                 List.of(new DetallePagoCreateDTO(1, new BigDecimal("50000"), null, "44048664", 1))
         );
         when(pagoService.crearPago(any())).thenReturn(
-                new PagoDTO(1, EstadoPago.PAGADO, java.time.LocalDate.now(), new BigDecimal("50000"), List.of())
+                new PagoDTO(1, EstadoPago.PAGADO, java.time.LocalDate.now(), new BigDecimal("50000"), List.of(), "44048664", "Juan")
         );
 
         mockMvc.perform(post("/pagos")

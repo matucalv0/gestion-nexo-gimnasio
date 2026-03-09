@@ -16,6 +16,8 @@ public record PagoDTO(
         @NotBlank
         LocalDate fecha,
         BigDecimal monto,
-        List<DetallePagoDTO> detalles
+        List<DetallePagoDTO> detalles,
+        String dniSocio,
+        String nombreSocio
 ) {
 }

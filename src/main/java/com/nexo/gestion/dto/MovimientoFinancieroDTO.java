@@ -13,10 +13,21 @@ public record MovimientoFinancieroDTO(
         Integer idReferencia,
         // Campos adicionales para gastos
         CategoriaGasto categoria,
-        String proveedor
+        String proveedor,
+        String dniSocio,
+        String nombreSocio
 ) {
     // Constructor simplificado para pagos (sin categoria/proveedor)
+    public MovimientoFinancieroDTO(TipoMovimiento tipoMovimiento, BigDecimal monto, LocalDateTime fecha, Integer idReferencia, String dniSocio, String nombreSocio) {
+        this(tipoMovimiento, monto, fecha, idReferencia, null, null, dniSocio, nombreSocio);
+    }
+    
+    // Constructor completo original para gastos 
+    public MovimientoFinancieroDTO(TipoMovimiento tipoMovimiento, BigDecimal monto, LocalDateTime fecha, Integer idReferencia, CategoriaGasto categoria, String proveedor) {
+        this(tipoMovimiento, monto, fecha, idReferencia, categoria, proveedor, null, null);
+    }
+
     public MovimientoFinancieroDTO(TipoMovimiento tipoMovimiento, BigDecimal monto, LocalDateTime fecha, Integer idReferencia) {
-        this(tipoMovimiento, monto, fecha, idReferencia, null, null);
+        this(tipoMovimiento, monto, fecha, idReferencia, null, null, null, null);
     }
 }

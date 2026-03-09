@@ -37,9 +37,12 @@ public class FinanzaService {
 
         String sql = """
             SELECT * FROM (
-                SELECT id_pago as ref_id, 'INGRESO' as tipo, monto, fecha, CAST('Pago' AS VARCHAR) as cat, CAST(NULL AS VARCHAR) as prov FROM pago WHERE estado NOT IN ('ELIMINADO', 'ANULADO')
+                SELECT p.id_pago as ref_id, 'INGRESO' as tipo, p.monto, p.fecha, CAST('Pago' AS VARCHAR) as cat, CAST(NULL AS VARCHAR) as prov, s.nombre as socio_nombre, s.dni as socio_dni 
+                FROM pago p LEFT JOIN socio s ON p.dni_socio = s.dni 
+                WHERE p.estado NOT IN ('ELIMINADO', 'ANULADO')
                 UNION ALL
-                SELECT id_gasto as ref_id, 'EGRESO' as tipo, monto, fecha, CAST(categoria AS VARCHAR) as cat, proveedor as prov FROM gasto WHERE (activo IS NULL OR activo = true)
+                SELECT id_gasto as ref_id, 'EGRESO' as tipo, monto, fecha, CAST(categoria AS VARCHAR) as cat, proveedor as prov, CAST(NULL AS VARCHAR) as socio_nombre, CAST(NULL AS VARCHAR) as socio_dni 
+                FROM gasto WHERE (activo IS NULL OR activo = true)
             ) as movimientos
             WHERE fecha >= :desde AND fecha < (CAST(:hasta AS DATE) + 1)
             ORDER BY fecha DESC
@@ -98,13 +101,18 @@ public class FinanzaService {
                 proveedor = proveedorRaw;
             }
 
+            String socioNombre = (String) row[6];
+            String socioDni = (String) row[7];
+
             content.add(new MovimientoFinancieroDTO(
                     tipo,
                     monto,
                     fecha.atStartOfDay(),
                     refId,
                     categoriaEnum,
-                    proveedor
+                    proveedor,
+                    socioDni,
+                    socioNombre
             ));
         }
 
@@ -133,7 +141,9 @@ public class FinanzaService {
         List<MovimientoFinancieroDTO> movimientos = new ArrayList<>();
 
         for (Pago p: pagos){
-            movimientos.add(new MovimientoFinancieroDTO(TipoMovimiento.INGRESO, p.getMonto(), p.getFecha().atStartOfDay(), p.getIdPago()));
+            String dniSocio = p.getSocio() != null ? p.getSocio().getDni() : null;
+            String nombreSocio = p.getSocio() != null ? p.getSocio().getNombre() : null;
+            movimientos.add(new MovimientoFinancieroDTO(TipoMovimiento.INGRESO, p.getMonto(), p.getFecha().atStartOfDay(), p.getIdPago(), dniSocio, nombreSocio));
         }
 
         for (Gasto g: gastos){

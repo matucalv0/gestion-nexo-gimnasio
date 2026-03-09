@@ -99,12 +99,21 @@ public class PagoService {
 
         }
 
+        String dniSocio = null;
+        String nombreSocio = null;
+        if (pago.getSocio() != null) {
+            dniSocio = pago.getSocio().getDni();
+            nombreSocio = pago.getSocio().getNombre();
+        }
+
         return new PagoDTO(
                 pago.getIdPago(),
                 pago.getEstado(),
                 pago.getFecha(),
                 pago.getMonto(),
-                detalleDTO
+                detalleDTO,
+                dniSocio,
+                nombreSocio
         );
     }
 

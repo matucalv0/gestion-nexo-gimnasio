@@ -19,12 +19,19 @@ export function detalleRowIds(m) {
 export function movimientoMainRowHtml(m) {
   const badgeClass = m.tipoMovimiento === "INGRESO" ? "badge-success" : "badge-danger";
 
+  let socioHtml = "—";
+  if (m.tipoMovimiento === "INGRESO" && m.dniSocio) {
+    socioHtml = `${m.nombreSocio} <span class="text-xs text-gray-400">(${m.dniSocio})</span>`;
+  }
+
   return `
     <td>${formatDate(m.fecha)}</td>
+    <td>${socioHtml}</td>
     <td>
       <span class="badge ${badgeClass}">${m.tipoMovimiento}</span>
     </td>
     <td class="font-semibold text-[var(--beige)]">$ ${Number(m.monto).toLocaleString()}</td>
+    <td class="text-gray-400">#${m.idReferencia}</td>
     <td>
       <div class="flex gap-2">
         <button type="button" class="table-action-btn" data-action="detalle" data-id="${m.idReferencia}" data-tipo="${m.tipoMovimiento}" title="Ver detalle">
@@ -49,7 +56,7 @@ export function movimientoDetailRowHtml(m) {
   const { contentId } = detalleRowIds(m);
 
   return `
-    <td colspan="4" class="p-0">
+    <td colspan="6" class="p-0">
       <div id="${contentId}" class="detail-panel">
         <p class="text-sm text-gray-500">Cargando detalle...</p>
       </div>
@@ -69,8 +76,8 @@ export function detalleIngresoHtml(pago) {
     <h4 class="detail-panel-title">Detalle del ingreso</h4>
     <div class="detail-items">
       ${pago.detalles
-        .map(
-          (d) => `
+      .map(
+        (d) => `
           <div class="detail-item">
             <div>
               <p class="detail-item-type">${d.tipo}</p>
@@ -83,8 +90,8 @@ export function detalleIngresoHtml(pago) {
             </div>
           </div>
         `,
-        )
-        .join("")}
+      )
+      .join("")}
     </div>
   `;
 }
