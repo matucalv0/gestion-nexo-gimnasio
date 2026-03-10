@@ -33,5 +33,5 @@ build/
 ### VS Code ###
 .vscode/
 .agents
-.skills-lock.json
+skills-lock.json
 .env
