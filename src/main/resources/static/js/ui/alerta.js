@@ -34,9 +34,9 @@ export const Alerta = {
     if (!document.getElementById("modalConfirmacion")) {
       const modal = document.createElement("div");
       modal.id = "modalConfirmacion";
-      modal.className = "hidden fixed inset-0 bg-black/80 items-center justify-center z-[110] p-4 backdrop-blur-sm";
+      modal.className = "hidden fixed inset-0 modal-bg items-center justify-center z-[110] p-4";
       modal.innerHTML = `
-                <div class="bg-[#121212] rounded-2xl border border-gray-800 max-w-md w-full p-6 shadow-2xl animate-scale-up">
+                <div class="modal-content max-w-md w-full p-6 animate-scale-up">
                     <div class="flex items-center gap-4 mb-4 text-[#FF6B2C]">
                         <div class="p-3 bg-[#FF6B2C]/10 rounded-full">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

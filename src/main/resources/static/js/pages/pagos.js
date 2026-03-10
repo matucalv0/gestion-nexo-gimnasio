@@ -135,6 +135,8 @@ function renderPagos(tablaBody, pagos) {
 
     // Fila principal
     const tr = document.createElement("tr");
+    tr.classList.add("animate-fade-in-up");
+    tr.style.animationDelay = `${index * 50}ms`;
 
     let socioHtml = "—";
     if (p.dniSocio) {

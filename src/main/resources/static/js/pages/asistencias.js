@@ -126,8 +126,10 @@ function renderTabla(tablaBody, asistencias) {
   // Ocultar empty state y mostrar datos
   if (emptyState) emptyState.classList.add('hidden');
 
-  asistencias.forEach(a => {
+  asistencias.forEach((a, index) => {
     const tr = document.createElement("tr");
+    tr.classList.add("animate-fade-in-up");
+    tr.style.animationDelay = `${index * 50}ms`;
 
     tr.innerHTML = `
       <td class="font-medium">${a.nombre}</td>

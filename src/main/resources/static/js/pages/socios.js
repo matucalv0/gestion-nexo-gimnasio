@@ -123,8 +123,11 @@ function renderSocios(tablaBody, socios) {
 
   if (emptyState) emptyState.classList.add('hidden');
 
-  socios.forEach(s => {
+  socios.forEach((s, index) => {
     const tr = document.createElement("tr");
+    tr.classList.add("animate-fade-in-up");
+    tr.style.animationDelay = `${index * 50}ms`;
+
     const isActivo = s.activo === true;
     tr.innerHTML = `
       <td>${s.dni}</td>

@@ -52,9 +52,10 @@ function renderPlantillas(plantillas) {
         return;
     }
 
-    plantillas.forEach(r => {
+    plantillas.forEach((r, index) => {
         const tr = document.createElement("tr");
-        tr.className = "hover:bg-[#1f2937] transition-colors"; // Row hover effect
+        tr.className = "hover:bg-[#1f2937] transition-colors animate-fade-in-up";
+        tr.style.animationDelay = `${index * 50}ms`;
         tr.innerHTML = `
             <td class="font-medium text-white">${r.nombre}</td>
             <td class="text-gray-400 text-sm max-w-md truncate">${r.descripcion || '-'}</td>
@@ -210,8 +211,10 @@ function renderAsignadas(rutinas) {
         rutinasActivas.add(masReciente.idRutina);
     });
 
-    rutinas.forEach(r => {
+    rutinas.forEach((r, index) => {
         const tr = document.createElement("tr");
+        tr.classList.add("animate-fade-in-up");
+        tr.style.animationDelay = `${index * 50}ms`;
         const esActiva = rutinasActivas.has(r.idRutina);
 
         // Format date
@@ -336,10 +339,10 @@ window.verSociosAsignados = async (idRutina, nombreRutina) => {
     if (!modal) {
         modal = document.createElement("div");
         modal.id = "modalSocios";
-        modal.className = "fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300";
+        modal.className = "fixed inset-0 z-50 flex items-center justify-center modal-bg hidden opacity-0 transition-opacity duration-300";
         modal.innerHTML = `
-            <div class="bg-[#121212] border border-[var(--input-border)] rounded-xl w-full max-w-lg overflow-hidden transform scale-95 transition-transform duration-300">
-                <div class="p-5 border-b border-[#2a2a2a] flex justify-between items-center bg-[#1a1a1a]">
+            <div class="modal-content w-full max-w-lg overflow-hidden transform scale-95 transition-transform duration-300">
+                <div class="modal-header flex justify-between items-center">
                     <h3 class="text-lg font-bold text-white">Socios con Rutina</h3>
                     <button id="closeModalSocios" class="text-gray-400 hover:text-white">&times;</button>
                 </div>
@@ -406,10 +409,10 @@ window.asignarRutina = async (idRutina, nombreRutina) => {
     if (!modal) {
         modal = document.createElement("div");
         modal.id = "modalAsignar";
-        modal.className = "fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300";
+        modal.className = "fixed inset-0 z-50 flex items-center justify-center modal-bg hidden opacity-0 transition-opacity duration-300";
         modal.innerHTML = `
-            <div class="bg-[#121212] border border-[var(--input-border)] rounded-xl w-full max-w-lg overflow-hidden transform scale-95 transition-transform duration-300 flex flex-col max-h-[85vh]">
-                <div class="p-5 border-b border-[#2a2a2a] flex justify-between items-center bg-[#1a1a1a]">
+            <div class="modal-content w-full max-w-lg overflow-hidden transform scale-95 transition-transform duration-300 flex flex-col max-h-[85vh]">
+                <div class="modal-header flex justify-between items-center">
                     <h3 class="text-lg font-bold text-white">Asignar Rutina</h3>
                     <button id="closeModalAsignar" class="text-gray-400 hover:text-white">&times;</button>
                 </div>

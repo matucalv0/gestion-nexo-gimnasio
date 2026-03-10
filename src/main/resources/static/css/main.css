@@ -11,7 +11,25 @@
 body {
   margin: 0;
   min-height: 100vh;
-  /* El fondo se maneja en el pseudo-elemento para evitar cortes al scroll */
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #050505;
+  color: #e2e8f0;
+}
+
+/* Base heading font */
+h1,
+h2,
+h3,
+h4,
+.font-display,
+.text-metric,
+.text-metric-lg,
+.text-metric-xl,
+.kpi-value,
+.kpi-value-new {
+  font-family: 'Outfit', sans-serif;
 }
 
 body::before {
@@ -21,19 +39,54 @@ body::before {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: -1;
-
-  /* Fondo profesional: Equilibrio identidad/legibilidad */
-  background-color: #0f172a;
+  z-index: -2;
   background-image:
-    linear-gradient(to bottom, rgba(11, 15, 20, 0.88), rgba(11, 15, 20, 0.90)),
+    radial-gradient(circle at 50% 0%, rgba(30, 41, 59, 1) 0%, rgba(5, 5, 5, 1) 60%),
     url("../assets/nexofondo.jpg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  background-size: 100% 100%, cover;
+  background-position: top center, center;
+  background-blend-mode: normal, overlay;
+  opacity: 0.95;
 }
 
-/* Evita que el fondo parpadee durante la transición */
+/* Subtle Noise Grain Texture */
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+}
+
+/* View Transitions native cross-fade (if supported by meta tag) */
+::view-transition-old(root) {
+  animation: 300ms cubic-bezier(0.4, 0, 0.2, 1) both fade-out;
+}
+
+::view-transition-new(root) {
+  animation: 400ms cubic-bezier(0.4, 0, 0.2, 1) both fade-in;
+}
+
+@keyframes fade-out {
+  to {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.99);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+
 ::view-transition-old(main-background),
 ::view-transition-new(main-background) {
   animation: none;
@@ -82,6 +135,45 @@ body::before {
   gap: 0.75rem;
 }
 
+/* Modal Base */
+.modal-bg {
+  background-color: rgba(5, 5, 5, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.modal-content {
+  background: rgba(20, 20, 20, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  border-radius: 1.25rem;
+  overflow: hidden;
+}
+
+/* Modals Header */
+.modal-header {
+  padding: 1.5rem 1.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(25, 25, 25, 0.5);
+}
+
+.modal-header h3 {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  font-size: 1.25rem;
+}
+
+.modal-body {
+  padding: 1.75rem;
+}
+
+.modal-footer {
+  padding: 1.25rem 1.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(25, 25, 25, 0.3);
+}
+
 /* Glassmorphism Effect - DEPRECADO, mantener para compatibilidad */
 .glass {
   background: rgba(18, 18, 18, 0.7);
@@ -91,80 +183,85 @@ body::before {
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 
-/* Card minimalista con fondo sólido */
+/* Card minimalista con fondo sólido y profundidad */
 .glass-card {
-  background: #1a1a1a;
-  /* Fondo sólido oscuro */
-  border: 1px solid #2d2d2d;
-  /* Borde sutil */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  /* Sombra suave */
-  border-radius: 0.75rem;
-  transition: all 0.2s ease;
+  background: rgba(15, 15, 15, 0.8);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  border-radius: 1rem;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .glass-card:hover {
-  border-color: #3a3a3a;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px -4px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transform: translateY(-2px);
 }
 
-/* Buttons - Diseño sólido y minimalista */
+/* Buttons - Diseño sólido, minimalista y glass sutil */
 .btn {
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  border-radius: 0.625rem;
   font-weight: 600;
-  transition: all 0.2s ease;
+  font-family: inherit;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
   border: none;
   cursor: pointer;
+  letter-spacing: 0.01em;
 }
 
 .btn:active {
-  transform: scale(0.98);
+  transform: scale(0.97);
 }
 
-/* Primary Button - Naranja sólido */
+/* Primary Button - Naranja con relieve sutil */
 .btn-primary {
-  background-color: var(--orange);
-  color: #0a0a0a;
-  /* Negro para mejor contraste */
-  border: 1px solid var(--orange);
-  box-shadow: 0 2px 4px rgba(233, 86, 30, 0.2);
+  background: linear-gradient(180deg, var(--orange) 0%, #d64a13 100%);
+  color: #fff;
+  border: 1px solid #d64a13;
+  box-shadow: 0 2px 0px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.2), 0 4px 12px rgba(233, 86, 30, 0.2);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .btn-primary:hover {
-  background-color: #ff6b35;
-  border-color: #ff6b35;
-  box-shadow: 0 4px 8px rgba(233, 86, 30, 0.3);
+  background: linear-gradient(180deg, #ff6b35 0%, var(--orange) 100%);
+  box-shadow: 0 2px 0px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.3), 0 6px 16px rgba(233, 86, 30, 0.35);
+  transform: translateY(-1px);
 }
 
-/* Secondary Button - Fondo oscuro con borde */
+/* Secondary Button - Fondo oscuro glass */
 .btn-secondary {
-  background-color: #2a2a2a;
-  border: 1px solid #3a3a3a;
-  color: var(--beige);
+  background-color: rgba(30, 30, 30, 0.8);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .btn-secondary:hover {
-  background-color: #333;
-  border-color: #4a4a4a;
+  background-color: rgba(50, 50, 50, 0.9);
+  border-color: rgba(255, 255, 255, 0.2);
   color: white;
 }
 
-/* Danger Button - Rojo sólido */
+/* Danger Button - Rojo sólido refinado */
 .btn-danger {
-  background-color: #1a1a1a;
-  border: 1px solid #ef4444;
-  color: #f87171;
+  background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+  border: 1px solid #b91c1c;
+  color: #fff;
+  box-shadow: 0 2px 0px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .btn-danger:hover {
-  background-color: #ef4444;
-  border-color: #dc2626;
-  color: white;
+  background: linear-gradient(180deg, #f87171 0%, #ef4444 100%);
+  box-shadow: 0 2px 0px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.3), 0 4px 16px rgba(239, 68, 68, 0.3);
 }
 
 /* Inputs - Minimalistas con mejor contraste */
@@ -232,13 +329,14 @@ body::before {
   /* 30px */
   line-height: 1.3;
   font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .text-h3 {
   font-size: 1.5rem;
   /* 24px */
   line-height: 1.4;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .text-h4 {
@@ -310,20 +408,21 @@ body::before {
   font-variant-numeric: tabular-nums;
 }
 
-/* ========== BOTONES SEMÁNTICOS ========== */
+/* ========== BOTONES SEMÁNTICOS (OVERRIDES) ========== */
 
-.btn-danger {
+.btn-outline-danger {
   background-color: transparent;
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
   box-shadow: none;
+  font-family: inherit;
 }
 
-.btn-danger:hover {
+.btn-outline-danger:hover {
   border-color: #ef4444;
   background-color: rgba(239, 68, 68, 0.1);
-  color: #fca5a5;
-  box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+  color: #fff;
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.15);
 }
 
 /* ========== ANIMACIONES ========== */
@@ -388,7 +487,30 @@ body::before {
 }
 
 .animate-scale-in {
-  animation: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  /* Using tighter, smoother curve for premium feel */
+  animation: scaleIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Modal specific animation (improving bounce effect) */
+.modal-content.scale-100 {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease !important;
+}
+
+/* Staggered list row animation */
+@keyframes fadeInUpRow {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUpRow 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 /* Skeleton loader (para estados de carga) */
@@ -1471,6 +1593,7 @@ input.flatpickr-input[readonly] {
   0% {
     background-position: 200% 0;
   }
+
   100% {
     background-position: -200% 0;
   }

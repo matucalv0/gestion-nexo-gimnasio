@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -49,6 +49,7 @@
             display: flex;
         }
     </style>
+    <meta name="view-transition" content="same-origin" />
 </head>
 
 <body class="min-h-screen text-gray-300">
@@ -222,59 +223,6 @@
                     class="p-4 text-center text-gray-600 hover:text-[var(--orange)] hover:bg-[#1a1a1a] cursor-pointer transition text-xs uppercase font-semibold tracking-wider border-t border-[var(--input-border)]">
                     + Click para añadir fila vacía
                 </div>
-            </div>
-
-        </div>
-    </main>
-
-    <!-- MODAL VIDEO -->
-    <div id="videoModal"
-        class="modal-video fixed inset-0 z-50 bg-black/80 hidden items-center justify-center backdrop-blur-sm">
-        <div
-            class="bg-[#1a1a1a] p-6 rounded-xl border border-[var(--input-border)] w-[90%] max-w-lg shadow-2xl transform transition-all scale-100">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold text-[var(--beige)] flex items-center gap-2">
-                    <svg class="w-5 h-5 text-[var(--orange)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z">
-                        </path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    Video de Referencia
-                </h3>
-                <button id="closeVideoModal" class="text-gray-400 hover:text-white transition">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
-                        </path>
-                    </svg>
-                </button>
-            </div>
-            <div class="space-y-4">
-                <div>
-                    <label class="form-label">URL del Video</label>
-                    <input type="text" id="videoUrlInput" class="form-input" placeholder="https://youtube.com/...">
-                </div>
-                <div class="flex gap-3 pt-2">
-                    <button id="cancelVideoBtn" class="btn-outline flex-1 justify-center">Cancelar</button>
-                    <button id="saveVideoBtn" class="btn-action-primary flex-1 justify-center">Guardar URL</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL NUEVO EJERCICIO -->
-    <div id="newExerciseModal"
-        class="modal-video fixed inset-0 z-50 bg-black/80 hidden items-center justify-center backdrop-blur-sm">
-        <div
-            class="bg-[#1a1a1a] p-6 rounded-xl border border-[var(--input-border)] w-[90%] max-w-lg shadow-2xl transform transition-all scale-100">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold text-[var(--beige)] flex items-center gap-2">
-                    <svg class="w-5 h-5 text-[var(--orange)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4">
-                        </path>
-                    </svg>
-                    Nuevo Ejercicio
                 </h3>
                 <button id="closeNewExerciseModal" class="text-gray-400 hover:text-white transition">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -310,12 +258,12 @@
                 </div>
             </div>
         </div>
-    </div>
+        </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script type="module" src="js/pages/registrar-rutina.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script type="module" src="js/pages/registrar-rutina.js"></script>
 
-    <script type="module" src="../js/ui/sidebar.js"></script>
+        <script type="module" src="../js/ui/sidebar.js"></script>
 </body>
 
 </html>

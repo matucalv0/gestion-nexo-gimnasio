@@ -118,19 +118,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
       socios.forEach((socio, index) => {
         const item = document.createElement("div");
-        item.className = "search-item";
+        item.className = "search-item group flex items-center gap-3 p-3 border-b border-white/5 last:border-0 hover:bg-white/5 cursor-pointer transition-colors outline-none focus:bg-white/10";
         item.tabIndex = 0;
         item.innerHTML = `
-          <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-          </svg>
-          <div class="flex-1 min-w-0">
-            <span class="block truncate">${socio.nombre}</span>
-            <span class="text-xs text-gray-500">${socio.dni}</span>
+          <div class="w-10 h-10 rounded-lg bg-black/50 text-gray-500 border border-white/10 flex items-center justify-center group-hover:bg-primary/20 group-hover:text-primary transition-all flex-shrink-0">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+            </svg>
           </div>
-          <svg class="w-4 h-4 text-primary transition-colors duration-200 flex-shrink-0 opacity-0 group-hover:opacity-100" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4" />
-          </svg>
+          <div class="flex-1 min-w-0">
+            <span class="block truncate font-bold text-gray-200 group-hover:text-white transition-colors text-base">${socio.nombre}</span>
+            <span class="text-xs text-gray-500 font-medium tracking-wide">DNI: <span class="font-mono text-gray-400 group-hover:text-gray-300">${socio.dni}</span></span>
+          </div>
+          <div class="w-8 h-8 rounded-full bg-[#111] border border-[#222] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all transform group-hover:scale-100 scale-75">
+            <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+          </div>
         `;
 
         // Click to register directly
@@ -328,14 +332,15 @@ async function cargarUltimasAsistencias() {
     lista.innerHTML = data.content.map(a => {
       const hora = formatTime(a.fechaHora);
       return `
-        <div class="recent-item">
-          <span class="recent-item-name truncate">${a.nombre || a.dni}</span>
-          <span class="recent-item-time">${hora}</span>
+        <div class="recent-item bg-black/40 border border-[#222] px-3 py-1.5 rounded-lg flex items-center gap-3">
+          <div class="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
+          <span class="recent-item-name font-bold text-gray-300 text-xs tracking-wide uppercase truncate max-w-[120px]">${a.nombre || a.dni}</span>
+          <span class="recent-item-time text-gray-500 font-mono text-[10px] bg-[#111] px-1.5 py-0.5 rounded border border-[#333]">${hora}</span>
         </div>
       `;
     }).join('');
   } catch (err) {
-    lista.innerHTML = '<p class="text-gray-500 text-xs text-center py-2">Error cargando asistencias</p>';
+    lista.innerHTML = '<p class="text-gray-500 text-xs w-full text-center py-2">Error cargando asistencias</p>';
   }
 }
 
@@ -401,39 +406,37 @@ async function cargarInfoSocioHome(socio) {
 
     const data = await res.json();
     infoSocio.innerHTML = `
-        <div class="absolute left-0 top-0 h-full w-1 bg-primary rounded-l-xl"></div>
         <div class="flex items-start gap-4 mb-2">
-          <div class="p-2.5 rounded-lg bg-primary/10 text-primary mt-1 border border-primary/20">
+          <div class="icon-box w-10 h-10 border border-primary/20">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
             </svg>
           </div>
           <div class="flex-1 min-w-0">
             <p class="text-white font-bold text-lg leading-tight truncate tracking-wide">${socio.nombre}</p>
-            <p class="text-gray-400 text-sm font-mono mt-0.5">DNI: ${socio.dni}</p>
+            <p class="text-gray-400 text-sm mt-0.5">DNI: ${socio.dni}</p>
           </div>
         </div>
-        <div class="mt-4 pt-4 border-t border-white/5 flex justify-between items-center bg-black/20 -mx-4 -mb-4 px-4 py-3 rounded-b-xl">
-          <span class="text-sm font-medium text-gray-400">Asistencias disp.</span>
-          <span class="text-lg font-black px-3 py-0.5 rounded-full shadow-inner border border-white/5 ${data.disponibles <= 2 ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' : 'bg-green-500/20 text-green-400 border-green-500/30'}">${data.disponibles}</span>
+        <div class="mt-4 pt-4 border-t border-[#333] flex justify-between items-center -mx-4 -mb-4 px-4 py-3 rounded-b-xl">
+          <span class="text-sm font-bold text-gray-400">Asistencias disp.</span>
+          <span class="text-lg font-black px-3 py-0.5 rounded-full ${data.disponibles <= 2 ? 'bg-yellow-500/20 text-yellow-500 border border-yellow-500/30' : 'bg-green-500/20 text-green-500 border border-green-500/30'}">${data.disponibles}</span>
         </div>
       `;
   } catch {
     infoSocio.innerHTML = `
-        <div class="absolute left-0 top-0 h-full w-1 bg-primary rounded-l-xl"></div>
         <div class="flex items-start gap-4 mb-2">
-          <div class="p-2.5 rounded-lg bg-primary/10 text-primary mt-1 border border-primary/20">
+          <div class="icon-box w-10 h-10 border border-primary/20">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
             </svg>
           </div>
           <div class="flex-1 min-w-0">
             <p class="text-white font-bold text-lg leading-tight truncate tracking-wide">${socio.nombre}</p>
-            <p class="text-gray-400 text-sm font-mono mt-0.5">DNI: ${socio.dni}</p>
+            <p class="text-gray-400 text-sm mt-0.5">DNI: ${socio.dni}</p>
           </div>
         </div>
         <div class="mt-4 pt-4 border-t border-yellow-500/20 flex justify-center items-center bg-yellow-500/5 -mx-4 -mb-4 px-4 py-3 rounded-b-xl">
-          <span class="text-xs font-semibold text-yellow-500 w-full text-center">Sin membresía activa (pendiente)</span>
+          <span class="text-xs font-bold text-yellow-500 w-full text-center">Sin membresía activa (pendiente)</span>
         </div>
       `;
   }
@@ -449,34 +452,32 @@ async function cargarInfoMembresiaHome(socio) {
 
     const membresia = await res.json();
     infoMembresia.innerHTML = `
-        <div class="absolute left-0 top-0 h-full w-1 bg-secondary rounded-l-xl"></div>
-        <div class="flex items-start gap-4 mb-2">
-          <div class="p-2.5 rounded-lg bg-secondary/10 text-secondary mt-1 border border-secondary/20">
+      <div class="flex items-start gap-4 mb-2">
+          <div class="icon-box w-10 h-10 border border-secondary/20 bg-secondary/10 text-secondary">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
           <div class="flex-1 min-w-0">
             <p class="text-white font-bold text-md leading-tight truncate tracking-wide">${membresia.tipo}</p>
-            <p class="text-gray-400 text-xs mt-0.5 font-medium uppercase tracking-wider">Plan Activo</p>
+            <p class="text-gray-400 text-xs mt-0.5 font-bold uppercase tracking-wider">Plan Activo</p>
           </div>
         </div>
-        <div class="mt-4 pt-4 border-t border-white/5 flex justify-between items-center bg-black/20 -mx-4 -mb-4 px-4 py-3 rounded-b-xl">
-          <span class="text-sm font-medium text-gray-400">Vencimiento</span>
-          <span class="text-sm font-bold text-white tracking-widest bg-white/5 border border-white/10 px-3 py-1 rounded-md shadow-inner">${membresia.vencimiento}</span>
-        </div>
-      `;
+      <div class="mt-4 pt-4 border-t border-[#333] flex justify-between items-center -mx-4 -mb-4 px-4 py-3 rounded-b-xl">
+        <span class="text-sm font-bold text-gray-400">Vencimiento</span>
+        <span class="text-sm font-black text-white px-3 py-1 rounded bg-[#222] border border-[#333]">${membresia.vencimiento}</span>
+      </div>
+    `;
   } catch {
     infoMembresia.innerHTML = `
-        <div class="absolute left-0 top-0 h-full w-1 bg-gray-500 rounded-l-xl"></div>
         <div class="flex items-start gap-4 mb-2">
-          <div class="p-2.5 rounded-lg bg-gray-500/10 text-gray-400 mt-1 border border-gray-500/20">
+          <div class="icon-box w-10 h-10 border border-gray-500/20 bg-gray-500/10 text-gray-400">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
           </div>
           <div class="flex-1 min-w-0 flex items-center h-10">
-            <p class="text-gray-400 font-medium text-sm">Ningún plan activo asociado</p>
+            <p class="text-gray-400 font-bold text-sm">Ningún plan activo asociado</p>
           </div>
         </div>
       `;
@@ -511,7 +512,7 @@ async function cargarDashboard() {
             </svg>
             <p class="text-gray-600 text-sm text-center">Sin membresías por vencer en los próximos 7 días</p>
           </div>
-        `;
+      `;
       } else {
         listaPorVencer.innerHTML = data.listaPorVencer.map(s => {
           const urgente = s.diasRestantes <= 2;
@@ -524,26 +525,26 @@ async function cargarDashboard() {
               ? 'bg-orange-500/15 text-orange-400 border border-orange-500/30'
               : 'bg-yellow-500/15 text-yellow-400 border border-yellow-500/30';
 
-          const diasLabel = hoy ? 'Hoy' : manana ? 'Mañana' : `${s.diasRestantes}d`;
+          const diasLabel = hoy ? 'Hoy' : manana ? 'Mañana' : `${s.diasRestantes} d`;
 
           return `
-          <div class="flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl bg-white/3 border border-white/5 hover:bg-white/5 hover:border-white/10 cursor-pointer transition-all group"
+          <div class="flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-[#111] border border-[#222] hover:bg-[#161616] hover:border-[#333] cursor-pointer transition-all group"
                onclick="window.location.href='socio-detalle.html?dni=${s.dni}'">
-            <div class="flex items-center gap-2.5 min-w-0">
-              <div class="flex-shrink-0 w-7 h-7 rounded-lg bg-white/5 border border-white/8 flex items-center justify-center">
-                <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="icon-box w-8 h-8 m-0 border border-white/10">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                 </svg>
               </div>
               <div class="min-w-0">
-                <p class="text-sm font-semibold text-gray-200 truncate group-hover:text-white transition-colors">${s.nombre}</p>
-                <p class="text-[10px] text-gray-600 uppercase tracking-wider font-medium truncate">${s.nombreMembresia}</p>
+                <p class="text-sm font-bold text-gray-200 truncate group-hover:text-white transition-colors">${s.nombre}</p>
+                <p class="text-xs text-gray-500 font-bold truncate">${s.nombreMembresia}</p>
               </div>
             </div>
-            <div class="flex items-center gap-2 flex-shrink-0">
-              <span class="text-[10px] text-gray-600">${formatDate(s.fechaVencimiento)}</span>
-              <span class="text-xs font-bold px-2 py-0.5 rounded-full ${pillClass}">${diasLabel}</span>
-              <svg class="w-3.5 h-3.5 text-gray-700 group-hover:text-gray-400 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <div class="flex items-center gap-3 flex-shrink-0">
+              <span class="text-xs text-gray-500 font-bold">${formatDate(s.fechaVencimiento)}</span>
+              <span class="text-xs font-black px-2 py-1 rounded ${pillClass}">${diasLabel}</span>
+              <svg class="w-4 h-4 text-gray-600 group-hover:text-primary transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
               </svg>
             </div>
@@ -567,6 +568,10 @@ async function cargarSociosInactivos() {
     const lista = document.getElementById("listaInactivos");
     const cantidad = document.getElementById("cantidadInactivos");
 
+    if (!seccion || !lista || !cantidad) {
+      return;
+    }
+
     if (!inactivos || inactivos.length === 0) {
       seccion.classList.add("hidden");
       return;
@@ -582,12 +587,12 @@ async function cargarSociosInactivos() {
 
       const diasTexto = s.diasSinAsistir >= 999
         ? "Nunca asistió"
-        : `${s.diasSinAsistir}d`;
+        : `${s.diasSinAsistir} d`;
 
       li.innerHTML = `
-        <span>${s.nombre}</span>
-        <span class="text-yellow-400 text-xs">${diasTexto}</span>
-      `;
+            < span > ${s.nombre}</span >
+              <span class="text-yellow-400 text-xs">${diasTexto}</span>
+          `;
 
       lista.appendChild(li);
     });
