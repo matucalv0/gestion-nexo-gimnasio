@@ -4,7 +4,7 @@ import { Alerta } from "../ui/alerta.js";
 import { renderPagination } from "../ui/pagination.js";
 
 import { byId, removeAll, setVisible } from "./finanzas/dom.js";
-import { formatCurrency, formatVariation, formatFechaHora } from "./finanzas/formatters.js";
+import { formatCurrency, formatVariation, formatFechaHora, formatDate } from "./finanzas/formatters.js";
 import { navigateTo, getRouteParams } from "../utils/navigate.js";
 import {
   detalleRowIds,
@@ -261,8 +261,8 @@ function onTablaClick(e) {
 }
 
 async function onVerDetalleClick({ id, tipo }) {
-  const row = byId(`detalle - ${id} -${tipo} `);
-  const contentDiv = byId(`detalle - content - ${id} -${tipo} `);
+  const row = byId(`detalle-${id}-${tipo}`);
+  const contentDiv = byId(`detalle-content-${id}-${tipo}`);
   if (!row || !contentDiv) return;
 
   row.classList.toggle("hidden");

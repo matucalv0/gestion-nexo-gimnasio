@@ -22,14 +22,15 @@
 
 <body class="min-h-screen text-gray-300">
 
-  <main class="flex justify-center items-start min-h-screen p-6 pt-8">
-    <div class="w-full max-w-xl">
+  <main class="flex justify-center items-start min-h-screen p-6 pt-12">
+    <div class="w-full max-w-4xl">
 
       <!-- Header -->
       <header class="page-header mb-6">
         <div class="page-header-icon">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
           </svg>
         </div>
         <div class="page-header-content">
@@ -48,49 +49,77 @@
 
       <!-- Card -->
       <div class="card-container">
+        <div class="card-toolbar">
+          <h2 class="card-toolbar-title">Datos del Socio</h2>
+        </div>
+
         <form id="registrarSocioForm" class="form-container">
 
-          <div class="form-group">
-            <label class="form-label" for="nombre">Nombre completo <span class="text-red-400">*</span></label>
-            <input id="nombre" name="nombre" type="text" placeholder="Ingrese el nombre completo" class="form-input" />
-            <span class="form-error error"></span>
-          </div>
+          <!-- PANEL 1: DATOS PERSONALES -->
+          <div class="bg-gray-800/30 border border-gray-700/50 p-4 rounded-lg space-y-3">
+            <h3 class="text-white font-semibold border-b border-gray-700/50 pb-2 text-sm tracking-wide uppercase">1.
+              Información Personal</h3>
 
-          <div class="form-group">
-            <label class="form-label" for="dni">DNI <span class="text-red-400">*</span></label>
-            <input id="dni" name="dni" type="text" placeholder="Ingrese su DNI" class="form-input" />
-            <span class="form-error error"></span>
-          </div>
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
 
-          <div class="form-group">
-            <label class="form-label" for="telefono">Teléfono <span class="text-red-400">*</span></label>
-            <input id="telefono" name="telefono" type="tel" placeholder="Ingrese su teléfono" class="form-input" />
-            <span class="form-error error"></span>
-          </div>
+              <div class="form-group md:col-span-6 mb-0">
+                <label class="form-label text-sm mb-1" for="nombre">Nombre completo <span
+                    class="text-red-400">*</span></label>
+                <input id="nombre" name="nombre" type="text" placeholder="Ingrese el nombre completo"
+                  class="form-input text-sm py-2" />
+                <span class="error text-red-400 text-xs mt-1 ml-1 hidden"></span>
+              </div>
 
-          <div class="form-group">
-            <label class="form-label" for="email">Email <span class="text-red-400">*</span></label>
-            <input id="email" name="email" type="email" placeholder="Ingrese su email" class="form-input" />
-            <span class="form-error error"></span>
-          </div>
+              <div class="form-group md:col-span-3 mb-0">
+                <label class="form-label text-sm mb-1" for="dni">DNI <span class="text-red-400">*</span></label>
+                <input id="dni" name="dni" type="text" placeholder="Ingrese su DNI" class="form-input text-sm py-2" />
+                <span class="error text-red-400 text-xs mt-1 ml-1 hidden"></span>
+              </div>
 
-          <div class="form-group">
-            <label class="form-label" for="fechaNacimiento">Fecha de nacimiento <span class="text-red-400">*</span></label>
-            <div class="relative">
-              <input id="fechaNacimiento" name="fechaNacimiento" type="text" placeholder="Seleccionar fecha" readonly class="form-input pr-10 cursor-pointer" />
-              <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
-              </svg>
+              <div class="form-group md:col-span-3 mb-0">
+                <label class="form-label text-sm mb-1" for="fechaNacimiento">Fecha nacimiento <span
+                    class="text-red-400">*</span></label>
+                <input id="fechaNacimiento" name="fechaNacimiento" type="text" placeholder="Seleccionar" readonly
+                  class="form-input text-sm py-2 cursor-pointer" />
+                <span class="error text-red-400 text-xs mt-1 ml-1 hidden"></span>
+              </div>
+
             </div>
-            <span class="form-error error"></span>
           </div>
 
-          <div class="form-actions">
-            <button type="submit" id="btnRegistrar" class="btn-action-primary w-full">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+          <!-- PANEL 2: DATOS DE CONTACTO -->
+          <div class="bg-gray-800/30 border border-gray-700/50 p-4 rounded-lg space-y-3">
+            <h3 class="text-white font-semibold border-b border-gray-700/50 pb-2 text-sm tracking-wide uppercase">2.
+              Datos de Contacto</h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
+
+              <div class="form-group md:col-span-6 mb-0">
+                <label class="form-label text-sm mb-1" for="email">Email <span class="text-red-400">*</span></label>
+                <input id="email" name="email" type="email" placeholder="ejemplo@email.com"
+                  class="form-input text-sm py-2" />
+                <span class="error text-red-400 text-xs mt-1 ml-1 hidden"></span>
+              </div>
+
+              <div class="form-group md:col-span-6 mb-0">
+                <label class="form-label text-sm mb-1" for="telefono">Teléfono <span
+                    class="text-red-400">*</span></label>
+                <input id="telefono" name="telefono" type="tel" placeholder="Ingrese su teléfono"
+                  class="form-input text-sm py-2" />
+                <span class="error text-red-400 text-xs mt-1 ml-1 hidden"></span>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- ACTIONS -->
+          <div class="form-actions border-t border-gray-800/50 pt-4 flex justify-end">
+            <button type="submit" id="btnRegistrar" class="btn-action-primary flex items-center gap-2 px-6">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z" />
               </svg>
-              <span>Registrar socio</span>
+              <span>Registrar Socio</span>
             </button>
           </div>
 

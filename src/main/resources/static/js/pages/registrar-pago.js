@@ -23,6 +23,7 @@ export async function init() {
     cargarMembresias(),
     cargarProductos(),
     cargarEmpleados(),
+    cargarDescuentos(),
   ]);
   const btnLogout = document.getElementById("btnLogout");
 
@@ -49,8 +50,14 @@ export async function init() {
       if (customContainer) {
         customContainer.classList.toggle('hidden', radio.value !== 'otro');
       }
+      evaluarWarningAsistencias();
     });
   });
+
+  const inputFechaCustom = document.getElementById('fechaCustom');
+  if (inputFechaCustom) {
+    inputFechaCustom.addEventListener('change', evaluarWarningAsistencias);
+  }
 
   buscarSocio.addEventListener("input", buscarSocioHandler);
 
@@ -570,34 +577,48 @@ function actualizarVisibilidadFechaInicio() {
   const grupo = document.getElementById("fechaInicioGroup");
   if (!grupo) return;
 
-  // Mostrar solo si: tipo MEMBRESIA + socio seleccionado + membresía vencida + tiene ultimo vencimiento
+  // Mostrar solo si: tipo MEMBRESIA + socio seleccionado + (membresía vencida o socio nuevo sin membresías)
+  const esVencida = vencimientoInfo && !vencimientoInfo.vigente && vencimientoInfo.ultimoVencimiento;
+  const esNuevo = vencimientoInfo && !vencimientoInfo.vigente && !vencimientoInfo.ultimoVencimiento;
+
   const mostrar = tipoDetalle.value === "MEMBRESIA"
     && socioSeleccionado
-    && vencimientoInfo
-    && !vencimientoInfo.vigente
-    && vencimientoInfo.ultimoVencimiento;
+    && (esVencida || esNuevo);
 
   if (mostrar) {
-    const fechaVenc = new Date(vencimientoInfo.ultimoVencimiento + "T00:00:00");
-    const fechaInicioDesdeVenc = new Date(fechaVenc);
-    fechaInicioDesdeVenc.setDate(fechaInicioDesdeVenc.getDate() + 1);
+    const radioVencimiento = document.querySelector('input[name="fechaInicio"][value="vencimiento"]');
+    const radioHoy = document.querySelector('input[name="fechaInicio"][value="hoy"]');
+    const labelVencimiento = radioVencimiento?.closest('label');
+    const customContainer = document.getElementById("fechaCustomContainer");
+    const inputCustom = document.getElementById("fechaCustom");
 
     const hoy = new Date();
-
-    document.getElementById("lblFechaVencimiento").textContent = formatearFecha(fechaInicioDesdeVenc);
     document.getElementById("lblFechaHoy").textContent = formatearFecha(hoy);
 
+    if (esVencida) {
+      // Socio con membresía vencida: mostrar las 3 opciones
+      const fechaVenc = new Date(vencimientoInfo.ultimoVencimiento + "T00:00:00");
+      const fechaInicioDesdeVenc = new Date(fechaVenc);
+      fechaInicioDesdeVenc.setDate(fechaInicioDesdeVenc.getDate() + 1);
+
+      document.getElementById("lblFechaVencimiento").textContent = formatearFecha(fechaInicioDesdeVenc);
+      if (labelVencimiento) labelVencimiento.classList.remove('hidden');
+      if (radioVencimiento) radioVencimiento.checked = true;
+    } else {
+      // Socio nuevo: ocultar opción de vencimiento y seleccionar 'hoy' por defecto
+      if (labelVencimiento) labelVencimiento.classList.add('hidden');
+      if (radioHoy) radioHoy.checked = true;
+    }
+
     // Reset UI for 'otro' option
-    const customContainer = document.getElementById("fechaCustomContainer");
     if (customContainer) customContainer.classList.add("hidden");
-    const radioVencimiento = document.querySelector('input[name="fechaInicio"][value="vencimiento"]');
-    if (radioVencimiento) radioVencimiento.checked = true;
-    const inputCustom = document.getElementById("fechaCustom");
     if (inputCustom) inputCustom.value = "";
 
     grupo.classList.remove("hidden");
+    evaluarWarningAsistencias();
   } else {
     grupo.classList.add("hidden");
+    ocultarWarningAsistencias();
   }
 }
 
@@ -606,20 +627,61 @@ function obtenerFechaInicioSeleccionada() {
   if (!grupo || grupo.classList.contains("hidden")) return null;
 
   const seleccion = document.querySelector('input[name="fechaInicio"]:checked')?.value;
-  if (!seleccion || !vencimientoInfo?.ultimoVencimiento) return null;
+  if (!seleccion) return null;
 
-  if (seleccion === "vencimiento") {
+  if (seleccion === "vencimiento" && vencimientoInfo?.ultimoVencimiento) {
     // Día siguiente al último vencimiento
     const fechaVenc = new Date(vencimientoInfo.ultimoVencimiento + "T00:00:00");
     fechaVenc.setDate(fechaVenc.getDate() + 1);
     return fechaVenc.toISOString().split("T")[0]; // yyyy-mm-dd
-  } else if (seleccion === "hoy") {
+  } else if (seleccion === "hoy" || (seleccion === "vencimiento" && !vencimientoInfo?.ultimoVencimiento)) {
+    // Fallback de seguridad si seleccionó vencimiento pero no tiene uno (socios nuevos)
     return new Date().toISOString().split("T")[0];
   } else if (seleccion === "otro") {
     const custom = document.getElementById("fechaCustom")?.value;
     return custom ? custom : null;
   }
   return null;
+}
+
+/* ================== WARNING ASISTENCIAS PENDIENTES ================== */
+function evaluarWarningAsistencias() {
+  const warningDiv = document.getElementById("warningAsistenciasPendientes");
+  const warningTexto = document.getElementById("warningAsistenciasPendientesTexto");
+  if (!warningDiv || !warningTexto) return;
+
+  // Solo evaluar si hay asistencias pendientes
+  if (!vencimientoInfo || !vencimientoInfo.asistenciasPendientes || vencimientoInfo.asistenciasPendientes === 0) {
+    warningDiv.classList.add("hidden");
+    return;
+  }
+
+  const fechaInicioElegida = obtenerFechaInicioSeleccionada();
+  if (!fechaInicioElegida) {
+    warningDiv.classList.add("hidden");
+    return;
+  }
+
+  const primeraAsistencia = vencimientoInfo.primeraAsistenciaPendiente;
+  if (!primeraAsistencia) {
+    warningDiv.classList.add("hidden");
+    return;
+  }
+
+  // Comparar: si la fecha de inicio elegida es posterior a la primera asistencia pendiente
+  if (fechaInicioElegida > primeraAsistencia) {
+    const fechaPendiente = new Date(primeraAsistencia + "T00:00:00");
+    const cantPendientes = vencimientoInfo.asistenciasPendientes;
+    warningTexto.textContent = `Hay ${cantPendientes} asistencia${cantPendientes > 1 ? 's' : ''} pendiente${cantPendientes > 1 ? 's' : ''} (la más antigua del ${formatearFecha(fechaPendiente)}) que no serán cubiertas con esta fecha de inicio.`;
+    warningDiv.classList.remove("hidden");
+  } else {
+    warningDiv.classList.add("hidden");
+  }
+}
+
+function ocultarWarningAsistencias() {
+  const warningDiv = document.getElementById("warningAsistenciasPendientes");
+  if (warningDiv) warningDiv.classList.add("hidden");
 }
 
 function formatearFecha(date) {

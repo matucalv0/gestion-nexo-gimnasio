@@ -327,7 +327,7 @@ async function cargarUltimasAsistencias() {
 
   try {
     const hoy = new Date().toISOString().split('T')[0];
-    const res = await authFetch(`/asistencias?page=0&size=5&desde=${hoy}&hasta=${hoy}`);
+    const res = await authFetch(`/asistencias?page=0&size=4&desde=${hoy}&hasta=${hoy}`);
 
     if (!res.ok) throw new Error();
     const data = await res.json();

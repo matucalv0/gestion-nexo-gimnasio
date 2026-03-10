@@ -379,7 +379,7 @@ export async function init() {
     try {
       // Obtener asistencias de hoy
       const hoy = new Date().toISOString().split('T')[0];
-      const res = await authFetch(`/asistencias?page=0&size=10&desde=${hoy}&hasta=${hoy}`);
+      const res = await authFetch(`/asistencias?page=0&size=4&desde=${hoy}&hasta=${hoy}`);
 
       if (!res.ok) throw new Error();
 

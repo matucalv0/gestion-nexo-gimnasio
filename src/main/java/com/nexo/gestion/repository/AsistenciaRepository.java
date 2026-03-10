@@ -167,6 +167,26 @@ public interface AsistenciaRepository extends JpaRepository<Asistencia, Asistenc
             @Param("dni") String dni, 
             @Param("limiteInferior") LocalDate limiteInferior);
 
+    // Contar asistencias pendientes del último mes (30 días)
+    @Query(value = """
+            SELECT COUNT(*) FROM asistencia a
+            WHERE a.estado_asistencia = 'PENDIENTE'
+              AND a.dni = :dni
+              AND a.fecha_hora >= CURRENT_DATE - INTERVAL '30 days'
+            """, nativeQuery = true)
+    Integer asistenciasPendientesUltimoMes(@Param("dni") String dni);
+
+    // Primera asistencia pendiente del último mes
+    @Query(value = """
+            SELECT a.fecha_hora FROM asistencia a
+            WHERE a.estado_asistencia = 'PENDIENTE'
+              AND a.dni = :dni
+              AND a.fecha_hora >= CURRENT_DATE - INTERVAL '30 days'
+            ORDER BY a.fecha_hora ASC
+            LIMIT 1
+            """, nativeQuery = true)
+    java.time.Instant fechaPrimeraAsistenciaPendienteUltimoMes(@Param("dni") String dni);
+
     // Contar asistencias de HOY
     @Query(value = """
             SELECT COUNT(*) FROM asistencia a

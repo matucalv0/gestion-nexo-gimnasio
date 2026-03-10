@@ -543,9 +543,20 @@ public class SocioService {
         LocalDate ultimoVencimientoGeneral = socioMembresiaRepository.findUltimoVencimientoGeneral(dni);
         LocalDate ultimoVencimientoVigente = socioMembresiaRepository.findUltimoVencimientoVigente(dni);
 
+        // Asistencias pendientes del último mes (30 días)
+        Integer pendientesCount = asistenciaRepository.asistenciasPendientesUltimoMes(dni);
+        java.time.Instant primeraAsistenciaPendiente = null;
+        if (pendientesCount != null && pendientesCount > 0) {
+            primeraAsistenciaPendiente = asistenciaRepository.fechaPrimeraAsistenciaPendienteUltimoMes(dni);
+        }
+
         Map<String, Object> resultado = new HashMap<>();
         resultado.put("ultimoVencimiento", ultimoVencimientoGeneral);
         resultado.put("vigente", ultimoVencimientoVigente != null);
+        resultado.put("asistenciasPendientes", pendientesCount != null ? pendientesCount : 0);
+        resultado.put("primeraAsistenciaPendiente", primeraAsistenciaPendiente != null
+                ? primeraAsistenciaPendiente.atZone(java.time.ZoneId.systemDefault()).toLocalDate().toString()
+                : null);
         return resultado;
     }
 }
