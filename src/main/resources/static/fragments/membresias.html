@@ -1,0 +1,78 @@
+<main class="flex justify-center items-start min-h-screen p-6 pt-8">
+  <div class="w-full max-w-5xl">
+
+    <!-- HEADER -->
+    <header class="page-header mb-6">
+      <div class="page-header-icon">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
+        </svg>
+      </div>
+      <div class="page-header-content">
+        <h1 class="page-header-title">Membresías</h1>
+        <p class="page-header-subtitle">Planes y suscripciones</p>
+      </div>
+      <div class="page-header-actions">
+        <button id="btnNuevaMembresia" class="btn-action-primary btn-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+          <span>Nuevo Plan</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- CARD PRINCIPAL -->
+    <div class="card-container">
+
+      <!-- Toolbar -->
+      <div class="card-toolbar">
+        <h2 class="card-toolbar-title">Gestión de Planes</h2>
+      </div>
+
+      <!-- Tabla -->
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Duración</th>
+              <th>Asistencias</th>
+              <th>Precio</th>
+              <th>Tipo</th>
+              <th>Estado</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="tablaMembresiasBody">
+            <!-- Empty state -->
+            <tr id="emptyStateMembresias" class="hidden">
+              <td colspan="7">
+                <div class="empty-state">
+                  <div class="empty-state-icon">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
+                    </svg>
+                  </div>
+                  <h3 class="empty-state-title">No hay planes configurados</h3>
+                  <p class="empty-state-desc">Creá los planes de membresía para que los socios puedan suscribirse</p>
+                  <button class="btn-action-primary btn-sm mt-4" onclick="window.location.hash='#/registrar-membresia'">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                    <span>Crear plan</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- filas dinámicas -->
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</main>

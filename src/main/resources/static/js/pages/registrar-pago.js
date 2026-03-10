@@ -2,6 +2,7 @@ import { checkAuth, logout } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
 import { Alerta } from "../ui/alerta.js";
 import { renderTabla } from "../ui/tabla.js";
+import { navigateTo, getRouteParams } from "../utils/navigate.js";
 
 checkAuth();
 
@@ -14,7 +15,7 @@ let socioSeleccionado = null;
 let vencimientoInfo = null; // { ultimoVencimiento, vigente }
 
 /* ================== INIT ================== */
-document.addEventListener("DOMContentLoaded", async () => {
+export async function init() {
 
   // Cargar datos en paralelo para mayor velocidad
   await Promise.all([
@@ -22,10 +23,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     cargarMembresias(),
     cargarProductos(),
     cargarEmpleados(),
-    cargarDescuentos()
   ]);
+  const btnLogout = document.getElementById("btnLogout");
 
-  const params = new URLSearchParams(window.location.search);
+
+  const params = getRouteParams();
   const dniFromFicha = params.get("dni");
 
 
@@ -85,8 +87,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (dniFromFicha) {
     await preseleccionarSocioDesdeFicha(dniFromFicha);
   }
+}
 
-});
+export function destroy() {
+  // Limpiar timers o cache visual si fuera necesario
+}
 
 async function preseleccionarSocioDesdeFicha(dni) {
   const res = await authFetch(`/socios/${dni}`);

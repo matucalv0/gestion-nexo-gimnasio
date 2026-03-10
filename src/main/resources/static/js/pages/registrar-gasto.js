@@ -1,10 +1,11 @@
 import { checkAuth, logout } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
 import { Alerta } from "../ui/alerta.js";
+import { navigateTo, getRouteParams } from "../utils/navigate.js";
 
 checkAuth();
 
-document.addEventListener("DOMContentLoaded", async () => {
+export async function init() {
 
     await cargarMediosPago();
 
@@ -12,7 +13,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("btnLogout")?.addEventListener("click", logout);
 
     gastoForm.addEventListener("submit", registrarGasto);
-});
+}
+
+export function destroy() {
+    // Cleanup if necessary
+}
 
 /* ================== CARGAS ================== */
 async function cargarMediosPago() {

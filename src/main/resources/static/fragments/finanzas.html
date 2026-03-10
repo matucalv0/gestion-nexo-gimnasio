@@ -1,0 +1,245 @@
+<main class="flex justify-center min-h-screen p-6 pt-8">
+    <div class="w-full max-w-7xl">
+
+        <!-- HEADER -->
+        <header class="page-header mb-6">
+            <div class="page-header-icon">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+                </svg>
+            </div>
+            <div class="page-header-content">
+                <h1 class="page-header-title">Finanzas</h1>
+                <p class="page-header-subtitle">Balance y movimientos</p>
+            </div>
+            <div class="page-header-actions">
+                <button id="btnNuevoGasto" class="btn-outline-danger btn-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                    <span>Nuevo Gasto</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- LAYOUT -->
+        <div class="flex flex-col lg:flex-row gap-5 lg:items-start">
+
+            <!-- IZQUIERDA -->
+            <section class="flex-1 flex flex-col gap-5">
+
+                <!-- KPIs -->
+                <div class="card-container">
+                    <h2 class="card-section-title mb-4">Ganancias</h2>
+
+                    <!-- Loading state KPIs -->
+                    <div id="kpisLoading" class="grid grid-cols-3 gap-4" aria-hidden="true">
+                        <div class="kpi-card">
+                            <div class="skeleton h-3 w-12 mb-3"></div>
+                            <div class="skeleton h-7 w-24"></div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="skeleton h-3 w-20 mb-3"></div>
+                            <div class="skeleton h-7 w-24"></div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="skeleton h-3 w-16 mb-3"></div>
+                            <div class="skeleton h-7 w-32"></div>
+                            <div class="skeleton h-3 w-24 mt-3"></div>
+                        </div>
+                    </div>
+
+                    <div id="kpisContent" class="grid grid-cols-3 gap-4 hidden">
+                        <div class="kpi-card">
+                            <p class="kpi-label">Hoy</p>
+                            <p id="kpiGananciaHoy" class="kpi-value">$0</p>
+                        </div>
+
+                        <div class="kpi-card">
+                            <p class="kpi-label">Esta semana</p>
+                            <p id="kpiGananciaSemana" class="kpi-value">$0</p>
+                        </div>
+
+                        <div class="kpi-card">
+                            <p class="kpi-label">Este mes</p>
+                            <div class="flex items-baseline gap-2">
+                                <p id="kpiGananciaMes" class="kpi-value">$0</p>
+                                <span id="varGananciaMes"
+                                    class="text-xs font-bold text-green-500 ml-2 break-words max-w-[80px] overflow-hidden text-ellipsis whitespace-nowrap"></span>
+                            </div>
+                            <p class="kpi-caption">vs. mes anterior</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EVOLUCIÓN -->
+                <div class="card-container">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="card-section-title">Evolución de movimientos</h2>
+                        <select id="filtroEvolucion" class="filter-select" aria-label="Filtro de evolución">
+                            <option value="7dias">Últimos 7 días</option>
+                            <option value="meses">Por mes</option>
+                        </select>
+                    </div>
+
+                    <div class="chart-container relative" id="evolucionContainer" aria-busy="false">
+                        <div id="evolucionLoading"
+                            class="absolute inset-0 bg-[#0a0a0a]/80 rounded-lg flex items-center justify-center hidden">
+                            <div class="w-full px-6">
+                                <div class="skeleton h-4 w-40 mb-4"></div>
+                                <div class="skeleton h-32 w-full"></div>
+                            </div>
+                        </div>
+                        <canvas id="chartEvolucion" class="w-full h-40"></canvas>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- DERECHA -->
+            <aside class="w-full lg:w-1/3 flex flex-col gap-5 lg:sticky lg:top-20 self-start min-w-0">
+                <!-- DONUT -->
+                <div class="card-container">
+                    <h2 class="card-section-title mb-4">Distribución de movimientos mensual</h2>
+                    <div class="chart-container flex justify-center relative" id="donutContainer" aria-busy="false">
+                        <div class="aspect-square w-56 flex items-center justify-center">
+                            <canvas id="donutIngresos" class="w-56 h-56"></canvas>
+                        </div>
+                    </div>
+                    <!-- Resumen -->
+                    <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3" aria-label="Resumen del mes">
+                        <div class="stat-card">
+                            <p class="stat-label">Ingresos</p>
+                            <p id="donutResumenIngresos" class="stat-value text-green-400">$0</p>
+                        </div>
+                        <div class="stat-card">
+                            <p class="stat-label">Gastos</p>
+                            <p id="donutResumenGastos" class="stat-value text-red-400">$0</p>
+                        </div>
+                        <div class="stat-card col-span-1 sm:col-span-2">
+                            <div class="flex items-center justify-between">
+                                <p class="stat-label">Neto</p>
+                                <span id="donutResumenPct" class="text-xs text-gray-400"></span>
+                            </div>
+                            <p id="donutResumenNeto" class="stat-value">$0</p>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <!-- TABLA -->
+        <section class="mt-5 card-container" aria-labelledby="movimientos-title">
+
+            <!-- Banner info filtros -->
+            <div id="filtrosBanner" class="hidden mb-4 info-card">
+                <span class="font-semibold text-[var(--beige)]">Filtros activos:</span>
+                <span id="filtrosTexto" class="ml-2 text-gray-400"></span>
+            </div>
+
+            <!-- Banner error -->
+            <div id="finanzasError"
+                class="hidden mb-4 px-4 py-3 rounded-lg border border-red-500/30 bg-red-500/10 text-sm text-red-300"
+                role="alert"></div>
+
+            <!-- HEADER DE LA SECCIÓN -->
+            <div class="card-toolbar flex-wrap gap-4">
+                <h2 id="movimientos-title" class="card-toolbar-title">Movimientos</h2>
+
+                <div class="flex flex-wrap items-center gap-3 ml-auto" role="group" aria-label="Filtros de movimientos">
+                    <div class="filter-group">
+                        <label for="filtroDesde" class="sr-only">Desde</label>
+                        <input type="date" id="filtroDesde" class="form-input py-1.5 text-sm">
+                    </div>
+                    <span class="text-gray-500" aria-hidden="true">—</span>
+                    <div class="filter-group">
+                        <label for="filtroHasta" class="sr-only">Hasta</label>
+                        <input type="date" id="filtroHasta" class="form-input py-1.5 text-sm">
+                    </div>
+
+                    <select id="filtroTipoMovimiento" class="filter-select" aria-label="Filtro por tipo">
+                        <option value="">Todos</option>
+                        <option value="INGRESO">Ingresos</option>
+                        <option value="EGRESO">Egresos</option>
+                    </select>
+
+                    <div class="filter-actions">
+                        <button id="btnFiltrarFecha" class="btn-action-primary btn-sm">Filtrar</button>
+                        <button id="btnLimpiarFiltros" class="btn-outline btn-sm">Limpiar</button>
+                        <button id="btnExportarMovimientos" class="btn-outline-success btn-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                            </svg>
+                            <span>Exportar</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-container relative" id="tablaContainer" aria-busy="false">
+                <div id="tablaLoading"
+                    class="absolute inset-0 bg-[#0a0a0a]/80 flex items-center justify-center hidden z-10">
+                    <div class="w-full px-6">
+                        <div class="skeleton h-10 w-full mb-3"></div>
+                        <div class="skeleton h-10 w-full mb-3"></div>
+                        <div class="skeleton h-10 w-full mb-3"></div>
+                        <div class="skeleton h-10 w-full mb-3"></div>
+                        <p class="text-xs text-gray-500 mt-2">Cargando movimientos...</p>
+                    </div>
+                </div>
+
+                <table class="data-table" aria-describedby="movimientos-help">
+                    <caption class="sr-only">Listado de movimientos financieros (ingresos y gastos)</caption>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Socio</th>
+                            <th>Tipo</th>
+                            <th>Monto</th>
+                            <th>Referencia</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaMovimientos" aria-live="polite">
+                        <tr id="emptyStateFinanzas" class="hidden">
+                            <td colspan="6">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+                                        </svg>
+                                    </div>
+                                    <h3 class="empty-state-title">Sin movimientos registrados</h3>
+                                    <p class="empty-state-desc">Los pagos recibidos y gastos registrados aparecerán
+                                        aquí</p>
+                                    <div class="flex gap-2 mt-4">
+                                        <button class="btn-outline btn-sm" onclick="window.location.hash='#/pagos'">Ver
+                                            pagos</button>
+                                        <button class="btn-action-primary btn-sm"
+                                            onclick="window.location.hash='#/registrar-gasto'">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M12 4.5v15m7.5-7.5h-15" />
+                                            </svg>
+                                            <span>Registrar gasto</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p id="movimientos-help" class="sr-only">Usa los filtros de fecha para limitar resultados.</p>
+            <div id="paginationContainer" class="mt-4" aria-label="Paginación"></div>
+        </section>
+
+    </div>
+</main>

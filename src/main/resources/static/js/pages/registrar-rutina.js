@@ -1,13 +1,13 @@
 import { authFetch } from "../api/api.js";
 import { getCurrentUser, checkAuth } from "../auth/auth.js";
 import { Alerta } from "../ui/alerta.js";
-
+import { navigateTo, getRouteParams } from "../utils/navigate.js";
 
 checkAuth();
 
-document.addEventListener("DOMContentLoaded", () => {
-    init();
-});
+export function init() {
+    initRutina();
+}
 
 // ESTADO GLOBAL
 let ejerciciosCache = [];
@@ -18,14 +18,17 @@ let clipboard = null; // Para copiar/pegar
 let undoStack = []; // Para Ctrl+Z
 let currentRutinaId = null; // Para modo edición
 
-async function init() {
+async function initRutina() {
+    // Escuchar atajos
+    document.addEventListener("keydown", manejadorAtajosTeclado);
+
     await cargarEjercicios();
     await cargarEmpleados();
     await cargarSocios(); // Wait for this too to ensure selects are ready
 
-    // CHECK EDIT MODE
-    const urlParams = new URLSearchParams(window.location.search);
-    const id = urlParams.get('id');
+    // CHECK EDIT MODE (usar getRouteParams para SPA hash routing)
+    const params = getRouteParams();
+    const id = params.get('id');
 
     if (id) {
         currentRutinaId = id;
@@ -57,10 +60,17 @@ async function init() {
 
     // Modal Nuevo Ejercicio
     cargarGruposMusculares();
+    // Setup Modal Events
     document.getElementById("btnCrearEjercicio").addEventListener("click", abrirModalNuevoEjercicio);
     document.getElementById("closeNewExerciseModal").addEventListener("click", cerrarModalNuevoEjercicio);
     document.getElementById("cancelNewExerciseBtn").addEventListener("click", cerrarModalNuevoEjercicio);
     document.getElementById("saveNewExerciseBtn").addEventListener("click", guardarNuevoEjercicio);
+
+}
+
+export function destroy() {
+    // Cleanup events when unmounting
+    document.removeEventListener("keydown", manejadorAtajosTeclado);
 }
 
 async function cargarEjercicios() {
@@ -681,19 +691,14 @@ function deshacer() {
 }
 
 function mostrarImportarExcel() {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = ".xlsx,.xls,.csv";
-    input.addEventListener("change", async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
+    // Puedes abrir el modal que ya tienes de importar o derivar a la vista nueva
+    // Por ahora redirigimos a la vista completa de importar rutina:
 
-        Alerta.warning("Importar Excel: funcionalidad en desarrollo");
-        // TODO: Implementar parseador de Excel
-    });
-    input.click();
+    if (confirm("Al importar desde Excel se reemplazarán los datos actuales o se agregarán al final (dependiendo de la implementación). ¿Ir a importar?")) {
+        // En SPA, navegamos usando navigateTo
+        navigateTo('importar-rutina', currentRutinaId ? { idDestino: currentRutinaId } : {});
+    }
 }
-
 function manejadorAtajosTeclado(e) {
     // Ctrl+Z global
     if (e.ctrlKey && e.key === "z" && e.target.tagName !== "INPUT" && e.target.tagName !== "SELECT") {
@@ -784,7 +789,9 @@ async function guardarRutina() {
 
         if (res.ok) {
             Alerta.success("Rutina guardada correctamente ✓");
-            setTimeout(() => window.location.href = "rutinas.html", 2000);
+            setTimeout(() => {
+                navigateTo('rutinas'); // o limpiar
+            }, 1000);
         } else {
             const err = await res.text();
             console.error("Error al guardar:", err);

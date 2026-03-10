@@ -2,26 +2,29 @@ import { authFetch } from "../api/api.js";
 import { checkAuth } from "../auth/auth.js";
 import { Alerta } from "../ui/alerta.js";
 import { formatDate } from "../utils/date-utils.js";
+import { navigateTo, getRouteParams } from "../utils/navigate.js";
 
 checkAuth();
 
 let rutinaActualId = null; // Variable global para el ID
 window.rutinaActualId = rutinaActualId; // Exposer en window para acceso desde onclick
+let modalEditarCargas = null; // para poder cerrarlo globalmente
 
-document.addEventListener("DOMContentLoaded", async () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const id = urlParams.get('id');
+export async function init() {
+    // 1) Obtener ID de Params
+    const params = getRouteParams();
+    const idParam = params.get("id");
 
-    if (!id) {
+    if (!idParam) {
         Alerta.warning("ID de rutina no especificado");
-        setTimeout(() => window.location.href = "rutinas.html", 2000);
+        setTimeout(() => navigateTo('rutinas'), 2000);
         return;
     }
 
-    rutinaActualId = id; // Guardar el ID
-    window.rutinaActualId = id; // Actualizar en window también
+    rutinaActualId = idParam; // Guardar el ID
+    window.rutinaActualId = idParam; // Actualizar en window también
 
-    await cargarRutina(id);
+    await cargarRutina(idParam);
 
     // ESC to close modal
     document.addEventListener("keydown", (e) => {
@@ -34,7 +37,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         }
     });
-});
+}
+
+export function destroy() {
+    // Cleanup
+}
 
 async function cargarRutina(id) {
     try {
@@ -237,12 +244,13 @@ window.abrirEditarCargas = (idDetalle, nombreEjercicio, cargas) => {
 };
 
 // Actualizar vista previa al escribir
-document.addEventListener('DOMContentLoaded', () => {
+// Actualizar vista previa al escribir - se ejecuta en init si el DOM está disponible
+(function () {
     const inputCargas = document.getElementById('inputCargas');
     if (inputCargas) {
         inputCargas.addEventListener('input', actualizarVistaPreviaCargas);
     }
-});
+})();
 
 function actualizarVistaPreviaCargas() {
     const inputText = document.getElementById('inputCargas').value.trim();

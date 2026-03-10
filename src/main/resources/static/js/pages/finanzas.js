@@ -4,7 +4,8 @@ import { Alerta } from "../ui/alerta.js";
 import { renderPagination } from "../ui/pagination.js";
 
 import { byId, removeAll, setVisible } from "./finanzas/dom.js";
-import { formatCurrency, formatVariation, formatDate } from "./finanzas/formatters.js";
+import { formatCurrency, formatVariation, formatFechaHora } from "./finanzas/formatters.js";
+import { navigateTo, getRouteParams } from "../utils/navigate.js";
 import {
   detalleRowIds,
   movimientoMainRowHtml,
@@ -17,8 +18,7 @@ const API = "/finanzas";
 
 checkAuth();
 
-
-
+// ESTADO GLOBAL
 let chartEvolucion = null;
 let chartDonut = null;
 let movimientosData = [];
@@ -65,7 +65,7 @@ const dom = {
 
 
 
-document.addEventListener("DOMContentLoaded", () => {
+export function init() {
   cacheDom();
   initEventos();
 
@@ -90,7 +90,12 @@ document.addEventListener("DOMContentLoaded", () => {
   cargarMovimientosPaginados();
   cargarDistribucionMensual();
   cargarEvolucion("7dias");
-});
+}
+
+export function destroy() {
+  if (chartDonut) chartDonut.destroy();
+  if (chartEvolucion) chartEvolucion.destroy();
+}
 
 function cacheDom() {
   dom.filtroEvolucion = byId("filtroEvolucion");
@@ -167,9 +172,9 @@ function updateFiltrosBanner() {
   const tipo = dom.filtroTipoMovimiento?.value;
 
   const parts = [];
-  if (desde) parts.push(`Desde ${formatDate(desde)}`);
-  if (hasta) parts.push(`Hasta ${formatDate(hasta)}`);
-  if (tipo) parts.push(`Tipo ${tipo === "INGRESO" ? "Ingreso" : "Egreso"}`);
+  if (desde) parts.push(`Desde ${formatFechaHora(desde)} `);
+  if (hasta) parts.push(`Hasta ${formatFechaHora(hasta)} `);
+  if (tipo) parts.push(`Tipo ${tipo === "INGRESO" ? "Ingreso" : "Egreso"} `);
 
   if (!dom.filtrosBanner || !dom.filtrosTexto) return;
 
@@ -198,7 +203,7 @@ function initEventos() {
   });
 
   dom.btnNuevoGasto?.addEventListener("click", () => {
-    window.location.href = "registrar-gasto.html";
+    navigateTo('registrar-gasto');
   });
 
   dom.btnFiltrarFecha?.addEventListener("click", () => {
@@ -256,8 +261,8 @@ function onTablaClick(e) {
 }
 
 async function onVerDetalleClick({ id, tipo }) {
-  const row = byId(`detalle-${id}-${tipo}`);
-  const contentDiv = byId(`detalle-content-${id}-${tipo}`);
+  const row = byId(`detalle - ${id} -${tipo} `);
+  const contentDiv = byId(`detalle - content - ${id} -${tipo} `);
   if (!row || !contentDiv) return;
 
   row.classList.toggle("hidden");
@@ -450,6 +455,11 @@ async function eliminarMovimiento(id, tipo) {
   try {
     let endpoint;
 
+    if (tipo === 'GASTO') return; // Gastos no tienen vista detalle todavía
+
+    // Asumiendo que pago es PAGO_MEMBRESIA o PAGO_PRODUCTO
+    // Si quitasemos window.location: 
+    // navigateTo('pagos-detalle', { id: id });
     if (tipo === "INGRESO") {
       endpoint = `/pagos/${id}`;
     } else {

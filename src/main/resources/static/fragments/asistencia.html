@@ -1,0 +1,71 @@
+<!-- CONTENIDO -->
+  <main class="flex justify-center items-start min-h-screen p-6 pt-8">
+    <div class="w-full max-w-xl">
+
+      <!-- HEADER -->
+      <header class="page-header mb-6">
+        <div class="page-header-icon">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div class="page-header-content">
+          <h1 class="page-header-title">Registrar Asistencia</h1>
+          <p class="page-header-subtitle">Marcar ingreso de socio</p>
+        </div>
+      </header>
+
+      <!-- CARD PRINCIPAL -->
+      <div class="card-container">
+
+        <!-- Buscador -->
+        <div class="relative mb-4">
+          <div class="search-input-wrapper">
+            <svg class="search-input-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
+            <input type="text" id="inputBusqueda" placeholder="Buscar por nombre o DNI..." autocomplete="off" autofocus
+                   class="search-input" />
+          </div>
+
+          <!-- Resultados -->
+          <div id="resultadosBusqueda" class="search-results hidden"></div>
+        </div>
+
+        <!-- Botón Registrar -->
+        <button id="btnRegistrarAsistencia" class="btn-action-primary">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>Registrar asistencia</span>
+        </button>
+
+        <!-- Alertas -->
+        <div id="alert-container" class="mt-4"></div>
+
+        <!-- Info socio -->
+        <div id="infoSocio" class="hidden info-card mt-4"></div>
+
+        <div id="infoMembresia" class="hidden info-card mt-3"></div>
+
+        <!-- Separador -->
+        <div class="divider"></div>
+
+        <!-- Últimas asistencias del día -->
+        <div class="recent-section">
+          <div class="recent-header">
+            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h3 class="recent-title">Últimas asistencias de hoy</h3>
+          </div>
+          <div id="listaUltimasAsistencias" class="recent-list">
+            <p class="text-gray-500 text-sm">Cargando...</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Scripts -->

@@ -1,17 +1,18 @@
 import { checkAuth } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
 import { Alerta } from "../ui/alerta.js";
+import { navigateTo, getRouteParams } from "../utils/navigate.js";
 
 checkAuth();
 
 const API_URL = "/socios";
 
-document.addEventListener("DOMContentLoaded", async () => {
+export async function init() {
   const form = document.getElementById("editarSocioForm");
   const btnVolver = document.getElementById("btnVolver");
 
 
-  const params = new URLSearchParams(window.location.search);
+  const params = getRouteParams();
   const dni = params.get("dni");
 
   if (btnVolver) {
@@ -26,7 +27,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   await cargarSocio(dni, form);
 
   form.addEventListener("submit", (e) => editarSocio(e, dni, form));
-});
+}
+
+export function destroy() { }
 
 /* ===== cargar ===== */
 async function cargarSocio(dni, form) {
@@ -75,7 +78,7 @@ async function editarSocio(e, dni, form) {
 
     if (data.nuevoDni && data.nuevoDni !== dni) {
       setTimeout(() => {
-        window.location.replace(`editar-socio.html?dni=${data.nuevoDni}`);
+        navigateTo('editar-socio', { dni: data.nuevoDni });
       }, 1500);
     }
 

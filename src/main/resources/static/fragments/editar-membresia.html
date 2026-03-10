@@ -1,0 +1,91 @@
+<!-- ALERTAS -->
+<div id="alert-container" class="fixed top-4 right-4 max-w-md z-50"></div>
+
+<main class="flex justify-center items-start min-h-screen p-6 pt-8">
+    <div class="w-full max-w-lg">
+
+        <!-- HEADER -->
+        <header class="page-header mb-6">
+            <div class="page-header-icon">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                </svg>
+            </div>
+            <div class="page-header-content">
+                <h1 class="page-header-title">Editar Plan</h1>
+                <p class="page-header-subtitle">Modificar membresía</p>
+            </div>
+            <div class="page-header-actions">
+                <a href="#/membresias" class="btn-outline btn-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                    </svg>
+                    <span>Volver</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- CARD PRINCIPAL -->
+        <div class="card-container">
+            <div class="card-toolbar">
+                <h2 class="card-toolbar-title">Datos del plan</h2>
+            </div>
+
+            <form id="editarMembresiaForm" class="form-container">
+                <!-- NOMBRE -->
+                <div class="form-group">
+                    <label class="form-label" for="nombre">Nombre <span class="text-red-400">*</span></label>
+                    <input type="text" name="nombre" id="nombre" class="form-input" placeholder="Ej: Plan Mensual" />
+                    <span class="form-error error"></span>
+                </div>
+
+                <!-- TIPO -->
+                <div class="form-group">
+                    <label class="form-label" for="tipoMembresia">Tipo <span class="text-red-400">*</span></label>
+                    <select name="tipoMembresia" id="tipoMembresia" class="form-input">
+                        <option value="MUSCULACION">Musculación</option>
+                        <option value="FUNCIONAL">Funcional</option>
+                        <option value="MIXTA">Mixta</option>
+                    </select>
+                    <span class="form-error error"></span>
+                </div>
+
+                <!-- DURACIÓN Y ASISTENCIAS EN GRID -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="form-group">
+                        <label class="form-label" for="duracionDias">Duración (días) <span
+                                class="text-red-400">*</span></label>
+                        <input type="number" name="duracionDias" id="duracionDias" class="form-input"
+                            placeholder="30" />
+                        <span class="form-error error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="asistenciasPorSemana">Asist./semana</label>
+                        <input type="number" name="asistenciasPorSemana" id="asistenciasPorSemana" class="form-input"
+                            placeholder="0" />
+                        <span class="form-error error"></span>
+                    </div>
+                </div>
+
+                <!-- PRECIO -->
+                <div class="form-group">
+                    <label class="form-label" for="precioSugerido">Precio <span class="text-red-400">*</span></label>
+                    <input type="number" step="0.01" name="precioSugerido" id="precioSugerido" class="form-input"
+                        placeholder="0.00" />
+                    <span class="form-error error"></span>
+                </div>
+
+                <!-- BOTÓN -->
+                <button type="submit" class="btn-action-primary w-full mt-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                    <span>Guardar cambios</span>
+                </button>
+            </form>
+        </div>
+
+    </div>
+</main>

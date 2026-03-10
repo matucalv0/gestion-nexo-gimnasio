@@ -1,12 +1,13 @@
 import { checkAuth, logout } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
 import { Alerta } from "../ui/alerta.js";
+import { navigateTo, getRouteParams } from "../utils/navigate.js";
 
 checkAuth();
 
 const API_URL = "/productos";
 
-document.addEventListener("DOMContentLoaded", async () => {
+export async function init() {
   const form = document.getElementById("editarProductoForm");
   const btnHome = document.getElementById("btnHome");
   const btnLogout = document.getElementById("btnLogout");
@@ -14,7 +15,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   btnHome?.addEventListener("click", () => history.back());
   btnLogout?.addEventListener("click", logout);
 
-  const params = new URLSearchParams(window.location.search);
+  const params = getRouteParams();
   const idProducto = params.get("id");
 
   if (!idProducto) {
@@ -96,4 +97,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (span) span.textContent = mensaje;
     });
   }
-});
+}
+
+export function destroy() {
+  // Cleanup
+}

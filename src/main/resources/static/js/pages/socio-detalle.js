@@ -2,6 +2,7 @@ import { checkAuth } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
 import { Alerta } from "../ui/alerta.js";
 import { formatDate, formatDateTime } from "../utils/date-utils.js";
+import { navigateTo, getRouteParams } from "../utils/navigate.js";
 
 checkAuth();
 const API_URL = "/socios";
@@ -33,9 +34,12 @@ function invalidarCaches() {
     cacheMembresiaFetch = null;
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
-    const params = new URLSearchParams(window.location.search);
+let _currentDni = null;
+
+export async function init() {
+    const params = getRouteParams();
     const dni = params.get("dni");
+    _currentDni = dni;
 
     if (!dni) {
         Alerta.error("Socio inválido");
@@ -53,18 +57,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     ]).catch(err => console.error("Error en carga inicial de socio", err));
 
     // Botones
-    // Botones
     document.getElementById("btnVolver")?.addEventListener("click", () => history.back());
-    document.getElementById("btnEditar")?.addEventListener("click", () => window.location.href = `editar-socio.html?dni=${dni}`);
-    document.getElementById("btnRegistrarPago")?.addEventListener("click", () => window.location.href = `registrar-pago.html?dni=${dni}`);
-    document.getElementById("btnRegistrarAsistencia")?.addEventListener("click", () => { window.location.href = `asistencia.html?dni=${dni}&asistencia=true`; });
+    document.getElementById("btnEditar")?.addEventListener("click", () => navigateTo('editar-socio', { dni }));
+    document.getElementById("btnRegistrarPago")?.addEventListener("click", () => navigateTo('registrar-pago', { dni }));
+    document.getElementById("btnRegistrarAsistencia")?.addEventListener("click", () => navigateTo('asistencia', { dni, asistencia: 'true' }));
     document.getElementById("btnRenovarMembresia")?.addEventListener("click", () => renovarMembresia(dni));
 
     // Modal de anulación
     document.getElementById("btnCancelarAnular")?.addEventListener("click", cerrarModalAnular);
     document.getElementById("btnConfirmarAnular")?.addEventListener("click", () => confirmarAnularPago(dni));
     document.getElementById("modalAnularPago")?.querySelector(".modal-backdrop")?.addEventListener("click", cerrarModalAnular);
-});
+}
+
+export function destroy() {
+    // Cleanup
+}
 
 async function cargarMembresiasDisponibles() {
     try {
@@ -138,9 +145,14 @@ async function renovarMembresia(dni) {
 
         Alerta.success(`✓ Membresía renovada: ${membresia.nombre} - $${membresia.precioSugerido}`);
 
-        // Recargar datos
-        setTimeout(() => {
-            window.location.reload();
+        // Recargar datos (sin reload en SPA)
+        invalidarCaches();
+        setTimeout(async () => {
+            await Promise.all([
+                cargarKPIs(_currentDni),
+                cargarMembresiaVigente(_currentDni),
+                cargarHistorialPagos(_currentDni)
+            ]);
         }, 1500);
 
     } catch (err) {
@@ -381,7 +393,7 @@ async function cargarRutinaActiva(dni) {
                         ${rutina.descripcion ? `<span class="text-gray-500">${rutina.descripcion}</span>` : ''}
                     </div>
                 </div>
-                <button onclick="window.location.href='ver-rutina.html?id=${rutina.idRutina}'" 
+                <button onclick="window.location.hash='#/ver-rutina?id=${rutina.idRutina}'" 
                     class="bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-200 hover:text-white border border-indigo-500/40 px-3 py-1.5 text-sm rounded-md transition">
                     Ver rutina completa
                 </button>

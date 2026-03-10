@@ -2,6 +2,7 @@ import { checkAuth } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
 import { Alerta } from "../ui/alerta.js";
 import { formatDate, formatTime } from "../utils/date-utils.js";
+import { navigateTo, getRouteParams } from "../utils/navigate.js";
 
 checkAuth();
 
@@ -29,7 +30,7 @@ const playSound = (type) => {
   } catch (e) { /* ignore */ }
 };
 
-document.addEventListener("DOMContentLoaded", async () => {
+export async function init() {
   const input = document.getElementById("inputBusqueda");
   const btnRegistrar = document.getElementById("btnRegistrarAsistencia");
   const btnHome = document.getElementById("btnHome");
@@ -102,7 +103,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   // ===== Preselección desde ficha =====
-  const params = new URLSearchParams(window.location.search);
+  const params = getRouteParams();
   const dniFromFicha = params.get("dni");
   const esAsistencia = params.get("asistencia") === "true";
 
@@ -407,6 +408,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Cargar al inicio
   cargarUltimasAsistencias();
-});
+}
+
+export function destroy() {
+  // Cleanup
+}
 
 

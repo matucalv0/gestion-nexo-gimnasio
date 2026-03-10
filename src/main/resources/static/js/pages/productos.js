@@ -1,12 +1,13 @@
 import { checkAuth, logout } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
 import { Alerta } from "../ui/alerta.js";
+import { navigateTo, getRouteParams } from "../utils/navigate.js";
 
 checkAuth();
 
 const API_URL = "/productos";
 
-document.addEventListener("DOMContentLoaded", () => {
+export function init() {
   const tablaBody = document.getElementById("tablaProductosBody");
   const busquedaInput = document.getElementById("inputBusqueda");
 
@@ -24,13 +25,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (btnHome) btnHome.addEventListener("click", () => history.back());
   if (btnLogout) btnLogout.addEventListener("click", logout);
-  if (btnNuevoProducto) btnNuevoProducto.addEventListener("click", () => window.location.href = "registrar-producto.html");
+  if (btnNuevoProducto) btnNuevoProducto.addEventListener("click", () => navigateTo('registrar-producto'));
 
   if (btnBuscar && busquedaInput) {
     btnBuscar.addEventListener("click", () => buscarProductos(tablaBody, busquedaInput.value));
     busquedaInput.addEventListener("input", () => buscarProductos(tablaBody, busquedaInput.value));
   }
-});
+}
+
+export function destroy() {
+  // Cleanup
+}
 
 async function cargarProductos(tablaBody) {
   try {
@@ -105,5 +110,5 @@ async function buscarProductos(tablaBody, valor) {
 }
 
 function editarProducto(id) {
-  window.location.href = `editar-producto.html?id=${id}`;
+  navigateTo('editar-producto', { id: id });
 }

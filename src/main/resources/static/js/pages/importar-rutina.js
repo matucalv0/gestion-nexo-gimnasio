@@ -1,14 +1,11 @@
 import { authFetch } from "../api/api.js";
 import { getCurrentUser, checkAuth } from "../auth/auth.js";
 import { Alerta } from "../ui/alerta.js";
+import { navigateTo, getRouteParams } from "../utils/navigate.js";
 
 checkAuth();
 
-document.addEventListener("DOMContentLoaded", () => {
-    init();
-});
-
-async function init() {
+export async function init() {
     // Cargar empleados y socios
     await cargarEmpleados();
     await cargarSocios();
@@ -124,7 +121,7 @@ async function importarRutina() {
             const data = await res.json();
             Alerta.success(`Rutina importada correctamente (ID: ${data.idRutina})`);
             setTimeout(() => {
-                window.location.href = "rutinas.html";
+                navigateTo('rutinas');
             }, 2000);
         } else {
             const err = await res.json();
@@ -138,4 +135,8 @@ async function importarRutina() {
         btn.disabled = false;
         btn.innerHTML = textOriginal;
     }
+}
+
+export function destroy() {
+    // Cleanup
 }

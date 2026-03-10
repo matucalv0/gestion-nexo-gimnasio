@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Guardar sesión (el servidor envía user info, el token va solo en cookie HttpOnly)
       saveSession(data);
 
-      window.location.href = "/home.html";
+      window.location.href = "/index.html#/home";
 
 
     } catch (err) {

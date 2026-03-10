@@ -1,19 +1,21 @@
 import { authFetch } from "../api/api.js";
 import { checkAuth } from "../auth/auth.js";
 import { Alerta } from "../ui/alerta.js";
+import { navigateTo, getRouteParams } from "../utils/navigate.js";
 
 checkAuth();
 
 let ejerciciosCache = [];
 let gruposCache = [];
 
-document.addEventListener("DOMContentLoaded", async () => {
+export async function init() {
     await cargarGrupos();
     await cargarEjercicios();
     setupEventListeners();
-});
+}
 
 function setupEventListeners() {
+    document.getElementById("btnHome")?.addEventListener("click", () => history.back());
     // Modal controls
     document.getElementById("btnNuevoEjercicio").addEventListener("click", () => abrirModal());
     document.getElementById("closeModalBtn").addEventListener("click", cerrarModal);
@@ -62,7 +64,7 @@ function llenarSelectGrupos() {
 
 async function cargarEjercicios() {
     const tbody = document.getElementById("tablaEjerciciosBody");
-    tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state py-8"><p class="text-gray-500 text-sm">Cargando...</p></div></td></tr>`;
+    tbody.innerHTML = `< tr > <td colspan="4"><div class="empty-state py-8"><p class="text-gray-500 text-sm">Cargando...</p></div></td></tr > `;
 
     try {
         const res = await authFetch("/ejercicios");
@@ -70,11 +72,11 @@ async function cargarEjercicios() {
             ejerciciosCache = await res.json();
             renderTabla();
         } else {
-            tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state py-8"><p class="text-red-400 text-sm">Error cargando datos</p></div></td></tr>`;
+            tbody.innerHTML = `< tr > <td colspan="4"><div class="empty-state py-8"><p class="text-red-400 text-sm">Error cargando datos</p></div></td></tr > `;
         }
     } catch (e) {
         console.error(e);
-        tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state py-8"><p class="text-red-400 text-sm">Error de conexión</p></div></td></tr>`;
+        tbody.innerHTML = `< tr > <td colspan="4"><div class="empty-state py-8"><p class="text-red-400 text-sm">Error de conexión</p></div></td></tr > `;
     }
 }
 
@@ -92,7 +94,7 @@ function renderTabla() {
     });
 
     if (filtrados.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state py-8"><p class="text-gray-500 text-sm">No se encontraron ejercicios</p></div></td></tr>`;
+        tbody.innerHTML = `< tr > <td colspan="4"><div class="empty-state py-8"><p class="text-gray-500 text-sm">No se encontraron ejercicios</p></div></td></tr > `;
         return;
     }
 
@@ -101,14 +103,14 @@ function renderTabla() {
 
         const grupoNombre = gruposCache.find(g => g.idGrupo === ej.idGrupoMuscular)?.nombre || 'Desconocido';
         const videoLink = ej.video
-            ? `<a href="${ej.video}" target="_blank" class="text-blue-400 hover:text-blue-300 text-sm">Ver Video</a>`
+            ? `< a href = "${ej.video}" target = "_blank" class="text-blue-400 hover:text-blue-300 text-sm" > Ver Video</a > `
             : '<span class="text-gray-600 text-sm">—</span>';
 
         tr.innerHTML = `
-            <td>
-                <div class="font-medium">${ej.nombre}</div>
+    < td >
+    <div class="font-medium">${ej.nombre}</div>
                 ${ej.descripcion ? `<div class="text-xs text-gray-500 truncate max-w-xs mt-0.5">${ej.descripcion}</div>` : ''}
-            </td>
+            </td >
             <td><span class="badge">${grupoNombre}</span></td>
             <td>${videoLink}</td>
             <td>
@@ -125,7 +127,7 @@ function renderTabla() {
                     </button>
                 </div>
             </td>
-        `;
+`;
 
         // Attach events directly to avoid delegation issues
         tr.querySelector(".btn-edit").addEventListener("click", () => abrirModal(ej));
@@ -144,10 +146,10 @@ function abrirModal(ejercicio = null) {
     // Reset or Fill
     if (ejercicio) {
         title.innerHTML = `
-            <svg class="w-5 h-5 text-secondary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-            </svg> 
-            Editar Ejercicio
+    < svg class="w-5 h-5 text-secondary-500" fill = "none" stroke = "currentColor" viewBox = "0 0 24 24" >
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+            </svg >
+    Editar Ejercicio
         `;
         idInput.value = ejercicio.idEjercicio;
         document.getElementById("nombreInput").value = ejercicio.nombre;
@@ -156,10 +158,10 @@ function abrirModal(ejercicio = null) {
         document.getElementById("descripcionInput").value = ejercicio.descripcion || "";
     } else {
         title.innerHTML = `
-            <svg class="w-5 h-5 text-secondary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-            </svg>
-            Nuevo Ejercicio
+        < svg class="w-5 h-5 text-secondary-500" fill = "none" stroke = "currentColor" viewBox = "0 0 24 24" >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg >
+    Nuevo Ejercicio
         `;
         idInput.value = "";
         document.getElementById("nombreInput").value = "";
@@ -196,7 +198,7 @@ async function guardarEjercicio() {
     };
 
     const method = id ? "PUT" : "POST";
-    const url = id ? `/ejercicios/${id}` : "/ejercicios";
+    const url = id ? `/ ejercicios / ${id} ` : "/ejercicios";
 
     try {
         const res = await authFetch(url, {
@@ -225,7 +227,7 @@ async function confirmarEliminacion(id) {
         textoConfirmar: "Sí, eliminar",
         onConfirm: async () => {
             try {
-                const res = await authFetch(`/ejercicios/${id}`, { method: "DELETE" });
+                const res = await authFetch(`/ ejercicios / ${id} `, { method: "DELETE" });
                 if (res.ok) {
                     Alerta.success("Eliminado correctamente");
                     cargarEjercicios();

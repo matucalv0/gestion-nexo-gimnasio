@@ -3,6 +3,7 @@ import { authFetch } from "../api/api.js";
 import { renderPagination } from "../ui/pagination.js";
 import { Alerta } from "../ui/alerta.js";
 import { formatCurrency, formatVariation } from "./finanzas/formatters.js";
+import { navigateTo, getRouteParams } from "../utils/navigate.js";
 
 checkAuth();
 
@@ -17,7 +18,7 @@ const API_URL = "/pagos";
 let currentPage = 0;
 const pageSize = 20;
 
-document.addEventListener("DOMContentLoaded", () => {
+export function init() {
   const tablaBody = document.getElementById("tablaPagosBody");
   const filtroSelect = document.getElementById("filtroRecaudado");
 
@@ -37,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ?.addEventListener("click", () => history.back());
 
   document.getElementById("btnNuevoPago")
-    .addEventListener("click", () => window.location.href = "registrar-pago.html");
+    ?.addEventListener("click", () => navigateTo('registrar-pago'));
 
   // Botón Filtrar Fechas
   document.getElementById("btnFiltrarFecha").addEventListener("click", () => {
@@ -66,7 +67,12 @@ document.addEventListener("DOMContentLoaded", () => {
   filtroSelect.addEventListener("change", (e) => {
     cargarRecaudado(e.target.value);
   });
-});
+}
+
+export function destroy() {
+  if (pagosDiaChart) pagosDiaChart.destroy();
+  if (donutIngresosChart) donutIngresosChart.destroy();
+}
 
 async function cargarDatosIniciales(tablaBody) {
   try {

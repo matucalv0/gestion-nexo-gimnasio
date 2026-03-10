@@ -1,0 +1,69 @@
+<main class="flex justify-center items-start min-h-screen p-6 pt-8">
+    <div class="w-full max-w-xl">
+
+      <!-- HEADER -->
+      <header class="page-header mb-6">
+        <div class="page-header-icon">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+          </svg>
+        </div>
+        <div class="page-header-content">
+          <h1 class="page-header-title">Registrar Producto</h1>
+          <p class="page-header-subtitle">Nuevo item de inventario</p>
+        </div>
+        <div class="page-header-actions">
+          <button id="btnVolver" class="btn-outline btn-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+            </svg>
+            <span>Volver</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- CARD PRINCIPAL -->
+      <div class="card-container">
+        <div class="card-toolbar">
+          <h2 class="card-toolbar-title">Datos del producto</h2>
+        </div>
+
+        <form id="registrarProductoForm" class="form-container" novalidate>
+
+          <!-- NOMBRE -->
+          <div class="form-group">
+            <label class="form-label" for="nombre">Nombre <span class="text-red-400">*</span></label>
+            <input type="text" name="nombre" id="nombre" class="form-input" placeholder="Ej: Proteína Whey" />
+            <span class="form-error error"></span>
+          </div>
+
+          <!-- PRECIO Y STOCK -->
+          <div class="grid grid-cols-2 gap-4">
+            <div class="form-group">
+              <label class="form-label" for="precio">Precio <span class="text-red-400">*</span></label>
+              <input type="number" name="precio" id="precio" step="0.01" min="0" class="form-input" placeholder="0.00" />
+              <span class="form-error error"></span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="stock">Stock <span class="text-red-400">*</span></label>
+              <input type="number" name="stock" id="stock" min="0" class="form-input" placeholder="0" />
+              <span class="form-error error"></span>
+            </div>
+          </div>
+
+          <!-- BOTÓN -->
+          <div class="form-actions">
+            <button type="submit" class="btn-action-primary w-full">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              <span>Registrar producto</span>
+            </button>
+          </div>
+
+        </form>
+
+      </div>
+    </div>
+  </main>

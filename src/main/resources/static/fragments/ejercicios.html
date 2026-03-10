@@ -1,0 +1,122 @@
+<!-- ALERTAS -->
+    <div id="alert-container" class="fixed top-4 right-4 max-w-md z-50"></div>
+
+    <main class="flex justify-center min-h-screen p-6 pt-8">
+        <div class="w-full max-w-5xl">
+
+            <!-- HEADER -->
+            <header class="page-header mb-6">
+                <div class="page-header-icon">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.429 9.75L2.25 12l4.179 2.25m0-4.5l5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0l4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0l-5.571 3-5.571-3" />
+                    </svg>
+                </div>
+                <div class="page-header-content">
+                    <h1 class="page-header-title">Ejercicios</h1>
+                    <p class="page-header-subtitle">Catálogo de movimientos</p>
+                </div>
+                <div class="page-header-actions">
+                    <button id="btnNuevoEjercicio" class="btn-action-primary btn-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                        <span>Nuevo Ejercicio</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- CARD PRINCIPAL -->
+            <div class="card-container">
+                <!-- Toolbar con filtros -->
+                <div class="card-toolbar flex-wrap gap-4">
+                    <h2 class="card-toolbar-title">Catálogo</h2>
+
+                    <div class="flex gap-3 ml-auto">
+                        <div class="search-input-wrapper">
+                            <svg class="search-input-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                            </svg>
+                            <input type="text" id="busquedaInput" placeholder="Buscar por nombre..." class="search-input w-64">
+                        </div>
+                        <select id="filtroGrupo" class="filter-select" aria-label="Filtrar por grupo muscular">
+                            <option value="">Todos los grupos</option>
+                            <!-- Options injected by JS -->
+                        </select>
+                    </div>
+                </div>
+
+                <!-- TABLA -->
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Ejercicio</th>
+                                <th>Grupo Muscular</th>
+                                <th>Video</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaEjerciciosBody">
+                            <!-- Rows injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- MODAL NUEVO/EDITAR EJERCICIO -->
+    <div id="modalEjercicio" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content max-w-lg">
+            <!-- Header -->
+            <div class="modal-header">
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 text-[var(--orange)]" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                    <h3 id="modalTitle" class="modal-title">Nuevo Ejercicio</h3>
+                </div>
+                <button id="closeModalBtn" class="modal-close">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Body -->
+            <div class="modal-body">
+                <div class="form-container">
+                    <input type="hidden" id="ejercicioId">
+
+                    <div class="form-group">
+                        <label class="form-label" for="nombreInput">Nombre <span class="text-red-400">*</span></label>
+                        <input type="text" id="nombreInput" class="form-input" placeholder="Ej: Press Banca">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="grupoInput">Grupo Muscular <span class="text-red-400">*</span></label>
+                        <select id="grupoInput" class="form-input">
+                            <option value="">-- Seleccionar --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="videoInput">URL Video</label>
+                        <input type="text" id="videoInput" class="form-input" placeholder="https://...">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="descripcionInput">Descripción</label>
+                        <textarea id="descripcionInput" rows="3" class="form-input resize-none"></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 mt-2">
+                        <button id="cancelBtn" class="btn-outline">Cancelar</button>
+                        <button id="saveBtn" class="btn-action-primary">Guardar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

@@ -1,0 +1,78 @@
+<main class="flex justify-center items-start min-h-screen p-6 pt-8">
+    <div class="w-full max-w-lg">
+
+      <!-- HEADER -->
+      <header class="page-header mb-6">
+        <div class="page-header-icon">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+          </svg>
+        </div>
+        <div class="page-header-content">
+          <h1 class="page-header-title">Editar Socio</h1>
+          <p class="page-header-subtitle">Modificar datos personales</p>
+        </div>
+        <div class="page-header-actions">
+          <a href="javascript:history.back()" class="btn-outline btn-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+            </svg>
+            <span>Volver</span>
+          </a>
+        </div>
+      </header>
+
+      <!-- CARD PRINCIPAL -->
+      <div class="card-container">
+        <div class="card-toolbar">
+          <h2 class="card-toolbar-title">Datos del socio</h2>
+        </div>
+
+        <form id="editarSocioForm" class="form-container">
+          <!-- DNI -->
+          <div class="form-group">
+            <label class="form-label" for="nuevoDni">DNI</label>
+            <input name="nuevoDni" id="nuevoDni" type="text" class="form-input" placeholder="Ej: 12345678" />
+            <span class="form-error error"></span>
+          </div>
+
+          <!-- NOMBRE -->
+          <div class="form-group">
+            <label class="form-label" for="nombre">Nombre completo</label>
+            <input name="nombre" id="nombre" type="text" class="form-input" placeholder="Nombre y apellido" />
+            <span class="form-error error"></span>
+          </div>
+
+          <!-- FECHA NACIMIENTO -->
+          <div class="form-group">
+            <label class="form-label" for="fechaNacimiento">Fecha de nacimiento</label>
+            <input name="fechaNacimiento" id="fechaNacimiento" type="date" class="form-input" />
+            <span class="form-error error"></span>
+          </div>
+
+          <!-- TELÉFONO -->
+          <div class="form-group">
+            <label class="form-label" for="telefono">Teléfono</label>
+            <input name="telefono" id="telefono" type="text" class="form-input" placeholder="Ej: 1155667788" />
+            <span class="form-error error"></span>
+          </div>
+
+          <!-- EMAIL -->
+          <div class="form-group">
+            <label class="form-label" for="email">Email</label>
+            <input name="email" id="email" type="email" class="form-input" placeholder="correo@ejemplo.com" />
+            <span class="form-error error"></span>
+          </div>
+
+          <!-- BOTÓN -->
+          <button type="submit" class="btn-action-primary w-full mt-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+            <span>Guardar cambios</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </main>

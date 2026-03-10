@@ -1,12 +1,13 @@
 import { checkAuth, logout } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
 import { Alerta } from "../ui/alerta.js";
+import { navigateTo, getRouteParams } from "../utils/navigate.js";
 
 checkAuth();
 
 const API_URL = "/membresias";
 
-document.addEventListener("DOMContentLoaded", () => {
+export function init() {
   const form = document.getElementById("registrarMembresiaForm");
 
   document.getElementById("btnVolver")?.addEventListener("click", () => history.back());
@@ -60,6 +61,10 @@ document.addEventListener("DOMContentLoaded", () => {
       return new Error("Error al procesar la solicitud");
     }
   }
-});
+}
+
+export function destroy() {
+  // Cleanup if needed
+}
 
 

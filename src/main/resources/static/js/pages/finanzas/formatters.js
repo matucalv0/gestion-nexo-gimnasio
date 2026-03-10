@@ -58,3 +58,13 @@ export function formatVariation(variacion) {
   };
 }
 
+/**
+ * Formatea fecha y hora para labels de filtros.
+ * @param {string|Date} value
+ */
+export function formatFechaHora(value) {
+  const date = parseDate(value);
+  if (!date || isNaN(date.getTime())) return '-';
+  return date.toLocaleDateString(LOCALE) + ' ' + date.toLocaleTimeString(LOCALE, { hour: '2-digit', minute: '2-digit' });
+}
+

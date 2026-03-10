@@ -1,12 +1,13 @@
 import { checkAuth, logout } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
 import { Alerta } from "../ui/alerta.js";
+import { navigateTo, getRouteParams } from "../utils/navigate.js";
 
 checkAuth();
 
 const API_URL = "/membresias";
 
-document.addEventListener("DOMContentLoaded", () => {
+export function init() {
   const tablaBody = document.getElementById("tablaMembresiasBody");
 
   // Botones Home y Logout
@@ -19,12 +20,16 @@ document.addEventListener("DOMContentLoaded", () => {
   // Botón Nueva Membresía
   document.getElementById("btnNuevaMembresia")
     .addEventListener("click", () => {
-      window.location.href = "registrar-membresia.html";
+      navigateTo('registrar-membresia');
     });
 
   // Cargar membresías
   cargarMembresias(tablaBody);
-});
+}
+
+export function destroy() {
+  // Cleanup if needed
+}
 
 async function cargarMembresias(tablaBody) {
   try {
@@ -84,7 +89,7 @@ function renderMembresias(tablaBody, membresias) {
 
     // Evento click para editar
     tr.querySelector(".editarMembresia").addEventListener("click", () => {
-      window.location.href = `editar-membresia.html?id=${m.idMembresia}`;
+      navigateTo('editar-membresia', { id: m.idMembresia });
     });
 
     tablaBody.appendChild(tr);

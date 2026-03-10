@@ -250,12 +250,14 @@
 
 /* ========== MAIN CONTENT SHIFT ========== */
 
-body.has-sidebar>main {
+body.has-sidebar>main,
+body.has-sidebar>#app-content {
     margin-left: var(--sidebar-width);
     transition: margin-left var(--sidebar-transition);
 }
 
-body.has-sidebar.sidebar-collapsed>main {
+body.has-sidebar.sidebar-collapsed>main,
+body.has-sidebar.sidebar-collapsed>#app-content {
     margin-left: var(--sidebar-collapsed-width);
 }
 
@@ -353,16 +355,19 @@ body.has-sidebar.sidebar-collapsed>main {
         padding: 1.25rem 1rem;
     }
 
-    body.has-sidebar>main {
+    body.has-sidebar>main,
+    body.has-sidebar>#app-content {
         margin-left: 0;
     }
 
-    body.has-sidebar.sidebar-collapsed>main {
+    body.has-sidebar.sidebar-collapsed>main,
+    body.has-sidebar.sidebar-collapsed>#app-content {
         margin-left: 0;
     }
 
     /* Adjust main padding for hamburger button */
-    body.has-sidebar>main {
+    body.has-sidebar>main,
+    body.has-sidebar>#app-content {
         padding-top: 4.5rem;
     }
 }

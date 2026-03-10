@@ -1,0 +1,79 @@
+<main class="flex justify-center items-start min-h-screen p-6 pt-8">
+    <div class="w-full max-w-xl">
+
+      <!-- Header -->
+      <header class="page-header mb-6">
+        <div class="page-header-icon">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+          </svg>
+        </div>
+        <div class="page-header-content">
+          <h1 class="page-header-title">Registrar Socio</h1>
+          <p class="page-header-subtitle">Nuevo miembro del gimnasio</p>
+        </div>
+        <div class="page-header-actions">
+          <button id="btnVolver" class="btn-outline btn-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+            </svg>
+            <span>Volver</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Card -->
+      <div class="card-container">
+        <form id="registrarSocioForm" class="form-container">
+
+          <div class="form-group">
+            <label class="form-label" for="nombre">Nombre completo <span class="text-red-400">*</span></label>
+            <input id="nombre" name="nombre" type="text" placeholder="Ingrese el nombre completo" class="form-input" />
+            <span class="form-error error"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="dni">DNI <span class="text-red-400">*</span></label>
+            <input id="dni" name="dni" type="text" placeholder="Ingrese su DNI" class="form-input" />
+            <span class="form-error error"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="telefono">Teléfono <span class="text-red-400">*</span></label>
+            <input id="telefono" name="telefono" type="tel" placeholder="Ingrese su teléfono" class="form-input" />
+            <span class="form-error error"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="email">Email <span class="text-red-400">*</span></label>
+            <input id="email" name="email" type="email" placeholder="Ingrese su email" class="form-input" />
+            <span class="form-error error"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="fechaNacimiento">Fecha de nacimiento <span class="text-red-400">*</span></label>
+            <div class="relative">
+              <input id="fechaNacimiento" name="fechaNacimiento" type="text" placeholder="Seleccionar fecha" readonly class="form-input pr-10 cursor-pointer" />
+              <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+              </svg>
+            </div>
+            <span class="form-error error"></span>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" id="btnRegistrar" class="btn-action-primary w-full">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+              </svg>
+              <span>Registrar socio</span>
+            </button>
+          </div>
+
+        </form>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Inicializar Flatpickr -->

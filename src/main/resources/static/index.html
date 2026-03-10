@@ -2,16 +2,107 @@
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="0;url=/socios.html">
-    <link rel="icon" type="image/png" href="../assets/nexologo.png" />
-    <title>NEXO</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="assets/nexologo.png" />
+  <title>NEXO · Gestion</title>
   <meta name="view-transition" content="same-origin" />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              DEFAULT: '#FF6B2C',
+              50: '#FFF4EF',
+              100: '#FFE8DC',
+              200: '#FFD1B9',
+              300: '#FFBA96',
+              400: '#FFA373',
+              500: '#FF6B2C',
+              600: '#E85A1F',
+              700: '#C74A19',
+              800: '#A63A14',
+              900: '#852A0F',
+            },
+            secondary: {
+              DEFAULT: '#00D9FF',
+            },
+            dark: {
+              bg: '#121212',
+              card: '#1A1A1A',
+              border: '#2A2A2A'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+          },
+        },
+      },
+    }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
+    rel="stylesheet">
+
+  <!-- External Libs -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+
+  <!-- CSS del Proyecto -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+  <link rel="stylesheet" href="css/home.css">
+  <link rel="stylesheet" href="css/socios.css">
+  <link rel="stylesheet" href="css/socio-detalle.css">
+  <link rel="stylesheet" href="css/registrar-socio.css">
+  <link rel="stylesheet" href="css/registrar-pago.css">
+  <link rel="stylesheet" href="css/asistencia.css">
+  <link rel="stylesheet" href="css/asistencias.css">
+  <link rel="stylesheet" href="css/membresias.css">
+
 </head>
 
-<body>
-    <p>Redirigiendo...</p>
+<body class="text-gray-100 min-h-screen font-sans selection:bg-[var(--orange)] selection:text-white">
+
+  <!-- Preloads (optional but good for performance) -->
+  <link rel="preload" as="image" href="assets/nexofondo.jpg">
+
+  <!-- Contenedor Principal donde Router inyectará las vistas -->
+  <div id="app-content" class="min-h-screen">
+    <div class="flex justify-center py-20">
+      <div class="w-8 h-8 border-4 border-[var(--orange)] border-t-transparent rounded-full animate-spin"></div>
+    </div>
+  </div>
+
+  <!-- Sidebar Script -->
+  <script src="js/ui/sidebar.js"></script>
+
+  <!-- Chart.js (usado en Finanzas, Pagos, Asistencias) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- html2pdf (usado en Ver Rutina para exportar PDF) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <!-- Flatpickr (global para la SPA) -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
+
+  <!-- Router App Entry -->
+  <script type="module">
+    import { initRouter } from './js/router.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initRouter();
+    });
+  </script>
 </body>
 
 </html>

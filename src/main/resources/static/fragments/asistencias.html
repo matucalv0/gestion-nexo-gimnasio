@@ -1,0 +1,163 @@
+<main class="flex justify-center min-h-screen p-6 pt-8">
+    <div class="w-full max-w-7xl">
+
+      <!-- HEADER -->
+      <header class="page-header mb-6">
+        <div class="page-header-icon">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+          </svg>
+        </div>
+        <div class="page-header-content">
+          <h1 class="page-header-title">Asistencias</h1>
+          <p class="page-header-subtitle">Registros diarios del gimnasio</p>
+        </div>
+      </header>
+
+      <!-- LAYOUT PRINCIPAL -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+        <!-- COLUMNA IZQUIERDA -->
+        <div class="lg:col-span-2 flex flex-col gap-5">
+
+          <!-- KPIs Fila 1 -->
+          <div class="card-container">
+            <h2 class="card-section-title mb-4">Métricas del mes</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <!-- Asistencias del mes -->
+              <div class="kpi-card">
+                <p class="kpi-label">Asistencias</p>
+                <div class="flex items-baseline gap-2">
+                  <p id="kpiTotalAsistencias" class="kpi-value">0</p>
+                  <span id="varTotalAsistencias"
+                    class="text-xs font-bold text-green-500 ml-2 inline-flex items-center gap-1 max-w-[90px] overflow-hidden whitespace-nowrap">
+                    <!-- El JS debe inyectar aquí: ▲ 100.0% <svg ...> -->
+                  </span>
+                </div>
+                <p class="kpi-caption">vs. mes anterior</p>
+              </div>
+              <!-- Socios activos -->
+              <div class="kpi-card">
+                <p class="kpi-label">Socios activos</p>
+                <div class="flex items-baseline gap-2">
+                  <p id="kpiSociosActivosTotal" class="kpi-value">0</p>
+                  <span id="varSociosActivos"
+                    class="text-xs font-bold text-green-500 ml-2 inline-flex items-center gap-1 max-w-[90px] overflow-hidden whitespace-nowrap">
+                    <!-- El JS debe inyectar: ▲ 100.0% <svg ...> -->
+                  </span>
+                </div>
+                <p class="kpi-caption">vs. mes anterior</p>
+              </div>
+              <!-- Promedio por socio -->
+              <div class="kpi-card">
+                <p class="kpi-label">Promedio/socio</p>
+                <div class="flex items-baseline gap-2">
+                  <p id="kpiPromedio" class="kpi-value">0</p>
+                  <span id="varPromedio"
+                    class="text-xs font-bold text-green-500 ml-2 inline-flex items-center gap-1 max-w-[90px] overflow-hidden whitespace-nowrap">
+                    <!-- El JS debe inyectar: ▲ 100.0% <svg ...> -->
+                  </span>
+                </div>
+                <p class="kpi-caption">vs. mes anterior</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- KPIs Fila 2: Destacados -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Hora Pico -->
+            <div class="card-container card-highlight">
+              <p class="kpi-label">Hora Pico</p>
+              <p id="kpiHoraPico" class="text-2xl font-bold text-[var(--orange)]">--:--</p>
+              <p id="kpiHoraPicoAsistencias" class="kpi-caption">-- asistencias</p>
+            </div>
+            <!-- Socios más activos -->
+            <div class="card-container">
+              <p class="kpi-label mb-2">Más activos del mes</p>
+              <ul id="kpiSociosActivos" class="space-y-1 text-sm text-[var(--beige)]">
+                <!-- dinámico -->
+              </ul>
+            </div>
+          </div>
+
+          <!-- TABLA DE ASISTENCIAS -->
+          <section class="card-container">
+            <div class="card-toolbar">
+              <h2 class="card-toolbar-title">Listado de asistencias</h2>
+            </div>
+
+            <!-- Barra de Filtros -->
+            <div class="filters-section mb-0">
+              <div class="filter-group flex-1 min-w-[200px]">
+                <label class="filter-label" for="inputBusqueda">Buscar (DNI o Nombre)</label>
+                <input type="text" id="inputBusqueda" placeholder="Ej: 12345678" class="form-input py-1.5 text-sm">
+              </div>
+              <div class="filter-group">
+                <label class="filter-label" for="filtroDesde">Desde</label>
+                <input type="date" id="filtroDesde" class="form-input py-1.5 text-sm">
+              </div>
+              <div class="filter-group">
+                <label class="filter-label" for="filtroHasta">Hasta</label>
+                <input type="date" id="filtroHasta" class="form-input py-1.5 text-sm">
+              </div>
+              <div class="filter-actions">
+                <button id="btnBuscar" class="btn-action-primary btn-sm">Buscar</button>
+                <button id="btnLimpiarFiltros" class="btn-outline btn-sm">Limpiar</button>
+              </div>
+            </div>
+
+            <div class="table-container mt-5 overflow-x-auto">
+              <table class="data-table min-w-full">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>DNI</th>
+                    <th>Fecha / Hora</th>
+                  </tr>
+                </thead>
+                <tbody id="tablaAsistenciasBody">
+                  <!-- Empty state -->
+                  <tr id="emptyStateAsistencias" class="hidden">
+                    <td colspan="3">
+                      <div class="empty-state">
+                        <div class="empty-state-icon">
+                          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+                          </svg>
+                        </div>
+                        <h3 class="empty-state-title">Sin asistencias</h3>
+                        <p class="empty-state-desc">Probá cambiando el rango de fechas o el buscador.</p>
+                      </div>
+                    </td>
+                  </tr>
+                  <!-- filas dinámicas -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Paginación -->
+            <div id="paginationContainer" class="mt-4"></div>
+          </section>
+
+        </div>
+
+        <!-- COLUMNA DERECHA -->
+        <aside class="w-full lg:col-span-1 flex flex-col gap-5 h-fit lg:sticky lg:top-20 min-w-0">
+          <div class="card-container">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="card-section-title">Asistencias por mes</h2>
+              <input type="month" id="filtroMesAsistencias" class="filter-select text-sm"
+                aria-label="Filtrar por mes" />
+            </div>
+
+            <div class="chart-container">
+              <canvas id="AsistenciasDiaChart" class="w-full max-w-xs h-auto aspect-square"></canvas>
+            </div>
+          </div>
+        </aside>
+
+      </div>
+    </div>
+  </main>

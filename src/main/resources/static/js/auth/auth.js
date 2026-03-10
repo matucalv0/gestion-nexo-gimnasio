@@ -24,7 +24,9 @@ export async function logout() {
 export async function checkAuth() {
   const user = getCurrentUser();
   if (!user) {
-    window.location.href = "/login.html";
+    if (!window.location.pathname.endsWith("/login.html")) {
+      window.location.href = "/login.html";
+    }
     return;
   }
 
@@ -46,7 +48,9 @@ export async function checkAuth() {
 export function checkAuthSync() {
   const user = getCurrentUser();
   if (!user) {
-    window.location.href = "/login.html";
+    if (!window.location.pathname.endsWith("/login.html")) {
+      window.location.href = "/login.html";
+    }
   }
 }
 

@@ -2,6 +2,7 @@ import { checkAuth, logout } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
 import { Alerta } from "../ui/alerta.js";
 import { renderPagination } from "../ui/pagination.js";
+import { navigateTo, getRouteParams } from "../utils/navigate.js";
 
 checkAuth();
 
@@ -11,7 +12,7 @@ const API_URL = "/socios";
 let currentPage = 0;
 const pageSize = 20;
 
-document.addEventListener("DOMContentLoaded", () => {
+export function init() {
   const tablaBody = document.getElementById("tablaSociosBody");
   const inputBusqueda = document.getElementById("inputBusqueda");
   const filtroActivo = document.getElementById("filtroActivo");
@@ -30,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
   btnLogout?.addEventListener("click", logout);
 
   btnNuevoSocio?.addEventListener("click", () => {
-    window.location.href = "registrar-socio.html";
+    navigateTo('registrar-socio');
   });
 
   // Exportar CSV
@@ -68,11 +69,15 @@ document.addEventListener("DOMContentLoaded", () => {
   cargarSocios(tablaBody);
 
   // Foco automático en el input de búsqueda
-  const params = new URLSearchParams(window.location.search);
+  const params = getRouteParams();
   if (params.get("focus") === "true" || !params.has("focus")) {
     inputBusqueda?.focus();
   }
-});
+}
+
+export function destroy() {
+  // Limpiar event listeners no anclados al DOM si es necesario
+}
 
 
 async function cargarSocios(tablaBody) {
@@ -150,7 +155,7 @@ function renderSocios(tablaBody, socios) {
     `;
 
     tr.querySelector("button").addEventListener("click", () => {
-      window.location.href = `socio-detalle.html?dni=${s.dni}`;
+      navigateTo('socio-detalle', { dni: s.dni });
     });
 
     tablaBody.appendChild(tr);

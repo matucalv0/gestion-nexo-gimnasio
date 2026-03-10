@@ -1,0 +1,78 @@
+<main class="flex justify-center items-start min-h-screen p-6 pt-8">
+    <div class="w-full max-w-xl">
+
+      <!-- Header -->
+      <header class="page-header mb-6">
+        <div class="page-header-icon">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
+          </svg>
+        </div>
+        <div class="page-header-content">
+          <h1 class="page-header-title">Registrar Plan</h1>
+          <p class="page-header-subtitle">Nueva membresía</p>
+        </div>
+        <div class="page-header-actions">
+          <button id="btnVolver" class="btn-outline btn-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+            </svg>
+            <span>Volver</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Card -->
+      <div class="card-container">
+        <div class="card-toolbar">
+          <h2 class="card-toolbar-title">Datos del plan</h2>
+        </div>
+
+        <!-- Form -->
+        <form id="registrarMembresiaForm" class="form-container">
+
+          <div class="form-group">
+            <label class="form-label" for="nombre">Nombre <span class="text-red-400">*</span></label>
+            <input id="nombre" required class="form-input" placeholder="Ej: Mensual, Pase libre" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="tipo">Tipo de plan <span class="text-red-400">*</span></label>
+            <select id="tipo" required class="form-input">
+              <option value="" disabled selected>Seleccionar tipo</option>
+              <option value="MUSCULACION">Musculación</option>
+              <option value="FUNCIONAL">Funcional</option>
+              <option value="MIXTA">Mixta</option>
+            </select>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="form-group">
+              <label class="form-label" for="duracion">Duración (días) <span class="text-red-400">*</span></label>
+              <input type="number" id="duracion" min="1" required class="form-input" placeholder="30" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="asistencias">Asistencias/semana</label>
+              <input type="number" id="asistencias" min="1" class="form-input" placeholder="Ilimitadas" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="precio">Precio <span class="text-red-400">*</span></label>
+            <input type="number" id="precio" min="0" step="0.01" required class="form-input" placeholder="0.00" />
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-action-primary w-full">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              <span>Registrar plan</span>
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </main>

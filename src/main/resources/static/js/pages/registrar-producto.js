@@ -1,12 +1,13 @@
 import { checkAuth, logout } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
 import { Alerta } from "../ui/alerta.js";
+import { navigateTo, getRouteParams } from "../utils/navigate.js";
 
 checkAuth();
 
 const API_URL = "/productos";
 
-document.addEventListener("DOMContentLoaded", () => {
+export function init() {
   const form = document.getElementById("registrarProductoForm");
   const btnHome = document.getElementById("btnVolver");
   const btnLogout = document.getElementById("btnLogout");
@@ -81,4 +82,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
-});
+}
+
+export function destroy() {
+  // Cleanup
+}

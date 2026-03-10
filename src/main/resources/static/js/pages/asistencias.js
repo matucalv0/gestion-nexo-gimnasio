@@ -3,6 +3,7 @@ import { authFetch } from "../api/api.js";
 import { Alerta } from "../ui/alerta.js";
 import { renderPagination } from "../ui/pagination.js";
 import { formatDateTime } from "../utils/date-utils.js";
+import { navigateTo, getRouteParams } from "../utils/navigate.js";
 
 checkAuth();
 
@@ -12,7 +13,7 @@ const API_URL = "/asistencias";
 let currentPage = 0;
 const pageSize = 20;
 
-document.addEventListener("DOMContentLoaded", () => {
+export function init() {
 
   const tablaBody = document.getElementById("tablaAsistenciasBody");
 
@@ -24,6 +25,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnLimpiar = document.getElementById("btnLimpiarFiltros");
 
   // Filtro Mes (solo gráfico)
+  // Leer parámetros URL (para redirección desde dashboard y asistencias)
+  const params = getRouteParams();
+  const initDate = params.get("date");
+  const forceFocus = params.get("focus");
   const inputMes = document.getElementById("filtroMesAsistencias");
 
   // Inicializar fechas (últimos 30 días)
@@ -71,7 +76,11 @@ document.addEventListener("DOMContentLoaded", () => {
   cargarAsistencias(tablaBody);
   cargarKPIs();
   cargarGrafico();
-});
+}
+
+export function destroy() {
+  if (chart) chart.destroy();
+}
 
 /* ================== ASISTENCIAS (TABLA) ================== */
 

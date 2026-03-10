@@ -1,6 +1,7 @@
 import { checkAuth, logout } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
 import { Alerta } from "../ui/alerta.js";
+import { navigateTo, getRouteParams } from "../utils/navigate.js";
 
 checkAuth();
 
@@ -28,8 +29,8 @@ const playSound = (type) => {
 
 let timeoutModalExito = null;
 
-document.addEventListener("DOMContentLoaded", () => {
-  const go = page => window.location.href = page;
+export function init() {
+  const go = page => navigateTo(page.replace('.html', ''));
 
   // ===== HEADER: fecha contextual =====
   const headerSaludo = document.getElementById("headerSaludo");
@@ -310,7 +311,14 @@ document.addEventListener("DOMContentLoaded", () => {
     cargarSociosInactivos(),
     cargarUltimasAsistencias()
   ]).catch(err => console.error("Error en carga inicial del home", err));
-});
+}
+
+export function destroy() {
+  // Limpieza al cambiar de ruta
+  if (timeoutModalExito) {
+    clearTimeout(timeoutModalExito);
+  }
+}
 
 // ===== Últimas asistencias del día =====
 async function cargarUltimasAsistencias() {
@@ -529,7 +537,7 @@ async function cargarDashboard() {
 
           return `
           <div class="flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-[#111] border border-[#222] hover:bg-[#161616] hover:border-[#333] cursor-pointer transition-all group"
-               onclick="window.location.href='socio-detalle.html?dni=${s.dni}'">
+              onclick="window.location.hash='#/socio-detalle?dni=${s.dni}'">
             <div class="flex items-center gap-3 min-w-0">
               <div class="icon-box w-8 h-8 m-0 border border-white/10">
                 <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">

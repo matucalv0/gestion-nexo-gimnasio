@@ -1,146 +1,118 @@
-/* ===== Variables base ===== */
-:root {
-  --radius: 10px;
-  --beige: #e6dccb;
-  --primary: #c58940;
-}
+/* ===== Home Page Styles ===== */
+/* Extraído de las inline <style> del original home.html */
 
-/* ===== Fondo global ===== */
-body {
-  min-height: 100vh;
-  margin: 0;
-  background-image: linear-gradient(
-      rgba(9, 25, 36, 0.88),
-      rgba(9, 25, 36, 0.88)
-    ),
-    url("../assets/nexofondo.jpg");
-  background-size: cover;
-  background-position: center;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-}
-
-/* ===== Contenedor ===== */
-.panel-container {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  padding: 80px 16px 40px;
-}
-
-/* ===== Card principal ===== */
 .panel-card {
-  width: 100%;
-  max-width: 1000px;
-  background-color: #1f2e38;
-  padding: 32px 40px;
-  border-radius: var(--radius);
-  box-shadow: 0 12px 30px rgba(0,0,0,0.5);
-  box-sizing: border-box;
+  background: #111111;
+  border: 1px solid #222222;
+  border-radius: 0.75rem;
 }
 
-/* ===== Header ===== */
-.panel-header {
+.kpi-card-new {
+  background: #111111;
+  border: 1px solid #222222;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
+  height: 100%;
+}
+
+.kpi-card-highlight {
+  border: 1px solid rgba(255, 107, 44, 0.5);
+}
+
+.kpi-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.75rem;
+}
+
+.kpi-value-new {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.kpi-subtitle {
+  font-size: 0.75rem;
+  color: #666;
+}
+
+/* Watermark background */
+.bg-watermark {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 25vw;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.02);
+  z-index: -1;
+  pointer-events: none;
+  user-select: none;
+}
+
+.search-input-new {
+  background: #1A1A1A;
+  border: 1px solid #333;
+  border-radius: 0.5rem;
+  color: white;
+  padding: 0.875rem 1rem 0.875rem 2.5rem;
+  width: 100%;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.search-input-new:focus {
+  border-color: var(--orange);
+}
+
+.action-btn-new {
+  background: #111111;
+  border: 1px solid #333;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  display: flex;
   align-items: center;
-  margin-bottom: 48px;
-}
-
-.panel-header h1 {
-  color: var(--beige);
-  letter-spacing: 3px;
-  font-size: 22px;
-  margin: 0;
-}
-
-.header-actions button {
-  background: transparent;
-  border: 1px solid #2f3e48;
-  color: var(--beige);
-  padding: 8px 16px;
-  border-radius: var(--radius);
+  transition: all 0.2s;
   cursor: pointer;
-  transition: background-color 0.2s ease;
 }
 
-.header-actions button:hover {
-  background-color: #2a3a45;
+.action-btn-new:hover {
+  border-color: rgba(255, 107, 44, 0.6);
+  background: #161616;
 }
 
-/* ===== Dashboard ===== */
-.dashboard {
-  margin-top: 2rem;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 32px;
-}
-
-/* ===== Card del dashboard ===== */
-.dashboard-card {
-  min-height: 140px;
-  padding: 1.5rem;
-
-  background-color: #16222b;
-  border: 1px solid #2f3e48;
-  border-radius: var(--radius);
-
+.icon-box {
+  width: 40px;
+  height: 40px;
+  border-radius: 0.5rem;
+  background: rgba(255, 107, 44, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
+  color: #FF6B2C;
+  margin-right: 1rem;
+}
 
-  font-size: 16px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--beige);
-  text-align: center;
-
+.nav-grid-card {
+  background: #111111;
+  border: 1px solid #222222;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s;
   cursor: pointer;
-  transition:
-    transform 0.2s ease,
-    background-color 0.2s ease,
-    box-shadow 0.2s ease;
+  text-decoration: none;
 }
 
-.dashboard-card:hover {
-  background-color: #1f2e38;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+.nav-grid-card:hover {
+  background: #161616;
+  border-color: #333;
 }
-
-.dashboard-card:active {
-  transform: translateY(0);
-  background-color: #22313c;
-}
-
-/* ===== Card primaria (atajos rápidos) ===== */
-.dashboard-card.primary {
-  background-color: var(--primary);
-  color: #1f2e38;
-  border: none;
-}
-
-.dashboard-card.primary:hover {
-  background-color: #d69b50;
-}
-
-/* ===== Responsive ===== */
-@media (max-width: 768px) {
-
-  .panel-container {
-    padding-top: 40px;
-  }
-
-  .panel-card {
-    padding: 24px 20px;
-  }
-
-  .dashboard {
-    gap: 20px;
-  }
-
-  .dashboard-card {
-    min-height: 120px;
-    font-size: 14px;
-  }
-}
-

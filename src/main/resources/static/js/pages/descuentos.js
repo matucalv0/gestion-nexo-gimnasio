@@ -1,7 +1,7 @@
 import { checkAuth, logout } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
 import { Alerta } from "../ui/alerta.js";
-
+import { navigateTo, getRouteParams } from "../utils/navigate.js";
 
 checkAuth();
 
@@ -13,33 +13,36 @@ let descuentos = [];
 // ==========================
 // DOM
 // ==========================
-const dom = {
-    tablaBody: document.getElementById("tablaBody"),
-    emptyState: document.getElementById("emptyState"),
-    btnNuevo: document.getElementById("btnNuevo"),
-    modal: document.getElementById("modalDescuento"),
-    modalContent: document.getElementById("modalContent"),
-    btnCerrarModal: document.getElementById("btnCerrarModal"),
-    btnCancelarModal: document.getElementById("btnCancelarModal"),
-    form: document.getElementById("formDescuento"),
-    modalTitle: document.getElementById("modalTitle"),
-    // Inputs
-    id: document.getElementById("descuentoId"),
-    nombre: document.getElementById("nombre"),
-    porcentaje: document.getElementById("porcentaje"),
-    activo: document.getElementById("activo"),
-};
+let dom = {};
 
 // ==========================
 // INIT
 // ==========================
-document.addEventListener("DOMContentLoaded", () => {
+export function init() {
+    // Inicializar DOM refs AQUÍ, después de que el fragment se haya inyectado
+    dom = {
+        tablaBody: document.getElementById("tablaBody"),
+        emptyState: document.getElementById("emptyState"),
+        btnNuevo: document.getElementById("btnNuevo"),
+        modal: document.getElementById("modalDescuento"),
+        modalContent: document.getElementById("modalContent"),
+        btnCerrarModal: document.getElementById("btnCerrarModal"),
+        btnCancelarModal: document.getElementById("btnCancelarModal"),
+        form: document.getElementById("formDescuento"),
+        modalTitle: document.getElementById("modalTitle"),
+        // Inputs
+        id: document.getElementById("descuentoId"),
+        nombre: document.getElementById("nombre"),
+        porcentaje: document.getElementById("porcentaje"),
+        activo: document.getElementById("activo"),
+    };
+
     cargarDescuentos();
     initEventos();
-});
+}
 
 function initEventos() {
-    document.getElementById("btnHome")?.addEventListener("click", () => window.location.href = "/home.html");
+    document.getElementById("btnHome")?.addEventListener("click", () => history.back());
 
     dom.btnNuevo.addEventListener("click", () => abrirModal());
 
@@ -197,4 +200,8 @@ async function guardarDescuento(e) {
         console.error(error);
         Alerta.error(error.message);
     }
+}
+
+export function destroy() {
+    // Cleanup
 }

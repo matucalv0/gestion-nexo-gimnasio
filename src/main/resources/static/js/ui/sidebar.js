@@ -8,32 +8,32 @@
         {
             section: 'Principal',
             items: [
-                { label: 'Panel', href: '/home.html', icon: 'home', pages: ['home.html'] },
-                { label: 'Asistencia', href: '/asistencia.html', icon: 'check-circle', pages: ['asistencia.html'] },
+                { label: 'Panel', href: '#/home', icon: 'home', pages: ['home'] },
+                { label: 'Asistencia', href: '#/asistencia', icon: 'check-circle', pages: ['asistencia'] },
             ]
         },
         {
             section: 'Gestión',
             items: [
-                { label: 'Socios', href: '/socios.html', icon: 'users', pages: ['socios.html', 'socio-detalle.html', 'registrar-socio.html', 'editar-socio.html'] },
-                { label: 'Pagos', href: '/pagos.html', icon: 'dollar', pages: ['pagos.html', 'registrar-pago.html'] },
-                { label: 'Finanzas', href: '/finanzas.html', icon: 'chart', pages: ['finanzas.html', 'registrar-gasto.html'] },
+                { label: 'Socios', href: '#/socios', icon: 'users', pages: ['socios', 'socio-detalle', 'registrar-socio', 'editar-socio'] },
+                { label: 'Pagos', href: '#/pagos', icon: 'dollar', pages: ['pagos', 'registrar-pago'] },
+                { label: 'Finanzas', href: '#/finanzas', icon: 'chart', pages: ['finanzas', 'registrar-gasto'] },
             ]
         },
         {
             section: 'Configuración',
             items: [
-                { label: 'Membresías', href: '/membresias.html', icon: 'card', pages: ['membresias.html', 'registrar-membresia.html', 'editar-membresia.html'] },
-                { label: 'Productos', href: '/productos.html', icon: 'cube', pages: ['productos.html', 'registrar-producto.html', 'editar-producto.html'] },
-                { label: 'Rutinas', href: '/rutinas.html', icon: 'clipboard', pages: ['rutinas.html', 'registrar-rutina.html', 'ver-rutina.html', 'importar-rutina.html'] },
-                { label: 'Ejercicios', href: '/ejercicios.html', icon: 'dumbbell', pages: ['ejercicios.html'] },
-                { label: 'Descuentos', href: '/descuentos.html', icon: 'tag', pages: ['descuentos.html'] },
+                { label: 'Membresías', href: '#/membresias', icon: 'card', pages: ['membresias', 'registrar-membresia', 'editar-membresia'] },
+                { label: 'Productos', href: '#/productos', icon: 'cube', pages: ['productos', 'registrar-producto', 'editar-producto'] },
+                { label: 'Rutinas', href: '#/rutinas', icon: 'clipboard', pages: ['rutinas', 'registrar-rutina', 'ver-rutina', 'importar-rutina'] },
+                { label: 'Ejercicios', href: '#/ejercicios', icon: 'dumbbell', pages: ['ejercicios'] },
+                { label: 'Descuentos', href: '#/descuentos', icon: 'tag', pages: ['descuentos'] },
             ]
         },
         {
             section: 'Estadísticas',
             items: [
-                { label: 'Asistencias', href: '/asistencias.html', icon: 'bar-chart', pages: ['asistencias.html'] },
+                { label: 'Asistencias', href: '#/asistencias', icon: 'bar-chart', pages: ['asistencias'] },
             ]
         }
     ];
@@ -61,14 +61,16 @@
     }
 
     function getCurrentPage() {
-        const path = window.location.pathname;
-        const page = path.substring(path.lastIndexOf('/') + 1) || 'index.html';
-        return page;
+        // En la SPA, el ID de ruta de la página está en el Hash URL
+        const hash = window.location.hash || '#/home';
+        // "#/socio-detalle?dni=123" -> routeId = "socio-detalle"
+        const routeId = hash.replace('#/', '').split('?')[0];
+        return routeId;
     }
 
     function isActive(pages) {
-        const current = getCurrentPage();
-        return pages.includes(current);
+        const currentRoute = getCurrentPage();
+        return pages.includes(currentRoute);
     }
 
     function buildSidebarHTML() {
@@ -82,7 +84,7 @@
             section.items.forEach((item) => {
                 const activeClass = isActive(item.pages) ? ' active' : '';
                 navHTML += `
-          <a href="${item.href}" class="sidebar-item${activeClass}" data-tooltip="${item.label}">
+          <a href="${item.href}" class="sidebar-item${activeClass}" data-tooltip="${item.label}" data-pages="${item.pages.join(',')}">
             ${svgIcon(item.icon)}
             <span class="sidebar-item-label">${item.label}</span>
           </a>`;

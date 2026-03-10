@@ -1,0 +1,92 @@
+<main class="flex justify-center items-start min-h-screen p-6 pt-8">
+  <div class="w-full max-w-5xl">
+
+    <!-- Header -->
+    <header class="page-header mb-6">
+      <div class="page-header-icon">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+        </svg>
+      </div>
+      <div class="page-header-content">
+        <h1 class="page-header-title">Productos</h1>
+        <p class="page-header-subtitle">Inventario y ventas</p>
+      </div>
+      <div class="page-header-actions">
+        <button id="btnNuevoProducto" class="btn-action-primary btn-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+          <span>Nuevo Producto</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Card principal -->
+    <div class="card-container">
+
+      <!-- Toolbar -->
+      <div class="card-toolbar">
+        <h2 class="card-toolbar-title">Gestión de Productos</h2>
+      </div>
+
+      <!-- Buscador -->
+      <div class="filters-section mb-0">
+        <div class="filter-group flex-1">
+          <label class="filter-label" for="inputBusqueda">Buscar</label>
+          <div class="search-input-wrapper">
+            <svg class="search-input-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
+            <input type="text" id="inputBusqueda" placeholder="Buscar por nombre o código" class="search-input" />
+          </div>
+        </div>
+        <div class="filter-actions">
+          <button id="btnBuscar" class="btn-action-primary btn-sm">Buscar</button>
+        </div>
+      </div>
+
+      <!-- Tabla -->
+      <div class="table-container mt-5">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Nombre</th>
+              <th>Precio</th>
+              <th>Stock</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="tablaProductosBody">
+            <!-- Empty state -->
+            <tr id="emptyStateProductos" class="hidden">
+              <td colspan="5">
+                <div class="empty-state">
+                  <div class="empty-state-icon">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+                    </svg>
+                  </div>
+                  <h3 class="empty-state-title">No hay productos en el catálogo</h3>
+                  <p class="empty-state-desc">Agregá productos para vender en el gimnasio</p>
+                  <button class="btn-action-primary btn-sm mt-4" onclick="window.location.hash='#/registrar-producto'">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                    <span>Registrar producto</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <!-- filas dinámicas -->
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</main>
