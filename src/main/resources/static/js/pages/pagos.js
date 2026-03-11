@@ -34,11 +34,13 @@ export function init() {
   inputHasta.value = hoy.toISOString().split("T")[0];
   inputDesde.value = hace30dias.toISOString().split("T")[0];
 
-  document.getElementById("btnHome")
+  document
+    .getElementById("btnHome")
     ?.addEventListener("click", () => history.back());
 
-  document.getElementById("btnNuevoPago")
-    ?.addEventListener("click", () => navigateTo('registrar-pago'));
+  document
+    .getElementById("btnNuevoPago")
+    ?.addEventListener("click", () => navigateTo("registrar-pago"));
 
   // Botón Filtrar Fechas
   document.getElementById("btnFiltrarFecha").addEventListener("click", () => {
@@ -55,7 +57,9 @@ export function init() {
   });
 
   // Botón Exportar CSV
-  document.getElementById("btnExportarPagos")?.addEventListener("click", exportarPagos);
+  document
+    .getElementById("btnExportarPagos")
+    ?.addEventListener("click", exportarPagos);
 
   // Cargar datos iniciales asegurando el orden correcto para el render de la tabla
   cargarDatosIniciales(tablaBody);
@@ -84,7 +88,7 @@ async function cargarDatosIniciales(tablaBody) {
       cargarPagos(tablaBody),
       cargarKPIsRecaudado(),
       cargarDistribucionIngresos(),
-      cargarMasVendidos()
+      cargarMasVendidos(),
     ]);
   } catch (err) {
     console.error("Error en carga inicial de pagos", err);
@@ -113,32 +117,30 @@ async function cargarPagos(tablaBody) {
       (newPage) => {
         currentPage = newPage;
         cargarPagos(tablaBody);
-      }
+      },
     );
-
   } catch (err) {
     Alerta.error("Error al cargar pagos");
   }
 }
 
 function renderPagos(tablaBody, pagos) {
-  const emptyState = document.getElementById('emptyStatePagos');
+  const emptyState = document.getElementById("emptyStatePagos");
 
   // Limpiar filas existentes (excepto el empty state)
-  const rows = tablaBody.querySelectorAll('tr:not(#emptyStatePagos)');
-  rows.forEach(row => row.remove());
+  const rows = tablaBody.querySelectorAll("tr:not(#emptyStatePagos)");
+  rows.forEach((row) => row.remove());
 
   if (!pagos || !pagos.length) {
     // Mostrar empty state
-    if (emptyState) emptyState.classList.remove('hidden');
+    if (emptyState) emptyState.classList.remove("hidden");
     return;
   }
 
   // Ocultar empty state y mostrar datos
-  if (emptyState) emptyState.classList.add('hidden');
+  if (emptyState) emptyState.classList.add("hidden");
 
   pagos.forEach((p, index) => {
-
     // Fila principal
     const tr = document.createElement("tr");
     tr.classList.add("animate-fade-in-up");
@@ -150,15 +152,15 @@ function renderPagos(tablaBody, pagos) {
     }
 
     tr.innerHTML = `
-      <td>${p.fecha}</td>
-      <td>${socioHtml}</td>
-      <td>
-        <span class="badge ${p.estado === 'PAGADO' ? 'badge-success' : p.estado === 'ANULADO' ? 'badge-danger' : 'badge-warning'}">
+      <td class="py-5 px-6 align-middle">${p.fecha}</td>
+      <td class="py-5 px-6 align-middle">${socioHtml}</td>
+      <td class="py-5 px-6 align-middle text-center">
+        <span class="badge ${p.estado === "PAGADO" ? "badge-success" : p.estado === "ANULADO" ? "badge-danger" : "badge-warning"}">
           ${p.estado}
         </span>
       </td>
-      <td class="font-semibold text-[var(--beige)]">$ ${p.monto}</td>
-      <td>
+      <td class="py-5 px-6 align-middle text-right font-semibold text-[var(--beige)] font-mono">$ ${p.monto}</td>
+      <td class="py-5 px-6 align-middle text-center">
         <button class="table-action-btn" data-index="${index}" title="Ver detalle">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
@@ -167,18 +169,17 @@ function renderPagos(tablaBody, pagos) {
       </td>
     `;
 
-
     tablaBody.appendChild(tr);
 
     // Fila detalle (sub-card)
     const trDetalle = document.createElement("tr");
-    trDetalle.className = "hidden";
+    trDetalle.className = "hidden bg-[#0a0a0a]";
     trDetalle.id = `detalle-${index}`;
 
     trDetalle.innerHTML = `
-      <td colspan="5" class="p-0">
-        <div class="detail-panel">
-          <h4 class="detail-panel-title">Detalle del pago</h4>
+      <td colspan="5" class="p-0 border-b border-[#222]">
+        <div class="detail-panel py-6 px-12">
+          <h4 class="detail-panel-title mb-4 text-gray-300">Detalle del pago</h4>
           ${renderDetalle(p.detalles)}
         </div>
       </td>
@@ -187,28 +188,29 @@ function renderPagos(tablaBody, pagos) {
   });
 
   // Toggle detalle
-  tablaBody.querySelectorAll("button[data-index]").forEach(btn => {
+  tablaBody.querySelectorAll("button[data-index]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const index = btn.dataset.index;
-      document
-        .getElementById(`detalle-${index}`)
-        .classList.toggle("hidden");
+      document.getElementById(`detalle-${index}`).classList.toggle("hidden");
     });
   });
 }
 
-
 async function cargarNombres() {
   const [productosRes, membresiasRes] = await Promise.all([
     authFetch("/productos"),
-    authFetch("/membresias")
+    authFetch("/membresias"),
   ]);
 
   const productos = await productosRes.json();
   const membresias = await membresiasRes.json();
 
-  productosMap = Object.fromEntries(productos.map(p => [p.idProducto, p.nombre]));
-  membresiasMap = Object.fromEntries(membresias.map(m => [m.idMembresia, m.nombre]));
+  productosMap = Object.fromEntries(
+    productos.map((p) => [p.idProducto, p.nombre]),
+  );
+  membresiasMap = Object.fromEntries(
+    membresias.map((m) => [m.idMembresia, m.nombre]),
+  );
 }
 
 function renderDetalle(detallePagos) {
@@ -217,33 +219,32 @@ function renderDetalle(detallePagos) {
   }
 
   return `
-    <div class="detail-items">
-      ${detallePagos.map(d => {
-    const tipo = d.idProducto ? "Producto" : "Membresía";
-    const nombre = d.idProducto
-      ? productosMap[d.idProducto] || "Desconocido"
-      : membresiasMap[d.idMembresia] || "Desconocida";
+    <div class="detail-items flex flex-col gap-4">
+      ${detallePagos
+        .map((d) => {
+          const tipo = d.idProducto ? "Producto" : "Membresía";
+          const nombre = d.idProducto
+            ? productosMap[d.idProducto] || "Desconocido"
+            : membresiasMap[d.idMembresia] || "Desconocida";
 
-    return `
-          <div class="detail-item">
+          return `
+          <div class="detail-item flex justify-between items-center p-4 rounded border border-[#222] bg-[#111]">
             <div>
-              <p class="detail-item-type">${tipo}</p>
-              <p class="detail-item-name">${nombre}</p>
-              <p class="detail-item-qty">Cantidad: ${d.cantidad}</p>
+              <p class="detail-item-type text-xs text-gray-500 uppercase tracking-widest mb-1">${tipo}</p>
+              <p class="detail-item-name text-sm text-white font-medium">${nombre}</p>
+              <p class="detail-item-qty text-xs text-gray-400 mt-1">Cantidad: <span class="text-gray-300 font-bold">${d.cantidad}</span></p>
             </div>
             <div class="text-right">
-              <p class="detail-item-label">Unitario</p>
-              <p class="detail-item-price">$ ${d.precioUnitario}</p>
+              <p class="detail-item-label text-xs text-gray-500 mb-1">Unitario</p>
+              <p class="detail-item-price text-sm text-[var(--beige)] font-mono">$ ${d.precioUnitario}</p>
             </div>
           </div>
         `;
-  }).join("")}
+        })
+        .join("")}
     </div>
   `;
 }
-
-
-
 
 function setValor(id, valor) {
   const el = document.getElementById(id);
@@ -272,7 +273,7 @@ async function cargarKPIsRecaudado() {
     const [resHoy, resSemana, resMesCompleto] = await Promise.all([
       authFetch("/pagos/estadisticas/recaudado-hoy"),
       authFetch("/pagos/estadisticas/recaudado-semana"),
-      authFetch("/pagos/estadisticas/mes-completo")
+      authFetch("/pagos/estadisticas/mes-completo"),
     ]);
 
     const totalHoy = await resHoy.json();
@@ -283,28 +284,22 @@ async function cargarKPIsRecaudado() {
     setValor("kpiSemana", totalSemana);
     setValor("kpiMes", statsMes.totalMes);
     renderVariacion("varMes", statsMes.variacionMensual);
-
   } catch (err) {
     console.error("Error al cargar KPIs de recaudado:", err);
   }
 }
 
-
-
-
 async function cargarDistribucionIngresos() {
   try {
     const res = await authFetch(
-      "/pagos/estadisticas/recaudado-productos-planes"
+      "/pagos/estadisticas/recaudado-productos-planes",
     );
     const data = await res.json();
 
     const productos = data.totalProductos || 0;
     const membresias = data.totalPlanes || 0;
 
-    const ctx = document
-      .getElementById("donutIngresos")
-      .getContext("2d");
+    const ctx = document.getElementById("donutIngresos").getContext("2d");
 
     if (donutIngresosChart) donutIngresosChart.destroy();
 
@@ -312,51 +307,53 @@ async function cargarDistribucionIngresos() {
       type: "doughnut",
       data: {
         labels: ["Productos", "Cuotas"],
-        datasets: [{
-          data: [productos, membresias],
-          backgroundColor: ["#c7c7c7", "#e9561e"],
-          hoverBackgroundColor: ["#e0e0e0", "#ff6a2b"],
-          borderColor: "#111",
-          borderWidth: 2,
-          hoverOffset: 6
-        }]
-
+        datasets: [
+          {
+            data: [productos, membresias],
+            backgroundColor: ["#c7c7c7", "#3b82f6"],
+            hoverBackgroundColor: ["#e0e0e0", "#60a5fa"],
+            borderColor: "transparent",
+            borderWidth: 0,
+            hoverOffset: 4,
+          },
+        ],
       },
       options: {
         responsive: true,
-        cutout: "65%",
+        maintainAspectRatio: false,
+        cutout: "82%",
         plugins: {
           legend: {
             position: "bottom",
             labels: {
-              color: "#ECD9BA",
-              padding: 16,
-              boxWidth: 12
-            }
+              color: "#9ca3af",
+              padding: 24,
+              boxWidth: 8,
+              usePointStyle: true,
+              pointStyle: "circle",
+            },
           },
           tooltip: {
-            backgroundColor: "rgba(20,20,20,0.95)",
-            titleColor: "#ECD9BA",
-            bodyColor: "#ECD9BA",
-            borderColor: "rgba(255,255,255,0.15)",
+            backgroundColor: "rgba(10,10,10,0.9)",
+            titleColor: "#fff",
+            bodyColor: "#d1d5db",
+            borderColor: "rgba(255,255,255,0.1)",
             borderWidth: 1,
-            padding: 10,
+            padding: 12,
+            cornerRadius: 8,
             displayColors: false,
             callbacks: {
               label: (ctx) => {
                 const total = productos + membresias;
                 const value = ctx.raw;
-                const pct = total
-                  ? ((value / total) * 100).toFixed(1)
-                  : 0;
+                const pct = total ? ((value / total) * 100).toFixed(1) : 0;
                 return `$ ${value.toLocaleString()} (${pct}%)`;
-              }
-            }
-          }
-        }
-      }
+              },
+            },
+          },
+        },
+      },
     });
-
   } catch (err) {
     console.error("Error al cargar donut de ingresos:", err);
   }
@@ -366,7 +363,7 @@ async function cargarMasVendidos() {
   try {
     const [productoRes, planRes] = await Promise.all([
       authFetch("/pagos/estadisticas/producto-mas-vendido-mes"),
-      authFetch("/pagos/estadisticas/plan-mas-vendido-mes")
+      authFetch("/pagos/estadisticas/plan-mas-vendido-mes"),
     ]);
 
     const producto = await productoRes.json();
@@ -378,32 +375,26 @@ async function cargarMasVendidos() {
       producto.nombre || "—";
 
     document.getElementById("productoMasVendidoTotal").textContent =
-      producto.cantidad
-        ? `${producto.cantidad} vendidos`
-        : "Sin ventas";
+      producto.cantidad ? `${producto.cantidad} vendidos` : "Sin ventas";
 
     document.getElementById("planMasVendidoNombre").textContent =
       plan.nombre || "—";
 
-    document.getElementById("planMasVendidoTotal").textContent =
-      plan.cantidad
-        ? `${plan.cantidad} socios`
-        : "Sin socios";
-
+    document.getElementById("planMasVendidoTotal").textContent = plan.cantidad
+      ? `${plan.cantidad} socios`
+      : "Sin socios";
   } catch (e) {
     console.error("Error cargando más vendidos", e);
   }
 }
 
-
-
-
 // ------------------ GRÁFICO ------------------
 async function cargarRecaudado(filtro = "7dias") {
   try {
-    const endpoint = filtro === "7dias"
-      ? "/pagos/estadisticas/recaudado-ultima-semana"
-      : "/pagos/estadisticas/recaudado-meses";
+    const endpoint =
+      filtro === "7dias"
+        ? "/pagos/estadisticas/recaudado-ultima-semana"
+        : "/pagos/estadisticas/recaudado-meses";
 
     const res = await authFetch(endpoint);
     const data = await res.json();
@@ -412,12 +403,12 @@ async function cargarRecaudado(filtro = "7dias") {
     let totals = [];
 
     if (filtro === "7dias") {
-      labels = data.map(d => d.fecha);
-      totals = data.map(d => d.monto ?? 0);
+      labels = data.map((d) => d.fecha);
+      totals = data.map((d) => d.monto ?? 0);
     } else {
       // suponemos data = [{anio, mes, total}]
-      labels = data.map(d => `${d.mes}/${d.anio}`);
-      totals = data.map(d => d.monto ?? 0);
+      labels = data.map((d) => `${d.mes}/${d.anio}`);
+      totals = data.map((d) => d.monto ?? 0);
     }
 
     const ctx = document.getElementById("pagosDiaChart").getContext("2d");
@@ -428,48 +419,40 @@ async function cargarRecaudado(filtro = "7dias") {
       type: "line",
       data: {
         labels,
-        datasets: [{
-          label: "Recaudado",
-          data: totals,
+        datasets: [
+          {
+            label: "Recaudado",
+            data: totals,
 
-          borderColor: "#c7c7c7",
-          backgroundColor: "rgba(199,199,199,0.15)",
-          fill: true,
-          tension: 0.3,
+            borderColor: "#3b82f6",
+            backgroundColor: "rgba(59,130,246,0.1)",
+            fill: true,
+            tension: 0.4,
 
-          pointRadius: 3,
-          pointHoverRadius: 6,
-          pointBackgroundColor: "#c7c7c7",
-          pointHoverBackgroundColor: "#ECD9BA",
-          pointBorderColor: "#ffffff",
-          pointHoverBorderWidth: 2,
-        }]
+            pointRadius: 0,
+            pointHoverRadius: 6,
+            pointBackgroundColor: "#3b82f6",
+            pointHoverBackgroundColor: "#111",
+            pointBorderColor: "#ffffff",
+            pointHoverBorderWidth: 2,
+            borderWidth: 2,
+          },
+        ],
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
 
         interaction: {
           mode: "index",
-          intersect: false
+          intersect: false,
         },
 
         plugins: {
           legend: { display: false },
 
           title: {
-            display: true,
-            text: filtro === "7dias"
-              ? "Recaudado últimos 7 días"
-              : "Recaudado por mes",
-            color: "#ECD9BA",
-            font: {
-              size: 16,
-              weight: "bold"
-            },
-            padding: {
-              top: 8,
-              bottom: 16
-            }
+            display: false,
           },
 
           tooltip: {
@@ -477,50 +460,58 @@ async function cargarRecaudado(filtro = "7dias") {
             mode: "index",
             intersect: false,
 
-            backgroundColor: "rgba(15,15,15,0.95)",
-            borderColor: "rgba(255,255,255,0.15)",
+            backgroundColor: "rgba(10,10,10,0.9)",
+            borderColor: "rgba(255,255,255,0.1)",
             borderWidth: 1,
 
-            titleColor: "#ECD9BA",
-            bodyColor: "#ECD9BA",
+            titleColor: "#aaa",
+            bodyColor: "#fff",
 
             titleFont: {
-              size: 13,
-              weight: "bold"
+              size: 11,
+              weight: "normal",
             },
             bodyFont: {
-              size: 12
+              size: 13,
+              weight: "bold",
             },
 
-            padding: 10,
-            cornerRadius: 6,
-            displayColors: false
-          }
+            padding: 12,
+            cornerRadius: 8,
+            displayColors: false,
+            callbacks: {
+              title: (ctx) => ctx[0].label,
+              label: (ctx) => `Recaudado: ${formatCurrency(ctx.parsed.y)}`,
+            },
+          },
         },
 
         scales: {
           y: {
             beginAtZero: true,
             ticks: {
-              color: "#e5e5e5"
+              color: "#6b7280",
+              font: { size: 11 },
+              callback: (v) => `${formatCurrency(v)}`,
             },
             grid: {
-              color: "rgba(255,255,255,0.08)"
-            }
+              display: false,
+            },
+            border: { display: false },
           },
           x: {
             ticks: {
-              color: "#e5e5e5"
+              color: "#6b7280",
+              font: { size: 11 },
             },
             grid: {
-              drawOnChartArea: false // clave: limpia visualmente el gráfico
-            }
-          }
-        }
-      }
+              display: false,
+            },
+            border: { display: false },
+          },
+        },
+      },
     });
-
-
   } catch (err) {
     console.error("Error al cargar estadística de recaudado:", err);
   }
@@ -552,7 +543,7 @@ async function exportarPagos() {
     const urlBlob = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = urlBlob;
-    a.download = `pagos_${desde || 'inicio'}_a_${hasta || 'hoy'}.csv`;
+    a.download = `pagos_${desde || "inicio"}_a_${hasta || "hoy"}.csv`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

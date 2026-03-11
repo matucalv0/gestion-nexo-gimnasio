@@ -8,7 +8,6 @@ import { checkAuthSync } from './auth/auth.js';
 // Mapa de rutas de la aplicación
 const ROUTES = {
     'home': { fragment: 'fragments/home.html', module: './pages/home.js' },
-    'asistencia': { fragment: 'fragments/asistencia.html', module: './pages/asistencia.js' },
     'asistencias': { fragment: 'fragments/asistencias.html', module: './pages/asistencias.js' },
     'socios': { fragment: 'fragments/socios.html', module: './pages/socios.js' },
     'socio-detalle': { fragment: 'fragments/socio-detalle.html', module: './pages/socio-detalle.js' },

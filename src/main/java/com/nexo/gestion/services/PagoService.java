@@ -10,7 +10,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -47,8 +46,7 @@ public class PagoService {
             ProductoRepository productoRepository,
             SocioMembresiaRepository socioMembresiaRepository,
             AsistenciaRepository asistenciaRepository,
-            DescuentoRepository descuentoRepository
-    ) {
+            DescuentoRepository descuentoRepository) {
         this.pagoRepository = pagoRepository;
         this.socioRepository = socioRepository;
         this.empleadoRepository = empleadoRepository;
@@ -85,16 +83,14 @@ public class PagoService {
                 detallePago.getCantidad(),
                 detallePago.getPrecioUnitario(),
                 idProducto,
-                idMembresia
-        );
+                idMembresia);
     }
-
 
     private PagoDTO convertirAPagoDTO(Pago pago) {
         List<DetallePago> detalle = pago.getDetalles();
         List<DetallePagoDTO> detalleDTO = new ArrayList<>();
 
-        for (DetallePago d: detalle){
+        for (DetallePago d : detalle) {
             detalleDTO.add(convertirDetallePagoADTO(d));
 
         }
@@ -113,14 +109,12 @@ public class PagoService {
                 pago.getMonto(),
                 detalleDTO,
                 dniSocio,
-                nombreSocio
-        );
+                nombreSocio);
     }
 
     private SocioMembresia renovarMembresia(Socio socio, Membresia membresia, LocalDate fechaInicioOverride) {
 
-        LocalDate ultimoVencimiento =
-                socioMembresiaRepository.findUltimoVencimientoVigente(socio.getDni());
+        LocalDate ultimoVencimiento = socioMembresiaRepository.findUltimoVencimientoVigente(socio.getDni());
 
         LocalDate inicio;
 
@@ -154,13 +148,13 @@ public class PagoService {
 
         SocioMembresia guardada = socioMembresiaRepository.save(nuevaSuscripcion);
 
-        // Validar asistencias pendientes que caen dentro del rango de la nueva membresía
+        // Validar asistencias pendientes que caen dentro del rango de la nueva
+        // membresía
         List<Asistencia> pendientes = asistenciaRepository
                 .findPendientesEnRango(
                         socio.getDni(),
                         inicio.atStartOfDay(),
-                        vencimiento.atTime(java.time.LocalTime.MAX)
-                );
+                        vencimiento.atTime(java.time.LocalTime.MAX));
 
         if (!pendientes.isEmpty()) {
             for (Asistencia asistencia : pendientes) {
@@ -172,18 +166,15 @@ public class PagoService {
         return guardada;
     }
 
-
-
     @Transactional
     public PagoDTO crearPago(PagoCreateDTO dto) {
 
-        
         if (dto.getEstado() != EstadoPago.PAGADO && dto.getEstado() != EstadoPago.PENDIENTE) {
             throw new IllegalStateException("Estado no válido. Solo PAGADO o PENDIENTE.");
         }
 
-        Socio socio = dto.getDniSocio() != null ?
-                socioRepository.findById(dto.getDniSocio()).orElseThrow(() -> new ObjetoNoEncontradoException("socio")) : null;
+        Socio socio = dto.getDniSocio() != null ? socioRepository.findById(dto.getDniSocio())
+                .orElseThrow(() -> new ObjetoNoEncontradoException("socio")) : null;
 
         Empleado empleado = empleadoRepository.findById(dto.getDniEmpleado())
                 .orElseThrow(() -> new ObjetoNoEncontradoException("empleado"));
@@ -191,51 +182,46 @@ public class PagoService {
         MedioPago medioPago = medioPagoRepository.findById(dto.getIdMedioPago())
                 .orElseThrow(() -> new ObjetoNoEncontradoException("medio de pago"));
 
-        
         Pago pago = new Pago(dto.getEstado(), socio, medioPago, empleado);
-        pago = pagoRepository.save(pago); 
+        pago = pagoRepository.save(pago);
 
-    
         BigDecimal montoBrutoTotal = BigDecimal.ZERO;
         BigDecimal montoBaseParaDescuento = BigDecimal.ZERO;
 
         int numeroLinea = 1;
         List<Producto> productosAActualizar = new ArrayList<>();
 
-        
         for (DetallePagoCreateDTO dDTO : dto.getDetalles()) {
-            if (dDTO.getCantidad() <= 0) throw new CantidadCeroDetalle();
+            if (dDTO.getCantidad() <= 0)
+                throw new CantidadCeroDetalle();
 
             DetallePago detalle = new DetallePago();
             detalle.setPago(pago);
             detalle.setCantidad(dDTO.getCantidad());
             detalle.setIdDetallePago(new DetallePagoId(pago.getIdPago(), numeroLinea++));
 
-            BigDecimal precioRealUnitario; 
+            BigDecimal precioRealUnitario;
 
-            
             if (dDTO.getIdProducto() != null) {
                 Producto p = productoRepository.findById(dDTO.getIdProducto())
                         .orElseThrow(() -> new ObjetoNoEncontradoException("producto " + dDTO.getIdProducto()));
 
-                
                 precioRealUnitario = p.getPrecioSugerido();
 
                 detalle.setProducto(p);
                 p.restarStock(dDTO.getCantidad());
                 productosAActualizar.add(p);
             }
-            
+
             else if (dDTO.getIdMembresia() != null) {
-                if (socio == null) throw new ObjetoNoEncontradoException("Se requiere socio para membresía");
+                if (socio == null)
+                    throw new ObjetoNoEncontradoException("Se requiere socio para membresía");
 
                 Membresia m = membresiaRepository.findById(dDTO.getIdMembresia())
                         .orElseThrow(() -> new ObjetoNoEncontradoException("membresía " + dDTO.getIdMembresia()));
 
-                
                 precioRealUnitario = m.getPrecioSugerido();
 
-                
                 BigDecimal subtotalMembresia = precioRealUnitario.multiply(BigDecimal.valueOf(dDTO.getCantidad()));
                 montoBaseParaDescuento = montoBaseParaDescuento.add(subtotalMembresia);
 
@@ -249,28 +235,26 @@ public class PagoService {
                 throw new IllegalStateException("El detalle debe tener producto o membresía");
             }
 
-            
             detalle.setPrecioUnitario(precioRealUnitario);
             montoBrutoTotal = montoBrutoTotal.add(precioRealUnitario.multiply(BigDecimal.valueOf(dDTO.getCantidad())));
 
             pago.agregarDetalle(detalle);
         }
 
-        
         BigDecimal montoFinal = montoBrutoTotal;
 
         if (dto.getIdDescuento() != null) {
             Descuento descuento = descuentoRepository.findById(dto.getIdDescuento())
                     .orElseThrow(() -> new ObjetoNoEncontradoException("descuento"));
 
-            if (!descuento.getActivo()) throw new IllegalStateException("Descuento inactivo");
+            if (!descuento.getActivo())
+                throw new IllegalStateException("Descuento inactivo");
 
-            
             if (montoBaseParaDescuento.compareTo(BigDecimal.ZERO) > 0) {
-               
+
                 BigDecimal montoADescontar = montoBaseParaDescuento
                         .multiply(descuento.getPorcentaje())
-                        .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP); 
+                        .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
 
                 montoFinal = montoFinal.subtract(montoADescontar);
                 pago.setDescuento(descuento);
@@ -291,9 +275,6 @@ public class PagoService {
         return convertirAPagoDTO(pago);
     }
 
-
-
-
     @Transactional(readOnly = true)
     public PagoDTO obtenerPago(Integer id) {
         Pago pago = pagoRepository.findById(id)
@@ -304,7 +285,7 @@ public class PagoService {
     @Transactional(readOnly = true)
     public List<PagoDTO> buscarPagos() {
         return pagoRepository.findByEstadoNotInOrderByFechaDesc(
-                        List.of(EstadoPago.ELIMINADO, EstadoPago.ANULADO))
+                List.of(EstadoPago.ELIMINADO, EstadoPago.ANULADO))
                 .stream()
                 .map(this::convertirAPagoDTO)
                 .toList();
@@ -312,20 +293,19 @@ public class PagoService {
 
     @Transactional(readOnly = true)
     public PageResponseDTO<PagoDTO> buscarPagosPaginados(int page, int size, LocalDate desde, LocalDate hasta) {
-        
+
         if (hasta == null) {
             hasta = LocalDate.now();
         }
-        
+
         if (desde == null) {
             desde = LocalDate.of(1970, 1, 1);
         }
 
-        org.springframework.data.domain.Pageable pageable = 
-                org.springframework.data.domain.PageRequest.of(page, size);
-        
-        org.springframework.data.domain.Page<Pago> pagos = 
-                pagoRepository.findByFechaBetweenOrderByFechaDesc(desde, hasta, pageable);
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+
+        org.springframework.data.domain.Page<Pago> pagos = pagoRepository.findByFechaBetweenOrderByFechaDesc(desde,
+                hasta, pageable);
 
         List<PagoDTO> content = pagos.getContent()
                 .stream()
@@ -337,11 +317,8 @@ public class PagoService {
                 pagos.getNumber(),
                 pagos.getSize(),
                 pagos.getTotalElements(),
-                pagos.getTotalPages()
-        );
+                pagos.getTotalPages());
     }
-
-
 
     @Transactional
     public void anularPago(Integer id) {
@@ -354,17 +331,16 @@ public class PagoService {
 
         pago.setEstado(EstadoPago.ANULADO);
 
-        
         for (DetallePago detalle : pago.getDetalles()) {
             if (detalle.getSocioMembresia() != null) {
-               
+
                 SocioMembresia sm = detalle.getSocioMembresia();
                 sm.setActivo(false);
                 socioMembresiaRepository.save(sm);
             }
-            
+
             if (detalle.getProducto() != null && detalle.getCantidad() != null) {
-               
+
                 Producto producto = detalle.getProducto();
                 producto.setStock(producto.getStock() + detalle.getCantidad());
                 productoRepository.save(producto);
@@ -383,20 +359,18 @@ public class PagoService {
             throw new IllegalStateException("El pago ya está eliminado");
         }
 
-       
         pago.setEstado(EstadoPago.ELIMINADO);
 
-        
         for (DetallePago detalle : pago.getDetalles()) {
             if (detalle.getSocioMembresia() != null) {
-              
+
                 SocioMembresia sm = detalle.getSocioMembresia();
                 sm.setActivo(false);
                 socioMembresiaRepository.save(sm);
             }
 
             if (detalle.getProducto() != null && detalle.getCantidad() != null) {
-              
+
                 Producto producto = detalle.getProducto();
                 producto.setStock(producto.getStock() + detalle.getCantidad());
                 productoRepository.save(producto);
@@ -413,9 +387,8 @@ public class PagoService {
     public List<PagoPorFechaDTO> recaudadoUltimaSemana() {
         List<Object[]> pagos = pagoRepository.totalPagosUltimaSemana();
         return pagos.stream().map(r -> new PagoPorFechaDTO(
-                        ((java.sql.Date) r[0]).toLocalDate(),
-                        (BigDecimal) r[1]
-                ))
+                ((java.sql.Date) r[0]).toLocalDate(),
+                (BigDecimal) r[1]))
                 .collect(Collectors.toList());
     }
 
@@ -424,13 +397,11 @@ public class PagoService {
 
         return pagos.stream()
                 .map(r -> new PagoPorMesDTO(
-                        ((Number) r[0]).intValue(), 
-                        ((Number) r[1]).intValue(), 
-                        ((BigDecimal) r[2]) 
-                ))
+                        ((Number) r[0]).intValue(),
+                        ((Number) r[1]).intValue(),
+                        ((BigDecimal) r[2])))
                 .collect(Collectors.toList());
     }
-
 
     public BigDecimal recaudadoHoy() {
         BigDecimal total = pagoRepository.totalRecaudadoHoy();
@@ -450,8 +421,7 @@ public class PagoService {
     public RecaudacionProductosMembresiasMesDTO recaudadoMesProductosPlanes() {
         return new RecaudacionProductosMembresiasMesDTO(
                 pagoRepository.totalRecaudadoMesProductos(),
-                pagoRepository.totalRecaudadoMesPlanes()
-        );
+                pagoRepository.totalRecaudadoMesPlanes());
     }
 
     public ProductoMasVendidoMesDTO productoMasVendidoEnELMes() {
@@ -465,10 +435,8 @@ public class PagoService {
 
         return new ProductoMasVendidoMesDTO(
                 (String) row[0],
-                ((Number) row[1]).intValue()
-        );
+                ((Number) row[1]).intValue());
     }
-
 
     public PlanMasVendidoMesDTO planMasVendidoEnELMes() {
         List<Object[]> result = pagoRepository.planMasVendidoMensual();
@@ -481,19 +449,18 @@ public class PagoService {
 
         return new PlanMasVendidoMesDTO(
                 (String) row[0],
-                ((Number) row[1]).intValue()
-        );
+                ((Number) row[1]).intValue());
     }
 
     public PagoMesStatsDTO obtenerEstadisticasMensuales() {
         BigDecimal totalMesActual = recaudadoMes();
-        
+
         List<PagoPorMesDTO> historico = recaudadoMeses();
-        
+
         LocalDate fechaActual = LocalDate.now();
         int mesActual = fechaActual.getMonthValue();
         int anioActual = fechaActual.getYear();
-        
+
         int mesAnterior = mesActual - 1;
         int anioAnterior = anioActual;
         if (mesAnterior == 0) {
@@ -503,22 +470,22 @@ public class PagoService {
 
         final int finalMesAnterior = mesAnterior;
         final int finalAnioAnterior = anioAnterior;
-        
+
         BigDecimal totalMesAnterior = historico.stream()
-            .filter(h -> h.mes().equals(finalMesAnterior) && h.anio().equals(finalAnioAnterior))
-            .map(PagoPorMesDTO::monto)
-            .findFirst()
-            .orElse(BigDecimal.ZERO);
+                .filter(h -> h.mes().equals(finalMesAnterior) && h.anio().equals(finalAnioAnterior))
+                .map(PagoPorMesDTO::monto)
+                .findFirst()
+                .orElse(BigDecimal.ZERO);
 
         Double variacion = null;
 
         if (totalMesAnterior.compareTo(BigDecimal.ZERO) > 0) {
             BigDecimal diferencia = totalMesActual.subtract(totalMesAnterior);
             BigDecimal var = diferencia.divide(totalMesAnterior, 4, java.math.RoundingMode.HALF_UP)
-                                       .multiply(BigDecimal.valueOf(100));
+                    .multiply(BigDecimal.valueOf(100));
             variacion = var.doubleValue();
         } else if (totalMesActual.compareTo(BigDecimal.ZERO) > 0) {
-            variacion = 100.0; 
+            variacion = 100.0;
         } else {
             variacion = 0.0;
         }
@@ -526,4 +493,3 @@ public class PagoService {
         return new PagoMesStatsDTO(totalMesActual, variacion);
     }
 }
-

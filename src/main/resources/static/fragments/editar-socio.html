@@ -1,78 +1,229 @@
 <main class="flex justify-center items-start min-h-screen p-6 pt-8">
-    <div class="w-full max-w-lg">
-
-      <!-- HEADER -->
-      <header class="page-header mb-6">
-        <div class="page-header-icon">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+  <div class="w-full max-w-4xl">
+    <!-- Header -->
+    <header
+      class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8"
+    >
+      <div class="flex items-center gap-4">
+        <div
+          class="w-12 h-12 rounded-xl bg-[#111] flex items-center justify-center border border-[#222]"
+        >
+          <svg
+            class="w-6 h-6 text-blue-400"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+            />
           </svg>
         </div>
-        <div class="page-header-content">
-          <h1 class="page-header-title">Editar Socio</h1>
-          <p class="page-header-subtitle">Modificar datos personales</p>
+        <div>
+          <h1 class="text-2xl font-bold text-white tracking-tight">
+            Editar Socio
+          </h1>
+          <p class="text-sm text-gray-500 mt-0.5">Modificación de datos</p>
         </div>
-        <div class="page-header-actions">
-          <a href="javascript:history.back()" class="btn-outline btn-sm">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-            </svg>
-            <span>Volver</span>
-          </a>
-        </div>
-      </header>
-
-      <!-- CARD PRINCIPAL -->
-      <div class="card-container">
-        <div class="card-toolbar">
-          <h2 class="card-toolbar-title">Datos del socio</h2>
-        </div>
-
-        <form id="editarSocioForm" class="form-container">
-          <!-- DNI -->
-          <div class="form-group">
-            <label class="form-label" for="nuevoDni">DNI</label>
-            <input name="nuevoDni" id="nuevoDni" type="text" class="form-input" placeholder="Ej: 12345678" />
-            <span class="form-error error"></span>
-          </div>
-
-          <!-- NOMBRE -->
-          <div class="form-group">
-            <label class="form-label" for="nombre">Nombre completo</label>
-            <input name="nombre" id="nombre" type="text" class="form-input" placeholder="Nombre y apellido" />
-            <span class="form-error error"></span>
-          </div>
-
-          <!-- FECHA NACIMIENTO -->
-          <div class="form-group">
-            <label class="form-label" for="fechaNacimiento">Fecha de nacimiento</label>
-            <input name="fechaNacimiento" id="fechaNacimiento" type="date" class="form-input" />
-            <span class="form-error error"></span>
-          </div>
-
-          <!-- TELÉFONO -->
-          <div class="form-group">
-            <label class="form-label" for="telefono">Teléfono</label>
-            <input name="telefono" id="telefono" type="text" class="form-input" placeholder="Ej: 1155667788" />
-            <span class="form-error error"></span>
-          </div>
-
-          <!-- EMAIL -->
-          <div class="form-group">
-            <label class="form-label" for="email">Email</label>
-            <input name="email" id="email" type="email" class="form-input" placeholder="correo@ejemplo.com" />
-            <span class="form-error error"></span>
-          </div>
-
-          <!-- BOTÓN -->
-          <button type="submit" class="btn-action-primary w-full mt-2">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-            </svg>
-            <span>Guardar cambios</span>
-          </button>
-        </form>
       </div>
+      <div class="flex items-center gap-3">
+        <a
+          href="javascript:history.back()"
+          class="glass-card flex items-center gap-2 px-4 py-2 hover:bg-[#161616] hover:text-white transition-colors text-sm font-medium text-gray-300"
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
+            />
+          </svg>
+          Cancelar
+        </a>
+      </div>
+    </header>
+
+    <!-- Card -->
+    <div class="glass-card p-0 overflow-hidden">
+      <div class="p-6 border-b border-[#222] bg-[#0a0a0a]">
+        <h2
+          class="text-base font-bold text-white tracking-tight flex items-center gap-2"
+        >
+          <div
+            class="w-8 h-8 rounded bg-[#1a1a1a] border border-[#333] flex items-center justify-center text-blue-400"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+              />
+            </svg>
+          </div>
+          Actualización de Perfil
+        </h2>
+      </div>
+
+      <form id="editarSocioForm" class="p-6 md:p-8 space-y-8 bg-[#111]">
+        <!-- PANEL 1: DATOS PERSONALES -->
+        <div class="space-y-5">
+          <h3
+            class="text-xs font-bold text-[#666] uppercase tracking-widest border-b border-[#222] pb-3 flex items-center gap-3"
+          >
+            <span
+              class="w-6 h-6 rounded-full bg-[#222] flex items-center justify-center text-white text-[10px]"
+              >1</span
+            >
+            Información Personal
+          </h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-5">
+            <div class="md:col-span-6 relative group">
+              <label
+                class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2"
+                for="nombre"
+                >Nombre completo</label
+              >
+              <input
+                name="nombre"
+                id="nombre"
+                type="text"
+                placeholder="Nombre y apellido"
+                class="w-full bg-transparent text-white placeholder-gray-600 px-0 py-2 border-b-2 border-[#333] focus:border-blue-500 focus:outline-none transition-colors text-base"
+              />
+              <span
+                class="form-error error text-red-400 text-xs mt-1.5 hidden break-words"
+              ></span>
+            </div>
+
+            <div class="md:col-span-3 relative group">
+              <label
+                class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2"
+                for="nuevoDni"
+                >DNI</label
+              >
+              <input
+                name="nuevoDni"
+                id="nuevoDni"
+                type="text"
+                placeholder="Ej: 12345678"
+                class="w-full bg-transparent text-white placeholder-gray-600 px-0 py-2 border-b-2 border-[#333] focus:border-blue-500 focus:outline-none transition-colors text-base font-mono"
+              />
+              <span
+                class="form-error error text-red-400 text-xs mt-1.5 hidden break-words"
+              ></span>
+            </div>
+
+            <div class="md:col-span-3 relative group">
+              <label
+                class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2"
+                for="fechaNacimiento"
+                >Nacimiento</label
+              >
+              <div class="relative">
+                <input
+                  name="fechaNacimiento"
+                  id="fechaNacimiento"
+                  type="date"
+                  class="w-full bg-transparent text-white placeholder-gray-600 px-0 py-2 border-b-2 border-[#333] focus:border-blue-500 focus:outline-none transition-colors text-base cursor-pointer [color-scheme:dark]"
+                />
+              </div>
+              <span
+                class="form-error error text-red-400 text-xs mt-1.5 hidden break-words"
+              ></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL 2: DATOS DE CONTACTO -->
+        <div class="space-y-5 pt-4">
+          <h3
+            class="text-xs font-bold text-[#666] uppercase tracking-widest border-b border-[#222] pb-3 flex items-center gap-3"
+          >
+            <span
+              class="w-6 h-6 rounded-full bg-[#222] flex items-center justify-center text-white text-[10px]"
+              >2</span
+            >
+            Datos de Contacto
+          </h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-5">
+            <div class="md:col-span-6 relative group">
+              <label
+                class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2"
+                for="email"
+                >Email</label
+              >
+              <input
+                name="email"
+                id="email"
+                type="email"
+                placeholder="correo@ejemplo.com"
+                class="w-full bg-transparent text-white placeholder-gray-600 px-0 py-2 border-b-2 border-[#333] focus:border-blue-500 focus:outline-none transition-colors text-base"
+              />
+              <span
+                class="form-error error text-red-400 text-xs mt-1.5 hidden break-words"
+              ></span>
+            </div>
+
+            <div class="md:col-span-6 relative group">
+              <label
+                class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2"
+                for="telefono"
+                >Teléfono</label
+              >
+              <input
+                name="telefono"
+                id="telefono"
+                type="text"
+                placeholder="Ej: 1155667788"
+                class="w-full bg-transparent text-white placeholder-gray-600 px-0 py-2 border-b-2 border-[#333] focus:border-blue-500 focus:outline-none transition-colors text-base font-mono"
+              />
+              <span
+                class="form-error error text-red-400 text-xs mt-1.5 hidden break-words"
+              ></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="mt-10 pt-6 border-t border-[#222] flex justify-end">
+          <button
+            type="submit"
+            class="bg-blue-500 hover:bg-blue-600 text-white font-bold flex items-center gap-2 px-8 py-3 rounded-lg transition-colors text-sm shadow-[0_0_15px_rgba(59,130,246,0.3)] w-full md:w-auto justify-center"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M4.5 12.75l6 6 9-13.5"
+              />
+            </svg>
+            <span>Guardar Cambios</span>
+          </button>
+        </div>
+      </form>
     </div>
-  </main>
+  </div>
+</main>

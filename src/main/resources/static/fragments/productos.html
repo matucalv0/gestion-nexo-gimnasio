@@ -1,92 +1,140 @@
-<main class="flex justify-center items-start min-h-screen p-6 pt-8">
-  <div class="w-full max-w-5xl">
-
+<main
+  class="flex justify-center flex-col items-center min-h-screen p-6 pt-8 w-full max-w-7xl mx-auto"
+>
+  <div class="w-full">
     <!-- Header -->
-    <header class="page-header mb-6">
-      <div class="page-header-icon">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
-        </svg>
-      </div>
-      <div class="page-header-content">
-        <h1 class="page-header-title">Productos</h1>
-        <p class="page-header-subtitle">Inventario y ventas</p>
-      </div>
-      <div class="page-header-actions">
-        <button id="btnNuevoProducto" class="btn-action-primary btn-sm">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+    <header
+      class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8"
+    >
+      <div class="flex items-center gap-4">
+        <div
+          class="w-12 h-12 rounded-xl bg-[#111] flex items-center justify-center border border-[#222]"
+        >
+          <svg
+            class="w-6 h-6 text-[var(--orange)]"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"
+            />
           </svg>
-          <span>Nuevo Producto</span>
+        </div>
+        <div>
+          <h1 class="text-2xl font-bold text-white tracking-tight">
+            Inventario
+          </h1>
+          <p class="text-sm text-gray-500 mt-0.5">
+            Catálogo de productos de venta
+          </p>
+        </div>
+      </div>
+      <div class="flex flex-col sm:flex-row items-center gap-3">
+        <!-- Buscador elegante -->
+        <div class="relative w-full sm:w-64">
+          <div
+            class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+          >
+            <svg
+              class="w-4 h-4 text-gray-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+              />
+            </svg>
+          </div>
+          <input
+            type="text"
+            id="inputBusqueda"
+            class="w-full bg-[#111] border border-[#222] text-white text-sm rounded-lg focus:border-[var(--orange)] block pl-10 p-2.5 transition-colors placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-[var(--orange)]"
+            placeholder="Buscar artículo..."
+          />
+        </div>
+
+        <button
+          id="btnNuevoProducto"
+          class="w-full sm:w-auto bg-[var(--orange)] hover:bg-[#e07a27] text-black font-bold flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg transition-colors text-sm shadow-[0_0_15px_rgba(255,140,50,0.3)]"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 4.5v15m7.5-7.5h-15"
+            />
+          </svg>
+          Crear Artículo
         </button>
       </div>
     </header>
 
-    <!-- Card principal -->
-    <div class="card-container">
-
-      <!-- Toolbar -->
-      <div class="card-toolbar">
-        <h2 class="card-toolbar-title">Gestión de Productos</h2>
-      </div>
-
-      <!-- Buscador -->
-      <div class="filters-section mb-0">
-        <div class="filter-group flex-1">
-          <label class="filter-label" for="inputBusqueda">Buscar</label>
-          <div class="search-input-wrapper">
-            <svg class="search-input-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-            </svg>
-            <input type="text" id="inputBusqueda" placeholder="Buscar por nombre o código" class="search-input" />
-          </div>
-        </div>
-        <div class="filter-actions">
-          <button id="btnBuscar" class="btn-action-primary btn-sm">Buscar</button>
-        </div>
-      </div>
-
-      <!-- Tabla -->
-      <div class="table-container mt-5">
-        <table class="data-table">
-          <thead>
+    <!-- LISTA PRINCIPAL -->
+    <div class="glass-card p-0 overflow-hidden w-full relative min-h-[400px]">
+      <div class="overflow-x-auto subtle-scrollbar">
+        <table class="w-full text-left text-sm whitespace-nowrap">
+          <thead
+            class="bg-[#111] border-b border-[#222] sticky top-0 z-10 text-xs uppercase tracking-widest text-[#666] font-bold"
+          >
             <tr>
-              <th>Código</th>
-              <th>Nombre</th>
-              <th>Precio</th>
-              <th>Stock</th>
-              <th>Acción</th>
+              <th class="py-4 px-6 font-semibold">SKU / ID</th>
+              <th class="py-4 px-6 font-semibold">Producto</th>
+              <th class="py-4 px-6 font-semibold">Precio Unit.</th>
+              <th class="py-4 px-6 font-semibold">Stock Disp.</th>
+              <th class="py-4 px-6 font-semibold text-center">Acciones</th>
             </tr>
           </thead>
-          <tbody id="tablaProductosBody">
+          <tbody id="tablaProductosBody" class="divide-y divide-[#222]/50">
             <!-- Empty state -->
             <tr id="emptyStateProductos" class="hidden">
-              <td colspan="5">
-                <div class="empty-state">
-                  <div class="empty-state-icon">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+              <td colspan="5" class="py-20">
+                <div
+                  class="flex flex-col items-center justify-center text-center max-w-sm mx-auto"
+                >
+                  <div
+                    class="w-16 h-16 rounded-2xl bg-[#111] border border-[#222] flex items-center justify-center mb-4 text-gray-500"
+                  >
+                    <svg
+                      class="w-8 h-8"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"
+                      />
                     </svg>
                   </div>
-                  <h3 class="empty-state-title">No hay productos en el catálogo</h3>
-                  <p class="empty-state-desc">Agregá productos para vender en el gimnasio</p>
-                  <button class="btn-action-primary btn-sm mt-4" onclick="window.location.hash='#/registrar-producto'">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                    </svg>
-                    <span>Registrar producto</span>
-                  </button>
+                  <h3 class="text-lg font-bold text-white tracking-tight mb-2">
+                    No hay artículos en el catálogo
+                  </h3>
+                  <p class="text-sm text-gray-500">
+                    Aún no has registrado ningún producto. Añade suplementos,
+                    bebidas o indumentaria para comenzar a vender.
+                  </p>
                 </div>
               </td>
             </tr>
-            <!-- filas dinámicas -->
           </tbody>
         </table>
       </div>
-
     </div>
   </div>
 </main>

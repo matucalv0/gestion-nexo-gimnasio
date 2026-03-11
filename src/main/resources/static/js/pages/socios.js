@@ -31,7 +31,7 @@ export function init() {
   btnLogout?.addEventListener("click", logout);
 
   btnNuevoSocio?.addEventListener("click", () => {
-    navigateTo('registrar-socio');
+    navigateTo("registrar-socio");
   });
 
   // Exportar CSV
@@ -79,7 +79,6 @@ export function destroy() {
   // Limpiar event listeners no anclados al DOM si es necesario
 }
 
-
 async function cargarSocios(tablaBody) {
   try {
     const q = document.getElementById("inputBusqueda").value;
@@ -105,9 +104,8 @@ async function cargarSocios(tablaBody) {
       (newPage) => {
         currentPage = newPage;
         cargarSocios(tablaBody);
-      }
+      },
     );
-
   } catch (err) {
     console.error("Error al cargar socios", err);
     Alerta.error("No se pudieron cargar los socios");
@@ -115,47 +113,96 @@ async function cargarSocios(tablaBody) {
 }
 
 function renderSocios(tablaBody, socios) {
-  const emptyState = document.getElementById('emptyStateSocios');
+  const emptyState = document.getElementById("emptyStateSocios");
 
   // Limpiar filas existentes (excepto el empty state)
-  const rows = tablaBody.querySelectorAll('tr:not(#emptyStateSocios)');
-  rows.forEach(row => row.remove());
+  const rows = tablaBody.querySelectorAll("tr:not(#emptyStateSocios)");
+  rows.forEach((row) => row.remove());
 
   if (!socios || !socios.length) {
-    if (emptyState) emptyState.classList.remove('hidden');
+    if (emptyState) emptyState.classList.remove("hidden");
     return;
   }
 
-  if (emptyState) emptyState.classList.add('hidden');
+  if (emptyState) emptyState.classList.add("hidden");
 
   socios.forEach((s, index) => {
     const tr = document.createElement("tr");
-    tr.classList.add("animate-fade-in-up");
-    tr.style.animationDelay = `${index * 50}ms`;
+    tr.classList.add("hover:bg-[#161616]", "transition-colors", "group");
+    if (index < 10) {
+      tr.classList.add("animate-fade-in-up");
+      tr.style.animationDelay = `${index * 50}ms`;
+    }
 
     const isActivo = s.activo === true;
+
+    // Generar Avatar (color hash basado en el nombre)
+    const nombreCompleto = s.nombre || "Desconocido";
+    const iniciales = nombreCompleto
+      .split(" ")
+      .slice(0, 2)
+      .map((n) => n.charAt(0).toUpperCase())
+      .join("");
+
+    const colors = [
+      "bg-rose-500/10 text-rose-400 border-rose-500/20",
+      "bg-blue-500/10 text-blue-400 border-blue-500/20",
+      "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+      "bg-purple-500/10 text-purple-400 border-purple-500/20",
+      "bg-orange-500/10 text-orange-400 border-orange-500/20",
+      "bg-cyan-500/10 text-cyan-400 border-cyan-500/20",
+    ];
+    let hash = 0;
+    for (let i = 0; i < nombreCompleto.length; i++) {
+      hash = nombreCompleto.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const colorIndex = Math.abs(hash) % colors.length;
+    const avatarClass = colors[colorIndex];
+
+    const estadoBtn = isActivo
+      ? `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-green-500/10 text-green-400 border border-green-500/20">
+           <span class="w-1.5 h-1.5 rounded-full bg-green-400"></span> Activo
+         </span>`
+      : `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-gray-500/10 text-gray-400 border border-gray-500/20">
+           <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span> Baja
+         </span>`;
+
     tr.innerHTML = `
-      <td>${s.dni}</td>
-      <td class="font-medium">${s.nombre}</td>
-      <td class="text-gray-400">${s.telefono ?? "-"}</td>
-      <td class="text-gray-400">${s.email ?? "-"}</td>
-      <td>
-        <span class="badge ${isActivo ? 'badge-success' : 'badge-danger'}">
-          ${isActivo ? "Activo" : "Inactivo"}
-        </span>
+      <td class="py-4 px-6">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center border font-bold text-sm ${avatarClass}">
+            ${iniciales}
+          </div>
+          <div>
+            <p class="text-sm font-bold text-gray-200 group-hover:text-white transition-colors truncate max-w-[150px] sm:max-w-xs">${nombreCompleto}</p>
+          </div>
+        </div>
       </td>
-      <td>
-        <button class="table-action-btn" title="Ver detalle">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-        </button>
+      <td class="py-4 px-6 text-right">
+        <p class="text-sm font-mono text-gray-400 group-hover:text-gray-300 transition-colors">${s.dni}</p>
+      </td>
+      <td class="py-4 px-6 text-right">
+        <div class="flex flex-col items-end">
+          <p class="text-sm text-gray-300">${s.telefono || '<span class="text-gray-600">—</span>'}</p>
+          <p class="text-xs text-gray-500 max-w-[120px] truncate">${s.email || ""}</p>
+        </div>
+      </td>
+      <td class="py-4 px-6 text-center">
+        ${estadoBtn}
+      </td>
+      <td class="py-4 px-6 text-center">
+        <div class="flex items-center justify-center">
+          <button class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:text-[var(--orange)] hover:bg-[var(--orange)]/10 transition-colors" title="Ver ficha del socio">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+            </svg>
+          </button>
+        </div>
       </td>
     `;
 
     tr.querySelector("button").addEventListener("click", () => {
-      navigateTo('socio-detalle', { dni: s.dni });
+      navigateTo("socio-detalle", { dni: s.dni });
     });
 
     tablaBody.appendChild(tr);
@@ -184,7 +231,7 @@ async function exportarCSV() {
     const urlBlob = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = urlBlob;
-    a.download = `socios_${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `socios_${new Date().toISOString().split("T")[0]}.csv`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -196,11 +243,3 @@ async function exportarCSV() {
     Alerta.error("No se pudo exportar el archivo");
   }
 }
-
-
-
-
-
-
-
-

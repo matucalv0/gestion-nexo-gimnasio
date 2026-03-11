@@ -1,118 +1,230 @@
-<main class="flex justify-center items-start min-h-screen p-6 pt-8">
-        <div class="w-full max-w-6xl">
-
-            <!-- HEADER -->
-            <header class="page-header mb-6">
-                <div class="page-header-icon">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                    </svg>
-                </div>
-                <div class="page-header-content">
-                    <h1 class="page-header-title">Descuentos</h1>
-                    <p class="page-header-subtitle">GestiÃ³n de descuentos y promociones</p>
-                </div>
-                <div class="page-header-actions">
-                    <button id="btnNuevo" class="btn-action-primary btn-sm">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                        </svg>
-                        <span>Nuevo Descuento</span>
-                    </button>
-                    <button id="btnHome" class="btn-outline btn-sm">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-                        </svg>
-                        <span>Volver</span>
-                    </button>
-                </div>
-            </header>
-
-            <!-- CONTENIDO -->
-            <div class="card-container">
-                <div class="card-toolbar">
-                    <h2 class="card-toolbar-title">Listado de Descuentos</h2>
-                    <div class="flex gap-2">
-                        <!-- Filtros si fueran necesarios -->
-                    </div>
-                </div>
-
-                <div class="table-container">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Nombre</th>
-                                <th>Porcentaje</th>
-                                <th>Estado</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tablaBody">
-                            <!-- JS fill -->
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Empty state -->
-                <div id="emptyState" class="hidden flex flex-col items-center justify-center py-12 text-gray-400">
-                    <svg class="w-12 h-12 mb-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                    </svg>
-                    <p class="text-lg font-medium">No hay descuentos registrados</p>
-                </div>
-            </div>
-
+<main
+  class="flex justify-center items-start min-h-screen p-6 pt-8 w-full max-w-7xl mx-auto"
+>
+  <div class="w-full">
+    <!-- HEADER -->
+    <header
+      class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8"
+    >
+      <div class="flex items-center gap-4">
+        <div
+          class="w-12 h-12 rounded-xl bg-[#111] flex items-center justify-center border border-[#222]"
+        >
+          <svg
+            class="w-6 h-6 text-pink-500"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+            />
+          </svg>
         </div>
-    </main>
-
-    <!-- MODAL -->
-    <div id="modalDescuento" class="fixed inset-0 z-50 hidden flex items-center justify-center modal-bg p-4">
-        <div class="modal-content w-full max-w-md transform transition-all scale-95 opacity-0" id="modalContent">
-
-            <div class="modal-header flex justify-between items-center">
-                <h3 class="text-lg font-bold text-white flex items-center gap-2" id="modalTitle">
-                    Nuevo Descuento
-                </h3>
-                <button id="btnCerrarModal" class="text-gray-400 hover:text-white transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-
-            <div class="modal-body">
-                <form id="formDescuento" class="space-y-4">
-                    <input type="hidden" id="descuentoId">
-
-                    <div class="form-group">
-                        <label class="form-label">Nombre <span class="text-red-400">*</span></label>
-                        <input type="text" id="nombre" class="form-input" required
-                            placeholder="Ej: Estudiante, Promo Verano">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Porcentaje (%) <span class="text-red-400">*</span></label>
-                        <input type="number" id="porcentaje" class="form-input" required min="0" max="100" step="0.01"
-                            placeholder="Ej: 10.00">
-                    </div>
-
-                    <div class="mt-2 flex items-center gap-2">
-                        <input type="checkbox" id="activo"
-                            class="form-checkbox h-4 w-4 bg-gray-700 border-gray-600 rounded text-[var(--orange)] focus:ring-0 focus:ring-offset-0">
-                        <label for="activo" class="text-sm text-gray-300 select-none">Activo (visible en pagos)</label>
-                    </div>
-
-                    <div class="pt-4 flex gap-3 justify-end">
-                        <button type="button" id="btnCancelarModal"
-                            class="px-4 py-2 rounded-lg text-sm font-medium text-gray-300 hover:text-white hover:bg-[#252525] transition-colors border border-transparent hover:border-[#333]">Cancelar</button>
-                        <button type="submit"
-                            class="btn-action-primary w-full sm:w-auto justify-center">Guardar</button>
-                    </div>
-                </form>
-            </div>
+        <div>
+          <h1 class="text-2xl font-bold text-white tracking-tight">
+            Promociones
+          </h1>
+          <p class="text-sm text-gray-500 mt-0.5">
+            Gestión de descuentos y beneficios fijos
+          </p>
         </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button
+          id="btnNuevo"
+          class="bg-pink-600 hover:bg-pink-700 text-white font-bold flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg transition-colors text-sm shadow-[0_0_15px_rgba(219,39,119,0.3)] w-full sm:w-auto"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 4.5v15m7.5-7.5h-15"
+            />
+          </svg>
+          Nuevo Beneficio
+        </button>
+      </div>
+    </header>
+
+    <!-- CONTENIDO: Grid de Cupones -->
+    <div
+      id="tablaBody"
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 relative min-h-[400px]"
+    >
+      <!-- Empty state -->
+      <div
+        id="emptyState"
+        class="hidden absolute inset-0 flex flex-col items-center justify-center py-12 text-gray-400"
+      >
+        <div
+          class="w-16 h-16 rounded-2xl bg-[#111] border border-[#222] flex items-center justify-center mb-4 text-gray-500"
+        >
+          <svg
+            class="w-8 h-8"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+            />
+          </svg>
+        </div>
+        <h3 class="text-lg font-bold text-white tracking-tight mb-2">
+          No tienes promociones activas
+        </h3>
+        <p class="text-sm text-gray-500 max-w-sm text-center">
+          Crea beneficios fijos que podrán ser aplicados al momento de cobrar
+          una suscripción o producto.
+        </p>
+      </div>
+
+      <!-- JS fill (Cards) -->
     </div>
+  </div>
+</main>
+
+<!-- MODAL -->
+<div
+  id="modalDescuento"
+  class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+>
+  <div
+    class="w-full max-w-md transform transition-all scale-95 opacity-0 glass-card p-0 overflow-hidden"
+    id="modalContent"
+  >
+    <div
+      class="p-5 border-b border-[#222] bg-[#0a0a0a] flex justify-between items-center"
+    >
+      <h3
+        class="text-base font-bold text-white tracking-tight flex items-center gap-2"
+        id="modalTitle"
+      >
+        <div
+          class="w-8 h-8 rounded bg-[#1a1a1a] border border-[#333] flex items-center justify-center text-pink-500"
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+            />
+          </svg>
+        </div>
+        Nuevo Descuento
+      </h3>
+      <button
+        id="btnCerrarModal"
+        class="text-gray-500 hover:text-white transition-colors bg-[#111] hover:bg-[#222] w-8 h-8 rounded-full flex justify-center items-center border border-[#333]"
+      >
+        <svg
+          class="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <div class="p-6 md:p-8 bg-[#111]">
+      <form id="formDescuento" class="space-y-6">
+        <input type="hidden" id="descuentoId" />
+
+        <div class="relative group">
+          <label
+            class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2"
+            >Denominación <span class="text-pink-500">*</span></label
+          >
+          <input
+            type="text"
+            id="nombre"
+            required
+            placeholder="Ej: Estudiante, Familiar"
+            class="w-full bg-transparent text-white placeholder-gray-600 px-0 py-2 border-b-2 border-[#333] focus:border-pink-500 focus:outline-none transition-colors text-lg font-bold"
+          />
+        </div>
+
+        <div class="relative group">
+          <label
+            class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2"
+            >Bonificación <span class="text-pink-500">*</span></label
+          >
+          <div
+            class="relative flex items-center border-b-2 border-[#333] group-focus-within:border-pink-500 transition-colors"
+          >
+            <input
+              type="number"
+              id="porcentaje"
+              required
+              min="0"
+              max="100"
+              step="0.01"
+              placeholder="0"
+              class="w-full bg-transparent text-emerald-400 placeholder-gray-600 px-0 py-2 focus:outline-none text-3xl font-black font-mono tracking-tight"
+            />
+            <span class="absolute right-0 text-3xl font-black text-gray-600"
+              >%</span
+            >
+          </div>
+        </div>
+
+        <label
+          class="flex items-center gap-3 cursor-pointer group mt-4 p-3 rounded-lg border border-[#222] bg-[#161616] hover:border-[#333] transition-colors"
+        >
+          <div class="relative flex items-center">
+            <input type="checkbox" id="activo" class="peer sr-only" />
+            <div
+              class="w-10 h-5 bg-[#333] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-pink-500"
+            ></div>
+          </div>
+          <span
+            class="text-sm font-bold text-gray-300 group-hover:text-white transition-colors"
+            >Habilitado para cobros</span
+          >
+        </label>
+
+        <div class="pt-6 border-t border-[#222] flex gap-3 justify-end">
+          <button
+            type="button"
+            id="btnCancelarModal"
+            class="px-5 py-2.5 rounded-lg text-sm font-bold text-gray-400 hover:text-white hover:bg-[#222] transition-colors border border-transparent"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            class="bg-pink-600 hover:bg-pink-700 text-white font-bold px-6 py-2.5 rounded-lg transition-colors text-sm shadow-[0_0_15px_rgba(219,39,119,0.3)]"
+          >
+            Guardar Beneficio
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -16,7 +16,6 @@ let vencimientoInfo = null; // { ultimoVencimiento, vigente }
 
 /* ================== INIT ================== */
 export async function init() {
-
   // Cargar datos en paralelo para mayor velocidad
   await Promise.all([
     cargarMediosPago(),
@@ -27,36 +26,41 @@ export async function init() {
   ]);
   const btnLogout = document.getElementById("btnLogout");
 
-
   const params = getRouteParams();
   const dniFromFicha = params.get("dni");
 
-
   tipoDetalle.addEventListener("change", onTipoDetalleChange);
-  producto.addEventListener("change", cargarPrecioProducto);
-  membresia.addEventListener("change", cargarPrecioMembresia);
+  producto.addEventListener("change", () => { cargarPrecioProducto(); calcularTotalesConPreview(); });
+  membresia.addEventListener("change", () => { cargarPrecioMembresia(); calcularTotalesConPreview(); });
+  cantidad.addEventListener("input", calcularTotalesConPreview);
   btnAgregarDetalle.addEventListener("click", agregarDetalle);
+  document.getElementById("btnAgregarDetalleM")?.addEventListener("click", agregarDetalle);
 
   const descuentoSelect = document.getElementById("descuento");
   if (descuentoSelect) {
-    descuentoSelect.addEventListener("change", actualizarPrecioMembresiaPorDescuento);
+    descuentoSelect.addEventListener(
+      "change",
+      actualizarPrecioMembresiaPorDescuento,
+    );
   }
   pagoForm.addEventListener("submit", registrarPago);
 
-  const radiosFechaInicio = document.querySelectorAll('input[name="fechaInicio"]');
-  radiosFechaInicio.forEach(radio => {
-    radio.addEventListener('change', () => {
-      const customContainer = document.getElementById('fechaCustomContainer');
+  const radiosFechaInicio = document.querySelectorAll(
+    'input[name="fechaInicio"]',
+  );
+  radiosFechaInicio.forEach((radio) => {
+    radio.addEventListener("change", () => {
+      const customContainer = document.getElementById("fechaCustomContainer");
       if (customContainer) {
-        customContainer.classList.toggle('hidden', radio.value !== 'otro');
+        customContainer.classList.toggle("hidden", radio.value !== "otro");
       }
       evaluarWarningAsistencias();
     });
   });
 
-  const inputFechaCustom = document.getElementById('fechaCustom');
+  const inputFechaCustom = document.getElementById("fechaCustom");
   if (inputFechaCustom) {
-    inputFechaCustom.addEventListener('change', evaluarWarningAsistencias);
+    inputFechaCustom.addEventListener("change", evaluarWarningAsistencias);
   }
 
   buscarSocio.addEventListener("input", buscarSocioHandler);
@@ -72,9 +76,10 @@ export async function init() {
     }
   });
 
-  document.getElementById("btnHome")?.addEventListener("click", () => history.back());
+  document
+    .getElementById("btnHome")
+    ?.addEventListener("click", () => history.back());
   document.getElementById("btnLogout")?.addEventListener("click", logout);
-
 
   // Atajos de teclado
   document.addEventListener("keydown", (e) => {
@@ -110,15 +115,13 @@ async function preseleccionarSocioDesdeFicha(dni) {
   await consultarUltimoVencimiento(dni);
 }
 
-
-
 /* ================== CARGAS ================== */
 async function cargarMediosPago() {
   const res = await authFetch("/mediosdepago");
   const data = await res.json();
   medioPago.innerHTML = `<option value="">Seleccione...</option>`;
   data.forEach((mp, index) => {
-    const selected = index === 0 ? 'selected' : ''; // Seleccionar el primero (generalmente Efectivo)
+    const selected = index === 0 ? "selected" : ""; // Seleccionar el primero (generalmente Efectivo)
     medioPago.innerHTML += `<option value="${mp.idMedioPago}" ${selected}>${mp.nombre}</option>`;
   });
 }
@@ -127,8 +130,9 @@ async function cargarProductos() {
   const res = await authFetch("/productos");
   productosCache = await res.json();
   producto.innerHTML = `<option value="">Seleccione...</option>`;
-  productosCache.forEach(p =>
-    producto.innerHTML += `<option value="${p.idProducto}">${p.nombre}</option>`
+  productosCache.forEach(
+    (p) =>
+      (producto.innerHTML += `<option value="${p.idProducto}">${p.nombre}</option>`),
   );
 }
 
@@ -136,8 +140,9 @@ async function cargarMembresias() {
   const res = await authFetch("/membresias");
   membresiasCache = await res.json();
   membresia.innerHTML = `<option value="">Seleccione...</option>`;
-  membresiasCache.forEach(m =>
-    membresia.innerHTML += `<option value="${m.idMembresia}">${m.nombre}</option>`
+  membresiasCache.forEach(
+    (m) =>
+      (membresia.innerHTML += `<option value="${m.idMembresia}">${m.nombre}</option>`),
   );
 }
 
@@ -146,9 +151,9 @@ async function cargarEmpleados() {
   const data = await res.json();
   empleado.innerHTML = `<option value="">Seleccione...</option>`;
   let primeroSeleccionado = false;
-  data.forEach(e => {
+  data.forEach((e) => {
     if (e.activo) {
-      const selected = !primeroSeleccionado ? 'selected' : '';
+      const selected = !primeroSeleccionado ? "selected" : "";
       primeroSeleccionado = true;
       empleado.innerHTML += `<option value="${e.dni}" ${selected}>${e.nombre}</option>`;
     }
@@ -164,7 +169,7 @@ async function cargarDescuentos() {
     if (res.ok) {
       descuentosCache = await res.json();
       descuentoSelect.innerHTML = `<option value="">Ninguno</option>`;
-      descuentosCache.forEach(d => {
+      descuentosCache.forEach((d) => {
         descuentoSelect.innerHTML += `<option value="${d.idDescuento}">${d.nombre} (${d.porcentaje}%)</option>`;
       });
     }
@@ -190,7 +195,7 @@ async function buscarSocioHandler() {
 
   resultadosSocio.innerHTML = "";
 
-  socios.forEach(s => {
+  socios.forEach((s) => {
     const li = document.createElement("li");
     li.className =
       "px-4 py-2 cursor-pointer hover:bg-gray-700 text-[var(--beige)] transition-colors duration-150 ease-in-out";
@@ -220,6 +225,10 @@ function onTipoDetalleChange() {
   precio.value = "";
   precioMembresia.value = "";
 
+  // Limpiar info de descuento visual al cambiar tipo
+  const spanInfo = document.getElementById("infoDescuentoMembresia");
+  if (spanInfo) spanInfo.textContent = "";
+
   // Mostrar/ocultar selector de fecha inicio según tipo
   actualizarVisibilidadFechaInicio();
 
@@ -227,17 +236,24 @@ function onTipoDetalleChange() {
   const descuentoSelect = document.getElementById("descuento");
   if (descuentoSelect) {
     descuentoSelect.disabled = tipoDetalle.value === "PRODUCTO";
+    // Si cambia a Producto, resetear el descuento seleccionado
+    if (tipoDetalle.value === "PRODUCTO") {
+      descuentoSelect.value = "";
+    }
   }
+
+  // Actualizar HUD con los items ya en el carrito (sin preview ya que se limpiaron los precios)
+  calcularTotalesConPreview();
 }
 
 /* ================== PRECIOS ================== */
 function cargarPrecioProducto() {
-  const p = productosCache.find(p => p.idProducto == producto.value);
-  precio.value = p ? p.precio ?? p.precioSugerido ?? 0 : 0;
+  const p = productosCache.find((p) => p.idProducto == producto.value);
+  precio.value = p ? (p.precio ?? p.precioSugerido ?? 0) : 0;
 }
 
 function cargarPrecioMembresia() {
-  const m = membresiasCache.find(m => m.idMembresia == membresia.value);
+  const m = membresiasCache.find((m) => m.idMembresia == membresia.value);
   // Siempre usamos el precio BASE original
   let precioBase = m ? Number(m.precio ?? m.precioSugerido ?? 0) : 0;
 
@@ -248,31 +264,22 @@ function cargarPrecioMembresia() {
   actualizarInfoVisualDescuento(precioBase);
 }
 
-
-
-
 function actualizarInfoVisualDescuento(precioBase) {
   const descuentoSelect = document.getElementById("descuento");
   const spanInfo = document.getElementById("infoDescuentoMembresia");
 
   if (!spanInfo) return;
 
-  // Limpiar mensaje si no hay datos
   spanInfo.textContent = "";
 
   if (descuentoSelect && descuentoSelect.value && precioBase > 0) {
     const descId = Number(descuentoSelect.value);
-    const descObj = descuentosCache.find(d => d.idDescuento === descId);
+    const descObj = descuentosCache.find((d) => d.idDescuento === descId);
 
     if (descObj) {
       const montoDesc = (precioBase * descObj.porcentaje) / 100;
       const precioFinalEstimado = precioBase - montoDesc;
-
-      // Mostramos cuánto se descontará, pero NO tocamos el input precioMembresia
-      spanInfo.innerHTML = `
-        <span class="text-green-400">-${descObj.porcentaje}% ($${montoDesc.toFixed(2)})</span> 
-        <span class="text-gray-400 text-sm">Final: $${precioFinalEstimado.toFixed(2)}</span>
-      `;
+      spanInfo.innerHTML = `<span class="text-green-400">-${descObj.porcentaje}% ($${montoDesc.toFixed(2)})</span> <span class="text-gray-400">→ Final: $${precioFinalEstimado.toFixed(2)}</span>`;
     }
   }
 }
@@ -288,8 +295,8 @@ function actualizarPrecioMembresiaPorDescuento() {
     if (spanInfo) spanInfo.textContent = "";
   }
 
-  // 2. Recalcular los totales del carrito (Subtotal - Descuento Global)
-  calcularTotales();
+  // 2. Recalcular totales con preview (incluye el item seleccionado aunque no se haya agregado)
+  calcularTotalesConPreview();
 }
 
 /* ================== DETALLES ================== */
@@ -298,12 +305,10 @@ function agregarDetalle() {
   let precioUnitario;
 
   if (tipo === "PRODUCTO") {
-    if (!producto.value)
-      return Alerta.warning("Seleccione un producto");
+    if (!producto.value) return Alerta.warning("Seleccione un producto");
     precioUnitario = Number(precio.value);
   } else {
-    if (!membresia.value)
-      return Alerta.warning("Seleccione una membresía");
+    if (!membresia.value) return Alerta.warning("Seleccione una membresía");
     precioUnitario = Number(precioMembresia.value);
   }
 
@@ -315,14 +320,14 @@ function agregarDetalle() {
     detalle = {
       idProducto: Number(producto.value),
       cantidad: Number(cantidad.value),
-      precioUnitario
+      precioUnitario,
     };
   } else {
     detalle = {
       idSocio: socioSeleccionado ? socioSeleccionado.dni : null,
       idMembresia: Number(membresia.value),
       cantidad: 1,
-      precioUnitario
+      precioUnitario,
     };
   }
 
@@ -339,7 +344,7 @@ function agregarDetalle() {
 
 /* Ocultar tabla si no hay detalles */
 function renderDetalles() {
-  const tableContainer = document.querySelector(".table-container");
+  const tableContainer = document.getElementById("tableContainer");
   if (detalles.length === 0) {
     if (tableContainer) tableContainer.classList.add("hidden");
   } else {
@@ -349,30 +354,43 @@ function renderDetalles() {
       detallesBody,
       detalles,
       [
-        d => (d.idProducto ? "Producto" : "Membresía"),
-        d =>
+        (d) => (d.idProducto ? "Producto" : "Membresía"),
+        (d) =>
           d.idProducto
-            ? productosCache.find(p => p.idProducto === d.idProducto)?.nombre ??
-            "Desconocido"
-            : membresiasCache.find(m => m.idMembresia === d.idMembresia)?.nombre ??
-            "Desconocido",
-        d => d.cantidad,
-        d => `$${d.precioUnitario}`
+            ? (productosCache.find((p) => p.idProducto === d.idProducto)
+                ?.nombre ?? "Desconocido")
+            : (membresiasCache.find((m) => m.idMembresia === d.idMembresia)
+                ?.nombre ?? "Desconocido"),
+        (d) => d.cantidad,
+        (d) => `$${d.precioUnitario}`,
       ],
       (d, i) => {
         const btn = document.createElement("button");
         btn.type = "button";
-        btn.className = "text-orange-600 font-medium hover:underline";
+        btn.className =
+          "text-[var(--orange)] font-medium hover:text-white transition-colors bg-[var(--orange)]/10 hover:bg-[var(--orange)] rounded-lg px-3 py-1";
         btn.textContent = "Eliminar";
         btn.addEventListener("click", () => {
           detalles.splice(i, 1);
           renderDetalles();
         });
         return btn;
-      }
+      },
     );
+
+    // FIX: Override `renderTabla` hardcoded bg-gray classes so it looks like a modern glass-card edge-to-edge table
+    const rows = detallesBody.querySelectorAll("tr");
+    rows.forEach((row, i) => {
+      row.className = "hover:bg-white/5 transition-colors duration-150";
+      const cells = row.querySelectorAll("td");
+      cells.forEach((td, index) => {
+        td.className = "py-3 px-4 text-[var(--beige)]";
+        if (index === 2 || index === 4) td.classList.add("text-center");
+        if (index === 3) td.classList.add("text-right");
+      });
+    });
   }
-  calcularTotales();
+  calcularTotalesConPreview();
 }
 
 function calcularTotales() {
@@ -382,21 +400,24 @@ function calcularTotales() {
   const lblTotal = document.getElementById("lblTotal");
 
   // 1. Calcular Subtotal
-  const subtotal = detalles.reduce((acc, d) => acc + (d.cantidad * d.precioUnitario), 0);
+  const subtotal = detalles.reduce(
+    (acc, d) => acc + d.cantidad * d.precioUnitario,
+    0,
+  );
 
   // 2. Calcular Descuento (Solo sobre membresías)
   let descuentoMonto = 0;
 
   if (descuentoSelect && descuentoSelect.value) {
     const descId = Number(descuentoSelect.value);
-    const descObj = descuentosCache.find(d => d.idDescuento === descId);
+    const descObj = descuentosCache.find((d) => d.idDescuento === descId);
 
     if (descObj) {
       // Filtrar solo ítems de tipo Membresía
       // En el frontend, d.idProducto existe para productos, y d.idMembresia para membresías.
       const montoMembresias = detalles
-        .filter(d => d.idMembresia != null)
-        .reduce((acc, d) => acc + (d.cantidad * d.precioUnitario), 0);
+        .filter((d) => d.idMembresia != null)
+        .reduce((acc, d) => acc + d.cantidad * d.precioUnitario, 0);
 
       const porcentaje = descObj.porcentaje;
 
@@ -409,10 +430,75 @@ function calcularTotales() {
   const total = subtotal - descuentoMonto;
 
   // 3. Render
-  const formatter = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' });
+  const formatter = new Intl.NumberFormat("es-AR", {
+    style: "currency",
+    currency: "ARS",
+  });
   if (lblSubtotal) lblSubtotal.textContent = formatter.format(subtotal);
-  if (lblDescuento) lblDescuento.textContent = "-" + formatter.format(descuentoMonto);
+  if (lblDescuento)
+    lblDescuento.textContent = "-" + formatter.format(descuentoMonto);
   if (lblTotal) lblTotal.textContent = formatter.format(total);
+}
+
+/**
+ * Calculates a LIVE preview of the totals (cart + currently selected item).
+ * This runs on every item/quantity/discount change so the user sees the
+ * running total without needing to click "Añadir".
+ */
+function calcularTotalesConPreview() {
+  const tipo = tipoDetalle?.value;
+  let precioPreview = 0;
+  let cantidadPreview = 1;
+
+  if (tipo === "PRODUCTO" && producto?.value) {
+    precioPreview = Number(precio?.value ?? 0);
+    cantidadPreview = Number(cantidad?.value ?? 1);
+  } else if (tipo === "MEMBRESIA" && membresia?.value) {
+    precioPreview = Number(precioMembresia?.value ?? 0);
+    cantidadPreview = 1;
+  }
+
+  // Build a virtual combined list: committed cart + preview item
+  const todoDetalles = [
+    ...detalles,
+    ...(precioPreview > 0
+      ? [{ cantidad: cantidadPreview, precioUnitario: precioPreview, idMembresia: tipo === "MEMBRESIA" ? 1 : undefined, idProducto: tipo === "PRODUCTO" ? 1 : undefined }]
+      : []),
+  ];
+
+  const descuentoSelect = document.getElementById("descuento");
+  const lblSubtotal = document.getElementById("lblSubtotal");
+  const lblDescuento = document.getElementById("lblDescuento");
+  const lblTotal = document.getElementById("lblTotal");
+
+  const subtotalPreview = todoDetalles.reduce(
+    (acc, d) => acc + d.cantidad * d.precioUnitario,
+    0,
+  );
+
+  let descuentoMontoPreview = 0;
+  if (descuentoSelect && descuentoSelect.value) {
+    const descId = Number(descuentoSelect.value);
+    const descObj = descuentosCache.find((d) => d.idDescuento === descId);
+    if (descObj) {
+      const montoMembresias = todoDetalles
+        .filter((d) => d.idMembresia != null)
+        .reduce((acc, d) => acc + d.cantidad * d.precioUnitario, 0);
+      if (montoMembresias > 0) {
+        descuentoMontoPreview = (montoMembresias * descObj.porcentaje) / 100;
+      }
+    }
+  }
+
+  const totalPreview = subtotalPreview - descuentoMontoPreview;
+
+  const formatter = new Intl.NumberFormat("es-AR", {
+    style: "currency",
+    currency: "ARS",
+  });
+  if (lblSubtotal) lblSubtotal.textContent = formatter.format(subtotalPreview);
+  if (lblDescuento) lblDescuento.textContent = "-" + formatter.format(descuentoMontoPreview);
+  if (lblTotal) lblTotal.textContent = formatter.format(totalPreview);
 }
 
 /* Versión silenciosa de agregarDetalle que retorna true/false */
@@ -431,6 +517,10 @@ function agregarDetalleSilencioso() {
       Alerta.warning("Seleccione una membresía");
       return false;
     }
+    if (!socioSeleccionado) {
+      Alerta.warning("Seleccioná un socio para registrar el pago de membresía");
+      return false;
+    }
     precioUnitario = Number(precioMembresia.value);
   }
 
@@ -444,14 +534,14 @@ function agregarDetalleSilencioso() {
     detalle = {
       idProducto: Number(producto.value),
       cantidad: Number(cantidad.value),
-      precioUnitario
+      precioUnitario,
     };
   } else {
     detalle = {
       idSocio: socioSeleccionado ? socioSeleccionado.dni : null,
       idMembresia: Number(membresia.value),
       cantidad: 1,
-      precioUnitario
+      precioUnitario,
     };
   }
 
@@ -474,7 +564,9 @@ async function registrarPago(e) {
   // Validate custom date if 'otro' is selected
   const grupoFecha = document.getElementById("fechaInicioGroup");
   if (grupoFecha && !grupoFecha.classList.contains("hidden")) {
-    const seleccionFecha = document.querySelector('input[name="fechaInicio"]:checked')?.value;
+    const seleccionFecha = document.querySelector(
+      'input[name="fechaInicio"]:checked',
+    )?.value;
     if (seleccionFecha === "otro") {
       const customDate = document.getElementById("fechaCustom")?.value;
       if (!customDate) {
@@ -505,23 +597,30 @@ async function registrarPago(e) {
   if (detalles.length === 0)
     return Alerta.warning("El pago debe tener al menos un detalle");
 
-  if (!medioPago.value)
-    return Alerta.warning("Seleccione un medio de pago");
+  // Validar que si hay membresías en el pago, se haya seleccionado un socio
+  const tieneMembresia = detalles.some((d) => d.idMembresia != null);
+  if (tieneMembresia && !socioSeleccionado) {
+    return Alerta.warning("Seleccioná un socio antes de registrar un pago de membresía");
+  }
+
+  if (!medioPago.value) return Alerta.warning("Seleccione un medio de pago");
 
   const data = {
     estado: "PAGADO",
     dniSocio: socioSeleccionado ? socioSeleccionado.dni : null,
     idMedioPago: Number(medioPago.value),
     dniEmpleado: empleado.value,
-    idDescuento: document.getElementById("descuento").value ? Number(document.getElementById("descuento").value) : null,
+    idDescuento: document.getElementById("descuento").value
+      ? Number(document.getElementById("descuento").value)
+      : null,
     fechaInicioMembresia: obtenerFechaInicioSeleccionada(),
-    detalles
+    detalles,
   };
 
   try {
     const res = await authFetch("/pagos", {
       method: "POST",
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     });
 
     if (!res.ok) {
@@ -529,7 +628,7 @@ async function registrarPago(e) {
       try {
         const error = await res.json();
         mensaje = error.message || mensaje;
-      } catch { }
+      } catch {}
       return Alerta.error(mensaje);
     }
 
@@ -550,7 +649,6 @@ async function registrarPago(e) {
     document.getElementById("infoDescuentoMembresia").textContent = ""; // Limpiar info descuento
     calcularTotales();
     onTipoDetalleChange();
-
   } catch {
     Alerta.error("No se pudo conectar con el servidor");
   }
@@ -578,17 +676,28 @@ function actualizarVisibilidadFechaInicio() {
   if (!grupo) return;
 
   // Mostrar solo si: tipo MEMBRESIA + socio seleccionado + (membresía vencida o socio nuevo sin membresías)
-  const esVencida = vencimientoInfo && !vencimientoInfo.vigente && vencimientoInfo.ultimoVencimiento;
-  const esNuevo = vencimientoInfo && !vencimientoInfo.vigente && !vencimientoInfo.ultimoVencimiento;
+  const esVencida =
+    vencimientoInfo &&
+    !vencimientoInfo.vigente &&
+    vencimientoInfo.ultimoVencimiento;
+  const esNuevo =
+    vencimientoInfo &&
+    !vencimientoInfo.vigente &&
+    !vencimientoInfo.ultimoVencimiento;
 
-  const mostrar = tipoDetalle.value === "MEMBRESIA"
-    && socioSeleccionado
-    && (esVencida || esNuevo);
+  const mostrar =
+    tipoDetalle.value === "MEMBRESIA" &&
+    socioSeleccionado &&
+    (esVencida || esNuevo);
 
   if (mostrar) {
-    const radioVencimiento = document.querySelector('input[name="fechaInicio"][value="vencimiento"]');
-    const radioHoy = document.querySelector('input[name="fechaInicio"][value="hoy"]');
-    const labelVencimiento = radioVencimiento?.closest('label');
+    const radioVencimiento = document.querySelector(
+      'input[name="fechaInicio"][value="vencimiento"]',
+    );
+    const radioHoy = document.querySelector(
+      'input[name="fechaInicio"][value="hoy"]',
+    );
+    const labelVencimiento = radioVencimiento?.closest("label");
     const customContainer = document.getElementById("fechaCustomContainer");
     const inputCustom = document.getElementById("fechaCustom");
 
@@ -597,16 +706,19 @@ function actualizarVisibilidadFechaInicio() {
 
     if (esVencida) {
       // Socio con membresía vencida: mostrar las 3 opciones
-      const fechaVenc = new Date(vencimientoInfo.ultimoVencimiento + "T00:00:00");
+      const fechaVenc = new Date(
+        vencimientoInfo.ultimoVencimiento + "T00:00:00",
+      );
       const fechaInicioDesdeVenc = new Date(fechaVenc);
       fechaInicioDesdeVenc.setDate(fechaInicioDesdeVenc.getDate() + 1);
 
-      document.getElementById("lblFechaVencimiento").textContent = formatearFecha(fechaInicioDesdeVenc);
-      if (labelVencimiento) labelVencimiento.classList.remove('hidden');
+      document.getElementById("lblFechaVencimiento").textContent =
+        formatearFecha(fechaInicioDesdeVenc);
+      if (labelVencimiento) labelVencimiento.classList.remove("hidden");
       if (radioVencimiento) radioVencimiento.checked = true;
     } else {
       // Socio nuevo: ocultar opción de vencimiento y seleccionar 'hoy' por defecto
-      if (labelVencimiento) labelVencimiento.classList.add('hidden');
+      if (labelVencimiento) labelVencimiento.classList.add("hidden");
       if (radioHoy) radioHoy.checked = true;
     }
 
@@ -626,7 +738,9 @@ function obtenerFechaInicioSeleccionada() {
   const grupo = document.getElementById("fechaInicioGroup");
   if (!grupo || grupo.classList.contains("hidden")) return null;
 
-  const seleccion = document.querySelector('input[name="fechaInicio"]:checked')?.value;
+  const seleccion = document.querySelector(
+    'input[name="fechaInicio"]:checked',
+  )?.value;
   if (!seleccion) return null;
 
   if (seleccion === "vencimiento" && vencimientoInfo?.ultimoVencimiento) {
@@ -634,7 +748,10 @@ function obtenerFechaInicioSeleccionada() {
     const fechaVenc = new Date(vencimientoInfo.ultimoVencimiento + "T00:00:00");
     fechaVenc.setDate(fechaVenc.getDate() + 1);
     return fechaVenc.toISOString().split("T")[0]; // yyyy-mm-dd
-  } else if (seleccion === "hoy" || (seleccion === "vencimiento" && !vencimientoInfo?.ultimoVencimiento)) {
+  } else if (
+    seleccion === "hoy" ||
+    (seleccion === "vencimiento" && !vencimientoInfo?.ultimoVencimiento)
+  ) {
     // Fallback de seguridad si seleccionó vencimiento pero no tiene uno (socios nuevos)
     return new Date().toISOString().split("T")[0];
   } else if (seleccion === "otro") {
@@ -647,11 +764,17 @@ function obtenerFechaInicioSeleccionada() {
 /* ================== WARNING ASISTENCIAS PENDIENTES ================== */
 function evaluarWarningAsistencias() {
   const warningDiv = document.getElementById("warningAsistenciasPendientes");
-  const warningTexto = document.getElementById("warningAsistenciasPendientesTexto");
+  const warningTexto = document.getElementById(
+    "warningAsistenciasPendientesTexto",
+  );
   if (!warningDiv || !warningTexto) return;
 
   // Solo evaluar si hay asistencias pendientes
-  if (!vencimientoInfo || !vencimientoInfo.asistenciasPendientes || vencimientoInfo.asistenciasPendientes === 0) {
+  if (
+    !vencimientoInfo ||
+    !vencimientoInfo.asistenciasPendientes ||
+    vencimientoInfo.asistenciasPendientes === 0
+  ) {
     warningDiv.classList.add("hidden");
     return;
   }
@@ -672,7 +795,7 @@ function evaluarWarningAsistencias() {
   if (fechaInicioElegida > primeraAsistencia) {
     const fechaPendiente = new Date(primeraAsistencia + "T00:00:00");
     const cantPendientes = vencimientoInfo.asistenciasPendientes;
-    warningTexto.textContent = `Hay ${cantPendientes} asistencia${cantPendientes > 1 ? 's' : ''} pendiente${cantPendientes > 1 ? 's' : ''} (la más antigua del ${formatearFecha(fechaPendiente)}) que no serán cubiertas con esta fecha de inicio.`;
+    warningTexto.textContent = `Hay ${cantPendientes} asistencia${cantPendientes > 1 ? "s" : ""} pendiente${cantPendientes > 1 ? "s" : ""} (la más antigua del ${formatearFecha(fechaPendiente)}) que no serán cubiertas con esta fecha de inicio.`;
     warningDiv.classList.remove("hidden");
   } else {
     warningDiv.classList.add("hidden");

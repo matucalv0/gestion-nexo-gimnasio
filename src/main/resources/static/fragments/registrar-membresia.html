@@ -1,78 +1,205 @@
 <main class="flex justify-center items-start min-h-screen p-6 pt-8">
-    <div class="w-full max-w-xl">
-
-      <!-- Header -->
-      <header class="page-header mb-6">
-        <div class="page-header-icon">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
+  <div class="w-full max-w-2xl">
+    <!-- Header -->
+    <header
+      class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8"
+    >
+      <div class="flex items-center gap-4">
+        <div
+          class="w-12 h-12 rounded-xl bg-[#111] flex items-center justify-center border border-[#222]"
+        >
+          <svg
+            class="w-6 h-6 text-[var(--orange)]"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"
+            />
           </svg>
         </div>
-        <div class="page-header-content">
-          <h1 class="page-header-title">Registrar Plan</h1>
-          <p class="page-header-subtitle">Nueva membresía</p>
+        <div>
+          <h1 class="text-2xl font-bold text-white tracking-tight">
+            Registrar Plan
+          </h1>
+          <p class="text-sm text-gray-500 mt-0.5">
+            Definición de nueva membresía
+          </p>
         </div>
-        <div class="page-header-actions">
-          <button id="btnVolver" class="btn-outline btn-sm">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+      </div>
+      <div class="flex items-center gap-3">
+        <a
+          href="#/membresias"
+          id="btnVolver"
+          class="glass-card flex items-center gap-2 px-4 py-2 hover:bg-[#161616] hover:text-white transition-colors text-sm font-medium text-gray-300"
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
+            />
+          </svg>
+          Cancelar
+        </a>
+      </div>
+    </header>
+
+    <!-- Card -->
+    <div class="glass-card p-0 overflow-hidden">
+      <div class="p-6 border-b border-[#222] bg-[#0a0a0a]">
+        <h2
+          class="text-base font-bold text-white tracking-tight flex items-center gap-2"
+        >
+          <div
+            class="w-8 h-8 rounded bg-[#1a1a1a] border border-[#333] flex items-center justify-center text-[var(--orange)]"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+              />
             </svg>
-            <span>Volver</span>
+          </div>
+          Condiciones del Plan
+        </h2>
+      </div>
+
+      <!-- Form -->
+      <form id="registrarMembresiaForm" class="p-6 md:p-8 space-y-6 bg-[#111]">
+        <div class="relative group">
+          <label
+            class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2"
+            for="nombre"
+            >Nombre comercial <span class="text-[var(--orange)]">*</span></label
+          >
+          <input
+            id="nombre"
+            required
+            placeholder="Ej: Fase Libre Mensual"
+            class="w-full bg-transparent text-white placeholder-gray-600 px-0 py-2 border-b-2 border-[#333] focus:border-[var(--orange)] focus:outline-none transition-colors text-base font-bold"
+          />
+        </div>
+
+        <div class="relative group">
+          <label
+            class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2"
+            for="tipo"
+            >Tipo de uso <span class="text-[var(--orange)]">*</span></label
+          >
+          <select
+            id="tipo"
+            required
+            class="w-full bg-[#111] text-white px-0 py-2 border-b-2 border-[#333] focus:border-[var(--orange)] focus:outline-none transition-colors text-base appearance-none cursor-pointer"
+          >
+            <option value="" disabled selected class="text-gray-500">
+              Seleccionar modalidad...
+            </option>
+            <option value="MUSCULACION" class="text-white bg-[#222]">
+              Musculación
+            </option>
+            <option value="FUNCIONAL" class="text-white bg-[#222]">
+              Funcional
+            </option>
+            <option value="MIXTA" class="text-white bg-[#222]">Mixta</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-6">
+          <div class="relative group">
+            <label
+              class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2"
+              for="duracion"
+              >Vigencia (días)
+              <span class="text-[var(--orange)]">*</span></label
+            >
+            <input
+              type="number"
+              id="duracion"
+              min="1"
+              required
+              placeholder="30"
+              class="w-full bg-transparent text-white placeholder-gray-600 px-0 py-2 border-b-2 border-[#333] focus:border-[var(--orange)] focus:outline-none transition-colors text-xl font-bold font-mono text-center tracking-wider"
+            />
+          </div>
+
+          <div class="relative group">
+            <label
+              class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2"
+              for="asistencias"
+              >Asist./semana</label
+            >
+            <input
+              type="number"
+              id="asistencias"
+              min="1"
+              placeholder="Ilimitadas"
+              class="w-full bg-transparent text-white placeholder-gray-600 px-0 py-2 border-b-2 border-[#333] focus:border-[var(--orange)] focus:outline-none transition-colors text-xl font-bold font-mono text-center tracking-wider"
+            />
+          </div>
+        </div>
+
+        <div class="relative group">
+          <label
+            class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2"
+            for="precio"
+            >Base Arancelaria <span class="text-[var(--orange)]">*</span></label
+          >
+          <div class="relative flex items-center">
+            <span class="absolute left-0 text-xl font-bold text-gray-500"
+              >$</span
+            >
+            <input
+              type="number"
+              id="precio"
+              min="0"
+              step="0.01"
+              required
+              placeholder="0.00"
+              class="w-full bg-transparent text-emerald-400 placeholder-gray-600 pl-6 py-2 border-b-2 border-[#333] focus:border-[var(--orange)] focus:outline-none transition-colors text-2xl font-black font-mono tracking-tight"
+            />
+          </div>
+        </div>
+
+        <div class="mt-8 pt-6 border-t border-[#222] flex justify-end">
+          <button
+            type="submit"
+            class="bg-[var(--orange)] hover:bg-[#e07a27] text-black font-bold flex items-center gap-2 px-8 py-3 rounded-lg transition-colors text-sm shadow-[0_0_15px_rgba(255,140,50,0.3)] w-full justify-center"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 4.5v15m7.5-7.5h-15"
+              />
+            </svg>
+            <span>Registrar Plan Base</span>
           </button>
         </div>
-      </header>
-
-      <!-- Card -->
-      <div class="card-container">
-        <div class="card-toolbar">
-          <h2 class="card-toolbar-title">Datos del plan</h2>
-        </div>
-
-        <!-- Form -->
-        <form id="registrarMembresiaForm" class="form-container">
-
-          <div class="form-group">
-            <label class="form-label" for="nombre">Nombre <span class="text-red-400">*</span></label>
-            <input id="nombre" required class="form-input" placeholder="Ej: Mensual, Pase libre" />
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="tipo">Tipo de plan <span class="text-red-400">*</span></label>
-            <select id="tipo" required class="form-input">
-              <option value="" disabled selected>Seleccionar tipo</option>
-              <option value="MUSCULACION">Musculación</option>
-              <option value="FUNCIONAL">Funcional</option>
-              <option value="MIXTA">Mixta</option>
-            </select>
-          </div>
-
-          <div class="grid grid-cols-2 gap-4">
-            <div class="form-group">
-              <label class="form-label" for="duracion">Duración (días) <span class="text-red-400">*</span></label>
-              <input type="number" id="duracion" min="1" required class="form-input" placeholder="30" />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="asistencias">Asistencias/semana</label>
-              <input type="number" id="asistencias" min="1" class="form-input" placeholder="Ilimitadas" />
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="precio">Precio <span class="text-red-400">*</span></label>
-            <input type="number" id="precio" min="0" step="0.01" required class="form-input" placeholder="0.00" />
-          </div>
-
-          <div class="form-actions">
-            <button type="submit" class="btn-action-primary w-full">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-              </svg>
-              <span>Registrar plan</span>
-            </button>
-          </div>
-        </form>
-
-      </div>
+      </form>
     </div>
-  </main>
+  </div>
+</main>

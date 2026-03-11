@@ -24,12 +24,12 @@ public class RutinaController {
         this.rutinaImportService = rutinaImportService;
     }
 
-
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @PostMapping
     public ResponseEntity<RutinaDTO> crearRutina(@Valid @RequestBody RutinaCreateDTO dto) {
         if (dto.dniSocio() == null || dto.dniSocio().isBlank()) {
-            throw new IllegalArgumentException("No se permite crear Plantillas manualmente. Use la importación de Excel.");
+            throw new IllegalArgumentException(
+                    "No se permite crear Plantillas manualmente. Use la importación de Excel.");
         }
         RutinaDTO rutinaDTO = rutinaService.crearRutinaConDetalles(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(rutinaDTO);
@@ -40,7 +40,6 @@ public class RutinaController {
     public ResponseEntity<List<RutinaDTO>> listarRutinas() {
         return ResponseEntity.ok(rutinaService.buscarRutinas());
     }
-
 
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping("/plantillas")
@@ -64,10 +63,10 @@ public class RutinaController {
         return ResponseEntity.ok(rutinaService.obtenerRutinaPorId(id));
     }
 
-
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @PutMapping("/{id}")
-    public ResponseEntity<RutinaDTO> actualizarRutina(@PathVariable Integer id, @Valid @RequestBody RutinaUpdateDTO dto) {
+    public ResponseEntity<RutinaDTO> actualizarRutina(@PathVariable Integer id,
+            @Valid @RequestBody RutinaUpdateDTO dto) {
         if (!id.equals(dto.idRutina())) {
             return ResponseEntity.badRequest().build();
         }

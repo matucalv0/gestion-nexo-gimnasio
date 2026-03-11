@@ -14,7 +14,6 @@ let currentPage = 0;
 const pageSize = 20;
 
 export function init() {
-
   const tablaBody = document.getElementById("tablaAsistenciasBody");
 
   // Filtros
@@ -39,7 +38,9 @@ export function init() {
   if (inputHasta) inputHasta.value = hoy.toISOString().split("T")[0];
   if (inputDesde) inputDesde.value = hace30dias.toISOString().split("T")[0];
 
-  document.getElementById("btnHome")?.addEventListener("click", () => history.back());
+  document
+    .getElementById("btnHome")
+    ?.addEventListener("click", () => history.back());
 
   // Botón Buscar / Filtrar
   btnBuscar?.addEventListener("click", () => {
@@ -110,9 +111,8 @@ async function cargarAsistencias(tablaBody) {
       (newPage) => {
         currentPage = newPage;
         cargarAsistencias(tablaBody);
-      }
+      },
     );
-
   } catch (err) {
     console.error(err);
     Alerta.error("Error al cargar asistencias");
@@ -120,30 +120,30 @@ async function cargarAsistencias(tablaBody) {
 }
 
 function renderTabla(tablaBody, asistencias) {
-  const emptyState = document.getElementById('emptyStateAsistencias');
+  const emptyState = document.getElementById("emptyStateAsistencias");
 
   // Limpiar filas existentes (excepto el empty state)
-  const rows = tablaBody.querySelectorAll('tr:not(#emptyStateAsistencias)');
-  rows.forEach(row => row.remove());
+  const rows = tablaBody.querySelectorAll("tr:not(#emptyStateAsistencias)");
+  rows.forEach((row) => row.remove());
 
   if (!asistencias || asistencias.length === 0) {
     // Mostrar empty state
-    if (emptyState) emptyState.classList.remove('hidden');
+    if (emptyState) emptyState.classList.remove("hidden");
     return;
   }
 
   // Ocultar empty state y mostrar datos
-  if (emptyState) emptyState.classList.add('hidden');
+  if (emptyState) emptyState.classList.add("hidden");
 
   asistencias.forEach((a, index) => {
     const tr = document.createElement("tr");
-    tr.classList.add("animate-fade-in-up");
+    tr.classList.add("animate-fade-in-up", "hover:bg-[#161616]", "transition");
     tr.style.animationDelay = `${index * 50}ms`;
 
     tr.innerHTML = `
-      <td class="font-medium">${a.nombre}</td>
-      <td class="text-gray-400">${a.dni}</td>
-      <td class="text-gray-400">${formatDateTime(a.fechaHora)}</td>
+      <td class="py-4 px-8 font-medium align-middle">${a.nombre}</td>
+      <td class="py-4 px-8 text-gray-500 font-mono text-right align-middle">${a.dni}</td>
+      <td class="py-4 px-8 text-gray-400 text-right align-middle tabular-nums">${formatDateTime(a.fechaHora)}</td>
     `;
 
     tablaBody.appendChild(tr);
@@ -162,32 +162,54 @@ async function cargarKPIs() {
     const res = await authFetch(`${API_URL}/estadisticas/mes`);
     const stats = await res.json();
 
-    document.getElementById("kpiTotalAsistencias").textContent = stats.totalAsistencias ?? 0;
+    document.getElementById("kpiTotalAsistencias").textContent =
+      stats.totalAsistencias ?? 0;
     renderVariacion("varTotalAsistencias", stats.variacionAsistencias);
 
-    document.getElementById("kpiPromedio").textContent = stats.promedioAsistencias ?? 0;
+    document.getElementById("kpiPromedio").textContent =
+      stats.promedioAsistencias ?? 0;
     renderVariacion("varPromedio", stats.variacionPromedio);
 
-    document.getElementById("kpiSociosActivosTotal").textContent = stats.sociosActivos ?? 0;
+    document.getElementById("kpiSociosActivosTotal").textContent =
+      stats.sociosActivos ?? 0;
     renderVariacion("varSociosActivos", stats.variacionSocios);
 
     const ul = document.getElementById("kpiSociosActivos");
     ul.innerHTML = "";
 
     if (!stats.sociosMasActivos || stats.sociosMasActivos.length === 0) {
-      ul.innerHTML = `<li class="text-gray-500">Sin datos</li>`;
+      ul.innerHTML = `<li class="text-gray-500 text-sm">Sin datos para este mes</li>`;
       return;
     }
 
-    stats.sociosMasActivos.forEach(s => {
+    stats.sociosMasActivos.forEach((s) => {
       const li = document.createElement("li");
-      li.textContent = `• ${s.nombre} (${s.dni})`;
+      li.className =
+        "flex items-center gap-3 p-3 rounded-lg border border-[#222] bg-[#111] hover:border-[#333] transition-colors";
+
+      // Avatar dummy basado en inicial
+      const initial = s.nombre ? s.nombre.charAt(0).toUpperCase() : "?";
+      const hue =
+        Array.from(s.nombre || "X").reduce(
+          (acc, char) => acc + char.charCodeAt(0),
+          0,
+        ) % 360;
+
+      li.innerHTML = `
+        <div class="w-10 h-10 rounded bg-[#1a1a1a] flex flex-shrink-0 items-center justify-center font-bold text-white border border-[#333] relative overflow-hidden">
+           <div class="absolute inset-x-0 bottom-0 h-1/2 opacity-20" style="background-color: hsl(${hue}, 70%, 50%)"></div>
+           <span class="z-10">${initial}</span>
+        </div>
+        <div class="flex flex-col min-w-0 flex-1">
+          <p class="text-sm font-medium text-white truncate">${s.nombre}</p>
+          <p class="text-xs text-gray-500 font-mono mt-0.5 truncate">DNI: ${s.dni}</p>
+        </div>
+      `;
       ul.appendChild(li);
     });
 
     // Cargar hora pico
     await cargarHoraPico();
-
   } catch (err) {
     console.error(err);
     Alerta.error("Error al cargar KPIs");
@@ -199,7 +221,8 @@ async function cargarHoraPico() {
     const res = await authFetch(`${API_URL}/estadisticas/hora-pico`);
     const data = await res.json();
 
-    document.getElementById("kpiHoraPico").textContent = data.rangoHorario || "--:--";
+    document.getElementById("kpiHoraPico").textContent =
+      data.rangoHorario || "--:--";
     document.getElementById("kpiHoraPicoAsistencias").textContent =
       `${data.totalAsistencias || 0} asistencias`;
   } catch (err) {
@@ -224,13 +247,13 @@ async function cargarGrafico() {
     if (!data || data.length === 0) return;
 
     // 👉 Construir fechas locales correctas para evitar desfase
-    const fechas = data.map(d => {
+    const fechas = data.map((d) => {
       const [year, month, day] = d.fecha.split("-").map(Number);
       return new Date(year, month - 1, day); // hora local
     });
 
-    const labels = fechas.map(d => d.getDate()); // solo día para el eje x
-    const values = data.map(d => d.totalAsistencias);
+    const labels = fechas.map((d) => d.getDate()); // solo día para el eje x
+    const values = data.map((d) => d.totalAsistencias);
 
     const ctx = document.getElementById("AsistenciasDiaChart");
 
@@ -250,18 +273,18 @@ async function cargarGrafico() {
           {
             label: "Asistencias",
             data: values,
-            borderColor: "#FF8C32",
+            borderColor: "rgba(255, 140, 50, 0.8)",
             backgroundColor: gradient,
             fill: true,
             tension: 0.4,
-            borderWidth: 3,
+            borderWidth: 2,
             pointRadius: 0,
-            pointHoverRadius: 8,
+            pointHoverRadius: 6,
             pointHoverBackgroundColor: "#FF8C32",
             pointHoverBorderColor: "#fff",
-            pointHoverBorderWidth: 2
-          }
-        ]
+            pointHoverBorderWidth: 2,
+          },
+        ],
       },
       options: {
         responsive: true,
@@ -269,79 +292,94 @@ async function cargarGrafico() {
 
         interaction: {
           mode: "index",
-          intersect: false
+          intersect: false,
         },
 
         plugins: {
           legend: { display: false },
 
           tooltip: {
-            backgroundColor: "rgba(10,10,10,0.95)",
-            borderColor: "#FF8C32",
-            borderWidth: 1,
-            titleColor: "#FF8C32",
-            bodyColor: "#e5e5e5",
-            titleFont: { size: 14, weight: "bold" },
-            bodyFont: { size: 13 },
+            backgroundColor: "rgba(10, 10, 10, 0.95)",
+            titleColor: "rgba(255, 255, 255, 0.9)",
+            bodyColor: "rgba(255, 140, 50, 1)",
+            titleFont: {
+              size: 13,
+              family: "'Inter', sans-serif",
+              weight: "normal",
+            },
+            bodyFont: {
+              size: 14,
+              family: "'JetBrains Mono', monospace",
+              weight: "bold",
+            },
             padding: 12,
-            cornerRadius: 8,
+            cornerRadius: 6,
             displayColors: false,
+            borderColor: "rgba(255, 255, 255, 0.1)",
+            borderWidth: 1,
             callbacks: {
               title: (items) => {
                 const i = items[0].dataIndex;
                 return new Intl.DateTimeFormat("es-AR", {
                   weekday: "long",
                   day: "numeric",
-                  month: "long"
+                  month: "long",
                 }).format(fechas[i]);
               },
-              label: (item) => `📊 ${item.parsed.y} asistencias`
-            }
-          }
+              label: (item) => `${item.parsed.y} asistencias`,
+            },
+          },
         },
 
         scales: {
           y: {
             beginAtZero: true,
             ticks: {
-              color: "#9ca3af",
-              font: { size: 11 },
-              padding: 8
+              color: "#6b7280",
+              font: { size: 11, family: "'JetBrains Mono', monospace" },
+              padding: 12,
+              maxTicksLimit: 6,
             },
             grid: {
-              color: "rgba(255,255,255,0.05)",
-              drawBorder: false
+              display: false,
+              drawBorder: false,
             },
-            border: { display: false }
+            border: { display: false },
           },
           x: {
             ticks: {
-              color: "#9ca3af",
-              font: { size: 11 },
+              color: "#6b7280",
+              font: { size: 11, family: "'Inter', sans-serif" },
+              padding: 10,
               maxRotation: 0,
               callback: (value, index) => {
                 const day = labels[index];
-                return day === 1 || day % 7 === 0 || day === labels[labels.length - 1] ? day : "";
-              }
+                return day === 1 ||
+                  day % 7 === 0 ||
+                  day === labels[labels.length - 1]
+                  ? day
+                  : "";
+              },
             },
-            grid: { display: false },
-            border: { display: false }
-          }
+            grid: {
+              display: false,
+              drawBorder: false,
+            },
+            border: { display: false },
+          },
         },
 
         animation: {
           duration: 800,
-          easing: "easeOutCubic"
-        }
-      }
+          easing: "easeOutCubic",
+        },
+      },
     });
-
   } catch (err) {
     console.error(err);
     Alerta.error("Error al cargar gráfico");
   }
 }
-
 
 /* ================== UTIL ================== */
 
@@ -361,4 +399,3 @@ function renderVariacion(elementId, variacion) {
   el.className = `text-xs font-bold ${color} ml-2`;
   el.innerHTML = `${icono} ${Math.abs(variacion).toFixed(1)}%`;
 }
-

@@ -15,7 +15,7 @@ const playSound = (type) => {
     const gain = ctx.createGain();
     osc.connect(gain);
     gain.connect(ctx.destination);
-    if (type === 'success') {
+    if (type === "success") {
       osc.frequency.value = 800;
       gain.gain.value = 0.1;
     } else {
@@ -24,20 +24,43 @@ const playSound = (type) => {
     }
     osc.start();
     setTimeout(() => osc.stop(), 150);
-  } catch (e) { /* ignore */ }
+  } catch (e) {
+    /* ignore */
+  }
 };
 
 let timeoutModalExito = null;
 
 export function init() {
-  const go = page => navigateTo(page.replace('.html', ''));
+  const go = (page) => navigateTo(page.replace(".html", ""));
 
   // ===== HEADER: fecha contextual =====
   const headerSaludo = document.getElementById("headerSaludo");
   if (headerSaludo) {
     const ahora = new Date();
-    const diasSemana = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
-    const meses = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+    const diasSemana = [
+      "Domingo",
+      "Lunes",
+      "Martes",
+      "Miércoles",
+      "Jueves",
+      "Viernes",
+      "Sábado",
+    ];
+    const meses = [
+      "ene",
+      "feb",
+      "mar",
+      "abr",
+      "may",
+      "jun",
+      "jul",
+      "ago",
+      "sep",
+      "oct",
+      "nov",
+      "dic",
+    ];
     const dia = diasSemana[ahora.getDay()];
     const fecha = `${ahora.getDate()} ${meses[ahora.getMonth()]}`;
     headerSaludo.textContent = `${dia} ${fecha} · NEXO`;
@@ -45,8 +68,12 @@ export function init() {
 
   // ===== NAVEGACIÓN =====
   document.getElementById("btnLogout")?.addEventListener("click", logout);
-  document.getElementById("quickSocio")?.addEventListener("click", () => go("registrar-socio.html"));
-  document.getElementById("quickPago")?.addEventListener("click", () => go("registrar-pago.html"));
+  document
+    .getElementById("quickSocio")
+    ?.addEventListener("click", () => go("registrar-socio.html"));
+  document
+    .getElementById("quickPago")
+    ?.addEventListener("click", () => go("registrar-pago.html"));
 
   // ===== REGISTRO RÁPIDO DE ASISTENCIA =====
   const input = document.getElementById("inputAsistenciaRapida");
@@ -103,7 +130,10 @@ export function init() {
 
   // Click fuera para cerrar dropdown
   document.addEventListener("click", (e) => {
-    if (!e.target.closest("#inputAsistenciaRapida") && !e.target.closest("#resultadosBusquedaHome")) {
+    if (
+      !e.target.closest("#inputAsistenciaRapida") &&
+      !e.target.closest("#resultadosBusquedaHome")
+    ) {
       resultadosBusqueda?.classList.add("hidden");
     }
   });
@@ -111,7 +141,9 @@ export function init() {
   // ===== Buscar socios =====
   async function buscarSocios(valor) {
     try {
-      const res = await authFetch(`${API_SOCIOS}/search?q=${encodeURIComponent(valor)}`);
+      const res = await authFetch(
+        `${API_SOCIOS}/search?q=${encodeURIComponent(valor)}`,
+      );
       const socios = await res.json();
       ultimaBusqueda = socios;
 
@@ -119,20 +151,31 @@ export function init() {
 
       socios.forEach((socio, index) => {
         const item = document.createElement("div");
-        item.className = "search-item group flex items-center gap-3 p-3 border-b border-white/5 last:border-0 hover:bg-white/5 cursor-pointer transition-colors outline-none focus:bg-white/10";
+        item.className =
+          "search-item group flex items-center gap-4 p-4 border-b border-[#222] last:border-0 hover:bg-[#161616] cursor-pointer transition-colors outline-none focus:bg-[#222]";
         item.tabIndex = 0;
+
+        // Avatar dummy basado en inicial (como Asistencias)
+        const initial = socio.nombre
+          ? socio.nombre.charAt(0).toUpperCase()
+          : "?";
+        const hue =
+          Array.from(socio.nombre || "X").reduce(
+            (acc, char) => acc + char.charCodeAt(0),
+            0,
+          ) % 360;
+
         item.innerHTML = `
-          <div class="w-10 h-10 rounded-lg bg-black/50 text-gray-500 border border-white/10 flex items-center justify-center group-hover:bg-primary/20 group-hover:text-primary transition-all flex-shrink-0">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-            </svg>
+          <div class="w-10 h-10 rounded bg-[#1a1a1a] flex flex-shrink-0 items-center justify-center font-bold text-white border border-[#333] relative overflow-hidden group-hover:border-[var(--orange)]/30 transition-colors">
+            <div class="absolute inset-x-0 bottom-0 h-1/2 opacity-20" style="background-color: hsl(${hue}, 70%, 50%)"></div>
+            <span class="z-10">${initial}</span>
           </div>
           <div class="flex-1 min-w-0">
             <span class="block truncate font-bold text-gray-200 group-hover:text-white transition-colors text-base">${socio.nombre}</span>
-            <span class="text-xs text-gray-500 font-medium tracking-wide">DNI: <span class="font-mono text-gray-400 group-hover:text-gray-300">${socio.dni}</span></span>
+            <span class="text-xs text-gray-500 font-medium tracking-wide">DNI: <span class="font-mono text-gray-400 group-hover:text-gray-300 transition-colors">${socio.dni}</span></span>
           </div>
           <div class="w-8 h-8 rounded-full bg-[#111] border border-[#222] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all transform group-hover:scale-100 scale-75">
-            <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 text-[var(--orange)]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
             </svg>
           </div>
@@ -182,36 +225,38 @@ export function init() {
       const resSocio = await authFetch(`${API_SOCIOS}/${dni}`);
       if (!resSocio.ok) {
         Alerta.error(`No se encontró socio con DNI ${dni}`);
-        playSound('error');
+        playSound("error");
         return;
       }
       const socio = await resSocio.json();
       await registrarAsistencia(socio);
     } catch (err) {
       Alerta.error("Error al buscar socio");
-      playSound('error');
+      playSound("error");
     }
   }
 
   // ===== Registrar asistencia =====
   async function registrarAsistencia(socio) {
     try {
-      const res = await authFetch(`${API_SOCIOS}/${socio.dni}/asistencias`, { method: "POST" });
+      const res = await authFetch(`${API_SOCIOS}/${socio.dni}/asistencias`, {
+        method: "POST",
+      });
 
       if (!res.ok) {
         let mensaje = "Error al registrar asistencia";
         try {
           const body = await res.json();
           mensaje = body.message || mensaje;
-        } catch { }
+        } catch {}
         Alerta.error(mensaje);
-        playSound('error');
+        playSound("error");
         resetInput();
         return;
       }
 
       Alerta.success(`Asistencia registrada - ${socio.nombre}`);
-      playSound('success');
+      playSound("success");
 
       // Actualizar KPI de asistencias
       const kpiEl = document.getElementById("kpiAsistenciasHoy");
@@ -225,10 +270,9 @@ export function init() {
 
       // ===== Mostrar Modal de Éxito con Info del Socio =====
       mostrarModalExito(socio);
-
     } catch (err) {
       Alerta.error("No se pudo registrar la asistencia");
-      playSound('error');
+      playSound("error");
     }
   }
 
@@ -266,7 +310,9 @@ export function init() {
   const modalPorVencer = document.getElementById("modalPorVencer");
   const kpiPorVencerCard = document.getElementById("kpiPorVencerCard");
   const cerrarModalPorVencer = document.getElementById("cerrarModalPorVencer");
-  const cerrarModalPorVencerFooter = document.getElementById("cerrarModalPorVencerFooter");
+  const cerrarModalPorVencerFooter = document.getElementById(
+    "cerrarModalPorVencerFooter",
+  );
   const backdropPorVencer = modalPorVencer?.querySelector(".modal-backdrop");
 
   kpiPorVencerCard?.addEventListener("click", () => {
@@ -309,8 +355,8 @@ export function init() {
   Promise.all([
     cargarDashboard(),
     cargarSociosInactivos(),
-    cargarUltimasAsistencias()
-  ]).catch(err => console.error("Error en carga inicial del home", err));
+    cargarUltimasAsistencias(),
+  ]).catch((err) => console.error("Error en carga inicial del home", err));
 }
 
 export function destroy() {
@@ -326,29 +372,35 @@ async function cargarUltimasAsistencias() {
   if (!lista) return;
 
   try {
-    const hoy = new Date().toISOString().split('T')[0];
-    const res = await authFetch(`/asistencias?page=0&size=4&desde=${hoy}&hasta=${hoy}`);
+    const hoy = new Date().toISOString().split("T")[0];
+    const res = await authFetch(
+      `/asistencias?page=0&size=8&desde=${hoy}&hasta=${hoy}`,
+    );
 
     if (!res.ok) throw new Error();
     const data = await res.json();
 
     if (!data.content || data.content.length === 0) {
-      lista.innerHTML = '<p class="text-gray-500 text-xs text-center py-2">No hay asistencias registradas hoy</p>';
+      lista.innerHTML =
+        '<p class="text-gray-500 text-xs text-center py-2">No hay asistencias registradas hoy</p>';
       return;
     }
 
-    lista.innerHTML = data.content.map(a => {
-      const hora = formatTime(a.fechaHora);
-      return `
-        <div class="recent-item bg-black/40 border border-[#222] px-3 py-1.5 rounded-lg flex items-center gap-3">
-          <div class="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
-          <span class="recent-item-name font-bold text-gray-300 text-xs tracking-wide uppercase truncate max-w-[120px]">${a.nombre || a.dni}</span>
-          <span class="recent-item-time text-gray-500 font-mono text-[10px] bg-[#111] px-1.5 py-0.5 rounded border border-[#333]">${hora}</span>
+    lista.innerHTML = data.content
+      .map((a) => {
+        const hora = formatTime(a.fechaHora);
+        return `
+        <div class="bg-[#111] border border-[#222] px-3 py-1.5 rounded flex items-center gap-3 w-full transition-all hover:bg-[#161616]">
+          <div class="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)] flex-shrink-0"></div>
+          <span class="font-bold text-gray-300 text-xs tracking-wide uppercase truncate flex-1 block max-w-full min-w-0" title="${a.nombre || a.dni}">${a.nombre || a.dni}</span>
+          <span class="text-gray-500 font-mono text-[10px] bg-[#0a0a0a] px-1.5 py-0.5 rounded border border-[#222] flex-shrink-0">${hora}</span>
         </div>
       `;
-    }).join('');
+      })
+      .join("");
   } catch (err) {
-    lista.innerHTML = '<p class="text-gray-500 text-xs w-full text-center py-2">Error cargando asistencias</p>';
+    lista.innerHTML =
+      '<p class="text-gray-500 text-xs w-full text-center py-2">Error cargando asistencias</p>';
   }
 }
 
@@ -364,7 +416,7 @@ async function mostrarModalExito(socio) {
 
   await Promise.all([
     cargarInfoSocioHome(socio),
-    cargarInfoMembresiaHome(socio)
+    cargarInfoMembresiaHome(socio),
   ]);
 
   // Animate in
@@ -409,42 +461,43 @@ async function cargarInfoSocioHome(socio) {
   infoSocio.innerHTML = `<p class="text-sm text-gray-500 animate-pulse text-center">Cargando socio...</p>`;
 
   try {
-    const res = await authFetch(`${API_SOCIOS}/${socio.dni}/asistencias-disponibles`);
+    const res = await authFetch(
+      `${API_SOCIOS}/${socio.dni}/asistencias-disponibles`,
+    );
     if (!res.ok) throw new Error();
 
     const data = await res.json();
+    const initial = socio.nombre ? socio.nombre.charAt(0).toUpperCase() : "?";
+
     infoSocio.innerHTML = `
-        <div class="flex items-start gap-4 mb-2">
-          <div class="icon-box w-10 h-10 border border-primary/20">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-            </svg>
+        <div class="flex items-start gap-4 p-4">
+          <div class="w-12 h-12 rounded bg-[#1a1a1a] flex flex-shrink-0 items-center justify-center font-bold text-white text-lg border border-[#333]">
+            <span>${initial}</span>
           </div>
           <div class="flex-1 min-w-0">
             <p class="text-white font-bold text-lg leading-tight truncate tracking-wide">${socio.nombre}</p>
-            <p class="text-gray-400 text-sm mt-0.5">DNI: ${socio.dni}</p>
+            <p class="text-gray-400 text-sm mt-0.5 font-mono">DNI: ${socio.dni}</p>
           </div>
         </div>
-        <div class="mt-4 pt-4 border-t border-[#333] flex justify-between items-center -mx-4 -mb-4 px-4 py-3 rounded-b-xl">
+        <div class="mt-2 border-t border-[#222] flex justify-between items-center px-4 py-3 bg-[#0a0a0a] rounded-b-xl">
           <span class="text-sm font-bold text-gray-400">Asistencias disp.</span>
-          <span class="text-lg font-black px-3 py-0.5 rounded-full ${data.disponibles <= 2 ? 'bg-yellow-500/20 text-yellow-500 border border-yellow-500/30' : 'bg-green-500/20 text-green-500 border border-green-500/30'}">${data.disponibles}</span>
+          <span class="text-lg font-black px-3 py-0.5 rounded ${data.disponibles <= 2 ? "bg-yellow-500/10 text-yellow-500 border border-yellow-500/20" : "bg-green-500/10 text-green-500 border border-green-500/20"}">${data.disponibles}</span>
         </div>
       `;
   } catch {
+    const initial = socio.nombre ? socio.nombre.charAt(0).toUpperCase() : "?";
     infoSocio.innerHTML = `
-        <div class="flex items-start gap-4 mb-2">
-          <div class="icon-box w-10 h-10 border border-primary/20">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-            </svg>
+        <div class="flex items-start gap-4 p-4">
+          <div class="w-12 h-12 rounded bg-[#1a1a1a] flex flex-shrink-0 items-center justify-center font-bold text-white text-lg border border-[#333]">
+            <span>${initial}</span>
           </div>
           <div class="flex-1 min-w-0">
             <p class="text-white font-bold text-lg leading-tight truncate tracking-wide">${socio.nombre}</p>
-            <p class="text-gray-400 text-sm mt-0.5">DNI: ${socio.dni}</p>
+            <p class="text-gray-400 text-sm mt-0.5 font-mono">DNI: ${socio.dni}</p>
           </div>
         </div>
-        <div class="mt-4 pt-4 border-t border-yellow-500/20 flex justify-center items-center bg-yellow-500/5 -mx-4 -mb-4 px-4 py-3 rounded-b-xl">
-          <span class="text-xs font-bold text-yellow-500 w-full text-center">Sin membresía activa (pendiente)</span>
+        <div class="mt-2 border-t border-[#222] flex justify-center items-center px-4 py-3 bg-[#111] rounded-b-xl">
+          <span class="text-xs font-bold text-[var(--orange)] w-full text-center">Sin membresía activa</span>
         </div>
       `;
   }
@@ -460,32 +513,32 @@ async function cargarInfoMembresiaHome(socio) {
 
     const membresia = await res.json();
     infoMembresia.innerHTML = `
-      <div class="flex items-start gap-4 mb-2">
-          <div class="icon-box w-10 h-10 border border-secondary/20 bg-secondary/10 text-secondary">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <div class="flex items-start gap-4 p-4">
+          <div class="w-12 h-12 rounded flex flex-shrink-0 items-center justify-center border border-indigo-500/20 bg-indigo-500/10 text-indigo-400">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <div class="flex-1 min-w-0">
+          <div class="flex-1 min-w-0 flex flex-col justify-center h-12">
             <p class="text-white font-bold text-md leading-tight truncate tracking-wide">${membresia.tipo}</p>
             <p class="text-gray-400 text-xs mt-0.5 font-bold uppercase tracking-wider">Plan Activo</p>
           </div>
         </div>
-      <div class="mt-4 pt-4 border-t border-[#333] flex justify-between items-center -mx-4 -mb-4 px-4 py-3 rounded-b-xl">
+      <div class="mt-2 border-t border-[#222] flex justify-between items-center px-4 py-3 bg-[#0a0a0a] rounded-b-xl">
         <span class="text-sm font-bold text-gray-400">Vencimiento</span>
         <span class="text-sm font-black text-white px-3 py-1 rounded bg-[#222] border border-[#333]">${membresia.vencimiento}</span>
       </div>
     `;
   } catch {
     infoMembresia.innerHTML = `
-        <div class="flex items-start gap-4 mb-2">
-          <div class="icon-box w-10 h-10 border border-gray-500/20 bg-gray-500/10 text-gray-400">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <div class="flex items-start gap-4 p-4">
+          <div class="w-12 h-12 rounded border border-[#333] bg-[#1a1a1a] text-gray-500 flex flex-shrink-0 items-center justify-center">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
           </div>
-          <div class="flex-1 min-w-0 flex items-center h-10">
-            <p class="text-gray-400 font-bold text-sm">Ningún plan activo asociado</p>
+          <div class="flex-1 min-w-0 flex items-center h-12">
+            <p class="text-gray-500 font-bold text-sm">Ningún plan activo asociado</p>
           </div>
         </div>
       `;
@@ -500,8 +553,9 @@ async function cargarDashboard() {
 
     const data = await res.json();
 
-    document.getElementById("kpiRecaudacionHoy").textContent =
-      formatMoney(data.recaudacionHoy);
+    document.getElementById("kpiRecaudacionHoy").textContent = formatMoney(
+      data.recaudacionHoy,
+    );
     document.getElementById("kpiSociosActivos").textContent =
       data.sociosActivos || 0;
     document.getElementById("kpiPorVencer").textContent =
@@ -522,45 +576,54 @@ async function cargarDashboard() {
           </div>
       `;
       } else {
-        listaPorVencer.innerHTML = data.listaPorVencer.map(s => {
-          const urgente = s.diasRestantes <= 2;
-          const hoy = s.diasRestantes === 0;
-          const manana = s.diasRestantes === 1;
+        listaPorVencer.innerHTML = data.listaPorVencer
+          .map((s) => {
+            const urgente = s.diasRestantes <= 2;
+            const hoy = s.diasRestantes === 0;
+            const manana = s.diasRestantes === 1;
 
-          const pillClass = hoy || manana
-            ? 'bg-red-500/15 text-red-400 border border-red-500/30'
-            : urgente
-              ? 'bg-orange-500/15 text-orange-400 border border-orange-500/30'
-              : 'bg-yellow-500/15 text-yellow-400 border border-yellow-500/30';
+            const pillClass =
+              hoy || manana
+                ? "bg-red-500/15 text-red-400 border border-red-500/30"
+                : urgente
+                  ? "bg-orange-500/15 text-orange-400 border border-orange-500/30"
+                  : "bg-yellow-500/15 text-yellow-400 border border-yellow-500/30";
 
-          const diasLabel = hoy ? 'Hoy' : manana ? 'Mañana' : `${s.diasRestantes} d`;
+            const diasLabel = hoy
+              ? "Hoy"
+              : manana
+                ? "Mañana"
+                : `${s.diasRestantes} d`;
 
-          return `
-          <div class="flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-[#111] border border-[#222] hover:bg-[#161616] hover:border-[#333] cursor-pointer transition-all group"
+            return `
+          <div class="glass-card flex items-center justify-between gap-3 p-4 cursor-pointer hover:bg-[#161616] group"
               onclick="window.location.hash='#/socio-detalle?dni=${s.dni}'">
-            <div class="flex items-center gap-3 min-w-0">
-              <div class="icon-box w-8 h-8 m-0 border border-white/10">
-                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <div class="flex items-center gap-4 min-w-0">
+              <div class="w-10 h-10 rounded bg-[#1a1a1a] border border-[#333] flex items-center justify-center text-gray-400 group-hover:text-white transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                 </svg>
               </div>
               <div class="min-w-0">
-                <p class="text-sm font-bold text-gray-200 truncate group-hover:text-white transition-colors">${s.nombre}</p>
-                <p class="text-xs text-gray-500 font-bold truncate">${s.nombreMembresia}</p>
+                <p class="text-base font-bold text-gray-200 truncate group-hover:text-white transition-colors tracking-tight">${s.nombre}</p>
+                <p class="text-xs text-gray-500 font-medium truncate">${s.nombreMembresia}</p>
               </div>
             </div>
-            <div class="flex items-center gap-3 flex-shrink-0">
-              <span class="text-xs text-gray-500 font-bold">${formatDate(s.fechaVencimiento)}</span>
-              <span class="text-xs font-black px-2 py-1 rounded ${pillClass}">${diasLabel}</span>
-              <svg class="w-4 h-4 text-gray-600 group-hover:text-primary transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <div class="flex items-center gap-4 flex-shrink-0">
+              <div class="flex flex-col items-end hidden sm:flex">
+                <span class="text-xs text-gray-500 font-bold uppercase tracking-wider">Vence</span>
+                <span class="text-sm font-mono text-gray-300">${formatDate(s.fechaVencimiento)}</span>
+              </div>
+              <span class="text-sm font-black px-3 py-1 rounded ${pillClass}">${diasLabel}</span>
+              <svg class="w-5 h-5 text-[#333] group-hover:text-[var(--orange)] transition-colors transform -translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
               </svg>
             </div>
           </div>`;
-        }).join('');
+          })
+          .join("");
       }
     }
-
   } catch (err) {
     console.error("Error cargando dashboard", err);
   }
@@ -589,13 +652,13 @@ async function cargarSociosInactivos() {
     cantidad.textContent = inactivos.length;
     lista.innerHTML = "";
 
-    inactivos.forEach(s => {
+    inactivos.forEach((s) => {
       const li = document.createElement("li");
-      li.className = "flex justify-between items-center text-gray-300 py-1.5 border-b border-white/5 last:border-0";
+      li.className =
+        "flex justify-between items-center text-gray-300 py-1.5 border-b border-white/5 last:border-0";
 
-      const diasTexto = s.diasSinAsistir >= 999
-        ? "Nunca asistió"
-        : `${s.diasSinAsistir} d`;
+      const diasTexto =
+        s.diasSinAsistir >= 999 ? "Nunca asistió" : `${s.diasSinAsistir} d`;
 
       li.innerHTML = `
             < span > ${s.nombre}</span >
@@ -604,7 +667,6 @@ async function cargarSociosInactivos() {
 
       lista.appendChild(li);
     });
-
   } catch (err) {
     console.error("Error cargando socios inactivos", err);
   }
@@ -613,11 +675,11 @@ async function cargarSociosInactivos() {
 // ===== Utilidades =====
 function formatMoney(amount) {
   if (amount == null) return "$0";
-  return new Intl.NumberFormat('es-AR', {
-    style: 'currency',
-    currency: 'ARS',
+  return new Intl.NumberFormat("es-AR", {
+    style: "currency",
+    currency: "ARS",
     minimumFractionDigits: 0,
-    maximumFractionDigits: 0
+    maximumFractionDigits: 0,
   }).format(amount);
 }
 
@@ -626,18 +688,21 @@ function formatDate(dateStr) {
   let date;
   const str = String(dateStr);
   if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
-    const [year, month, day] = str.split('-').map(Number);
+    const [year, month, day] = str.split("-").map(Number);
     date = new Date(year, month - 1, day);
   } else {
     date = new Date(dateStr);
   }
   if (isNaN(date.getTime())) return "-";
-  return date.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' });
+  return date.toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit" });
 }
 
 function formatTime(dateStr) {
   if (!dateStr) return "";
   const date = new Date(dateStr);
   if (isNaN(date.getTime())) return "";
-  return date.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+  return date.toLocaleTimeString("es-AR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }

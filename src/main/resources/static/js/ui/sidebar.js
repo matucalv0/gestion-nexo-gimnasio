@@ -8,8 +8,7 @@
         {
             section: 'Principal',
             items: [
-                { label: 'Panel', href: '#/home', icon: 'home', pages: ['home'] },
-                { label: 'Asistencia', href: '#/asistencia', icon: 'check-circle', pages: ['asistencia'] },
+                { label: 'Panel', href: '#/home', icon: 'home', pages: ['home'] }
             ]
         },
         {

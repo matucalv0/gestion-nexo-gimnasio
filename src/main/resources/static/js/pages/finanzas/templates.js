@@ -17,7 +17,8 @@ export function detalleRowIds(m) {
  * @param {{ idReferencia: number|string, tipoMovimiento: string, fecha: string, monto: number }} m
  */
 export function movimientoMainRowHtml(m) {
-  const badgeClass = m.tipoMovimiento === "INGRESO" ? "badge-success" : "badge-danger";
+  const badgeClass =
+    m.tipoMovimiento === "INGRESO" ? "badge-success" : "badge-danger";
 
   let socioHtml = "—";
   if (m.tipoMovimiento === "INGRESO" && m.dniSocio) {
@@ -25,15 +26,15 @@ export function movimientoMainRowHtml(m) {
   }
 
   return `
-    <td>${formatDate(m.fecha)}</td>
-    <td>${socioHtml}</td>
-    <td>
+    <td class="py-5 px-6 align-middle">${formatDate(m.fecha)}</td>
+    <td class="py-5 px-6 align-middle">${socioHtml}</td>
+    <td class="py-5 px-6 align-middle text-center">
       <span class="badge ${badgeClass}">${m.tipoMovimiento}</span>
     </td>
-    <td class="font-semibold text-[var(--beige)]">$ ${Number(m.monto).toLocaleString()}</td>
-    <td class="text-gray-400">#${m.idReferencia}</td>
-    <td>
-      <div class="flex gap-2">
+    <td class="py-5 px-6 align-middle text-right font-semibold text-[var(--beige)] font-mono">$ ${Number(m.monto).toLocaleString()}</td>
+    <td class="py-5 px-6 align-middle text-gray-500 font-mono text-center">#${m.idReferencia}</td>
+    <td class="py-5 px-6 align-middle text-center">
+      <div class="flex gap-2 justify-center">
         <button type="button" class="table-action-btn" data-action="detalle" data-id="${m.idReferencia}" data-tipo="${m.tipoMovimiento}" title="Ver detalle">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
@@ -56,8 +57,8 @@ export function movimientoDetailRowHtml(m) {
   const { contentId } = detalleRowIds(m);
 
   return `
-    <td colspan="6" class="p-0">
-      <div id="${contentId}" class="detail-panel">
+    <td colspan="6" class="p-0 border-b border-[#222]">
+      <div id="${contentId}" class="detail-panel py-6 px-12">
         <p class="text-sm text-gray-500">Cargando detalle...</p>
       </div>
     </td>
@@ -73,25 +74,25 @@ export function detalleIngresoHtml(pago) {
   }
 
   return `
-    <h4 class="detail-panel-title">Detalle del ingreso</h4>
-    <div class="detail-items">
+    <h4 class="detail-panel-title mb-4 text-gray-300">Detalle del ingreso</h4>
+    <div class="detail-items flex flex-col gap-4">
       ${pago.detalles
-      .map(
-        (d) => `
-          <div class="detail-item">
+        .map(
+          (d) => `
+          <div class="detail-item flex justify-between items-center p-4 rounded border border-[#222] bg-[#111]">
             <div>
-              <p class="detail-item-type">${d.tipo}</p>
-              <p class="detail-item-name">${d.nombre}</p>
-              <p class="detail-item-qty">Cantidad: ${d.cantidad}</p>
+              <p class="detail-item-type text-xs text-gray-500 uppercase tracking-widest mb-1">${d.tipo}</p>
+              <p class="detail-item-name text-sm text-white font-medium">${d.nombre}</p>
+              <p class="detail-item-qty text-xs text-gray-400 mt-1">Cantidad: <span class="text-gray-300 font-bold">${d.cantidad}</span></p>
             </div>
             <div class="text-right">
-              <p class="detail-item-label">Unitario</p>
-              <p class="detail-item-price">$ ${d.precioUnitario}</p>
+              <p class="detail-item-label text-xs text-gray-500 mb-1">Unitario</p>
+              <p class="detail-item-price text-sm text-[var(--beige)] font-mono">$ ${d.precioUnitario}</p>
             </div>
           </div>
         `,
-      )
-      .join("")}
+        )
+        .join("")}
     </div>
   `;
 }
@@ -101,18 +102,18 @@ export function detalleIngresoHtml(pago) {
  */
 export function detalleGastoHtml(gasto) {
   return `
-    <h4 class="detail-panel-title">Detalle del gasto</h4>
-    <div class="detail-items">
-      <div class="detail-item">
+    <h4 class="detail-panel-title mb-4 text-gray-300">Detalle del gasto</h4>
+    <div class="detail-items flex flex-col gap-4">
+      <div class="detail-item flex justify-between items-center p-4 rounded border border-[#222] bg-[#111] max-w-sm">
         <div>
-          <p class="detail-item-type">Categoría</p>
-          <p class="detail-item-name">${gasto?.categoria?.trim() || "Sin categoría"}</p>
+          <p class="detail-item-type text-xs text-gray-500 uppercase tracking-widest mb-1">Categoría</p>
+          <p class="detail-item-name text-sm text-white font-medium">${gasto?.categoria?.trim() || "Sin categoría"}</p>
         </div>
       </div>
-      <div class="detail-item">
+      <div class="detail-item flex justify-between items-center p-4 rounded border border-[#222] bg-[#111] max-w-sm">
         <div>
-          <p class="detail-item-type">Proveedor</p>
-          <p class="detail-item-name">${gasto?.proveedor?.trim() || "Sin descripción"}</p>
+          <p class="detail-item-type text-xs text-gray-500 uppercase tracking-widest mb-1">Proveedor / Descripción</p>
+          <p class="detail-item-name text-sm text-white font-medium">${gasto?.proveedor?.trim() || "Sin descripción"}</p>
         </div>
       </div>
     </div>
@@ -130,4 +131,3 @@ export function kpiValueHtml(current, previous) {
     previous: formatCurrency(previous),
   };
 }
-

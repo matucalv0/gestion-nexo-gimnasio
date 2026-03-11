@@ -4,7 +4,12 @@ import { Alerta } from "../ui/alerta.js";
 import { renderPagination } from "../ui/pagination.js";
 
 import { byId, removeAll, setVisible } from "./finanzas/dom.js";
-import { formatCurrency, formatVariation, formatFechaHora, formatDate } from "./finanzas/formatters.js";
+import {
+  formatCurrency,
+  formatVariation,
+  formatFechaHora,
+  formatDate,
+} from "./finanzas/formatters.js";
 import { navigateTo, getRouteParams } from "../utils/navigate.js";
 import {
   detalleRowIds,
@@ -44,7 +49,6 @@ const dom = {
   emptyState: null,
   pagination: null,
 
-
   kpisLoading: null,
   kpisContent: null,
   filtrosBanner: null,
@@ -63,8 +67,6 @@ const dom = {
   filtroTipoMovimiento: null,
 };
 
-
-
 export function init() {
   cacheDom();
   initEventos();
@@ -81,7 +83,8 @@ export function init() {
   hace30dias.setDate(hoy.getDate() - 30);
 
   if (dom.filtroHasta) dom.filtroHasta.value = hoy.toISOString().split("T")[0];
-  if (dom.filtroDesde) dom.filtroDesde.value = hace30dias.toISOString().split("T")[0];
+  if (dom.filtroDesde)
+    dom.filtroDesde.value = hace30dias.toISOString().split("T")[0];
 
   updateFiltrosBanner();
 
@@ -128,8 +131,6 @@ function cacheDom() {
   dom.filtroTipoMovimiento = byId("filtroTipoMovimiento");
 }
 
-
-
 function setError(message) {
   if (!dom.finanzasError) return;
   if (!message) {
@@ -151,19 +152,22 @@ function setKpisLoading(isLoading) {
 function setTablaLoading(isLoading) {
   uiState.tablaLoading = isLoading;
   setVisible(dom.tablaLoading, isLoading);
-  if (dom.tablaContainer) dom.tablaContainer.setAttribute("aria-busy", String(isLoading));
+  if (dom.tablaContainer)
+    dom.tablaContainer.setAttribute("aria-busy", String(isLoading));
 }
 
 function setDonutLoading(isLoading) {
   uiState.donutLoading = isLoading;
   setVisible(dom.donutLoading, isLoading);
-  if (dom.donutContainer) dom.donutContainer.setAttribute("aria-busy", String(isLoading));
+  if (dom.donutContainer)
+    dom.donutContainer.setAttribute("aria-busy", String(isLoading));
 }
 
 function setEvolucionLoading(isLoading) {
   uiState.evolucionLoading = isLoading;
   setVisible(dom.evolucionLoading, isLoading);
-  if (dom.evolucionContainer) dom.evolucionContainer.setAttribute("aria-busy", String(isLoading));
+  if (dom.evolucionContainer)
+    dom.evolucionContainer.setAttribute("aria-busy", String(isLoading));
 }
 
 function updateFiltrosBanner() {
@@ -188,9 +192,7 @@ function updateFiltrosBanner() {
   setVisible(dom.filtrosBanner, true);
 }
 
-
 // EVENTOS
-
 
 function initEventos() {
   dom.filtroEvolucion?.addEventListener("change", (e) => {
@@ -203,7 +205,7 @@ function initEventos() {
   });
 
   dom.btnNuevoGasto?.addEventListener("click", () => {
-    navigateTo('registrar-gasto');
+    navigateTo("registrar-gasto");
   });
 
   dom.btnFiltrarFecha?.addEventListener("click", () => {
@@ -235,7 +237,6 @@ function initEventos() {
     setTablaLoading(true);
     cargarMovimientosPaginados();
   });
-
 
   dom.tablaMovimientos?.addEventListener("click", onTablaClick);
 }
@@ -293,9 +294,7 @@ function onEliminarClick({ id, tipo }) {
   });
 }
 
-
 // KPIs
-
 
 async function cargarKPIs() {
   setKpisLoading(true);
@@ -349,9 +348,7 @@ function renderVariacion(elementId, variacion) {
   el.innerHTML = `${v.icono} ${v.value}%`;
 }
 
-
 // MOVIMIENTOS
-
 
 async function cargarMovimientosPaginados() {
   setTablaLoading(true);
@@ -371,23 +368,32 @@ async function cargarMovimientosPaginados() {
 
     // Filtro en frontend para no depender de cambios backend
     const content = Array.isArray(pageData.content) ? pageData.content : [];
-    const filteredContent = tipo ? content.filter((m) => m.tipoMovimiento === tipo) : content;
+    const filteredContent = tipo
+      ? content.filter((m) => m.tipoMovimiento === tipo)
+      : content;
 
     movimientosData = filteredContent;
     renderMovimientos(filteredContent);
 
     // Paginación: mantenemos la del backend. Si el filtro deja pocas filas,
     // se verá una página con menos resultados (esperado sin cambios backend)
-    renderPagination(dom.pagination, pageData.page, pageData.totalPages, (newPage) => {
-      currentPage = newPage;
-      cargarMovimientosPaginados();
-    });
+    renderPagination(
+      dom.pagination,
+      pageData.page,
+      pageData.totalPages,
+      (newPage) => {
+        currentPage = newPage;
+        cargarMovimientosPaginados();
+      },
+    );
 
     setTablaLoading(false);
   } catch (e) {
     console.error("Error cargando movimientos", e);
     setTablaLoading(false);
-    setError("No se pudieron cargar los movimientos. Verificá tu conexión o volvé a intentar.");
+    setError(
+      "No se pudieron cargar los movimientos. Verificá tu conexión o volvé a intentar.",
+    );
   }
 }
 
@@ -434,16 +440,31 @@ function renderMovimientos(movimientos) {
   movimientos.forEach((m) => {
     const tr = document.createElement("tr");
     tr.className = `
-      border-b border-[var(--input-border)]
-      hover:bg-[#1a1a1a] transition
+      border-b border-[#1f1f1f]
+      hover:bg-[#161616] transition
     `;
+
+    // Modification to innerHTML template if needed here, but usually it's in templates.js
+    // Wait, the row HTML is from templates.js. I'll modify class injection for standard rows or we can adjust templates.js later if it creates issues. Let's see what templates.js has, or just add a class that affects child tds.
+    // Instead of modifying templates.js directly right here, let's inject a wrapper or adjust classes
+    // if templates js output is raw <td>...
+    // Actually, we can just replace `movimientoMainRowHtml` with specific classes or add a utility class
+    // Let's assume templates.js returns normal <td>. We can dynamically add classes to the generated <td>s later or modify the whole system. Wait, I'll modify the JS templates.js in another call. For now we fix charts.
     tr.innerHTML = movimientoMainRowHtml(m);
+
+    // Inject padding classes to all tds
+    Array.from(tr.children).forEach((td) =>
+      td.classList.add("py-5", "px-6", "align-middle"),
+    );
+
     fragment.appendChild(tr);
 
     const trDetalle = document.createElement("tr");
     const { rowId } = detalleRowIds(m);
     trDetalle.id = rowId;
-    trDetalle.className = "hidden";
+    trDetalle.className = "hidden bg-[#0a0a0a]";
+
+    // As templates.js returns a <td> we directly assign it.
     trDetalle.innerHTML = movimientoDetailRowHtml(m);
     fragment.appendChild(trDetalle);
   });
@@ -455,10 +476,10 @@ async function eliminarMovimiento(id, tipo) {
   try {
     let endpoint;
 
-    if (tipo === 'GASTO') return; // Gastos no tienen vista detalle todavía
+    if (tipo === "GASTO") return; // Gastos no tienen vista detalle todavía
 
     // Asumiendo que pago es PAGO_MEMBRESIA o PAGO_PRODUCTO
-    // Si quitasemos window.location: 
+    // Si quitasemos window.location:
     // navigateTo('pagos-detalle', { id: id });
     if (tipo === "INGRESO") {
       endpoint = `/pagos/${id}`;
@@ -472,7 +493,9 @@ async function eliminarMovimiento(id, tipo) {
       throw new Error("Error al eliminar movimiento");
     }
 
-    Alerta.success(`${tipo === "INGRESO" ? "Pago" : "Gasto"} eliminado correctamente`);
+    Alerta.success(
+      `${tipo === "INGRESO" ? "Pago" : "Gasto"} eliminado correctamente`,
+    );
 
     setTablaLoading(true);
 
@@ -504,15 +527,14 @@ async function cargarDetallesPago(id, contentDiv) {
   }
 }
 
-
 // EVOLUCION (GRAFICO)
-
 
 async function cargarEvolucion(filtro) {
   setEvolucionLoading(true);
 
   try {
-    const endpoint = filtro === "7dias" ? `${API}/balance-semanal` : `${API}/balance-mensual`;
+    const endpoint =
+      filtro === "7dias" ? `${API}/balance-semanal` : `${API}/balance-mensual`;
 
     const res = await authFetch(endpoint);
     const data = await res.json();
@@ -534,9 +556,7 @@ async function cargarEvolucion(filtro) {
   }
 }
 
-
 // CHART
-
 
 function renderChart({ labels, ingresos, egresos }) {
   if (chartEvolucion) chartEvolucion.destroy();
@@ -563,51 +583,63 @@ function createDataset(label, data, color, bgColor) {
     borderColor: color,
     backgroundColor: bgColor,
     fill: true,
-    tension: 0.35,
+    tension: 0.4,
     pointRadius: 0,
-    pointHoverRadius: 0,
+    pointHoverRadius: 6,
+    pointBackgroundColor: color,
+    pointHoverBackgroundColor: "#111",
+    pointBorderColor: "#fff",
+    pointHoverBorderWidth: 2,
+    borderWidth: 2,
   };
 }
 
 function chartOptions() {
   return {
     responsive: true,
+    maintainAspectRatio: false,
     interaction: { mode: "index", intersect: false },
-    animation: { duration: 400, easing: "easeOutQuart" },
+    animation: { duration: 600, easing: "easeOutQuart" },
 
     plugins: {
       legend: {
         labels: {
           color: "#9ca3af",
           usePointStyle: true,
-          pointStyle: "line",
+          pointStyle: "circle",
+          padding: 20,
         },
       },
       tooltip: {
-        backgroundColor: "#020617",
-        borderColor: "#334155",
+        backgroundColor: "rgba(10,10,10,0.9)",
+        borderColor: "rgba(255,255,255,0.1)",
         borderWidth: 1,
         displayColors: false,
-        titleColor: "#e5e7eb",
-        bodyColor: "#e5e7eb",
-        padding: 10,
+        titleColor: "#fff",
+        bodyColor: "#d1d5db",
+        padding: 12,
+        cornerRadius: 8,
         callbacks: {
-          label: (ctx) => `${ctx.dataset.label}: ${formatCurrency(ctx.parsed.y)}`,
+          label: (ctx) =>
+            `${ctx.dataset.label}: ${formatCurrency(ctx.parsed.y)}`,
         },
       },
     },
 
     scales: {
       x: {
-        ticks: { color: "#9ca3af" },
+        ticks: { color: "#6b7280", font: { size: 11 } },
         grid: { display: false },
+        border: { display: false },
       },
       y: {
         ticks: {
-          color: "#9ca3af",
+          color: "#6b7280",
+          font: { size: 11 },
           callback: (v) => `${formatCurrency(v)}`,
         },
-        grid: { color: "#1f2937" },
+        grid: { display: false },
+        border: { display: false },
       },
     },
   };
@@ -627,31 +659,35 @@ function renderDonut(ingresos, gastos) {
           data: [ingresos, gastos],
           backgroundColor: ["#22c55e", "#ef4444"],
           hoverBackgroundColor: ["#34d399", "#f87171"],
-          borderColor: "#111",
-          borderWidth: 2,
-          hoverOffset: 6,
+          borderColor: "transparent",
+          borderWidth: 0,
+          hoverOffset: 4,
         },
       ],
     },
     options: {
       responsive: true,
-      cutout: "65%",
+      maintainAspectRatio: false,
+      cutout: "82%",
       plugins: {
         legend: {
           position: "bottom",
           labels: {
-            color: "#ECD9BA",
-            padding: 16,
-            boxWidth: 12,
+            color: "#9ca3af",
+            padding: 24,
+            boxWidth: 8,
+            usePointStyle: true,
+            pointStyle: "circle",
           },
         },
         tooltip: {
-          backgroundColor: "rgba(20,20,20,0.95)",
-          titleColor: "#ECD9BA",
-          bodyColor: "#ECD9BA",
-          borderColor: "rgba(255,255,255,0.15)",
+          backgroundColor: "rgba(10,10,10,0.95)",
+          titleColor: "#fff",
+          bodyColor: "#d1d5db",
+          borderColor: "rgba(255,255,255,0.1)",
           borderWidth: 1,
-          padding: 10,
+          padding: 12,
+          cornerRadius: 8,
           displayColors: false,
           callbacks: {
             label: (ctx) => {
@@ -696,9 +732,7 @@ function renderDonutResumen(ingresos, gastos) {
   }
 }
 
-
 // UTILS
-
 
 function mapLabels(data, filtro) {
   if (filtro === "7dias") {
@@ -708,9 +742,7 @@ function mapLabels(data, filtro) {
   return data.map((d) => `${String(d.mes).padStart(2, "0")}/${d.anio}`);
 }
 
-
 // EXPORTAR
-
 
 async function exportarMovimientos() {
   try {
@@ -734,7 +766,7 @@ async function exportarMovimientos() {
     const urlBlob = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = urlBlob;
-    a.download = `movimientos_${desde || 'inicio'}_a_${hasta || 'hoy'}.csv`;
+    a.download = `movimientos_${desde || "inicio"}_a_${hasta || "hoy"}.csv`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -746,4 +778,3 @@ async function exportarMovimientos() {
     Alerta.error("No se pudo exportar el archivo");
   }
 }
-
