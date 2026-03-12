@@ -9,7 +9,7 @@
 
 ---
 
-## 📋 Tabla de Contenidos
+##  Tabla de Contenidos
 
 - [Contexto del Proyecto](#-contexto-del-proyecto)
 - [Características Principales](#-características-principales)
@@ -23,7 +23,7 @@
 
 ---
 
-## 🎯 Contexto del Proyecto
+## Contexto del Proyecto
 
 **Cliente:** Nexo (gimnasio local)  
 **Estado:** En desarrollo avanzado – Próximo a implementación productiva
@@ -47,7 +47,7 @@ Sistema web con **API REST** que centraliza toda la operación:
 
 ---
 
-## ✨ Características Principales
+##  Características Principales
 
 ### Seguridad
 - ✅ Autenticación stateless con **JWT** (tokens en cookies HttpOnly)
@@ -63,7 +63,7 @@ Sistema web con **API REST** que centraliza toda la operación:
 
 ---
 
-## 🏗️ Arquitectura y Decisiones Técnicas
+## Arquitectura y Decisiones Técnicas
 
 ### Arquitectura en Capas
 
@@ -95,7 +95,7 @@ Sistema web con **API REST** que centraliza toda la operación:
 
 ---
 
-## 🛠️ Stack Tecnológico
+##  Stack Tecnológico
 
 | Tecnología | Versión | Uso |
 |------------|---------|-----|
@@ -113,7 +113,7 @@ Sistema web con **API REST** que centraliza toda la operación:
 
 ---
 
-## 🚀 Instalación y Ejecución
+## Instalación y Ejecución
 
 ### Requisitos Previos
 
@@ -168,7 +168,7 @@ export JWT_SECRET=tu_clave_secreta
 
 ---
 
-## 📡 Endpoints de la API
+## Endpoints de la API
 
 La documentación completa está disponible en `/swagger-ui.html` al ejecutar la aplicación.
 
@@ -225,7 +225,7 @@ curl -X POST http://localhost:8080/socios/12345678/asistencias \
 
 ---
 
-## 🧪 Tests
+##  Tests
 
 El proyecto incluye tests de integración que validan los flujos principales:
 
@@ -250,7 +250,7 @@ El proyecto incluye tests de integración que validan los flujos principales:
 
 ---
 
-## 📁 Estructura del Proyecto
+##  Estructura del Proyecto
 
 ```
 src/main/java/com/nexo/gestion/
@@ -291,7 +291,7 @@ src/main/resources/
 
 ---
 
-## 📸 Capturas del Sistema
+## Capturas del Sistema
 
 ### Documentación Swagger
 <img width="1392" alt="endpoints-socios" src="https://github.com/user-attachments/assets/ec66724f-fb82-458b-9226-37203feb6ba9" />
@@ -315,7 +315,7 @@ src/main/resources/
 
 ---
 
-## 👤 Autor
+##  Autor
 
 **Mateo Calvo**
 
@@ -324,4 +324,4 @@ src/main/resources/
 
 ---
 
-> 💡 *Este proyecto fue desarrollado para resolver un problema real de negocio. El código refleja decisiones pragmáticas orientadas a mantenibilidad, seguridad y escalabilidad.*
+> *Este proyecto fue desarrollado para resolver un problema real de negocio. El código refleja decisiones pragmáticas orientadas a mantenibilidad, seguridad y escalabilidad.*
