@@ -294,8 +294,7 @@ public class SocioService {
         if (!tieneMembresiasActiva && !estaEnGracia) {
             // Registrar como pendiente
             Asistencia nuevaAsistencia = new Asistencia(socio, false);
-            Asistencia guardada = asistenciaRepository.save(nuevaAsistencia);
-            return convertirAAsistenciaSocioIdDTO(guardada.getIdAsistencia());
+            return guardarAsistencia(nuevaAsistencia);
         }
 
         // Verificar si ya asistió hoy
@@ -307,8 +306,7 @@ public class SocioService {
         if (!tieneMembresiasActiva && estaEnGracia) {
             // Registrar como pendiente (período de gracia = asistencia válida pero sin consumir de membresía nueva)
             Asistencia nuevaAsistencia = new Asistencia(socio, false);
-            Asistencia guardada = asistenciaRepository.save(nuevaAsistencia);
-            return convertirAAsistenciaSocioIdDTO(guardada.getIdAsistencia());
+            return guardarAsistencia(nuevaAsistencia);
         }
 
         // Si tiene membresía activa pero no tiene asistencias disponibles
@@ -316,11 +314,22 @@ public class SocioService {
             throw new SocioSinAsistenciasDisponiblesException();
         }
 
-        // SocioMembresia membresia = membresiaVigente(socio);
-
         Asistencia nuevaAsistencia = new Asistencia(socio, true);
-        Asistencia guardada = asistenciaRepository.save(nuevaAsistencia);
-        return convertirAAsistenciaSocioIdDTO(guardada.getIdAsistencia());
+        return guardarAsistencia(nuevaAsistencia);
+    }
+
+    /**
+     * Guarda una asistencia y atrapa la violación de constraint único (dni + fecha)
+     * que puede ocurrir por concurrencia o problemas de red.
+     */
+    private AsistenciaSocioIdDTO guardarAsistencia(Asistencia asistencia) {
+        try {
+            Asistencia guardada = asistenciaRepository.save(asistencia);
+            asistenciaRepository.flush();
+            return convertirAAsistenciaSocioIdDTO(guardada.getIdAsistencia());
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            throw new AsistenciaDiariaException();
+        }
     }
 
     private SocioMembresia membresiaVigente(Socio socio) {
