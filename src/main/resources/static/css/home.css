@@ -116,3 +116,18 @@
   background: #161616;
   border-color: #333;
 }
+
+/* Visibility Toggle Button */
+#btnToggleRecaudacion {
+  padding: 0.25rem;
+  margin: -0.25rem;
+  border-radius: 0.375rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+#btnToggleRecaudacion:hover {
+  background: rgba(255, 255, 255, 0.05);
+}

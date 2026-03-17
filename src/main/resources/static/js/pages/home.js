@@ -31,6 +31,28 @@ const playSound = (type) => {
 
 let timeoutModalExito = null;
 
+// ===== ESTADO VISIBILIDAD RECAUDACIÓN (Global al módulo) =====
+let isRecaudacionHidden = localStorage.getItem("nexo_recaudacion_hidden") === "true";
+let ultimaRecaudacion = 0;
+
+function actualizarVistaRecaudacion() {
+  const kpiEl = document.getElementById("kpiRecaudacionHoy");
+  const iconOpen = document.getElementById("iconEyeOpen");
+  const iconClosed = document.getElementById("iconEyeClosed");
+
+  if (!kpiEl) return;
+
+  if (isRecaudacionHidden) {
+    kpiEl.textContent = "••••";
+    iconOpen?.classList.add("hidden");
+    iconClosed?.classList.remove("hidden");
+  } else {
+    kpiEl.textContent = formatMoney(ultimaRecaudacion);
+    iconOpen?.classList.remove("hidden");
+    iconClosed?.classList.add("hidden");
+  }
+}
+
 export function init() {
   const go = (page) => navigateTo(page.replace(".html", ""));
 
@@ -74,6 +96,13 @@ export function init() {
   document
     .getElementById("quickPago")
     ?.addEventListener("click", () => go("registrar-pago.html"));
+
+  // ===== TOGGLE RECAUDACIÓN =====
+  document.getElementById("btnToggleRecaudacion")?.addEventListener("click", () => {
+    isRecaudacionHidden = !isRecaudacionHidden;
+    localStorage.setItem("nexo_recaudacion_hidden", isRecaudacionHidden);
+    actualizarVistaRecaudacion();
+  });
 
   // ===== REGISTRO RÁPIDO DE ASISTENCIA =====
   const input = document.getElementById("inputAsistenciaRapida");
@@ -552,10 +581,9 @@ async function cargarDashboard() {
     if (!res.ok) throw new Error("Error cargando dashboard");
 
     const data = await res.json();
+    ultimaRecaudacion = data.recaudacionHoy || 0;
+    actualizarVistaRecaudacion();
 
-    document.getElementById("kpiRecaudacionHoy").textContent = formatMoney(
-      data.recaudacionHoy,
-    );
     document.getElementById("kpiSociosActivos").textContent =
       data.sociosActivos || 0;
     document.getElementById("kpiPorVencer").textContent =

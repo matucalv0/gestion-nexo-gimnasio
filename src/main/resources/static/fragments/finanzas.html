@@ -82,13 +82,7 @@
             >
               $0
             </p>
-            <div class="flex items-center gap-2 mt-2">
-              <span
-                id="varGananciaMes"
-                class="text-xs font-bold text-green-500"
-              ></span>
-              <p class="text-caption">vs. mes ant.</p>
-            </div>
+            <p class="text-caption mt-2">Total cobros brutos</p>
           </div>
 
           <!-- Neto (Protagonista) -->
@@ -107,14 +101,22 @@
             >
               $0
             </p>
+            <!-- Variación vs Mes Anterior -->
             <div
-              class="mt-3 py-1 px-3 rounded-full bg-white/5 border border-white/10"
+              class="mt-3 py-1 px-3 rounded-full bg-white/5 border border-white/10 flex items-center justify-center gap-2"
             >
               <span
-                id="donutResumenPct"
-                class="text-xs text-gray-300 font-medium tracking-wide"
+                id="varBalanceMes"
+                class="text-xs font-bold"
               ></span>
+              <span class="text-[10px] text-gray-500 uppercase tracking-tighter">vs. mes ant.</span>
             </div>
+            
+            <!-- Distribución Ingresos/Gastos -->
+            <p
+              id="donutResumenPct"
+              class="text-[10px] text-gray-500 font-medium tracking-wide mt-2"
+            ></p>
           </div>
 
           <!-- Gastos -->

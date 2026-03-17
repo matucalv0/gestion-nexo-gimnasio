@@ -314,8 +314,9 @@ async function cargarKPIs() {
     setValor("kpiGananciaHoy", hoy);
     setValor("kpiGananciaSemana", semana);
 
-    setValor("kpiGananciaMes", statsMes.gananciaMes);
-    renderVariacion("varGananciaMes", statsMes.variacionMensual);
+    // statsMes.gananciaMes del backend es el BALANCE NETO (Ingresos - Gastos del mes)
+    setValor("donutResumenNeto", statsMes.gananciaMes);
+    renderVariacion("varBalanceMes", statsMes.variacionMensual);
 
     setKpisLoading(false);
   } catch (e) {
@@ -704,7 +705,7 @@ function renderDonut(ingresos, gastos) {
 }
 
 function renderDonutResumen(ingresos, gastos) {
-  const elIngresos = byId("donutResumenIngresos");
+  const elIngresos = byId("kpiGananciaMes");
   const elGastos = byId("donutResumenGastos");
   const elNeto = byId("donutResumenNeto");
   const elPct = byId("donutResumenPct");
