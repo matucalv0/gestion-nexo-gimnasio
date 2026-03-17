@@ -16,6 +16,7 @@ import java.util.*;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.stream.Collectors;
+import java.sql.SQLException;
 
 @Service
 @Transactional(readOnly = true)
@@ -286,6 +287,11 @@ public class SocioService {
     public AsistenciaSocioIdDTO registrarAsistencia(String dni) {
         Socio socio = socioRepository.findById(dni).orElseThrow(() -> new ObjetoNoEncontradoException(dni));
 
+        // Verificar si ya asistió hoy (aplica para todos los casos)
+        if (asistenciaRepository.socioVinoHoy(socio.getDni())) {
+            throw new AsistenciaDiariaException();
+        }
+
         int periodoGracia = membresiaConfig.getPeriodoGracia();
         boolean tieneMembresiasActiva = socioMembresiaRepository.estaActivoHoy(dni);
         boolean estaEnGracia = socioMembresiaRepository.estaEnPeriodoGracia(dni, periodoGracia);
@@ -294,21 +300,14 @@ public class SocioService {
         if (!tieneMembresiasActiva && !estaEnGracia) {
             // Registrar como pendiente
             Asistencia nuevaAsistencia = new Asistencia(socio, false);
-            Asistencia guardada = asistenciaRepository.save(nuevaAsistencia);
-            return convertirAAsistenciaSocioIdDTO(guardada.getIdAsistencia());
-        }
-
-        // Verificar si ya asistió hoy
-        if (asistenciaRepository.socioVinoHoy(socio.getDni())) {
-            throw new AsistenciaDiariaException();
+            return guardarAsistencia(nuevaAsistencia);
         }
 
         // Si está en período de gracia (membresía vencida pero dentro del período)
         if (!tieneMembresiasActiva && estaEnGracia) {
             // Registrar como pendiente (período de gracia = asistencia válida pero sin consumir de membresía nueva)
             Asistencia nuevaAsistencia = new Asistencia(socio, false);
-            Asistencia guardada = asistenciaRepository.save(nuevaAsistencia);
-            return convertirAAsistenciaSocioIdDTO(guardada.getIdAsistencia());
+            return guardarAsistencia(nuevaAsistencia);
         }
 
         // Si tiene membresía activa pero no tiene asistencias disponibles
@@ -316,11 +315,43 @@ public class SocioService {
             throw new SocioSinAsistenciasDisponiblesException();
         }
 
-        // SocioMembresia membresia = membresiaVigente(socio);
-
         Asistencia nuevaAsistencia = new Asistencia(socio, true);
-        Asistencia guardada = asistenciaRepository.save(nuevaAsistencia);
-        return convertirAAsistenciaSocioIdDTO(guardada.getIdAsistencia());
+        return guardarAsistencia(nuevaAsistencia);
+    }
+
+    /**
+     * Guarda una asistencia y atrapa la violación de constraint único (dni + fecha)
+     * que puede ocurrir por concurrencia o problemas de red.
+     */
+    private AsistenciaSocioIdDTO guardarAsistencia(Asistencia asistencia) {
+        try {
+            Asistencia guardada = asistenciaRepository.saveAndFlush(asistencia);
+            return convertirAAsistenciaSocioIdDTO(guardada.getIdAsistencia());
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            Throwable rootCause = e.getMostSpecificCause();
+            boolean isUniqueConstraintViolation = false;
+
+            if (rootCause instanceof SQLException) {
+                String sqlState = ((SQLException) rootCause).getSQLState();
+                if ("23505".equals(sqlState)) {
+                    isUniqueConstraintViolation = true;
+                }
+            }
+
+            if (!isUniqueConstraintViolation && rootCause != null && rootCause.getMessage() != null) {
+                // Fallback por nombre de constraint/índice en el mensaje de error
+                if (rootCause.getMessage().contains("uq_asistencia_dni_fecha")) {
+                    isUniqueConstraintViolation = true;
+                }
+            }
+
+            if (isUniqueConstraintViolation) {
+                throw new AsistenciaDiariaException();
+            }
+
+            // Para otras violaciones de integridad, re-lanzamos la excepción original
+            throw e;
+        }
     }
 
     private SocioMembresia membresiaVigente(Socio socio) {
