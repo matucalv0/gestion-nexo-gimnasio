@@ -286,6 +286,11 @@ public class SocioService {
     public AsistenciaSocioIdDTO registrarAsistencia(String dni) {
         Socio socio = socioRepository.findById(dni).orElseThrow(() -> new ObjetoNoEncontradoException(dni));
 
+        // Verificar si ya asistió hoy (aplica para todos los casos)
+        if (asistenciaRepository.socioVinoHoy(socio.getDni())) {
+            throw new AsistenciaDiariaException();
+        }
+
         int periodoGracia = membresiaConfig.getPeriodoGracia();
         boolean tieneMembresiasActiva = socioMembresiaRepository.estaActivoHoy(dni);
         boolean estaEnGracia = socioMembresiaRepository.estaEnPeriodoGracia(dni, periodoGracia);
@@ -295,11 +300,6 @@ public class SocioService {
             // Registrar como pendiente
             Asistencia nuevaAsistencia = new Asistencia(socio, false);
             return guardarAsistencia(nuevaAsistencia);
-        }
-
-        // Verificar si ya asistió hoy
-        if (asistenciaRepository.socioVinoHoy(socio.getDni())) {
-            throw new AsistenciaDiariaException();
         }
 
         // Si está en período de gracia (membresía vencida pero dentro del período)
