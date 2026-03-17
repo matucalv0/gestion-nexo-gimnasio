@@ -324,8 +324,7 @@ public class SocioService {
      */
     private AsistenciaSocioIdDTO guardarAsistencia(Asistencia asistencia) {
         try {
-            Asistencia guardada = asistenciaRepository.save(asistencia);
-            asistenciaRepository.flush();
+            Asistencia guardada = asistenciaRepository.saveAndFlush(asistencia);
             return convertirAAsistenciaSocioIdDTO(guardada.getIdAsistencia());
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
             throw new AsistenciaDiariaException();
