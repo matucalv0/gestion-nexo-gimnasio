@@ -16,6 +16,7 @@ import java.util.*;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.stream.Collectors;
+import java.sql.SQLException;
 
 @Service
 @Transactional(readOnly = true)
@@ -327,7 +328,29 @@ public class SocioService {
             Asistencia guardada = asistenciaRepository.saveAndFlush(asistencia);
             return convertirAAsistenciaSocioIdDTO(guardada.getIdAsistencia());
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
-            throw new AsistenciaDiariaException();
+            Throwable rootCause = e.getMostSpecificCause();
+            boolean isUniqueConstraintViolation = false;
+
+            if (rootCause instanceof SQLException) {
+                String sqlState = ((SQLException) rootCause).getSQLState();
+                if ("23505".equals(sqlState)) {
+                    isUniqueConstraintViolation = true;
+                }
+            }
+
+            if (!isUniqueConstraintViolation && rootCause != null && rootCause.getMessage() != null) {
+                // Fallback por nombre de constraint/índice en el mensaje de error
+                if (rootCause.getMessage().contains("uq_asistencia_dni_fecha")) {
+                    isUniqueConstraintViolation = true;
+                }
+            }
+
+            if (isUniqueConstraintViolation) {
+                throw new AsistenciaDiariaException();
+            }
+
+            // Para otras violaciones de integridad, re-lanzamos la excepción original
+            throw e;
         }
     }
 
