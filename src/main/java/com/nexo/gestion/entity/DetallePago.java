@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 public class DetallePago {
     @EmbeddedId
     private DetallePagoId idDetallePago;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("idPago")
     @JoinColumn(name = "id_pago")
     private Pago pago;
@@ -17,10 +17,10 @@ public class DetallePago {
     private BigDecimal precioUnitario;
     @Column(precision = 10, scale = 2, insertable = false, updatable = false)
     private BigDecimal subtotal;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_producto")
     private Producto producto;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_sm")
     private SocioMembresia socioMembresia;
 

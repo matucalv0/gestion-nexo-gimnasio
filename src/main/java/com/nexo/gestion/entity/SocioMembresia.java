@@ -19,11 +19,11 @@ public class SocioMembresia {
     @Column(precision = 10, scale = 2)
     private BigDecimal precio;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dni_socio")
     private Socio socio;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_membresia")
     private Membresia membresia;
 

@@ -54,7 +54,10 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                "/",
+                                "/index.html",
                                 "/login.html",
+                                "/fragments/**",
                                 "/auth/login",
                                 "/auth/logout",
                                 "/actuator/health",
@@ -83,4 +86,5 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 }
+
 

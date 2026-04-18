@@ -9,7 +9,7 @@ public class Asistencia {
     @EmbeddedId
     private AsistenciaSocioId idAsistencia;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("dniSocio")
     @JoinColumn(name = "dni")
     private Socio socio;

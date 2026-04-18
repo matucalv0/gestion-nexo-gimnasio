@@ -22,7 +22,7 @@ public class Gasto {
     private String proveedor;
     private boolean activo = true;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_mediopago")
     private MedioPago medioPago;
 

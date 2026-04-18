@@ -2,6 +2,7 @@ package com.nexo.gestion.repository;
 
 import com.nexo.gestion.entity.Asistencia;
 import com.nexo.gestion.entity.AsistenciaSocioId;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface AsistenciaRepository extends JpaRepository<Asistencia, AsistenciaSocioId> {
+    @EntityGraph(attributePaths = {"socio"})
     @Query("""
     SELECT a FROM Asistencia a
     JOIN a.socio s
@@ -22,6 +24,7 @@ public interface AsistenciaRepository extends JpaRepository<Asistencia, Asistenc
     """)
     List<Asistencia> buscarPorNombreODni(@Param("q") String q);
 
+    @EntityGraph(attributePaths = {"socio"})
     @Query("""
     SELECT a FROM Asistencia a
     JOIN a.socio s
@@ -38,6 +41,7 @@ public interface AsistenciaRepository extends JpaRepository<Asistencia, Asistenc
     );
 
 
+    @EntityGraph(attributePaths = {"socio"})
     @Query(value = "SELECT * FROM ASISTENCIA ORDER BY FECHA_HORA DESC", nativeQuery = true)
     List<Asistencia> findAllOrdenadoPorFecha();
 
@@ -123,6 +127,7 @@ public interface AsistenciaRepository extends JpaRepository<Asistencia, Asistenc
             """, nativeQuery = true)
     java.time.Instant fechaPrimeraAsistenciasPendiente(@Param("dni") String dni);
 
+    @EntityGraph(attributePaths = {"socio"})
     @Query("""
     SELECT a
     FROM Asistencia a

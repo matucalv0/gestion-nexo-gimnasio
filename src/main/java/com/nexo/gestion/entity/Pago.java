@@ -19,19 +19,19 @@ public class Pago {
     @Column(precision = 10, scale = 2)
     private BigDecimal monto;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dni_empleado")
     private Empleado empleado;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dni_socio")
     private Socio socio;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_mediopago")
     private MedioPago medioPago;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_descuento")
     private Descuento descuento;
 

@@ -243,7 +243,7 @@ function onTipoDetalleChange() {
   }
 
   // Actualizar HUD con los items ya en el carrito (sin preview ya que se limpiaron los precios)
-  calcularTotalesConPreview();
+  calcularTotales();
 }
 
 /* ================== PRECIOS ================== */
@@ -390,7 +390,7 @@ function renderDetalles() {
       });
     });
   }
-  calcularTotalesConPreview();
+  calcularTotales();
 }
 
 function calcularTotales() {
@@ -449,20 +449,23 @@ function calcularTotalesConPreview() {
   const tipo = tipoDetalle?.value;
   let precioPreview = 0;
   let cantidadPreview = 1;
+  let esMembresia = false;
 
   if (tipo === "PRODUCTO" && producto?.value) {
     precioPreview = Number(precio?.value ?? 0);
     cantidadPreview = Number(cantidad?.value ?? 1);
+    esMembresia = false;
   } else if (tipo === "MEMBRESIA" && membresia?.value) {
     precioPreview = Number(precioMembresia?.value ?? 0);
     cantidadPreview = 1;
+    esMembresia = true;
   }
 
   // Build a virtual combined list: committed cart + preview item
   const todoDetalles = [
     ...detalles,
     ...(precioPreview > 0
-      ? [{ cantidad: cantidadPreview, precioUnitario: precioPreview, idMembresia: tipo === "MEMBRESIA" ? 1 : undefined, idProducto: tipo === "PRODUCTO" ? 1 : undefined }]
+      ? [{ cantidad: cantidadPreview, precioUnitario: precioPreview, idMembresia: esMembresia ? Number(membresia.value) : undefined, idProducto: !esMembresia ? Number(producto.value) : undefined }]
       : []),
   ];
 
@@ -471,16 +474,19 @@ function calcularTotalesConPreview() {
   const lblDescuento = document.getElementById("lblDescuento");
   const lblTotal = document.getElementById("lblTotal");
 
+  // 1. Calcular subtotal de todos los detalles (incluyendo preview)
   const subtotalPreview = todoDetalles.reduce(
     (acc, d) => acc + d.cantidad * d.precioUnitario,
     0,
   );
 
+  // 2. Calcular descuento (SOLO sobre membresías)
   let descuentoMontoPreview = 0;
   if (descuentoSelect && descuentoSelect.value) {
     const descId = Number(descuentoSelect.value);
     const descObj = descuentosCache.find((d) => d.idDescuento === descId);
     if (descObj) {
+      // Filtrar solo membresías (detalles con idMembresia)
       const montoMembresias = todoDetalles
         .filter((d) => d.idMembresia != null)
         .reduce((acc, d) => acc + d.cantidad * d.precioUnitario, 0);
@@ -490,8 +496,10 @@ function calcularTotalesConPreview() {
     }
   }
 
+  // 3. Calcular total final = subtotal - descuento
   const totalPreview = subtotalPreview - descuentoMontoPreview;
 
+  // 4. Renderizar los totales
   const formatter = new Intl.NumberFormat("es-AR", {
     style: "currency",
     currency: "ARS",

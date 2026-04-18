@@ -17,11 +17,11 @@ public class Rutina {
     private String nombre;
     private LocalDate fecha;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dni_empleado")
     private Empleado empleado;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dni_socio")
     private Socio socio;
 

@@ -40,7 +40,7 @@ public class AuthController {
     public ResponseEntity<Map<String, String>> login(@jakarta.validation.Valid @RequestBody UsuarioLoginDTO usuarioLoginDTO, jakarta.servlet.http.HttpServletResponse response) {
         log.debug("Intentando login para usuario: {}", usuarioLoginDTO.username());
         String token = authService.login(usuarioLoginDTO);
-        
+
         // Crear Cookie HttpOnly con SameSite=Strict para prevenir CSRF
         jakarta.servlet.http.Cookie cookie = new jakarta.servlet.http.Cookie("jwt", token);
         cookie.setHttpOnly(true);
@@ -66,7 +66,7 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<Map<String, String>> logout(jakarta.servlet.http.HttpServletRequest request,
-                                                       jakarta.servlet.http.HttpServletResponse response) {
+                                                      jakarta.servlet.http.HttpServletResponse response) {
         // RC-4: Blacklist del token actual para revocación server-side
         if (request.getCookies() != null) {
             for (jakarta.servlet.http.Cookie c : request.getCookies()) {

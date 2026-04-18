@@ -99,7 +99,7 @@ public interface SocioRepository extends JpaRepository<Socio, String> {
         LEFT JOIN membresia m ON ma.id_membresia = m.id_membresia
         WHERE (:q IS NULL OR LOWER(s.nombre) LIKE :q OR s.dni LIKE :q)
           AND (
-              :activo IS NULL 
+              CAST(:activo AS boolean) IS NULL 
               OR (:activo = true AND ma.id_sm IS NOT NULL)
               OR (:activo = false AND ma.id_sm IS NULL)
           )
@@ -128,7 +128,7 @@ public interface SocioRepository extends JpaRepository<Socio, String> {
         LEFT JOIN membresias_activas ma ON ma.dni_socio = s.dni
         WHERE (:q IS NULL OR LOWER(s.nombre) LIKE :q OR s.dni LIKE :q)
           AND (
-              :activo IS NULL 
+              CAST(:activo AS boolean) IS NULL
               OR (:activo = true AND ma.id_sm IS NOT NULL)
               OR (:activo = false AND ma.id_sm IS NULL)
           )
