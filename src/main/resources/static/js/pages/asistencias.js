@@ -2,6 +2,7 @@ import { checkAuth } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
 import { Alerta } from "../ui/alerta.js";
 import { renderPagination } from "../ui/pagination.js";
+import { renderMasterTable, createAvatarCell } from "../ui/tabla.js";
 import { formatDateTime } from "../utils/date-utils.js";
 import { navigateTo, getRouteParams } from "../utils/navigate.js";
 
@@ -102,7 +103,7 @@ async function cargarAsistencias(tablaBody) {
     const pageData = await res.json();
 
     // pageData es PageResponseDTO
-    renderTabla(tablaBody, pageData.content);
+    renderAsistenciasTable(tablaBody, pageData.content);
 
     renderPagination(
       document.getElementById("paginationContainer"),
@@ -119,34 +120,26 @@ async function cargarAsistencias(tablaBody) {
   }
 }
 
-function renderTabla(tablaBody, asistencias) {
+function renderAsistenciasTable(tablaBody, asistencias) {
   const emptyState = document.getElementById("emptyStateAsistencias");
 
-  // Limpiar filas existentes (excepto el empty state)
-  const rows = tablaBody.querySelectorAll("tr:not(#emptyStateAsistencias)");
-  rows.forEach((row) => row.remove());
-
-  if (!asistencias || asistencias.length === 0) {
-    // Mostrar empty state
-    if (emptyState) emptyState.classList.remove("hidden");
-    return;
-  }
-
-  // Ocultar empty state y mostrar datos
-  if (emptyState) emptyState.classList.add("hidden");
-
-  asistencias.forEach((a, index) => {
-    const tr = document.createElement("tr");
-    tr.classList.add("animate-fade-in-up", "hover:bg-[#161616]", "transition");
-    tr.style.animationDelay = `${index * 50}ms`;
-
-    tr.innerHTML = `
-      <td class="py-4 px-8 font-medium align-middle">${a.nombre}</td>
-      <td class="py-4 px-8 text-gray-500 font-mono text-right align-middle">${a.dni}</td>
-      <td class="py-4 px-8 text-gray-400 text-right align-middle tabular-nums">${formatDateTime(a.fechaHora)}</td>
-    `;
-
-    tablaBody.appendChild(tr);
+  renderMasterTable({
+    tbody: tablaBody,
+    emptyElement: emptyState,
+    data: asistencias,
+    columns: [
+      {
+        render: (a) => createAvatarCell(a.nombre)
+      },
+      {
+        field: "dni",
+        className: "text-left font-mono text-xs text-gray-400"
+      },
+      {
+        className: "text-right font-mono text-xs text-gray-300 tabular-nums",
+        format: (val, a) => formatDateTime(a.fechaHora)
+      }
+    ]
   });
 }
 
@@ -255,15 +248,17 @@ async function cargarGrafico() {
     const labels = fechas.map((d) => d.getDate()); // solo día para el eje x
     const values = data.map((d) => d.totalAsistencias);
 
-    const ctx = document.getElementById("AsistenciasDiaChart");
+    const canvas = document.getElementById("AsistenciasDiaChart");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
 
     if (chart) chart.destroy();
 
-    // Crear gradiente para el fill
-    const gradient = ctx.getContext("2d").createLinearGradient(0, 0, 0, 250);
-    gradient.addColorStop(0, "rgba(255, 140, 50, 0.3)");
-    gradient.addColorStop(0.5, "rgba(255, 140, 50, 0.1)");
-    gradient.addColorStop(1, "rgba(255, 140, 50, 0)");
+    // Crear gradiente refinado para el fill
+    const gradient = ctx.createLinearGradient(0, 0, 0, 240);
+    gradient.addColorStop(0, "rgba(255, 107, 44, 0.25)");
+    gradient.addColorStop(0.7, "rgba(255, 107, 44, 0.03)");
+    gradient.addColorStop(1, "rgba(255, 107, 44, 0.0)");
 
     chart = new Chart(ctx, {
       type: "line",
@@ -273,15 +268,18 @@ async function cargarGrafico() {
           {
             label: "Asistencias",
             data: values,
-            borderColor: "rgba(255, 140, 50, 0.8)",
+            borderColor: "#ff6b2c",
             backgroundColor: gradient,
             fill: true,
-            tension: 0.4,
-            borderWidth: 2,
-            pointRadius: 0,
+            tension: 0.28,
+            borderWidth: 2.5,
+            pointRadius: 2.5,
             pointHoverRadius: 6,
-            pointHoverBackgroundColor: "#FF8C32",
-            pointHoverBorderColor: "#fff",
+            pointBackgroundColor: "#0d0d11",
+            pointHoverBackgroundColor: "#ff6b2c",
+            pointBorderColor: "#ff6b2c",
+            pointHoverBorderColor: "#ffffff",
+            pointBorderWidth: 2,
             pointHoverBorderWidth: 2,
           },
         ],
@@ -289,34 +287,35 @@ async function cargarGrafico() {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-
         interaction: {
           mode: "index",
           intersect: false,
         },
-
+        animation: {
+          duration: 600,
+          easing: "easeOutQuart",
+        },
         plugins: {
           legend: { display: false },
-
           tooltip: {
-            backgroundColor: "rgba(10, 10, 10, 0.95)",
-            titleColor: "rgba(255, 255, 255, 0.9)",
-            bodyColor: "rgba(255, 140, 50, 1)",
+            backgroundColor: "rgba(13, 13, 17, 0.95)",
+            borderColor: "rgba(255, 255, 255, 0.12)",
+            borderWidth: 1,
+            titleColor: "#ffffff",
+            bodyColor: "#ff6b2c",
             titleFont: {
-              size: 13,
-              family: "'Inter', sans-serif",
-              weight: "normal",
+              size: 12,
+              family: "'Plus Jakarta Sans', sans-serif",
+              weight: "bold",
             },
             bodyFont: {
-              size: 14,
+              size: 13,
               family: "'JetBrains Mono', monospace",
               weight: "bold",
             },
             padding: 12,
-            cornerRadius: 6,
+            cornerRadius: 10,
             displayColors: false,
-            borderColor: "rgba(255, 255, 255, 0.1)",
-            borderWidth: 1,
             callbacks: {
               title: (items) => {
                 const i = items[0].dataIndex;
@@ -326,31 +325,31 @@ async function cargarGrafico() {
                   month: "long",
                 }).format(fechas[i]);
               },
-              label: (item) => `${item.parsed.y} asistencias`,
+              label: (item) => `  ${item.parsed.y} asistencias`,
             },
           },
         },
-
         scales: {
           y: {
             beginAtZero: true,
             ticks: {
-              color: "#6b7280",
-              font: { size: 11, family: "'JetBrains Mono', monospace" },
-              padding: 12,
+              color: "#71717a",
+              font: { size: 10, family: "'JetBrains Mono', monospace" },
+              padding: 8,
               maxTicksLimit: 6,
             },
             grid: {
-              display: false,
+              color: "rgba(255, 255, 255, 0.04)",
+              borderDash: [4, 4],
               drawBorder: false,
             },
             border: { display: false },
           },
           x: {
             ticks: {
-              color: "#6b7280",
-              font: { size: 11, family: "'Inter', sans-serif" },
-              padding: 10,
+              color: "#71717a",
+              font: { size: 11, family: "'Plus Jakarta Sans', sans-serif" },
+              padding: 8,
               maxRotation: 0,
               callback: (value, index) => {
                 const day = labels[index];
@@ -363,15 +362,9 @@ async function cargarGrafico() {
             },
             grid: {
               display: false,
-              drawBorder: false,
             },
             border: { display: false },
           },
-        },
-
-        animation: {
-          duration: 800,
-          easing: "easeOutCubic",
         },
       },
     });

@@ -2,7 +2,9 @@ import { checkAuth, logout } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
 import { Alerta } from "../ui/alerta.js";
 import { renderPagination } from "../ui/pagination.js";
+import { renderMasterTable, createAvatarCell, createStatusBadge } from "../ui/tabla.js";
 import { navigateTo, getRouteParams } from "../utils/navigate.js";
+import { formatDate, formatDiasRestantes, formatDiasDesdeVencimiento } from "../utils/date-utils.js";
 
 checkAuth();
 
@@ -12,10 +14,12 @@ const API_URL = "/socios";
 let currentPage = 0;
 const pageSize = 20;
 
+let searchDebounceTimer = null;
+
 export function init() {
-  const tablaBody = document.getElementById("tablaSociosBody");
   const inputBusqueda = document.getElementById("inputBusqueda");
   const filtroActivo = document.getElementById("filtroActivo");
+  const segmentedControl = document.getElementById("segmentedControl");
 
   const btnHome = document.getElementById("btnHome");
   const btnLogout = document.getElementById("btnLogout");
@@ -28,7 +32,9 @@ export function init() {
     history.back();
   });
 
-  btnLogout?.addEventListener("click", logout);
+  btnLogout?.addEventListener("click", () => {
+    logout();
+  });
 
   btnNuevoSocio?.addEventListener("click", () => {
     navigateTo("registrar-socio");
@@ -39,34 +45,76 @@ export function init() {
 
   // Buscar Button
   btnBuscar?.addEventListener("click", () => {
+    clearTimeout(searchDebounceTimer);
     currentPage = 0;
-    cargarSocios(tablaBody);
+    cargarSocios();
+  });
+
+  // Real-time debounced search
+  inputBusqueda?.addEventListener("input", () => {
+    clearTimeout(searchDebounceTimer);
+    searchDebounceTimer = setTimeout(() => {
+      currentPage = 0;
+      cargarSocios();
+    }, 300);
   });
 
   // Enter en buscador
   inputBusqueda?.addEventListener("keypress", (e) => {
     if (e.key === "Enter") {
+      clearTimeout(searchDebounceTimer);
       currentPage = 0;
-      cargarSocios(tablaBody);
+      cargarSocios();
     }
   });
 
-  // Filtro Estado Change
+  // Segmented Control Tabs
+  if (segmentedControl) {
+    const tabs = segmentedControl.querySelectorAll(".tab-btn");
+    tabs.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const val = btn.getAttribute("data-value");
+        if (filtroActivo) filtroActivo.value = val;
+        
+        // Update active classes
+        tabs.forEach((t) => t.classList.remove("active"));
+        btn.classList.add("active");
+
+        currentPage = 0;
+        cargarSocios();
+      });
+    });
+  }
+
+  // Fallback Filtro Select Change si existe
   filtroActivo?.addEventListener("change", () => {
     currentPage = 0;
-    cargarSocios(tablaBody);
+    cargarSocios();
   });
 
   // Limpiar
   btnLimpiar?.addEventListener("click", () => {
-    inputBusqueda.value = "";
-    filtroActivo.value = ""; // Todos
+    clearTimeout(searchDebounceTimer);
+    if (inputBusqueda) inputBusqueda.value = "";
+    if (filtroActivo) filtroActivo.value = "TODOS";
+
+    if (segmentedControl) {
+      const tabs = segmentedControl.querySelectorAll(".tab-btn");
+      tabs.forEach((t) => {
+        if (t.getAttribute("data-value") === "TODOS") {
+          t.classList.add("active");
+        } else {
+          t.classList.remove("active");
+        }
+      });
+    }
+
     currentPage = 0;
-    cargarSocios(tablaBody);
+    cargarSocios();
   });
 
   // Carga inicial
-  cargarSocios(tablaBody);
+  cargarSocios();
 
   // Foco automático en el input de búsqueda
   const params = getRouteParams();
@@ -76,34 +124,47 @@ export function init() {
 }
 
 export function destroy() {
-  // Limpiar event listeners no anclados al DOM si es necesario
+  clearTimeout(searchDebounceTimer);
 }
 
-async function cargarSocios(tablaBody) {
-  try {
-    const q = document.getElementById("inputBusqueda").value;
-    const activo = document.getElementById("filtroActivo").value;
+async function cargarSocios() {
+  const query = document.getElementById("inputBusqueda")?.value?.trim() || "";
+  const filtro = document.getElementById("filtroActivo")?.value || "TODOS";
 
+  try {
     let url = `${API_URL}?page=${currentPage}&size=${pageSize}`;
-    if (q) url += `&q=${encodeURIComponent(q)}`;
-    if (activo) url += `&activo=${activo}`;
+
+    if (query) {
+      url += `&q=${encodeURIComponent(query)}`;
+    }
+
+    if (filtro && filtro !== "TODOS") {
+      url += `&activo=${encodeURIComponent(filtro)}`;
+    }
 
     const res = await authFetch(url);
-    if (!res.ok) {
-      throw new Error("No se pudo obtener la lista de socios");
-    }
-    const pageData = await res.json();
+    if (!res.ok) throw new Error("Error al obtener socios");
 
-    renderSocios(tablaBody, pageData.content);
+    const data = await res.json();
 
-    // Render paginación
+    // Actualizar contadores globales de pestañas
+    const totalTodos = (data.totalActivos || 0) + (data.totalVencidos || 0) + (data.totalSinMembresia || 0);
+    actualizarContador("contadorTodos", totalTodos);
+    if (data.totalActivos !== undefined) actualizarContador("contadorActivos", data.totalActivos);
+    if (data.totalVencidos !== undefined) actualizarContador("contadorVencidos", data.totalVencidos);
+    if (data.totalSinMembresia !== undefined) actualizarContador("contadorSinMembresia", data.totalSinMembresia);
+
+    // Renderizar la Master Table usando el componente centralizado
+    renderSociosTable(data.socios || []);
+
+    // Paginación
     renderPagination(
       document.getElementById("paginationContainer"),
-      pageData.page,
-      pageData.totalPages,
+      data.pageNumber || 0,
+      data.totalPages || 0,
       (newPage) => {
         currentPage = newPage;
-        cargarSocios(tablaBody);
+        cargarSocios();
       },
     );
   } catch (err) {
@@ -112,110 +173,97 @@ async function cargarSocios(tablaBody) {
   }
 }
 
-function renderSocios(tablaBody, socios) {
-  const emptyState = document.getElementById("emptyStateSocios");
+function actualizarContador(id, count) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = count;
+}
 
-  // Limpiar filas existentes (excepto el empty state)
-  const rows = tablaBody.querySelectorAll("tr:not(#emptyStateSocios)");
-  rows.forEach((row) => row.remove());
+function renderSociosTable(socios) {
+  const tbody = document.getElementById("tablaSociosMasterBody");
+  const emptyElement = document.getElementById("emptyMaster");
 
-  if (!socios || !socios.length) {
-    if (emptyState) emptyState.classList.remove("hidden");
-    return;
-  }
-
-  if (emptyState) emptyState.classList.add("hidden");
-
-  socios.forEach((s, index) => {
-    const tr = document.createElement("tr");
-    tr.classList.add("hover:bg-[#161616]", "transition-colors", "group");
-    if (index < 10) {
-      tr.classList.add("animate-fade-in-up");
-      tr.style.animationDelay = `${index * 50}ms`;
-    }
-
-    const isActivo = s.activo === true;
-
-    // Generar Avatar (color hash basado en el nombre)
-    const nombreCompleto = s.nombre || "Desconocido";
-    const iniciales = nombreCompleto
-      .split(" ")
-      .slice(0, 2)
-      .map((n) => n.charAt(0).toUpperCase())
-      .join("");
-
-    const colors = [
-      "bg-rose-500/10 text-rose-400 border-rose-500/20",
-      "bg-blue-500/10 text-blue-400 border-blue-500/20",
-      "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-      "bg-purple-500/10 text-purple-400 border-purple-500/20",
-      "bg-orange-500/10 text-orange-400 border-orange-500/20",
-      "bg-cyan-500/10 text-cyan-400 border-cyan-500/20",
-    ];
-    let hash = 0;
-    for (let i = 0; i < nombreCompleto.length; i++) {
-      hash = nombreCompleto.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    const colorIndex = Math.abs(hash) % colors.length;
-    const avatarClass = colors[colorIndex];
-
-    const estadoBtn = isActivo
-      ? `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-green-500/10 text-green-400 border border-green-500/20">
-           <span class="w-1.5 h-1.5 rounded-full bg-green-400"></span> Activo
-         </span>`
-      : `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-gray-500/10 text-gray-400 border border-gray-500/20">
-           <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span> Baja
-         </span>`;
-
-    tr.innerHTML = `
-      <td class="py-4 px-6">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-lg flex items-center justify-center border font-bold text-sm ${avatarClass}">
-            ${iniciales}
+  renderMasterTable({
+    tbody,
+    emptyElement,
+    data: socios,
+    columns: [
+      {
+        field: "dni",
+        className: "text-left",
+        format: (dni) => `<span class="text-xs font-mono text-gray-400 group-hover:text-gray-300 transition-colors">${dni}</span>`
+      },
+      {
+        render: (s) => createAvatarCell(s.nombre)
+      },
+      {
+        render: (s) => `
+          <div class="flex flex-col items-start">
+            <span class="text-xs text-gray-300 font-medium">${s.telefono || '<span class="text-gray-600">—</span>'}</span>
+            <span class="text-[11px] text-gray-500 max-w-[140px] truncate">${s.email || ""}</span>
           </div>
-          <div>
-            <p class="text-sm font-bold text-gray-200 group-hover:text-white transition-colors truncate max-w-[150px] sm:max-w-xs">${nombreCompleto}</p>
-          </div>
-        </div>
-      </td>
-      <td class="py-4 px-6 text-right">
-        <p class="text-sm font-mono text-gray-400 group-hover:text-gray-300 transition-colors">${s.dni}</p>
-      </td>
-      <td class="py-4 px-6 text-right">
-        <div class="flex flex-col items-end">
-          <p class="text-sm text-gray-300">${s.telefono || '<span class="text-gray-600">—</span>'}</p>
-          <p class="text-xs text-gray-500 max-w-[120px] truncate">${s.email || ""}</p>
-        </div>
-      </td>
-      <td class="py-4 px-6 text-center">
-        ${estadoBtn}
-      </td>
-      <td class="py-4 px-6 text-center">
-        <div class="flex items-center justify-center">
-          <button class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:text-[var(--orange)] hover:bg-[var(--orange)]/10 transition-colors" title="Ver ficha del socio">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-            </svg>
-          </button>
-        </div>
-      </td>
-    `;
-
-    tr.querySelector("button").addEventListener("click", () => {
-      navigateTo("socio-detalle", { dni: s.dni });
-    });
-
-    tablaBody.appendChild(tr);
+        `
+      },
+      {
+        render: (s) => {
+          if (s.tieneMembresiaVigente) {
+            return createStatusBadge(s.nombreMembresia || "Activa", "success", true);
+          } else if (s.diasVencidos !== null && s.diasVencidos !== undefined) {
+            return createStatusBadge("Vencida", "danger");
+          } else {
+            return createStatusBadge("Sin Membresía", "neutral");
+          }
+        }
+      },
+      {
+        render: (s) => {
+          if (s.tieneMembresiaVigente) {
+            const diasTexto = formatDiasRestantes(s.diasRestantes);
+            const diasColor = s.diasRestantes <= 5 ? "text-orange-400 font-semibold" : "text-green-400 font-medium";
+            return `
+              <div class="flex flex-col items-start">
+                <span class="text-xs ${diasColor}">${diasTexto}</span>
+                <span class="text-[11px] text-gray-500 font-mono">${s.fechaVencimientoMembresia ? formatDate(s.fechaVencimientoMembresia) : ""}</span>
+              </div>
+            `;
+          } else if (s.diasVencidos !== null && s.diasVencidos !== undefined) {
+            const diasTexto = formatDiasDesdeVencimiento(s.diasVencidos);
+            const diasColor = s.diasVencidos > 7 ? "text-red-400 font-semibold" : "text-red-300 font-medium";
+            return `
+              <div class="flex flex-col items-start">
+                <span class="text-xs ${diasColor}">${diasTexto}</span>
+                <span class="text-[11px] text-gray-500 font-mono">${s.ultimaMembresiaVencimiento ? formatDate(s.ultimaMembresiaVencimiento) : ""}</span>
+              </div>
+            `;
+          } else {
+            return `<span class="text-gray-600 text-xs">—</span>`;
+          }
+        }
+      }
+    ],
+    actions: [
+      {
+        icon: "add",
+        type: "success",
+        title: "Renovar membresía / Cobrar",
+        onClick: (s) => navigateTo("registrar-pago", { dni: s.dni })
+      },
+      {
+        icon: "view",
+        type: "primary",
+        title: "Ver ficha del socio",
+        onClick: (s) => navigateTo("socio-detalle", { dni: s.dni })
+      }
+    ]
   });
 }
 
 async function exportarCSV() {
   try {
-    const q = document.getElementById("inputBusqueda").value;
-    const activo = document.getElementById("filtroActivo").value;
+    const q = document.getElementById("inputBusqueda")?.value || "";
+    const activo = document.getElementById("filtroActivo")?.value || "TODOS";
 
     let url = `/exportar/socios?`;
-    if (q) url += `q=${encodeURIComponent(q)}&`;
+    if (q.trim()) url += `q=${encodeURIComponent(q.trim())}&`;
     if (activo) url += `activo=${activo}`;
 
     const res = await authFetch(url);
@@ -243,3 +291,4 @@ async function exportarCSV() {
     Alerta.error("No se pudo exportar el archivo");
   }
 }
+

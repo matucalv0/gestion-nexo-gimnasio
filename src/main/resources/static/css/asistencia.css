@@ -1,17 +1,4 @@
-/* ===== Body y contenedor ===== */
-body {
-  min-height: 100vh;
-  margin: 0;
-  background-image: linear-gradient(
-      rgba(9, 25, 36, 0.88),
-      rgba(9, 25, 36, 0.88)
-    ),
-    url("../assets/nexofondo.jpg");
-  background-size: cover;
-  background-position: center;
-  font-family: "Segoe UI", sans-serif;
-  color: var(--beige);
-}
+/* ===== Asistencia Module (Dark Tech Theme) ===== */
 
 .panel-container {
   width: 100%;
@@ -22,17 +9,14 @@ body {
 .panel-card {
   width: 100%;
   max-width: 600px;
-  margin: 60px auto;
-  background-color: #1f2e38;
+  margin: 40px auto;
+  background-color: #0c0c0c;
   padding: 36px 40px;
-  border-radius: var(--radius);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+  border-radius: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.02);
   box-sizing: border-box;
-  transition: transform 0.2s ease;
-}
-
-.panel-card:hover {
-  transform: translateY(-2px);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ===== Header ===== */
@@ -45,9 +29,10 @@ body {
 
 .panel-header h1 {
   margin: 0;
-  letter-spacing: 1.5px;
-  color: var(--beige);
-  font-size: 28px;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  font-size: 1.75rem;
+  font-weight: 700;
 }
 
 /* ===== Acciones ===== */
@@ -55,123 +40,127 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  margin-bottom: 0; /* eliminamos margen que empujaba el dropdown */
-  position: relative; /* para que el dropdown se posicione respecto al input */
+  margin-bottom: 0;
+  position: relative;
 }
 
 .actions input {
   flex: 1 1 150px;
   min-width: 120px;
-  padding: 14px;
-  border-radius: var(--radius);
-  border: 1px solid #2f3e48;
-  background-color: #16222b;
-  color: var(--beige);
-  font-size: 16px;
-  transition: border 0.2s;
+  padding: 12px 16px;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: #111111;
+  color: #ffffff;
+  font-size: 0.9375rem;
+  transition: all 0.2s ease;
   z-index: 1;
+  outline: none;
 }
 
 .actions input:focus {
-  outline: none;
   border-color: var(--orange);
-  box-shadow: 0 0 8px rgba(255, 140, 0, 0.3);
+  box-shadow: 0 0 0 3px rgba(255, 80, 0, 0.15);
+  background-color: #141414;
 }
 
 .actions input::placeholder {
-  color: #9aa7b0;
+  color: #71717a;
 }
 
 .actions button {
-  padding: 14px 18px;
-  font-size: 15px;
-  border-radius: var(--radius);
+  padding: 12px 20px;
+  font-size: 0.875rem;
+  border-radius: 9999px;
   font-weight: 600;
   border: none;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .actions button.primary {
   background-color: var(--orange);
-  color: var(--black);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(255, 80, 0, 0.25);
 }
 
 .actions button.primary:hover {
-  background-color: #f57c26;
+  background-color: #ff651a;
+  box-shadow: 0 6px 20px rgba(255, 80, 0, 0.35);
   transform: translateY(-1px);
+}
+
+.actions button:active {
+  transform: scale(0.98);
 }
 
 /* ===== Dropdown de resultados ===== */
 .resultados-busqueda {
   position: absolute;
-  top: 100%; /* justo debajo del input */
+  top: 100%;
   left: 0;
   right: 0;
-  background-color: #16222b;
-  border: 1px solid #2f3e48;
-  border-radius: var(--radius);
+  background-color: #111111;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0.875rem;
   max-height: 220px;
   overflow-y: auto;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  margin-top: 4px;
-  z-index: 2;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.8);
+  margin-top: 6px;
+  z-index: 20;
 }
 
 .resultados-busqueda div {
-  padding: 12px 14px;
+  padding: 12px 16px;
   cursor: pointer;
-  color: var(--beige);
-  transition: background 0.2s, color 0.2s;
+  color: #d4d4d8;
+  font-size: 0.875rem;
+  transition: background 0.15s, color 0.15s;
 }
 
 .resultados-busqueda div:hover {
-  background-color: #1a2a33;
+  background-color: rgba(255, 80, 0, 0.1);
   color: var(--orange);
 }
 
 /* ===== Resultado de acción ===== */
 .resultado {
-  font-size: 16px;
+  font-size: 0.875rem;
   min-height: 30px;
   margin-top: 16px;
-  padding: 8px 12px;
-  border-radius: var(--radius);
+  padding: 10px 14px;
+  border-radius: 0.75rem;
   transition: all 0.2s;
   word-break: break-word;
 }
 
 .resultado.ok {
-  color: var(--green);
-  background-color: rgba(0, 128, 0, 0.1);
+  color: #4ade80;
+  background-color: rgba(74, 222, 128, 0.1);
+  border: 1px solid rgba(74, 222, 128, 0.2);
 }
 
 .resultado.warn {
-  color: var(--orange);
-  background-color: rgba(255, 140, 0, 0.1);
+  color: #fbbf24;
+  background-color: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.2);
 }
 
 .resultado.error {
-  color: var(--red);
-  background-color: rgba(255, 0, 0, 0.1);
+  color: #f87171;
+  background-color: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(248, 113, 113, 0.2);
 }
 
-.info-socio {
-  margin-top: 12px;
-  padding: 10px 14px;
-  border-radius: var(--radius);
-  background-color: #16222b;
-  color: var(--beige);
-  font-size: 15px;
-}
-
+.info-socio,
 .info-membresia {
   margin-top: 12px;
-  padding: 10px 14px;
-  border-radius: var(--radius);
-  background-color: #16222b;
-  color: var(--beige);
-  font-size: 15px;
+  padding: 12px 16px;
+  border-radius: 0.75rem;
+  background-color: #111111;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: #e5e5e5;
+  font-size: 0.875rem;
 }
 
 .info-socio:empty,
@@ -180,22 +169,15 @@ body {
   display: none;
 }
 
-
-
 /* ===== Ajustes móviles ===== */
 @media (max-width: 768px) {
   .panel-card {
     padding: 24px 16px;
-    margin: 40px 16px;
+    margin: 24px 16px;
   }
 
   .actions input,
   .actions button {
     flex: 1 1 100%;
   }
-
-  .resultados-busqueda {
-    max-height: 180px;
-  }
 }
-

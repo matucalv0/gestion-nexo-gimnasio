@@ -1,46 +1,30 @@
-
-/* ===== Fondo global ===== */
-
-body {
-  min-height: 100vh;
-  margin: 0;
-  background-image: linear-gradient(
-      rgba(9, 25, 36, 0.88),
-      rgba(9, 25, 36, 0.88)
-    ),
-    url("../assets/nexofondo.jpg");
-  background-size: cover;
-  background-position: center;
-  font-family: "Inter", sans-serif;
-}
+/* ===== Registrar Socio (Dark Tech Theme) ===== */
 
 .error {
   display: block;
-  color: #d92d20;
-  font-size: 0.85rem;
+  color: #f87171;
+  font-size: 0.8rem;
   margin-top: 4px;
   margin-bottom: 8px;
 }
 
-
 /* ===== Contenedor ===== */
 .panel-container {
   display: flex;
-  flex-direction: column;   /* ← CLAVE */
-  align-items: center;      /* centra horizontal */
-  padding: 40px 16px;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 16px;
 }
-
-
 
 /* ===== Card ===== */
 .panel-card {
   width: 100%;
   max-width: 600px;
-  background-color: #1f2e38;
-  padding: 32px 24px;
-  border-radius: var(--radius);
-  box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+  background-color: #0c0c0c;
+  padding: 32px 32px;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.02);
   box-sizing: border-box;
 }
 
@@ -49,22 +33,26 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 32px;
+  margin-bottom: 28px;
 }
 
 .panel-header h1 {
-  color: var(--beige);
-  font-size: 24px;
-  letter-spacing: 2px;
+  color: #ffffff;
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+  margin: 0;
 }
 
 /* ===== Form ===== */
 .form-label {
   display: block;
-  margin-bottom: 0.5rem;
-  font-size: 14px;
+  margin-bottom: 0.4rem;
+  font-size: 0.8125rem;
   font-weight: 600;
-  color: var(--beige);
+  color: #a1a1aa;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .form-input,
@@ -73,86 +61,93 @@ body {
   width: 100%;
   padding: 12px 16px;
   margin-bottom: 16px;
-  border-radius: var(--radius);
-  border: 1px solid #2f3e48;
-  background-color: #16222b;
-  color: var(--beige);
-  font-size: 14px;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: #111111;
+  color: #ffffff;
+  font-size: 0.9375rem;
   box-sizing: border-box;
   outline: none;
+  transition: all 0.2s ease;
 }
 
 .form-input::placeholder,
 .form-select::placeholder {
-  color: #9aa7b0;
+  color: #71717a;
 }
 
 .form-input:focus,
 .form-select:focus {
   border-color: var(--orange);
-  box-shadow: 0 0 0 3px rgba(255, 165, 0, 0.2);
+  box-shadow: 0 0 0 3px rgba(255, 80, 0, 0.15);
+  background-color: #141414;
 }
 
 .form-file::file-selector-button {
   margin-right: 1rem;
-  padding: 0.5rem 1rem;
-  border: 1px solid #2f3e48;
-  border-radius: var(--radius);
-  background-color: #22313c;
-  color: var(--beige);
+  padding: 0.4rem 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  background-color: #1a1a1a;
+  color: #e5e5e5;
   font-weight: 500;
+  font-size: 0.8125rem;
   cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 .form-file::file-selector-button:hover {
-  background-color: #1f2e38;
+  background-color: #262626;
 }
 
 /* Checkbox */
 .form-checkbox-row {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.75rem;
   margin-bottom: 24px;
 }
 
 .form-checkbox {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   border-radius: 4px;
-  border: 1px solid #2f3e48;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background-color: #111111;
   cursor: pointer;
   flex-shrink: 0;
-}
-
-.form-checkbox:checked {
-  background-color: var(--orange);
-  border-color: var(--orange);
+  accent-color: var(--orange);
 }
 
 /* Submit button */
 .form-btn {
   width: 100%;
   padding: 12px 16px;
-  border-radius: var(--radius);
+  border-radius: 9999px;
   border: none;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 0.9375rem;
   background-color: var(--orange);
-  color: var(--black);
+  color: #ffffff;
   cursor: pointer;
-  transition: background-color 0.2s, box-shadow 0.2s;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(255, 80, 0, 0.25);
 }
 
 .form-btn:hover {
-  background-color: #e59400;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  background-color: #ff651a;
+  box-shadow: 0 6px 20px rgba(255, 80, 0, 0.35);
+  transform: translateY(-1px);
+}
+
+.form-btn:active {
+  transform: scale(0.98);
 }
 
 /* ===== Mobile ===== */
 @media (max-width: 600px) {
   .panel-container {
-    padding: 24px 12px;
+    padding: 20px 12px;
   }
 
   .panel-card {
@@ -160,18 +155,6 @@ body {
   }
 
   .panel-header h1 {
-    font-size: 20px;
-  }
-
-  .form-input,
-  .form-select,
-  .form-file {
-    font-size: 14px;
-    padding: 10px 12px;
-  }
-
-  .form-btn {
-    font-size: 14px;
-    padding: 10px 12px;
+    font-size: 1.25rem;
   }
 }

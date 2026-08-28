@@ -7,14 +7,60 @@
   <link rel="icon" type="image/png" href="../assets/nexologo.png" />
   <title>NEXO · PRODUCTOS</title>
 
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/tailwind.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/main.css">
   <link rel="stylesheet" href="../css/sidebar.css">
   <link rel="preload" as="image" href="../assets/nexofondo.jpg">
   <meta name="view-transition" content="same-origin" />
+</head>
+
+<body class="text-gray-100 min-h-screen font-sans selection:bg-[var(--orange)] selection:text-white">
+
+  <main class="flex justify-center items-start min-h-screen p-6 pt-8">
+    <div class="w-full max-w-5xl">
+
+      <!-- Header -->
+      <header class="page-header mb-6">
+        <div class="page-header-icon">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+          </svg>
+        </div>
+        <div class="page-header-content">
+          <h1 class="page-header-title">Productos</h1>
+          <p class="page-header-subtitle">Inventario y ventas</p>
+        </div>
+        <div class="page-header-actions">
+          <button id="btnNuevoProducto" class="btn-action-primary btn-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            <span>Nuevo Producto</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Card principal -->
+      <div class="card-container">
+
+        <!-- Toolbar -->
+        <div class="card-toolbar">
+          <h2 class="card-toolbar-title">Gestión de Productos</h2>
+        </div>
+
+        <!-- Buscador -->
+        <div class="filters-section mb-0">
+          <div class="filter-group flex-1">
+            <label class="filter-label" for="inputBusqueda">Buscar</label>
+            <div class="search-input-wrapper">
+              <svg class="search-input-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+              </svg>
+              <input type="text" id="inputBusqueda" placeholder="Buscar por nombre o código" class="search-input" />
+            </div>
 </head>
 
 <body class="text-gray-100 min-h-screen font-sans selection:bg-[var(--orange)] selection:text-white">
@@ -67,42 +113,35 @@
           </div>
         </div>
 
-        <!-- Tabla -->
-        <div class="table-container mt-5">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Código</th>
-                <th>Nombre</th>
-                <th>Precio</th>
-                <th>Stock</th>
-                <th>Acción</th>
-              </tr>
-            </thead>
-            <tbody id="tablaProductosBody">
-              <!-- Empty state -->
-              <tr id="emptyStateProductos" class="hidden">
-                <td colspan="5">
-                  <div class="empty-state">
-                    <div class="empty-state-icon">
-                      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
-                      </svg>
-                    </div>
-                    <h3 class="empty-state-title">No hay productos en el catálogo</h3>
-                    <p class="empty-state-desc">Agregá productos para vender en el gimnasio</p>
-                    <button class="btn-action-primary btn-sm mt-4" onclick="window.location.href='/registrar-producto.html'">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                      </svg>
-                      <span>Registrar producto</span>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-              <!-- filas dinámicas -->
-            </tbody>
-          </table>
+        <!-- Tabla (MASTER TABLE) -->
+        <div class="master-table-card">
+          <div class="master-table-wrapper">
+            <table class="master-table">
+              <thead>
+                <tr>
+                  <th>Código</th>
+                  <th>Nombre</th>
+                  <th>Precio</th>
+                  <th>Stock</th>
+                  <th class="text-right">Acción</th>
+                </tr>
+              </thead>
+              <tbody id="tablaProductosBody">
+                <!-- Filas generadas dinámicamente -->
+              </tbody>
+            </table>
+
+            <!-- Empty state -->
+            <div id="emptyStateProductos" class="hidden py-16 text-center text-gray-500 italic text-sm">
+              <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-[#181818] flex items-center justify-center text-gray-600 border border-[#262626]">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+                </svg>
+              </div>
+              <p class="font-medium text-gray-400">No hay productos en el catálogo</p>
+              <p class="text-xs text-gray-600 mt-1">Agregá productos para vender en el gimnasio</p>
+            </div>
+          </div>
         </div>
 
       </div>

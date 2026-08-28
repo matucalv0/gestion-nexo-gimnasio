@@ -132,6 +132,7 @@ public class AsistenciaService {
                     (String) row[3],
                     null,
                     (Boolean) row[5],
+                    null, null, null, null, false, null,
                     null));
         }
 

@@ -2,6 +2,7 @@ import { checkAuth } from "../auth/auth.js";
 import { authFetch } from "../api/api.js";
 import { renderPagination } from "../ui/pagination.js";
 import { Alerta } from "../ui/alerta.js";
+import { renderMasterTable, createAvatarCell, createStatusBadge } from "../ui/tabla.js";
 import { formatCurrency, formatVariation } from "./finanzas/formatters.js";
 import { navigateTo, getRouteParams } from "../utils/navigate.js";
 
@@ -127,73 +128,72 @@ async function cargarPagos(tablaBody) {
 function renderPagos(tablaBody, pagos) {
   const emptyState = document.getElementById("emptyStatePagos");
 
-  // Limpiar filas existentes (excepto el empty state)
-  const rows = tablaBody.querySelectorAll("tr:not(#emptyStatePagos)");
-  rows.forEach((row) => row.remove());
-
-  if (!pagos || !pagos.length) {
-    // Mostrar empty state
-    if (emptyState) emptyState.classList.remove("hidden");
-    return;
-  }
-
-  // Ocultar empty state y mostrar datos
-  if (emptyState) emptyState.classList.add("hidden");
-
-  pagos.forEach((p, index) => {
-    // Fila principal
-    const tr = document.createElement("tr");
-    tr.classList.add("animate-fade-in-up");
-    tr.style.animationDelay = `${index * 50}ms`;
-
-    let socioHtml = "—";
-    if (p.dniSocio) {
-      socioHtml = `${p.nombreSocio} <span class="text-xs text-gray-400">(${p.dniSocio})</span>`;
-    }
-
-    tr.innerHTML = `
-      <td class="py-5 px-6 align-middle">${p.fecha}</td>
-      <td class="py-5 px-6 align-middle">${socioHtml}</td>
-      <td class="py-5 px-6 align-middle text-center">
-        <span class="badge ${p.estado === "PAGADO" ? "badge-success" : p.estado === "ANULADO" ? "badge-danger" : "badge-warning"}">
-          ${p.estado}
-        </span>
-      </td>
-      <td class="py-5 px-6 align-middle text-right font-semibold text-[var(--beige)] font-mono">$ ${p.monto}</td>
-      <td class="py-5 px-6 align-middle text-center">
-        <button class="table-action-btn" data-index="${index}" title="Ver detalle">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-          </svg>
-        </button>
-      </td>
-    `;
-
-    tablaBody.appendChild(tr);
-
-    // Fila detalle (sub-card)
-    const trDetalle = document.createElement("tr");
-    trDetalle.className = "hidden bg-[#0a0a0a]";
-    trDetalle.id = `detalle-${index}`;
-
-    trDetalle.innerHTML = `
-      <td colspan="5" class="p-0 border-b border-[#222]">
-        <div class="detail-panel py-6 px-12">
-          <h4 class="detail-panel-title mb-4 text-gray-300">Detalle del pago</h4>
-          ${renderDetalle(p.detalles)}
-        </div>
-      </td>
-    `;
-    tablaBody.appendChild(trDetalle);
+  renderMasterTable({
+    tbody: tablaBody,
+    emptyElement: emptyState,
+    data: pagos,
+    columns: [
+      {
+        field: "fecha",
+        format: (f) => `<span class="text-xs text-gray-400 font-mono">${f || "—"}</span>`
+      },
+      {
+        render: (p) => {
+          if (p.nombreSocio) {
+            return createAvatarCell(p.nombreSocio, p.dniSocio ? `DNI ${p.dniSocio}` : "");
+          }
+          return `<span class="text-gray-500 text-xs italic">Venta mostrador</span>`;
+        }
+      },
+      {
+        className: "text-center",
+        render: (p) => {
+          const tipo = p.estado === "PAGADO" ? "success" : p.estado === "ANULADO" ? "danger" : "warning";
+          return createStatusBadge(p.estado || "PAGADO", tipo, p.estado === "PAGADO");
+        }
+      },
+      {
+        className: "text-right",
+        render: (p) => `<span class="font-mono font-bold text-white tabular-nums">${formatCurrency(p.monto)}</span>`
+      }
+    ],
+    actions: [
+      {
+        icon: "view",
+        type: "primary",
+        title: "Ver detalle del pago",
+        onClick: (p, index) => {
+          const rowDetalle = document.getElementById(`detalle-pago-${index}`);
+          if (rowDetalle) {
+            rowDetalle.classList.toggle("hidden");
+          }
+        }
+      }
+    ]
   });
 
-  // Toggle detalle
-  tablaBody.querySelectorAll("button[data-index]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const index = btn.dataset.index;
-      document.getElementById(`detalle-${index}`).classList.toggle("hidden");
+  // Inject collapsible detail rows
+  if (pagos && pagos.length > 0) {
+    const rows = Array.from(tablaBody.querySelectorAll("tr"));
+    pagos.forEach((p, index) => {
+      const parentRow = rows[index];
+      if (!parentRow) return;
+
+      const trDetalle = document.createElement("tr");
+      trDetalle.className = "hidden bg-[#090909]";
+      trDetalle.id = `detalle-pago-${index}`;
+
+      trDetalle.innerHTML = `
+        <td colspan="5" class="p-0 border-b border-[#222]">
+          <div class="py-5 px-8 bg-[#090909] border-t border-b border-white/5">
+            <h4 class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">Detalle de los conceptos</h4>
+            ${renderDetalle(p.detalles)}
+          </div>
+        </td>
+      `;
+      parentRow.after(trDetalle);
     });
-  });
+  }
 }
 
 async function cargarNombres() {
@@ -299,9 +299,38 @@ async function cargarDistribucionIngresos() {
     const productos = data.totalProductos || 0;
     const membresias = data.totalPlanes || 0;
 
-    const ctx = document.getElementById("donutIngresos").getContext("2d");
+    const canvas = document.getElementById("donutIngresos");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
 
     if (donutIngresosChart) donutIngresosChart.destroy();
+
+    const total = productos + membresias;
+
+    // Center text plugin
+    const centerTextPlugin = {
+      id: "centerTextPluginPagos",
+      beforeDraw: (chart) => {
+        const { width, height, ctx } = chart;
+        ctx.save();
+        const centerX = width / 2;
+        const centerY = height / 2 - 12;
+
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        ctx.font = "600 9px 'Plus Jakarta Sans', sans-serif";
+        ctx.fillStyle = "#71717a";
+        ctx.fillText("TOTAL MES", centerX, centerY - 10);
+
+        const formatted = formatCurrency(total);
+        ctx.font = "700 15px 'JetBrains Mono', monospace";
+        ctx.fillStyle = "#38bdf8";
+        ctx.fillText(formatted, centerX, centerY + 10);
+
+        ctx.restore();
+      },
+    };
 
     donutIngresosChart = new Chart(ctx, {
       type: "doughnut",
@@ -309,11 +338,13 @@ async function cargarDistribucionIngresos() {
         labels: ["Productos", "Cuotas"],
         datasets: [
           {
-            data: [productos, membresias],
-            backgroundColor: ["#c7c7c7", "#3b82f6"],
-            hoverBackgroundColor: ["#e0e0e0", "#60a5fa"],
-            borderColor: "transparent",
-            borderWidth: 0,
+            data: total > 0 ? [productos, membresias] : [1, 0],
+            backgroundColor: total > 0 ? ["#818cf8", "#38bdf8"] : ["#27272a", "#18181b"],
+            hoverBackgroundColor: total > 0 ? ["#a5b4fc", "#7dd3fc"] : ["#3f3f46", "#27272a"],
+            borderColor: "#0d0d11",
+            borderWidth: 3,
+            borderRadius: 4,
+            spacing: 3,
             hoverOffset: 4,
           },
         ],
@@ -321,38 +352,46 @@ async function cargarDistribucionIngresos() {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        cutout: "82%",
+        cutout: "76%",
+        animation: { animateScale: true, animateRotate: true, duration: 600, easing: "easeOutQuart" },
         plugins: {
           legend: {
             position: "bottom",
             labels: {
-              color: "#9ca3af",
-              padding: 24,
-              boxWidth: 8,
+              color: "#a1a1aa",
+              padding: 16,
+              font: { family: "'Plus Jakarta Sans', sans-serif", size: 11, weight: 600 },
               usePointStyle: true,
               pointStyle: "circle",
+              boxWidth: 6,
+              boxHeight: 6,
             },
           },
           tooltip: {
-            backgroundColor: "rgba(10,10,10,0.9)",
+            backgroundColor: "rgba(13, 13, 17, 0.95)",
             titleColor: "#fff",
-            bodyColor: "#d1d5db",
-            borderColor: "rgba(255,255,255,0.1)",
+            bodyColor: "#d4d4d8",
+            titleFont: { family: "'Plus Jakarta Sans', sans-serif", size: 12, weight: 700 },
+            bodyFont: { family: "'JetBrains Mono', monospace", size: 12, weight: 600 },
+            borderColor: "rgba(255, 255, 255, 0.12)",
             borderWidth: 1,
             padding: 12,
-            cornerRadius: 8,
-            displayColors: false,
+            cornerRadius: 10,
+            displayColors: true,
+            boxPadding: 4,
+            usePointStyle: true,
             callbacks: {
               label: (ctx) => {
-                const total = productos + membresias;
+                if (total === 0) return "  Sin cobros registrados";
                 const value = ctx.raw;
                 const pct = total ? ((value / total) * 100).toFixed(1) : 0;
-                return `$ ${value.toLocaleString()} (${pct}%)`;
+                return `  $ ${value.toLocaleString()} (${pct}%)`;
               },
             },
           },
         },
       },
+      plugins: [centerTextPlugin],
     });
   } catch (err) {
     console.error("Error al cargar donut de ingresos:", err);
@@ -368,8 +407,6 @@ async function cargarMasVendidos() {
 
     const producto = await productoRes.json();
     const plan = await planRes.json();
-
-    console.log(producto);
 
     document.getElementById("productoMasVendidoNombre").textContent =
       producto.nombre || "—";
@@ -406,12 +443,19 @@ async function cargarRecaudado(filtro = "7dias") {
       labels = data.map((d) => d.fecha);
       totals = data.map((d) => d.monto ?? 0);
     } else {
-      // suponemos data = [{anio, mes, total}]
       labels = data.map((d) => `${d.mes}/${d.anio}`);
       totals = data.map((d) => d.monto ?? 0);
     }
 
-    const ctx = document.getElementById("pagosDiaChart").getContext("2d");
+    const canvas = document.getElementById("pagosDiaChart");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+
+    // Electric Cyan gradient
+    const gradient = ctx.createLinearGradient(0, 0, 0, 240);
+    gradient.addColorStop(0, "rgba(56, 189, 248, 0.22)");
+    gradient.addColorStop(0.7, "rgba(56, 189, 248, 0.03)");
+    gradient.addColorStop(1, "rgba(56, 189, 248, 0.0)");
 
     if (pagosDiaChart) pagosDiaChart.destroy();
 
@@ -423,86 +467,84 @@ async function cargarRecaudado(filtro = "7dias") {
           {
             label: "Recaudado",
             data: totals,
-
-            borderColor: "#3b82f6",
-            backgroundColor: "rgba(59,130,246,0.1)",
+            borderColor: "#38bdf8",
+            backgroundColor: gradient,
             fill: true,
-            tension: 0.4,
-
-            pointRadius: 0,
+            tension: 0.28,
+            borderWidth: 2.5,
+            pointRadius: 3,
             pointHoverRadius: 6,
-            pointBackgroundColor: "#3b82f6",
-            pointHoverBackgroundColor: "#111",
-            pointBorderColor: "#ffffff",
+            pointBackgroundColor: "#0d0d11",
+            pointHoverBackgroundColor: "#38bdf8",
+            pointBorderColor: "#38bdf8",
+            pointHoverBorderColor: "#ffffff",
+            pointBorderWidth: 2,
             pointHoverBorderWidth: 2,
-            borderWidth: 2,
           },
         ],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-
         interaction: {
           mode: "index",
           intersect: false,
         },
-
+        animation: {
+          duration: 600,
+          easing: "easeOutQuart",
+        },
         plugins: {
           legend: { display: false },
-
-          title: {
-            display: false,
-          },
-
           tooltip: {
             enabled: true,
             mode: "index",
             intersect: false,
-
-            backgroundColor: "rgba(10,10,10,0.9)",
-            borderColor: "rgba(255,255,255,0.1)",
+            backgroundColor: "rgba(13, 13, 17, 0.95)",
+            borderColor: "rgba(255, 255, 255, 0.12)",
             borderWidth: 1,
-
-            titleColor: "#aaa",
-            bodyColor: "#fff",
-
+            titleColor: "#ffffff",
+            bodyColor: "#38bdf8",
             titleFont: {
-              size: 11,
-              weight: "normal",
+              family: "'Plus Jakarta Sans', sans-serif",
+              size: 12,
+              weight: "bold",
             },
             bodyFont: {
+              family: "'JetBrains Mono', monospace",
               size: 13,
               weight: "bold",
             },
-
             padding: 12,
-            cornerRadius: 8,
+            cornerRadius: 10,
             displayColors: false,
             callbacks: {
               title: (ctx) => ctx[0].label,
-              label: (ctx) => `Recaudado: ${formatCurrency(ctx.parsed.y)}`,
+              label: (ctx) => `  Recaudado: ${formatCurrency(ctx.parsed.y)}`,
             },
           },
         },
-
         scales: {
           y: {
             beginAtZero: true,
             ticks: {
-              color: "#6b7280",
-              font: { size: 11 },
+              color: "#71717a",
+              font: { family: "'JetBrains Mono', monospace", size: 10 },
+              padding: 8,
+              maxTicksLimit: 6,
               callback: (v) => `${formatCurrency(v)}`,
             },
             grid: {
-              display: false,
+              color: "rgba(255, 255, 255, 0.04)",
+              borderDash: [4, 4],
+              drawBorder: false,
             },
             border: { display: false },
           },
           x: {
             ticks: {
-              color: "#6b7280",
-              font: { size: 11 },
+              color: "#71717a",
+              font: { family: "'Plus Jakarta Sans', sans-serif", size: 11 },
             },
             grid: {
               display: false,

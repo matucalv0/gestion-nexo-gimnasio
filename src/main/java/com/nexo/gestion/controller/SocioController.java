@@ -45,15 +45,48 @@ public class SocioController {
         return ResponseEntity.ok(pagos);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
-    @GetMapping
-    public ResponseEntity<PageResponseDTO<SocioDTO>> mostrarSocios(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(required = false) String q,
-            @RequestParam(required = false) Boolean activo) {
-        return ResponseEntity.ok(socioService.buscarSociosPaginados(page, size, q, activo));
-    }
+     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
+     @GetMapping
+     public ResponseEntity<SociosCategorizadosDTO> mostrarSocios(
+             @RequestParam(defaultValue = "0") int page,
+             @RequestParam(defaultValue = "20") int size,
+             @RequestParam(required = false) String q,
+             @RequestParam(required = false) String activo) {
+         return ResponseEntity.ok(socioService.buscarSociosCategorizados(page, size, q, activo));
+     }
+
+     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
+     @GetMapping("/activos")
+     public ResponseEntity<PageResponseDTO<SocioDTO>> mostrarSociosActivos(
+             @RequestParam(defaultValue = "0") int page,
+             @RequestParam(defaultValue = "20") int size,
+             @RequestParam(required = false) String q) {
+         return ResponseEntity.ok(socioService.buscarSociosActivos(q, page, size));
+     }
+
+     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
+     @GetMapping("/vencidos")
+     public ResponseEntity<PageResponseDTO<SocioDTO>> mostrarSociosVencidos(
+             @RequestParam(defaultValue = "0") int page,
+             @RequestParam(defaultValue = "20") int size,
+             @RequestParam(required = false) String q) {
+         return ResponseEntity.ok(socioService.buscarSociosVencidos(q, page, size));
+     }
+
+     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
+     @GetMapping("/sin-membresia")
+     public ResponseEntity<PageResponseDTO<SocioDTO>> mostrarSociosSinMembresia(
+             @RequestParam(defaultValue = "0") int page,
+             @RequestParam(defaultValue = "20") int size,
+             @RequestParam(required = false) String q) {
+         return ResponseEntity.ok(socioService.buscarSociosSinMembresia(q, page, size));
+     }
+
+     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
+     @GetMapping("/estadisticas")
+     public ResponseEntity<Map<String, Object>> mostrarEstadisticasSocios() {
+         return ResponseEntity.ok(socioService.buscarSociosEstadisticas());
+     }
 
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping("/search")
@@ -148,7 +181,7 @@ public class SocioController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(required = false) String q,
-            @RequestParam(required = false) Boolean activo) {
+            @RequestParam(required = false) String activo) {
         return ResponseEntity.ok(socioService.buscarSociosExtendidos(page, size, q, activo));
     }
 

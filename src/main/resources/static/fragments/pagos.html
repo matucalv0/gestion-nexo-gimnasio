@@ -1,76 +1,89 @@
 <main class="flex justify-center min-h-screen p-6 pt-8">
   <div class="w-full max-w-7xl">
-    <!-- HEADER -->
-    <header class="page-header mb-6">
-      <div class="page-header-icon">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
-        </svg>
-      </div>
-      <div class="page-header-content">
-        <h1 class="page-header-title">Pagos</h1>
-        <p class="page-header-subtitle">Ingresos y recaudación</p>
+
+    <!-- PAGE HEADER -->
+    <header class="page-header mb-8 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <div class="page-header-icon w-12 h-12 rounded-2xl bg-[#141418] border border-[#22222a] flex items-center justify-center shadow-md">
+          <svg class="w-5 h-5 text-sky-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
+          </svg>
+        </div>
+        <div class="page-header-content">
+          <h1 class="page-header-title text-2xl font-bold text-white tracking-tight">Pagos</h1>
+          <p class="page-header-subtitle text-xs text-zinc-400 font-medium">Control de ingresos, cobros de cuotas y ventas</p>
+        </div>
       </div>
       <div class="page-header-actions">
-        <button id="btnNuevoPago" class="btn-action-primary btn-sm">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-          </svg>
+        <button id="btnNuevoPago" class="btn-island btn-island-primary group">
           <span>Nuevo Pago</span>
+          <span class="island-icon-circle">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+          </span>
         </button>
       </div>
     </header>
 
-    <!-- LAYOUT PRINCIPAL -->
+    <!-- MAIN DASHBOARD CONTENT -->
     <div class="flex flex-col gap-6">
-      <!-- FILA SUPERIOR: KPIs (Full Width Neo-Fintech) -->
+
+      <!-- BENTO KPIS -->
       <section class="w-full">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch">
-          <!-- Hoy -->
-          <div class="glass-card p-6 flex flex-col justify-center border-l-4 border-l-blue-500/50">
-            <p class="text-label text-gray-400 mb-2">Recaudación Hoy</p>
-            <p id="kpiDia" class="text-metric-lg text-blue-400 font-bold tracking-tight tabular-nums">
-              $0
-            </p>
+          
+          <!-- Recaudación Hoy -->
+          <div class="neo-card flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-bold uppercase tracking-wider text-sky-400">Recaudación Hoy</span>
+                <div class="w-2.5 h-2.5 rounded-full bg-sky-400 shadow-[0_0_10px_rgba(56,189,248,0.8)]"></div>
+              </div>
+              <p id="kpiDia" class="text-3xl lg:text-4xl font-extrabold text-sky-400 font-mono tracking-tight tabular-nums">$0</p>
+            </div>
+            <p class="text-xs text-zinc-500 font-medium mt-4 pt-3 border-t border-[#1e1e24]">Total cobrado en la jornada</p>
           </div>
 
-          <!-- Mes (Protagonista) -->
-          <div
-            class="glass-card p-6 flex flex-col items-center justify-center relative overflow-hidden ring-1 ring-white/10 shadow-[0_0_30px_rgba(255,255,255,0.03)] bg-gradient-to-b from-[#111] to-[#0a0a0a]">
-            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white/20 to-transparent">
-            </div>
-            <p class="text-label text-gray-400 mb-3 tracking-widest uppercase">
-              Este Mes
-            </p>
-            <p id="kpiMes" class="text-display text-white drop-shadow-md tabular-nums">
-              $0
-            </p>
-            <div class="flex items-center gap-2 mt-3 py-1 px-3 rounded-full bg-white/5 border border-white/10">
-              <span id="varMes" class="text-xs font-bold text-green-400 tracking-wide"></span>
-              <span class="text-[10px] text-gray-500 uppercase tracking-tighter">vs. mes ant.</span>
+          <!-- Hero: Este Mes (Protagonista) -->
+          <div class="neo-card neo-card-hero-cyan md:scale-[1.02] z-10 flex flex-col items-center justify-center text-center">
+            <span class="text-xs font-bold uppercase tracking-[0.2em] text-zinc-400 mb-2">Total Este Mes</span>
+            <p id="kpiMes" class="text-4xl lg:text-5xl font-black text-white tracking-tight font-mono tabular-nums drop-shadow-lg my-1">$0</p>
+            
+            <!-- Variación vs Mes Anterior -->
+            <div class="mt-2.5 inline-flex items-center gap-1.5 py-1 px-3 rounded-full bg-[#181820] border border-[#2c2c36]">
+              <span id="varMes" class="text-xs font-bold font-mono"></span>
+              <span class="text-[10px] text-zinc-400 uppercase tracking-tight">vs. mes ant.</span>
             </div>
           </div>
 
-          <!-- Semana -->
-          <div
-            class="glass-card p-6 flex flex-col justify-center items-end border-r-4 border-r-purple-500/50 text-right">
-            <p class="text-label text-gray-400 mb-2">Esta Semana</p>
-            <p id="kpiSemana" class="text-metric-lg text-purple-400 font-bold tracking-tight tabular-nums">
-              $0
-            </p>
+          <!-- Esta Semana -->
+          <div class="neo-card flex flex-col justify-between text-right">
+            <div>
+              <div class="flex items-center justify-between mb-3 flex-row-reverse">
+                <span class="text-xs font-bold uppercase tracking-wider text-purple-400">Esta Semana</span>
+                <div class="w-2.5 h-2.5 rounded-full bg-purple-400 shadow-[0_0_10px_rgba(192,132,252,0.8)]"></div>
+              </div>
+              <p id="kpiSemana" class="text-3xl lg:text-4xl font-extrabold text-purple-400 font-mono tracking-tight tabular-nums">$0</p>
+            </div>
+            <p class="text-xs text-zinc-500 font-medium mt-4 pt-3 border-t border-[#1e1e24]">Acumulado últimos 7 días</p>
           </div>
+
         </div>
       </section>
 
-      <!-- FILA MEDIA: Gráficos y Top Ventas -->
+      <!-- CHARTS & TOP PERFORMERS -->
       <div class="flex flex-col lg:flex-row gap-6 lg:items-start">
-        <!-- EVOLUCIÓN (Izquierda, 2/3) -->
-        <section class="flex-[2] glass-card p-6">
-          <div class="flex items-center justify-between mb-6">
-            <h2 class="text-h4 text-white m-0">Evolución de Recaudación</h2>
-            <select id="filtroRecaudado" class="filter-select bg-[#161616] border-[#333] text-sm py-1.5 px-3 rounded-md"
-              aria-label="Filtro de recaudación">
+        
+        <!-- Evolución (Izquierda 2/3) -->
+        <section class="flex-[2] neo-card w-full">
+          <div class="flex items-center justify-between mb-6 pb-4 border-b border-[#1e1e24]">
+            <div>
+              <h2 class="text-base font-bold text-white tracking-tight m-0">Evolución de Recaudación</h2>
+              <p class="text-xs text-zinc-400 mt-0.5">Dinámica temporal de ingresos monetarios</p>
+            </div>
+            <select id="filtroRecaudado" class="filter-select-modern" aria-label="Filtro de recaudación">
               <option value="7dias">Últimos 7 días</option>
               <option value="meses">Por mes</option>
             </select>
@@ -81,13 +94,16 @@
           </div>
         </section>
 
-        <!-- DERECHA (1/3): Donut y Top Content -->
-        <aside class="flex-[1] flex flex-col gap-6 min-w-0">
-          <!-- DONUT -->
-          <div class="glass-card p-6 flex flex-col items-center">
-            <h2 class="text-h4 text-white m-0 w-full mb-6">
-              Distribución de Ingresos
-            </h2>
+        <!-- Donut y Top Performers (Derecha 1/3) -->
+        <aside class="flex-[1] flex flex-col gap-6 w-full min-w-0">
+          
+          <!-- Donut -->
+          <div class="neo-card w-full flex flex-col items-center">
+            <div class="w-full mb-6 pb-4 border-b border-[#1e1e24]">
+              <h2 class="text-base font-bold text-white tracking-tight m-0">Distribución de Ingresos</h2>
+              <p class="text-xs text-zinc-400 mt-0.5">Cuotas de membresías vs Productos</p>
+            </div>
+            
             <div class="chart-container relative w-full flex justify-center">
               <div class="aspect-square w-48 max-w-full flex items-center justify-center">
                 <canvas id="donutIngresos" class="w-full h-full"></canvas>
@@ -95,133 +111,93 @@
             </div>
           </div>
 
-          <!-- Top Performers -->
+          <!-- Top Performers Cards -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <!-- Producto más vendido -->
-            <div
-              class="glass-card p-4 border border-[#222] bg-gradient-to-br from-[#161616] to-[#0f0f0f] relative overflow-hidden">
-              <div class="absolute -right-4 -bottom-4 opacity-5 text-white">
-                <svg class="w-24 h-24" fill="currentColor" viewBox="0 0 24 24">
-                  <path
-                    d="M20 7h-4V5c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zm-6-2v2h-4V5h4zm6 14H4V9h16v10z" />
-                </svg>
+            
+            <!-- Producto Estrella -->
+            <div class="neo-card p-4 flex flex-col justify-between">
+              <div>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Producto Estrella</span>
+                <p id="productoMasVendidoNombre" class="text-sm font-bold text-white mt-1 truncate">—</p>
               </div>
-              <p class="text-label text-gray-500 mb-1 z-10 relative">
-                Producto Estrella
-              </p>
-              <p id="productoMasVendidoNombre" class="text-body font-bold text-white truncate z-10 relative">
-                —
-              </p>
-              <p id="productoMasVendidoTotal" class="text-caption text-gray-400 mt-2 z-10 relative">
-                —
-              </p>
+              <p id="productoMasVendidoTotal" class="text-[11px] font-mono font-medium text-emerald-400 mt-3 pt-2 border-t border-[#1e1e24]">—</p>
             </div>
 
-            <!-- Membresía más vendida -->
-            <div
-              class="glass-card p-4 border border-[#222] bg-gradient-to-br from-[#161616] to-[#0f0f0f] relative overflow-hidden">
-              <div class="absolute -right-4 -bottom-4 opacity-5 text-white">
-                <svg class="w-24 h-24" fill="currentColor" viewBox="0 0 24 24">
-                  <path
-                    d="M11 2v20c-5.07-.5-9-4.79-9-10s3.93-9.5 9-10zm2 0v8.99l5 4.99V2h-5zm0 20v-8.99l5-4.99V22h-5z" />
-                </svg>
+            <!-- Plan Estrella -->
+            <div class="neo-card p-4 flex flex-col justify-between">
+              <div>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Plan Más Demandado</span>
+                <p id="planMasVendidoNombre" class="text-sm font-bold text-white mt-1 truncate">—</p>
               </div>
-              <p class="text-label text-gray-500 mb-1 z-10 relative">
-                Plan Estrella
-              </p>
-              <p id="planMasVendidoNombre" class="text-body font-bold text-white truncate z-10 relative">
-                —
-              </p>
-              <p id="planMasVendidoTotal" class="text-caption text-gray-400 mt-2 z-10 relative">
-                —
-              </p>
+              <p id="planMasVendidoTotal" class="text-[11px] font-mono font-medium text-sky-400 mt-3 pt-2 border-t border-[#1e1e24]">—</p>
             </div>
+
           </div>
+
         </aside>
+
       </div>
 
-      <!-- FILA INFERIOR: TABLA DE PAGOS -->
-      <section class="glass-card overflow-hidden">
-        <div class="p-6 border-b border-[#222] flex flex-wrap gap-4 items-center justify-between bg-[#0f0f0f]">
-          <h2 class="text-h3 text-white m-0">Historial de Pagos</h2>
+      <!-- MASTER TABLE: HISTORIAL DE PAGOS -->
+      <section class="master-table-card">
+        <div class="master-toolbar">
+          <div>
+            <h2 class="text-lg font-bold text-white tracking-tight m-0">Historial de Cobros</h2>
+            <p class="text-xs text-zinc-400 mt-0.5">Registro cronológico de pagos recibidos</p>
+          </div>
 
           <div class="flex flex-wrap items-center gap-3">
-            <div class="flex items-center gap-2 bg-[#161616] border border-[#333] rounded-md p-1">
-              <input type="date" id="filtroDesde"
-                class="bg-transparent border-none text-sm text-white focus:ring-0 py-1 px-2" aria-label="Desde" />
-              <span class="text-gray-500 text-xs">→</span>
-              <input type="date" id="filtroHasta"
-                class="bg-transparent border-none text-sm text-white focus:ring-0 py-1 px-2" aria-label="Hasta" />
+            <div class="flex items-center gap-2 bg-[#141418] border border-[#26262e] rounded-xl p-1 px-2.5 shadow-inner">
+              <input type="date" id="filtroDesde" class="bg-transparent border-none text-xs text-zinc-200 focus:outline-none py-1 px-1 font-mono" aria-label="Desde" />
+              <span class="text-zinc-500 text-xs font-mono">→</span>
+              <input type="date" id="filtroHasta" class="bg-transparent border-none text-xs text-zinc-200 focus:outline-none py-1 px-1 font-mono" aria-label="Hasta" />
             </div>
 
-            <div class="flex gap-2">
-              <button id="btnFiltrarFecha" class="btn btn-secondary py-1.5 px-4 text-sm">
-                Filtrar
-              </button>
-              <button id="btnLimpiarFiltros"
-                class="btn text-gray-400 hover:text-white bg-transparent hover:bg-white/5 py-1.5 px-3 text-sm">
-                Limpiar
-              </button>
-              <button id="btnExportarPagos"
-                class="btn text-green-400 hover:text-white bg-green-500/10 hover:bg-green-500/20 py-1.5 px-3 text-sm border border-green-500/20">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+            <div class="flex items-center gap-2">
+              <button id="btnFiltrarFecha" class="btn-search-action">Filtrar</button>
+              <button id="btnLimpiarFiltros" class="btn-clear-action">Limpiar</button>
+              <button id="btnExportarPagos" class="btn-search-action flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300" title="Exportar CSV">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
                 </svg>
+                <span>CSV</span>
               </button>
             </div>
           </div>
         </div>
 
-        <div class="w-full overflow-x-auto relative">
-          <table class="w-full text-left border-collapse">
-            <thead class="bg-[#111] text-xs uppercase tracking-wider text-gray-500 border-b border-[#222]">
+        <div class="master-table-wrapper">
+          <table class="master-table">
+            <thead>
               <tr>
-                <th class="py-4 px-6 font-medium">Fecha</th>
-                <th class="py-4 px-6 font-medium">Socio</th>
-                <th class="py-4 px-6 font-medium text-center">Estado</th>
-                <th class="py-4 px-6 font-medium text-right">Monto</th>
-                <th class="py-4 px-6 font-medium text-center">Acción</th>
+                <th>Fecha</th>
+                <th>Socio</th>
+                <th class="text-center">Estado</th>
+                <th class="text-right">Monto</th>
+                <th class="text-right">Acción</th>
               </tr>
             </thead>
-            <tbody id="tablaPagosBody" class="text-sm divide-y divide-[#1f1f1f]">
-              <!-- Empty state -->
-              <tr id="emptyStatePagos" class="hidden">
-                <td colspan="5" class="py-12">
-                  <div class="flex flex-col items-center justify-center text-center">
-                    <div
-                      class="w-16 h-16 rounded-full bg-[#161616] flex items-center justify-center mb-4 border border-[#333]">
-                      <svg class="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" stroke-width="1.5"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    </div>
-                    <h3 class="text-lg font-medium text-white mb-1">
-                      Sin pagos recientes
-                    </h3>
-                    <p class="text-gray-500 mb-6 max-w-sm mx-auto">
-                      Registrá el primer pago para comenzar el seguimiento
-                      financiero.
-                    </p>
-                    <button class="btn btn-primary px-6" onclick="window.location.hash = '#/registrar-pago'">
-                      <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                      </svg>
-                      Registrar pago
-                    </button>
-                  </div>
-                </td>
-              </tr>
+            <tbody id="tablaPagosBody">
+              <!-- Filas generadas dinámicamente -->
             </tbody>
           </table>
+
+          <!-- Empty state -->
+          <div id="emptyStatePagos" class="hidden py-16 text-center">
+            <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-[#141418] flex items-center justify-center text-zinc-500 border border-[#26262e]">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <p class="font-semibold text-zinc-300 text-sm">Sin pagos registrados</p>
+            <p class="text-xs text-zinc-500 mt-1 max-w-sm mx-auto">No se encontraron cobros en el rango de fechas seleccionado.</p>
+          </div>
         </div>
 
-        <!-- Contenedor Paginación -->
-        <div id="paginationContainer" class="p-4 border-t border-[#222]"></div>
+        <!-- Paginación -->
+        <div id="paginationContainer" class="p-4 border-t border-[#1e1e24] bg-[#0c0c10]"></div>
       </section>
+
     </div>
   </div>
 </main>
-
-<!-- Scripts -->

@@ -92,10 +92,10 @@ export function init() {
   document.getElementById("btnLogout")?.addEventListener("click", logout);
   document
     .getElementById("quickSocio")
-    ?.addEventListener("click", () => go("registrar-socio.html"));
+    ?.addEventListener("click", () => navigateTo("registrar-socio"));
   document
     .getElementById("quickPago")
-    ?.addEventListener("click", () => go("registrar-pago.html"));
+    ?.addEventListener("click", () => navigateTo("registrar-pago"));
 
   // ===== TOGGLE RECAUDACIÓN =====
   document.getElementById("btnToggleRecaudacion")?.addEventListener("click", () => {
@@ -326,11 +326,11 @@ export function init() {
         break;
       case "F3":
         e.preventDefault();
-        go("registrar-pago.html");
+        navigateTo("registrar-pago");
         break;
       case "F4":
         e.preventDefault();
-        go("registrar-socio.html");
+        navigateTo("registrar-socio");
         break;
     }
   });

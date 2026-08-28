@@ -1,5 +1,6 @@
 import { authFetch } from "../api/api.js";
 import { Alerta } from "../ui/alerta.js";
+import { renderMasterTable, createAvatarCell, createStatusBadge, ICONS } from "../ui/tabla.js";
 import { parseDate, formatDate } from "../utils/date-utils.js";
 import { navigateTo, getRouteParams } from "../utils/navigate.js";
 
@@ -26,7 +27,6 @@ export async function cargarRutinas() {
 async function cargarPlantillas(page = 0) {
     state.plantillas.page = page;
     const tbody = document.getElementById("tablaPlantillasBody");
-    tbody.innerHTML = `<tr><td colspan="3"><div class="empty-state py-8"><p class="text-gray-500 text-sm">Cargando plantillas...</p></div></td></tr>`;
 
     try {
         const res = await authFetch(`/rutinas/plantillas?page=${page}&size=${state.plantillas.size}`);
@@ -46,37 +46,43 @@ async function cargarPlantillas(page = 0) {
 
 function renderPlantillas(plantillas) {
     const tbody = document.getElementById("tablaPlantillasBody");
-    tbody.innerHTML = "";
+    const emptyState = document.getElementById("emptyStatePlantillas");
 
-    if (!plantillas || plantillas.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="3"><div class="empty-state py-8"><p class="text-gray-500 text-sm">No hay plantillas importadas.</p></div></td></tr>`;
-        return;
-    }
-
-    plantillas.forEach((r, index) => {
-        const tr = document.createElement("tr");
-        tr.className = "hover:bg-[#1f2937] transition-colors animate-fade-in-up";
-        tr.style.animationDelay = `${index * 50}ms`;
-        tr.innerHTML = `
-            <td class="font-medium text-white">${r.nombre}</td>
-            <td class="text-gray-400 text-sm max-w-md truncate">${r.descripcion || '-'}</td>
-            <td>
-                <div class="flex items-center gap-3 relative">
-                    <!-- Primary Action -->
-                    <button onclick="window.asignarRutina(${r.idRutina}, '${r.nombre}')" class="btn-action-primary btn-sm text-xs shadow-lg shadow-orange-900/20">
-                        + Asignar
-                    </button>
-
-                    <!-- Kebab Menu Trigger -->
-                    <button onclick="window.toggleDropdown(event, ${r.idRutina}, '${r.nombre}')" class="p-1.5 text-gray-400 hover:text-white rounded-full hover:bg-gray-700 transition relative z-10 focus:outline-none">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
-                        </svg>
-                    </button>
-                </div>
-            </td>
-        `;
-        tbody.appendChild(tr);
+    renderMasterTable({
+        tbody: tbody,
+        emptyElement: emptyState,
+        data: plantillas,
+        columns: [
+            {
+                field: "nombre",
+                className: "font-semibold text-white group-hover:text-[var(--orange)] transition-colors"
+            },
+            {
+                field: "descripcion",
+                className: "text-gray-400 text-xs max-w-md truncate",
+                format: (d) => d || "—"
+            }
+        ],
+        actions: [
+            {
+                icon: "plus",
+                type: "primary",
+                title: "Asignar a socio",
+                onClick: (r) => window.asignarRutina(r.idRutina, r.nombre)
+            },
+            {
+                icon: "view",
+                type: "secondary",
+                title: "Vista Rápida",
+                onClick: (r) => navigateTo("ver-rutina", { id: r.idRutina })
+            },
+            {
+                icon: "edit",
+                type: "secondary",
+                title: "Editar Plantilla",
+                onClick: (r) => navigateTo("registrar-rutina", { id: r.idRutina })
+            }
+        ]
     });
 }
 
@@ -136,24 +142,19 @@ window.toggleDropdown = (e, id, nombre) => {
     `;
 
     // Position Calculator
-    // Align top-right of dropdown to bottom-right of button
-    const dropdownWidth = 192; // w-48 = 12rem = 192px
+    const dropdownWidth = 192;
     let left = rect.right - dropdownWidth;
-    let top = rect.bottom + 8; // 8px gap
+    let top = rect.bottom + 8;
 
-    // Boundary Check (Right edge)
     if (left + dropdownWidth > window.innerWidth) {
         left = window.innerWidth - dropdownWidth - 10;
     }
-
-    // Boundary check (Bottom edge) - flip if needed
-    // Not critical for now
 
     globalDropdown.style.top = `${top}px`;
     globalDropdown.style.left = `${left}px`;
 
     globalDropdown.classList.remove('hidden');
-    globalDropdown.dataset.lastBtn = btn.id; // Store to toggle off 
+    globalDropdown.dataset.lastBtn = btn.id;
 };
 
 
@@ -161,17 +162,16 @@ window.toggleDropdown = (e, id, nombre) => {
 async function cargarAsignadas(page = 0) {
     state.asignadas.page = page;
     const tbody = document.getElementById("tablaRutinasBody");
-    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state py-8"><p class="text-gray-500 text-sm">Cargando rutinas...</p></div></td></tr>`;
 
     try {
         const res = await authFetch(`/rutinas/asignadas?page=${page}&size=${state.asignadas.size}`);
         if (res.ok) {
             const data = await res.json();
             state.asignadas.totalPages = data.totalPages;
-            state.asignadasCache = data.content; // Cache for local filter if needed, though backend search is better
+            state.asignadasCache = data.content;
             renderAsignadas(data.content);
             renderPagination("paginacionAsignadas", state.asignadas, cargarAsignadas);
-            setupFiltros(); // Re-bind filter input
+            setupFiltros();
         } else {
             tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state py-8"><p class="text-red-400 text-sm">Error cargando rutinas</p></div></td></tr>`;
         }
@@ -183,10 +183,15 @@ async function cargarAsignadas(page = 0) {
 
 function renderAsignadas(rutinas) {
     const tbody = document.getElementById("tablaRutinasBody");
-    tbody.innerHTML = "";
+    const emptyState = document.getElementById("emptyStateRutinas");
 
     if (!rutinas || rutinas.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state py-8"><p class="text-gray-500 text-sm">No hay rutinas asignadas.</p></div></td></tr>`;
+        renderMasterTable({
+            tbody: tbody,
+            emptyElement: emptyState,
+            data: [],
+            columns: []
+        });
         return;
     }
 
@@ -212,43 +217,56 @@ function renderAsignadas(rutinas) {
         rutinasActivas.add(masReciente.idRutina);
     });
 
-    rutinas.forEach((r, index) => {
-        const tr = document.createElement("tr");
-        tr.classList.add("animate-fade-in-up");
-        tr.style.animationDelay = `${index * 50}ms`;
-        const esActiva = rutinasActivas.has(r.idRutina);
+    renderMasterTable({
+        tbody: tbody,
+        emptyElement: emptyState,
+        data: rutinas,
+        columns: [
+            {
+                render: (r) => createAvatarCell(r.nombreSocio || "Socio desconocido", r.dniSocio ? `DNI ${r.dniSocio}` : "")
+            },
+            {
+                render: (r) => {
+                    const esActiva = rutinasActivas.has(r.idRutina);
+                    const tagType = r.personalizada
+                        ? `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-purple-500/10 border border-purple-500/20 text-purple-400">Personalizada</span>`
+                        : `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-blue-500/10 border border-blue-500/20 text-blue-400">Original</span>`;
+                    const badgeActiva = esActiva ? createStatusBadge("ACTIVA", "success", true) : "";
 
-        // Format date
-        const fecha = formatDate(r.fecha);
-
-        tr.innerHTML = `
-            <td>
-                <div class="flex flex-col">
-                    <span class="font-medium">${r.nombreSocio || 'Socio desconocido'}</span>
-                    <span class="text-xs text-gray-500">${r.dniSocio || ''}</span>
-                </div>
-            </td>
-            <td>
-                <div class="flex items-center gap-2 flex-wrap">
-                    <span class="text-gray-300">${r.nombre}</span>
-                    ${esActiva ? '<span class="badge badge-success">ACTIVA</span>' : ''}
-                    ${r.personalizada ? '<span class="badge" style="background: rgba(168, 85, 247, 0.15); color: #c084fc;">PERSONALIZADA</span>' : '<span class="badge" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa;">ORIGINAL</span>'}
-                </div>
-            </td>
-            <td class="text-gray-400 text-sm">${fecha}</td>
-            <td class="text-gray-400 text-sm">${r.nombreEmpleado || '-'}</td>
-            <td>
-                <div class="flex gap-2 justify-end">
-                    <button class="flex-1 sm:flex-none border border-green-500/30 text-green-400 px-3 py-1.5 rounded hover:bg-green-500/10 transition-colors text-sm" onclick="navigateTo('registrar-rutina', { id: ${r.idRutina} })">
-                        Editar
-                    </button>
-                    <button class="flex-1 sm:flex-none border border-blue-500/30 text-blue-400 px-3 py-1.5 rounded hover:bg-blue-500/10 transition-colors text-sm" onclick="navigateTo('ver-rutina', { id: ${r.idRutina} })">
-                        Ver
-                    </button>
-                </div>
-            </td>
-        `;
-        tbody.appendChild(tr);
+                    return `
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="font-medium text-gray-200">${r.nombre}</span>
+                            ${badgeActiva}
+                            ${tagType}
+                        </div>
+                    `;
+                }
+            },
+            {
+                field: "fecha",
+                className: "text-gray-400 text-xs font-mono tabular-nums",
+                format: (f) => formatDate(f)
+            },
+            {
+                field: "nombreEmpleado",
+                className: "text-gray-400 text-xs",
+                format: (e) => e || "—"
+            }
+        ],
+        actions: [
+            {
+                icon: "view",
+                type: "secondary",
+                title: "Ver Rutina",
+                onClick: (r) => navigateTo("ver-rutina", { id: r.idRutina })
+            },
+            {
+                icon: "edit",
+                type: "primary",
+                title: "Editar Rutina",
+                onClick: (r) => navigateTo("registrar-rutina", { id: r.idRutina })
+            }
+        ]
     });
 }
 

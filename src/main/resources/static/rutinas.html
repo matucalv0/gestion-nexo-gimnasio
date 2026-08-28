@@ -2,20 +2,24 @@
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NEXO · Rutinas</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXO · Rutinas de Entrenamiento</title>
     <link rel="icon" type="image/png" href="../assets/nexologo.png" />
-    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="css/tailwind.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/main.css">
     <link rel="stylesheet" href="../css/sidebar.css">
-  <meta name="view-transition" content="same-origin" />
+    <meta name="view-transition" content="same-origin" />
 </head>
 
 <body class="text-gray-100 min-h-screen font-sans selection:bg-[var(--orange)] selection:text-white">
+
+    <!-- ALERTAS -->
+    <div id="alert-container" class="fixed top-4 right-4 max-w-md z-50"></div>
 
     <main class="flex justify-center min-h-screen p-6 pt-8">
         <div class="w-full max-w-7xl">
@@ -41,84 +45,81 @@
                 </div>
             </header>
 
-            <!-- SECCIÓN PLANTILLAS -->
+            <!-- SECCIÓN PLANTILLAS (MASTER TABLE) -->
             <section class="mb-6">
-                <div class="card-container">
-                    <div class="card-toolbar">
+                <div class="master-table-card">
+                    <div class="master-toolbar">
                         <div class="flex items-center gap-3">
-                            <h2 class="card-toolbar-title">Plantillas de Rutinas</h2>
-                            <span class="badge">Importadas desde Excel</span>
+                            <h2 class="text-lg font-bold text-white tracking-tight m-0">Plantillas de Rutinas</h2>
+                            <span class="badge">Excel</span>
                         </div>
                     </div>
 
-                    <div class="table-container">
-                        <table class="data-table">
+                    <div class="master-table-wrapper">
+                        <table class="master-table">
                             <thead>
                                 <tr>
                                     <th>Nombre Plantilla</th>
                                     <th>Descripción</th>
-                                    <th>Acciones</th>
+                                    <th class="text-right">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody id="tablaPlantillasBody">
-                                <tr>
-                                    <td colspan="3">
-                                        <div class="empty-state py-8">
-                                            <p class="text-gray-500 text-sm">Cargando plantillas...</p>
-                                        </div>
-                                    </td>
-                                </tr>
+                                <!-- Filas dinámicas -->
                             </tbody>
                         </table>
-                    </div>
 
-                    <!-- Pagination Plantillas -->
-                    <div id="paginacionPlantillas" class="mt-4"></div>
-                </div>
-            </section>
-
-            <!-- SECCIÓN RUTINAS DE SOCIOS -->
-            <section>
-                <div class="card-container">
-                    <div class="card-toolbar flex-wrap gap-4">
-                        <h2 class="card-toolbar-title">Rutinas Asignadas a Socios</h2>
-
-                        <!-- Search bar -->
-                        <div class="ml-auto">
-                            <div class="search-input-wrapper">
-                                <svg class="search-input-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                                </svg>
-                                <input type="text" id="busquedaRutina" placeholder="Buscar socio..." class="search-input w-64">
-                            </div>
+                        <div id="emptyStatePlantillas" class="hidden py-16 text-center text-gray-500 italic text-sm">
+                            <p class="font-medium text-gray-400">No hay plantillas importadas</p>
                         </div>
                     </div>
 
-                    <div class="table-container">
-                        <table class="data-table">
+                    <!-- Pagination Plantillas -->
+                    <div id="paginacionPlantillas" class="p-4 border-t border-[#222] bg-[#080808]"></div>
+                </div>
+            </section>
+
+            <!-- SECCIÓN RUTINAS DE SOCIOS (MASTER TABLE) -->
+            <section>
+                <div class="master-table-card">
+                    <div class="master-toolbar">
+                        <div>
+                            <h2 class="text-lg font-bold text-white tracking-tight m-0">Rutinas Asignadas a Socios</h2>
+                            <p class="text-xs text-gray-500 mt-0.5">Seguimiento individual de planes activos</p>
+                        </div>
+
+                        <!-- Search bar -->
+                        <div class="search-box-wrapper min-w-[200px]">
+                            <svg class="search-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            <input type="text" id="busquedaRutina" placeholder="Buscar socio..." class="search-box-input" autocomplete="off">
+                        </div>
+                    </div>
+
+                    <div class="master-table-wrapper">
+                        <table class="master-table">
                             <thead>
                                 <tr>
                                     <th>Socio</th>
                                     <th>Nombre Rutina</th>
                                     <th>Fecha</th>
                                     <th>Profesor</th>
-                                    <th>Acciones</th>
+                                    <th class="text-right">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody id="tablaRutinasBody">
-                                <tr>
-                                    <td colspan="5">
-                                        <div class="empty-state py-8">
-                                            <p class="text-gray-500 text-sm">Cargando rutinas...</p>
-                                        </div>
-                                    </td>
-                                </tr>
+                                <!-- Filas dinámicas -->
                             </tbody>
                         </table>
+
+                        <div id="emptyStateRutinas" class="hidden py-16 text-center text-gray-500 italic text-sm">
+                            <p class="font-medium text-gray-400">No se encontraron rutinas asignadas</p>
+                        </div>
                     </div>
 
                     <!-- Pagination Asignadas -->
-                    <div id="paginacionAsignadas" class="mt-4"></div>
+                    <div id="paginacionAsignadas" class="p-4 border-t border-[#222] bg-[#080808]"></div>
                 </div>
             </section>
 
@@ -149,13 +150,7 @@
         </div>
     </main>
 
-    <script type="module">
-        import { cargarRutinas } from "./js/pages/rutinas.js";
-
-        document.addEventListener("DOMContentLoaded", () => {
-            cargarRutinas();
-        });
-    </script>
+    <script type="module" src="../js/pages/rutinas.js"></script>
     <script src="../js/ui/sidebar.js"></script>
 </body>
 

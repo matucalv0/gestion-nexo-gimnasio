@@ -1,5 +1,6 @@
 package com.nexo.gestion.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nexo.gestion.entity.TipoMembresia;
 import jakarta.persistence.Column;
 
@@ -10,6 +11,7 @@ public class MembresiaPatchDTO {
     @Column(precision = 10, scale = 2)
     private BigDecimal precioSugerido;
     private String nombre;
+    @JsonProperty("estado")
     private Boolean activo;
     private TipoMembresia tipoMembresia;
 

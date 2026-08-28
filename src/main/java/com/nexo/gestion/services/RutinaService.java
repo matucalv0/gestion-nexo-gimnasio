@@ -416,6 +416,7 @@ public class RutinaService {
                 socio.getEmail(),
                 socio.getFechaNacimiento(),
                 socio.isActivo(),
+                null, null, null, null, false, null,
                 null // Rutina active not needed here to prevent recursion
         );
     }

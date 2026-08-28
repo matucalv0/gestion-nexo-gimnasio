@@ -7,13 +7,13 @@
     <title>NEXO · Gestionar Ejercicios</title>
     <link rel="icon" type="image/png" href="../assets/nexologo.png" />
 
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/tailwind.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/main.css">
     <link rel="stylesheet" href="../css/sidebar.css">
-  <meta name="view-transition" content="same-origin" />
+    <meta name="view-transition" content="same-origin" />
 </head>
 
 <body class="text-gray-100 min-h-screen font-sans selection:bg-[var(--orange)] selection:text-white">
@@ -45,20 +45,23 @@
                 </div>
             </header>
 
-            <!-- CARD PRINCIPAL -->
-            <div class="card-container">
+            <!-- CARD PRINCIPAL (MASTER TABLE) -->
+            <div class="master-table-card">
                 <!-- Toolbar con filtros -->
-                <div class="card-toolbar flex-wrap gap-4">
-                    <h2 class="card-toolbar-title">Catálogo</h2>
+                <div class="master-toolbar">
+                    <div>
+                        <h2 class="text-lg font-bold text-white tracking-tight m-0">Catálogo de Movimientos</h2>
+                        <p class="text-xs text-gray-500 mt-0.5">Ejercicios musculares y rutinas guiadas</p>
+                    </div>
 
-                    <div class="flex gap-3 ml-auto">
-                        <div class="search-input-wrapper">
-                            <svg class="search-input-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                    <div class="flex flex-wrap items-center gap-3">
+                        <div class="search-box-wrapper min-w-[200px]">
+                            <svg class="search-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
-                            <input type="text" id="busquedaInput" placeholder="Buscar por nombre..." class="search-input w-64">
+                            <input type="text" id="busquedaInput" placeholder="Buscar por nombre..." class="search-box-input" autocomplete="off">
                         </div>
-                        <select id="filtroGrupo" class="filter-select" aria-label="Filtrar por grupo muscular">
+                        <select id="filtroGrupo" class="filter-select text-xs py-2 bg-[#121212] border-white/10 text-white rounded-xl" aria-label="Filtrar por grupo muscular">
                             <option value="">Todos los grupos</option>
                             <!-- Options injected by JS -->
                         </select>
@@ -66,20 +69,26 @@
                 </div>
 
                 <!-- TABLA -->
-                <div class="table-container">
-                    <table class="data-table">
+                <div class="master-table-wrapper">
+                    <table class="master-table">
                         <thead>
                             <tr>
                                 <th>Ejercicio</th>
                                 <th>Grupo Muscular</th>
                                 <th>Video</th>
-                                <th>Acciones</th>
+                                <th class="text-right">Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="tablaEjerciciosBody">
                             <!-- Rows injected by JS -->
                         </tbody>
                     </table>
+
+                    <!-- Empty state -->
+                    <div id="emptyStateEjercicios" class="hidden py-16 text-center text-gray-500 italic text-sm">
+                        <p class="font-medium text-gray-400">No se encontraron ejercicios</p>
+                        <p class="text-xs text-gray-600 mt-1">Prueba seleccionando otro grupo muscular o agregando un nuevo ejercicio</p>
+                    </div>
                 </div>
             </div>
 
@@ -141,8 +150,27 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script type="module" src="js/pages/ejercicios.js"></script>
+    <!-- MODAL VIDEO -->
+    <div id="modalVideo" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content max-w-2xl">
+            <div class="modal-header">
+                <h3 id="videoModalTitle" class="modal-title">Demostración</h3>
+                <button id="closeVideoModalBtn" class="modal-close">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="relative w-full aspect-video bg-black rounded-lg overflow-hidden">
+                    <iframe id="videoIframe" class="w-full h-full" src="" frameborder="0" allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../js/pages/ejercicios.js"></script>
     <script src="../js/ui/sidebar.js"></script>
 </body>
 

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.Set;
 import java.util.HashSet;
@@ -64,6 +65,43 @@ public class SocioService {
                     rutina.getPersonalizada() != null ? rutina.getPersonalizada() : false,
                     null);
         }
+
+        SocioMembresia membresiaActual = socioMembresiaRepository.findActivaBySocio(socio.getDni()).orElse(null);
+        Integer diasRestantes = null;
+        Integer diasVencidos = null;
+        LocalDate fechaVencimientoMembresia = null;
+        LocalDate ultimaMembresiaVencimiento = null;
+        boolean tieneMembresiaVigente = false;
+        String nombreMembresia = null;
+
+        if (membresiaActual != null) {
+            tieneMembresiaVigente = true;
+            LocalDate ultimoVencimientoVigente = socioMembresiaRepository.findUltimoVencimientoVigente(socio.getDni());
+            fechaVencimientoMembresia = (ultimoVencimientoVigente != null) ? ultimoVencimientoVigente : membresiaActual.getFechaHasta();
+            if (fechaVencimientoMembresia != null) {
+                diasRestantes = Math.max(0, (int) java.time.temporal.ChronoUnit.DAYS.between(LocalDate.now(), fechaVencimientoMembresia));
+            }
+            if (membresiaActual.getMembresia() != null) {
+                nombreMembresia = membresiaActual.getMembresia().getNombre();
+            }
+        } else {
+            ultimaMembresiaVencimiento = socioMembresiaRepository.findUltimoVencimientoGeneral(socio.getDni());
+            if (ultimaMembresiaVencimiento != null) {
+                if (ultimaMembresiaVencimiento.isBefore(LocalDate.now())) {
+                    diasVencidos = Math.max(0, (int) java.time.temporal.ChronoUnit.DAYS.between(ultimaMembresiaVencimiento, LocalDate.now()));
+                } else {
+                    // Si el vencimiento es hoy o a futuro, la membresía está vigente
+                    tieneMembresiaVigente = true;
+                    fechaVencimientoMembresia = ultimaMembresiaVencimiento;
+                    diasRestantes = Math.max(0, (int) java.time.temporal.ChronoUnit.DAYS.between(LocalDate.now(), ultimaMembresiaVencimiento));
+                    List<SocioMembresia> membresias = socioMembresiaRepository.findBySocioDniOrderByFechaInicioAsc(socio.getDni());
+                    if (!membresias.isEmpty() && membresias.get(membresias.size() - 1).getMembresia() != null) {
+                        nombreMembresia = membresias.get(membresias.size() - 1).getMembresia().getNombre();
+                    }
+                }
+            }
+        }
+
         return new SocioDTO(
                 socio.getDni(),
                 socio.getNombre(),
@@ -71,6 +109,12 @@ public class SocioService {
                 socio.getEmail(),
                 socio.getFechaNacimiento(),
                 isActivo,
+                diasRestantes,
+                diasVencidos,
+                fechaVencimientoMembresia,
+                ultimaMembresiaVencimiento,
+                tieneMembresiaVigente,
+                nombreMembresia,
                 rutinaActiva);
     }
 
@@ -173,11 +217,14 @@ public class SocioService {
     public SocioDTO bajaSocio(String dni) {
         Socio socio = socioRepository.findById(dni).orElseThrow(() -> new ObjetoNoEncontradoException("socio con DNI " + dni));
         socio.setActivo(false);
-        // También dar de baja la membresía vigente para que dinámicamente quede inactivo
-        socioMembresiaRepository.findActivaBySocio(dni).ifPresent(sm -> {
-            sm.setActivo(false);
-            socioMembresiaRepository.save(sm);
-        });
+        // También dar de baja todas las membresías vigentes/futuras para que dinámicamente quede inactivo
+        List<SocioMembresia> membresias = socioMembresiaRepository.findBySocioDniOrderByFechaInicioAsc(dni);
+        for (SocioMembresia sm : membresias) {
+            if (sm.isActivo() && (sm.getFechaHasta() == null || !sm.getFechaHasta().isBefore(LocalDate.now()))) {
+                sm.setActivo(false);
+                socioMembresiaRepository.save(sm);
+            }
+        }
         Socio guardado = socioRepository.save(socio);
         return convertirASocioDTO(guardado, null, false);
     }
@@ -382,12 +429,17 @@ public class SocioService {
 
         int asistenciasPorSemana = Optional.ofNullable(membresiaActual.getMembresia().getAsistenciasPorSemana())
                 .orElse(0);
+        
+        if (asistenciasPorSemana == 0) {
+            return Integer.MAX_VALUE; // Ilimitadas
+        }
+
         int duracionDias = Optional.ofNullable(membresiaActual.getMembresia().getDuracionDias()).orElse(0);
 
         long diasAsistidos = Optional.ofNullable(
                 socioRepository.diasAsistidos(membresiaActual.getIdSm(), socio.getDni())).orElse(0L);
 
-        int cantidadAsistenciasMes = (int) Math.floor(asistenciasPorSemana * (duracionDias / 7.0));
+        int cantidadAsistenciasMes = (int) Math.ceil(asistenciasPorSemana * (duracionDias / 7.0));
 
         return Math.toIntExact(Math.max(cantidadAsistenciasMes - diasAsistidos, 0));
     }
@@ -398,8 +450,11 @@ public class SocioService {
 
         SocioMembresia suscripcionActiva = membresiaVigente(socio);
 
+        LocalDate ultimoVencimiento = socioMembresiaRepository.findUltimoVencimientoVigente(dni);
+        LocalDate fechaVencimiento = (ultimoVencimiento != null) ? ultimoVencimiento : suscripcionActiva.getFechaHasta();
+
         return new MembresiaVigenteDTO(suscripcionActiva.getMembresia().getNombre(),
-                suscripcionActiva.getMembresia().getTipoMembresia(), suscripcionActiva.getFechaHasta());
+                suscripcionActiva.getMembresia().getTipoMembresia(), fechaVencimiento);
 
     }
 
@@ -411,11 +466,16 @@ public class SocioService {
         Socio socio = socioRepository.findById(dni)
                 .orElseThrow(() -> new ObjetoNoEncontradoException("No existe ningun socio con el dni " + dni));
 
-        Integer idMembresiaVigente = membresiaVigente(socio).getIdSm();
+        SocioMembresia suscripcionActiva = membresiaVigente(socio);
 
-        Integer dias = socioMembresiaRepository.cantidadDiasParaVencimiento(dni, idMembresiaVigente);
+        LocalDate ultimoVencimiento = socioMembresiaRepository.findUltimoVencimientoVigente(dni);
+        LocalDate fechaVencimiento = (ultimoVencimiento != null) ? ultimoVencimiento : suscripcionActiva.getFechaHasta();
 
-        return socioMembresiaRepository.cantidadDiasParaVencimiento(dni, idMembresiaVigente);
+        if (fechaVencimiento == null) {
+            return 9999;
+        }
+
+        return Math.max(0, (int) java.time.temporal.ChronoUnit.DAYS.between(LocalDate.now(), fechaVencimiento));
     }
 
     public Boolean socioActivoMes(String dni) {
@@ -450,22 +510,20 @@ public class SocioService {
         return inactivos;
     }
 
-    public PageResponseDTO<SocioDTO> buscarSociosPaginados(int page, int size, String q, Boolean activo) {
+    public PageResponseDTO<SocioDTO> buscarSociosPaginados(int page, int size, String q, String activo) {
         if (q != null && !q.trim().isEmpty()) {
             q = "%" + q.trim().toLowerCase() + "%";
         } else {
             q = null;
         }
 
-        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
-
         org.springframework.data.domain.Page<Socio> pageResult = socioRepository.buscarSociosPaginados(q, activo,
-                pageable);
+                org.springframework.data.domain.PageRequest.of(page, size));
 
-        List<SocioDTO> content = mapearSociosADTOConRutinas(pageResult.getContent());
+        List<SocioDTO> dtos = mapearSociosADTOConRutinas(pageResult.getContent());
 
         return new PageResponseDTO<>(
-                content,
+                dtos,
                 pageResult.getNumber(),
                 pageResult.getSize(),
                 pageResult.getTotalElements(),
@@ -491,7 +549,7 @@ public class SocioService {
                 null);
     }
 
-    public PageResponseDTO<SocioListadoDTO> buscarSociosExtendidos(int page, int size, String q, Boolean activo) {
+    public PageResponseDTO<SocioListadoDTO> buscarSociosExtendidos(int page, int size, String q, String activo) {
         if (q != null && !q.trim().isEmpty()) {
             q = "%" + q.trim().toLowerCase() + "%";
         } else {
@@ -521,7 +579,7 @@ public class SocioService {
                 }
 
                 String nombreMembresia = (String) row[5];
-
+                
                 LocalDate fechaVencimiento = null;
                 if (row[6] != null) {
                     if (row[6] instanceof java.sql.Date) {
@@ -531,39 +589,137 @@ public class SocioService {
                     }
                 }
 
-                Integer diasRestantes = row[7] != null ? ((Number) row[7]).intValue() : null;
+                Integer diasRestantes = null;
+                if (row[7] != null) {
+                    diasRestantes = ((Number) row[7]).intValue();
+                }
 
-                java.time.LocalDateTime ultimaAsistencia = null;
-                Integer diasSinAsistir = null;
-                if (row[8] != null) {
-                    if (row[8] instanceof java.sql.Timestamp) {
-                        ultimaAsistencia = ((java.sql.Timestamp) row[8]).toLocalDateTime();
-                    } else if (row[8] instanceof java.time.OffsetDateTime) {
-                        ultimaAsistencia = ((java.time.OffsetDateTime) row[8]).toLocalDateTime();
-                    } else if (row[8] instanceof java.time.LocalDateTime) {
-                        ultimaAsistencia = (java.time.LocalDateTime) row[8];
-                    }
-                    if (ultimaAsistencia != null) {
-                        diasSinAsistir = (int) java.time.temporal.ChronoUnit.DAYS.between(
-                            ultimaAsistencia.toLocalDate(), LocalDate.now());
+                LocalDateTime ultimaAsistencia = null;
+                if (row[10] != null) {
+                    if (row[10] instanceof java.sql.Timestamp) {
+                        ultimaAsistencia = ((java.sql.Timestamp) row[10]).toLocalDateTime();
+                    } else if (row[10] instanceof java.time.LocalDateTime) {
+                        ultimaAsistencia = (java.time.LocalDateTime) row[10];
                     }
                 }
 
-                boolean esActivo = nombreMembresia != null;
+                Integer diasSinAsistir = null;
+                if (ultimaAsistencia != null) {
+                    diasSinAsistir = (int) java.time.temporal.ChronoUnit.DAYS.between(ultimaAsistencia.toLocalDate(), LocalDate.now());
+                }
+
+                Boolean isActivo = fechaVencimiento != null;
 
                 content.add(new SocioListadoDTO(
-                        dni, nombre, telefono, email, fechaNacimiento, esActivo,
-                        nombreMembresia, fechaVencimiento, diasRestantes,
-                        ultimaAsistencia, diasSinAsistir
+                        dni,
+                        nombre,
+                        telefono,
+                        email,
+                        fechaNacimiento,
+                        isActivo,
+                        nombreMembresia,
+                        fechaVencimiento,
+                        diasRestantes,
+                        ultimaAsistencia,
+                        diasSinAsistir
                 ));
             } catch (Exception e) {
-                // Log error pero continuar con los demás registros
-                log.error("Error procesando socio: {}", e.getMessage(), e);
+                System.err.println("Error mapping row: " + java.util.Arrays.toString(row));
+                e.printStackTrace();
             }
         }
 
         int totalPages = (int) Math.ceil((double) total / size);
-        return new PageResponseDTO<>(content, page, size, total, totalPages);
+
+        return new PageResponseDTO<>(
+                content,
+                page,
+                size,
+                total,
+                totalPages);
+    }
+
+    public SociosCategorizadosDTO buscarSociosCategorizados(int page, int size, String q, String activo) {
+        if (q != null && !q.trim().isEmpty()) {
+            q = "%" + q.trim().toLowerCase() + "%";
+        } else {
+            q = null;
+        }
+        long totalActivos = socioRepository.contarSociosActivosFiltrado(q);
+        long totalVencidos = socioRepository.contarSociosVencidosFiltrado(q);
+        long totalSinMembresia = socioRepository.contarSociosSinMembresiafiltrado(q);
+
+        List<Socio> socios;
+        long totalElements;
+
+        if (activo == null || activo.isBlank() || "TODOS".equalsIgnoreCase(activo) || "ALL".equalsIgnoreCase(activo)) {
+            socios = socioRepository.buscarSociosTodos(q, size, page * size);
+            totalElements = socioRepository.contarSociosTodosFiltrado(q);
+        } else if ("ACTIVOS".equalsIgnoreCase(activo) || "ACTIVO".equalsIgnoreCase(activo) || "TRUE".equalsIgnoreCase(activo)) {
+            socios = socioRepository.buscarSociosActivosNative(q, size, page * size);
+            totalElements = totalActivos;
+        } else if ("VENCIDOS".equalsIgnoreCase(activo) || "VENCIDO".equalsIgnoreCase(activo) || "INACTIVOS".equalsIgnoreCase(activo) || "INACTIVO".equalsIgnoreCase(activo) || "FALSE".equalsIgnoreCase(activo)) {
+            socios = socioRepository.buscarSociosVencidosNative(q, size, page * size);
+            totalElements = totalVencidos;
+        } else if ("SIN_MEMBRESIA".equalsIgnoreCase(activo) || "SIN_MEMBRESIAS".equalsIgnoreCase(activo) || "SIN-MEMBRESIA".equalsIgnoreCase(activo) || "SINMEMBRESIA".equalsIgnoreCase(activo)) {
+            socios = socioRepository.buscarSociosSinMembresiaNative(q, size, page * size);
+            totalElements = totalSinMembresia;
+        } else {
+            socios = socioRepository.buscarSociosTodos(q, size, page * size);
+            totalElements = socioRepository.contarSociosTodosFiltrado(q);
+        }
+
+        List<SocioDTO> dtos = mapearSociosADTOConRutinas(socios);
+        
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+        return new SociosCategorizadosDTO(totalActivos, totalVencidos, totalSinMembresia, dtos, page, size, totalElements, totalPages);
+    }
+
+    public PageResponseDTO<SocioDTO> buscarSociosActivos(String q, int page, int size) {
+        if (q != null && !q.trim().isEmpty()) {
+            q = "%" + q.trim().toLowerCase() + "%";
+        } else {
+            q = null;
+        }
+        List<Socio> socios = socioRepository.buscarSociosActivosNative(q, size, page * size);
+        long total = socioRepository.contarSociosActivosFiltrado(q);
+        List<SocioDTO> dtos = mapearSociosADTOConRutinas(socios);
+        int totalPages = (int) Math.ceil((double) total / size);
+        return new PageResponseDTO<>(dtos, page, size, total, totalPages);
+    }
+
+    public PageResponseDTO<SocioDTO> buscarSociosVencidos(String q, int page, int size) {
+        if (q != null && !q.trim().isEmpty()) {
+            q = "%" + q.trim().toLowerCase() + "%";
+        } else {
+            q = null;
+        }
+        List<Socio> socios = socioRepository.buscarSociosVencidosNative(q, size, page * size);
+        long total = socioRepository.contarSociosVencidosFiltrado(q);
+        List<SocioDTO> dtos = mapearSociosADTOConRutinas(socios);
+        int totalPages = (int) Math.ceil((double) total / size);
+        return new PageResponseDTO<>(dtos, page, size, total, totalPages);
+    }
+
+    public PageResponseDTO<SocioDTO> buscarSociosSinMembresia(String q, int page, int size) {
+        if (q != null && !q.trim().isEmpty()) {
+            q = "%" + q.trim().toLowerCase() + "%";
+        } else {
+            q = null;
+        }
+        List<Socio> socios = socioRepository.buscarSociosSinMembresiaNative(q, size, page * size);
+        long total = socioRepository.contarSociosSinMembresiafiltrado(q);
+        List<SocioDTO> dtos = mapearSociosADTOConRutinas(socios);
+        int totalPages = (int) Math.ceil((double) total / size);
+        return new PageResponseDTO<>(dtos, page, size, total, totalPages);
+    }
+
+    public Map<String, Object> buscarSociosEstadisticas() {
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("totalActivos", socioRepository.contarSociosExtendidos(null, "ACTIVOS"));
+        stats.put("totalVencidos", socioRepository.contarSociosExtendidos(null, "VENCIDOS"));
+        stats.put("totalSinMembresia", socioRepository.contarSociosExtendidos(null, "SIN_MEMBRESIA"));
+        return stats;
     }
 
     public Map<String, Object> obtenerUltimoVencimiento(String dni) {

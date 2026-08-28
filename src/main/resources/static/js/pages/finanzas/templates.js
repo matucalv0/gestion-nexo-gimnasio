@@ -57,9 +57,9 @@ export function movimientoDetailRowHtml(m) {
   const { contentId } = detalleRowIds(m);
 
   return `
-    <td colspan="6" class="p-0 border-b border-[#222]">
-      <div id="${contentId}" class="detail-panel py-6 px-12">
-        <p class="text-sm text-gray-500">Cargando detalle...</p>
+    <td colspan="6" class="p-0 border-b border-white/[0.04]">
+      <div id="${contentId}" class="detail-panel py-5 px-8 bg-[#0a0a0d] border-t border-b border-white/[0.04]">
+        <p class="text-xs text-zinc-500 font-mono">Cargando detalle...</p>
       </div>
     </td>
   `;
@@ -70,24 +70,24 @@ export function movimientoDetailRowHtml(m) {
  */
 export function detalleIngresoHtml(pago) {
   if (!pago?.detalles || !pago.detalles.length) {
-    return `<p class="text-sm text-gray-500">Sin detalle.</p>`;
+    return `<p class="text-xs text-zinc-500 font-mono">Sin detalle registrado.</p>`;
   }
 
   return `
-    <h4 class="detail-panel-title mb-4 text-gray-300">Detalle del ingreso</h4>
-    <div class="detail-items flex flex-col gap-4">
+    <h4 class="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-3">Detalle del cobro</h4>
+    <div class="detail-items flex flex-col gap-3">
       ${pago.detalles
         .map(
           (d) => `
-          <div class="detail-item flex justify-between items-center p-4 rounded border border-[#222] bg-[#111]">
+          <div class="flex justify-between items-center p-3.5 rounded-xl border border-white/[0.06] bg-white/[0.02]">
             <div>
-              <p class="detail-item-type text-xs text-gray-500 uppercase tracking-widest mb-1">${d.tipo}</p>
-              <p class="detail-item-name text-sm text-white font-medium">${d.nombre}</p>
-              <p class="detail-item-qty text-xs text-gray-400 mt-1">Cantidad: <span class="text-gray-300 font-bold">${d.cantidad}</span></p>
+              <span class="text-[10px] text-zinc-400 uppercase tracking-widest font-bold">${d.tipo}</span>
+              <p class="text-sm text-white font-semibold mt-0.5">${d.nombre}</p>
+              <p class="text-xs text-zinc-400 mt-1 font-mono">Cantidad: <span class="text-white font-bold">${d.cantidad}</span></p>
             </div>
             <div class="text-right">
-              <p class="detail-item-label text-xs text-gray-500 mb-1">Unitario</p>
-              <p class="detail-item-price text-sm text-[var(--beige)] font-mono">$ ${d.precioUnitario}</p>
+              <span class="text-[10px] text-zinc-400 uppercase tracking-wider">Precio Unitario</span>
+              <p class="text-sm text-emerald-400 font-mono font-bold mt-0.5">$ ${Number(d.precioUnitario).toLocaleString()}</p>
             </div>
           </div>
         `,
@@ -102,19 +102,15 @@ export function detalleIngresoHtml(pago) {
  */
 export function detalleGastoHtml(gasto) {
   return `
-    <h4 class="detail-panel-title mb-4 text-gray-300">Detalle del gasto</h4>
-    <div class="detail-items flex flex-col gap-4">
-      <div class="detail-item flex justify-between items-center p-4 rounded border border-[#222] bg-[#111] max-w-sm">
-        <div>
-          <p class="detail-item-type text-xs text-gray-500 uppercase tracking-widest mb-1">Categoría</p>
-          <p class="detail-item-name text-sm text-white font-medium">${gasto?.categoria?.trim() || "Sin categoría"}</p>
-        </div>
+    <h4 class="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-3">Detalle del gasto</h4>
+    <div class="flex flex-wrap gap-3">
+      <div class="flex-1 min-w-[200px] p-3.5 rounded-xl border border-white/[0.06] bg-white/[0.02]">
+        <span class="text-[10px] text-zinc-400 uppercase tracking-widest font-bold">Categoría</span>
+        <p class="text-sm text-white font-semibold mt-0.5">${gasto?.categoria?.trim() || "Sin categoría"}</p>
       </div>
-      <div class="detail-item flex justify-between items-center p-4 rounded border border-[#222] bg-[#111] max-w-sm">
-        <div>
-          <p class="detail-item-type text-xs text-gray-500 uppercase tracking-widest mb-1">Proveedor / Descripción</p>
-          <p class="detail-item-name text-sm text-white font-medium">${gasto?.proveedor?.trim() || "Sin descripción"}</p>
-        </div>
+      <div class="flex-1 min-w-[200px] p-3.5 rounded-xl border border-white/[0.06] bg-white/[0.02]">
+        <span class="text-[10px] text-zinc-400 uppercase tracking-widest font-bold">Proveedor / Observación</span>
+        <p class="text-sm text-white font-semibold mt-0.5">${gasto?.proveedor?.trim() || "Sin descripción"}</p>
       </div>
     </div>
   `;

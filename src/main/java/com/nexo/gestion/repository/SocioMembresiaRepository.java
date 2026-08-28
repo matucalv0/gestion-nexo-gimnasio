@@ -25,8 +25,9 @@ AND sm.fechaHasta >= CURRENT_DATE
     FROM socio_membresia sm
     WHERE sm.dni_socio = :dni
       AND sm.activo = true
-      AND CURRENT_DATE BETWEEN sm.fecha_inicio AND sm.fecha_hasta
-    ORDER BY sm.fecha_inicio DESC
+      AND sm.fecha_inicio <= CURRENT_DATE
+      AND (sm.fecha_hasta IS NULL OR sm.fecha_hasta >= CURRENT_DATE)
+    ORDER BY sm.fecha_hasta DESC NULLS FIRST, sm.fecha_inicio DESC
     LIMIT 1
 """, nativeQuery = true)
     Optional<SocioMembresia> findActivaBySocio(String dni);
@@ -218,6 +219,46 @@ AND sm.fechaHasta >= CURRENT_DATE
           AND (sm.fecha_hasta IS NULL OR sm.fecha_hasta >= CURRENT_DATE)
         """, nativeQuery = true)
     List<String> findDnisActivosHoy(@Param("dnis") List<String> dnis);
+
+    // Membresías que vencen en una fecha exacta y el socio no renovó (sin membresías con fecha posterior)
+    @Query("""
+        SELECT sm FROM SocioMembresia sm
+        JOIN FETCH sm.socio s
+        JOIN FETCH sm.membresia m
+        WHERE sm.activo = true
+          AND sm.fechaHasta = :fechaVencimiento
+          AND s.email IS NOT NULL
+          AND TRIM(s.email) <> ''
+          AND NOT EXISTS (
+              SELECT 1 FROM SocioMembresia sm2
+              WHERE sm2.socio = s
+                AND sm2.activo = true
+                AND sm2.idSm <> sm.idSm
+                AND (sm2.fechaHasta > sm.fechaHasta OR sm2.fechaInicio > sm.fechaHasta)
+          )
+    """)
+    List<SocioMembresia> findMembresiasPorVencerEnFecha(@Param("fechaVencimiento") LocalDate fechaVencimiento);
+
+    // Membresías que vencieron en una fecha exacta y el socio no tiene membresía vigente hoy ni futura
+    @Query("""
+        SELECT sm FROM SocioMembresia sm
+        JOIN FETCH sm.socio s
+        JOIN FETCH sm.membresia m
+        WHERE sm.activo = true
+          AND sm.fechaHasta = :fechaVencimiento
+          AND s.email IS NOT NULL
+          AND TRIM(s.email) <> ''
+          AND NOT EXISTS (
+              SELECT 1 FROM SocioMembresia sm2
+              WHERE sm2.socio = s
+                AND sm2.activo = true
+                AND (sm2.fechaHasta >= :hoy OR (sm2.fechaHasta IS NULL AND sm2.fechaInicio <= :hoy))
+          )
+    """)
+    List<SocioMembresia> findMembresiasVencidasEnFecha(
+            @Param("fechaVencimiento") LocalDate fechaVencimiento,
+            @Param("hoy") LocalDate hoy
+    );
 
 }
 

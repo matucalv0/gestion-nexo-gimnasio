@@ -56,58 +56,35 @@
       </div>
     </header>
 
-    <!-- LISTA PRINCIPAL -->
-    <div class="glass-card p-0 overflow-hidden w-full relative min-h-[400px]">
-      <div class="overflow-x-auto subtle-scrollbar">
-        <table class="w-full text-left text-sm whitespace-nowrap">
-          <thead
-            class="bg-[#111] border-b border-[#222] sticky top-0 z-10 text-xs uppercase tracking-widest text-[#666] font-bold"
-          >
+    <!-- LISTA PRINCIPAL (MASTER TABLE) -->
+    <div class="master-table-card">
+      <div class="master-table-wrapper">
+        <table class="master-table">
+          <thead>
             <tr>
-              <th class="py-4 px-6 font-semibold">Nombre del Plan</th>
-              <th class="py-4 px-6 font-semibold">Duración</th>
-              <th class="py-4 px-6 font-semibold">Asistencias</th>
-              <th class="py-4 px-6 font-semibold">Precio Base</th>
-              <th class="py-4 px-6 font-semibold">Modalidad</th>
-              <th class="py-4 px-6 font-semibold text-center">Acciones</th>
+              <th>Nombre del Plan</th>
+              <th>Duración</th>
+              <th>Asistencias</th>
+              <th>Precio Base</th>
+              <th>Modalidad</th>
+              <th class="text-right">Acciones</th>
             </tr>
           </thead>
-          <tbody id="tablaMembresiasBody" class="divide-y divide-[#222]/50">
-            <!-- Empty state -->
-            <tr id="emptyStateMembresias" class="hidden">
-              <td colspan="6" class="py-20">
-                <div
-                  class="flex flex-col items-center justify-center text-center max-w-sm mx-auto"
-                >
-                  <div
-                    class="w-16 h-16 rounded-2xl bg-[#111] border border-[#222] flex items-center justify-center mb-4 text-gray-500"
-                  >
-                    <svg
-                      class="w-8 h-8"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="1.5"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"
-                      />
-                    </svg>
-                  </div>
-                  <h3 class="text-lg font-bold text-white tracking-tight mb-2">
-                    No tienes planes configurados
-                  </h3>
-                  <p class="text-sm text-gray-500">
-                    Comienza creando planes base (mensualidades, pases diarios)
-                    para poder asociarlos a los clientes o realizar ventas.
-                  </p>
-                </div>
-              </td>
-            </tr>
+          <tbody id="tablaMembresiasBody">
+            <!-- Filas generadas dinámicamente -->
           </tbody>
         </table>
+
+        <!-- Empty state -->
+        <div id="emptyStateMembresias" class="hidden py-16 text-center text-gray-500 italic text-sm">
+          <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-[#181818] flex items-center justify-center text-gray-600 border border-[#262626]">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
+            </svg>
+          </div>
+          <p class="font-medium text-gray-400">No tienes planes configurados</p>
+          <p class="text-xs text-gray-600 mt-1">Comienza creando planes base (mensualidades, pases diarios) para asociarlos a los clientes.</p>
+        </div>
       </div>
     </div>
   </div>

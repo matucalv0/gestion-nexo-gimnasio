@@ -1,0 +1,139 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------------< com.nexo:gestion >--------------------------
+[INFO] Building gestion 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.3.5:run (default-cli) > test-compile @ gestion >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ gestion ---
+[INFO] Copying 2 resources from src\main\resources to target\classes
+[INFO] Copying 106 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ gestion ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ gestion ---
+[INFO] Copying 1 resource from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ gestion ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] <<< spring-boot:3.3.5:run (default-cli) < test-compile @ gestion <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.3.5:run (default-cli) @ gestion ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.5)
+
+2026-05-06T21:15:22.909-03:00  INFO 21012 --- [gestion] [  restartedMain] com.nexo.gestion.GestionApplication      : Starting GestionApplication using Java 17.0.12 with PID 21012 (C:\Users\matuc\OneDrive\Escritorio\varios\gestion\target\classes started by matuc in C:\Users\matuc\OneDrive\Escritorio\varios\gestion)
+2026-05-06T21:15:22.911-03:00 DEBUG 21012 --- [gestion] [  restartedMain] com.nexo.gestion.GestionApplication      : Running with Spring Boot v3.3.5, Spring v6.1.14
+2026-05-06T21:15:22.913-03:00  INFO 21012 --- [gestion] [  restartedMain] com.nexo.gestion.GestionApplication      : No active profile set, falling back to 1 default profile: "default"
+2026-05-06T21:15:22.949-03:00  INFO 21012 --- [gestion] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-05-06T21:15:22.949-03:00  INFO 21012 --- [gestion] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-05-06T21:15:23.933-03:00  INFO 21012 --- [gestion] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-05-06T21:15:24.019-03:00  INFO 21012 --- [gestion] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 79 ms. Found 17 JPA repository interfaces.
+2026-05-06T21:15:24.768-03:00  INFO 21012 --- [gestion] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-05-06T21:15:24.780-03:00  INFO 21012 --- [gestion] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-05-06T21:15:24.781-03:00  INFO 21012 --- [gestion] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.31]
+2026-05-06T21:15:24.832-03:00  INFO 21012 --- [gestion] [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-05-06T21:15:24.834-03:00  INFO 21012 --- [gestion] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1883 ms
+2026-05-06T21:15:25.169-03:00  INFO 21012 --- [gestion] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-05-06T21:15:25.320-03:00  INFO 21012 --- [gestion] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@7271abdf
+2026-05-06T21:15:25.322-03:00  INFO 21012 --- [gestion] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-05-06T21:15:25.348-03:00  INFO 21012 --- [gestion] [  restartedMain] org.flywaydb.core.FlywayExecutor         : Database: jdbc:postgresql://localhost:5432/gimnasiov2 (PostgreSQL 18.1)
+2026-05-06T21:15:25.356-03:00  WARN 21012 --- [gestion] [  restartedMain] o.f.c.internal.database.base.Database    : Flyway upgrade recommended: PostgreSQL 18.1 is newer than this version of Flyway and support has not been tested. The latest supported version of PostgreSQL is 16.
+2026-05-06T21:15:25.397-03:00  INFO 21012 --- [gestion] [  restartedMain] o.f.core.internal.command.DbValidate     : Successfully validated 7 migrations (execution time 00:00.031s)
+2026-05-06T21:15:25.447-03:00  INFO 21012 --- [gestion] [  restartedMain] o.f.core.internal.command.DbMigrate      : Current version of schema "public": 7
+2026-05-06T21:15:25.449-03:00  INFO 21012 --- [gestion] [  restartedMain] o.f.core.internal.command.DbMigrate      : Schema "public" is up to date. No migration necessary.
+2026-05-06T21:15:25.537-03:00  INFO 21012 --- [gestion] [  restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-05-06T21:15:25.589-03:00  INFO 21012 --- [gestion] [  restartedMain] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
+2026-05-06T21:15:25.623-03:00  INFO 21012 --- [gestion] [  restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-05-06T21:15:25.889-03:00  INFO 21012 --- [gestion] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-05-06T21:15:25.941-03:00  WARN 21012 --- [gestion] [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-05-06T21:15:27.092-03:00  INFO 21012 --- [gestion] [  restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-05-06T21:15:27.136-03:00  INFO 21012 --- [gestion] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-05-06T21:15:27.482-03:00 DEBUG 21012 --- [gestion] [  restartedMain] c.nexo.gestion.security.JwtAuthFilter    : Filter 'jwtAuthFilter' configured for use
+2026-05-06T21:15:27.549-03:00  INFO 21012 --- [gestion] [  restartedMain] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-05-06T21:15:28.121-03:00  INFO 21012 --- [gestion] [  restartedMain] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2026-05-06T21:15:29.348-03:00  WARN 21012 --- [gestion] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-05-06T21:15:29.466-03:00  INFO 21012 --- [gestion] [  restartedMain] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
+2026-05-06T21:15:29.828-03:00  INFO 21012 --- [gestion] [  restartedMain] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 2 endpoints beneath base path '/actuator'
+2026-05-06T21:15:29.906-03:00 DEBUG 21012 --- [gestion] [  restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, LogoutFilter, RateLimitFilter, JwtAuthFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, ExceptionTranslationFilter, AuthorizationFilter
+2026-05-06T21:15:30.088-03:00  WARN 21012 --- [gestion] [  restartedMain] ion$DefaultTemplateResolverConfiguration : Cannot find template location: classpath:/templates/ (please add some templates, check your Thymeleaf configuration, or set spring.thymeleaf.check-template-location=false)
+2026-05-06T21:15:30.573-03:00  INFO 21012 --- [gestion] [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2026-05-06T21:15:30.642-03:00  INFO 21012 --- [gestion] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-05-06T21:15:30.661-03:00  INFO 21012 --- [gestion] [  restartedMain] com.nexo.gestion.GestionApplication      : Started GestionApplication in 8.049 seconds (process running for 8.451)
+2026-05-06T21:15:30.788-03:00 DEBUG 21012 --- [gestion] [  restartedMain] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.activo,
+        u1_0.empleado_dni,
+        u1_0.password,
+        u1_0.rol,
+        u1_0.socio_dni,
+        u1_0.username 
+    from
+        usuario u1_0 
+    where
+        u1_0.username=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.activo,
+        u1_0.empleado_dni,
+        u1_0.password,
+        u1_0.rol,
+        u1_0.socio_dni,
+        u1_0.username 
+    from
+        usuario u1_0 
+    where
+        u1_0.username=?
+2026-05-06T21:15:30.805-03:00 DEBUG 21012 --- [gestion] [  restartedMain] c.nexo.gestion.config.DataInitializer    : El usuario administrador ya existe.
+2026-05-06T21:15:30.808-03:00 DEBUG 21012 --- [gestion] [  restartedMain] org.hibernate.SQL                        : 
+    select
+        mp1_0.id_mediopago 
+    from
+        medio_pago mp1_0 
+    where
+        mp1_0.nombre=? 
+    fetch
+        first ? rows only
+Hibernate: 
+    select
+        mp1_0.id_mediopago 
+    from
+        medio_pago mp1_0 
+    where
+        mp1_0.nombre=? 
+    fetch
+        first ? rows only
+2026-05-06T21:15:30.812-03:00 DEBUG 21012 --- [gestion] [  restartedMain] org.hibernate.SQL                        : 
+    select
+        mp1_0.id_mediopago 
+    from
+        medio_pago mp1_0 
+    where
+        mp1_0.nombre=? 
+    fetch
+        first ? rows only
+Hibernate: 
+    select
+        mp1_0.id_mediopago 
+    from
+        medio_pago mp1_0 
+    where
+        mp1_0.nombre=? 
+    fetch
+        first ? rows only
+2026-05-06T21:15:30.814-03:00  INFO 21012 --- [gestion] [  restartedMain] c.nexo.gestion.config.DataInitializer    : Inicialización de datos completada correctamente.

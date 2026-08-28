@@ -1,341 +1,180 @@
 <main class="flex justify-center min-h-screen p-6 pt-8">
   <div class="w-full max-w-7xl">
-    <!-- HEADER -->
-    <header class="page-header mb-6">
-      <div class="page-header-icon">
-        <svg
-          class="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.75"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z"
-          />
-        </svg>
-      </div>
-      <div class="page-header-content">
-        <h1 class="page-header-title">Asistencias</h1>
-        <p class="page-header-subtitle">Registros diarios del gimnasio</p>
+
+    <!-- PAGE HEADER -->
+    <header class="page-header mb-8 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <div class="page-header-icon w-12 h-12 rounded-2xl bg-[#141418] border border-[#22222a] flex items-center justify-center shadow-md">
+          <svg class="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+          </svg>
+        </div>
+        <div class="page-header-content">
+          <h1 class="page-header-title text-2xl font-bold text-white tracking-tight">Asistencias</h1>
+          <p class="page-header-subtitle text-xs text-zinc-400 font-medium">Control de aforo, ingresos diarios y socios concurrentes</p>
+        </div>
       </div>
     </header>
 
-    <!-- LAYOUT PRINCIPAL -->
+    <!-- MAIN DASHBOARD CONTENT -->
     <div class="flex flex-col gap-6">
-      <!-- FILA SUPERIOR: KPIs CLAVE -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Asistencias del mes -->
-        <div
-          class="glass-card flex flex-col justify-center px-8 py-6 relative overflow-hidden group"
-        >
-          <div
-            class="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-[var(--orange)]/30 to-transparent"
-          ></div>
-          <p
-            class="text-xs uppercase tracking-widest text-gray-500 mb-2 font-medium"
-          >
-            Asistencias
-          </p>
-          <div class="flex items-baseline gap-3">
-            <p
-              id="kpiTotalAsistencias"
-              class="text-4xl sm:text-5xl font-bold text-white tabular-nums tracking-tight"
-            >
-              0
-            </p>
-            <div
-              id="varTotalAsistencias"
-              class="flex items-center gap-1 bg-[#1a1a1a] px-2 py-1 rounded border border-[#333]"
-            >
-              <!-- El JS inyectará el texto/SVG -->
+
+      <!-- BENTO KPIS -->
+      <section class="w-full">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch">
+          
+          <!-- Asistencias Totales (Protagonista) -->
+          <div class="neo-card neo-card-hero md:scale-[1.02] z-10 flex flex-col items-center justify-center text-center">
+            <span class="text-xs font-bold uppercase tracking-[0.2em] text-zinc-400 mb-2">Total Asistencias</span>
+            <p id="kpiTotalAsistencias" class="text-4xl lg:text-5xl font-black text-white tracking-tight font-mono tabular-nums drop-shadow-lg my-1">0</p>
+            
+            <!-- Variación vs Mes Anterior -->
+            <div class="mt-2.5 inline-flex items-center gap-1.5 py-1 px-3 rounded-full bg-[#181820] border border-[#2c2c36]">
+              <span id="varTotalAsistencias" class="text-xs font-bold font-mono"></span>
+              <span class="text-[10px] text-zinc-400 uppercase tracking-tight">vs. mes ant.</span>
             </div>
           </div>
-          <p class="text-xs text-gray-500 mt-3 pt-3 border-t border-white/5">
-            vs. mes anterior
-          </p>
-        </div>
 
-        <!-- Socios activos -->
-        <div class="glass-card flex flex-col justify-center px-8 py-6">
-          <p
-            class="text-xs uppercase tracking-widest text-gray-500 mb-2 font-medium"
-          >
-            Socios activos
-          </p>
-          <div class="flex items-baseline gap-3">
-            <p
-              id="kpiSociosActivosTotal"
-              class="text-4xl font-bold text-white tabular-nums tracking-tight"
-            >
-              0
-            </p>
-            <div
-              id="varSociosActivos"
-              class="flex items-center gap-1 bg-[#1a1a1a] px-2 py-1 rounded border border-[#333]"
-            >
-              <!-- El JS inyectará el texto/SVG -->
-            </div>
-          </div>
-          <p class="text-xs text-gray-500 mt-3 pt-3 border-t border-white/5">
-            vs. mes anterior
-          </p>
-        </div>
-
-        <!-- Promedio por socio -->
-        <div class="glass-card flex flex-col justify-center px-8 py-6">
-          <p
-            class="text-xs uppercase tracking-widest text-gray-500 mb-2 font-medium"
-          >
-            Promedio/socio
-          </p>
-          <div class="flex items-baseline gap-3">
-            <p
-              id="kpiPromedio"
-              class="text-4xl font-bold text-white tabular-nums tracking-tight"
-            >
-              0
-            </p>
-            <div
-              id="varPromedio"
-              class="flex items-center gap-1 bg-[#1a1a1a] px-2 py-1 rounded border border-[#333]"
-            >
-              <!-- El JS inyectará el texto/SVG -->
-            </div>
-          </div>
-          <p class="text-xs text-gray-500 mt-3 pt-3 border-t border-white/5">
-            vs. mes anterior
-          </p>
-        </div>
-      </div>
-
-      <!-- FILA MEDIOS: GRAFICO EVOLUCIÓN y TOP ACTIVIDADES -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Gráfico Evolución (2/3) -->
-        <div class="lg:col-span-2 glass-card flex flex-col px-8 py-6">
-          <div class="flex items-center justify-between mb-6">
+          <!-- Socios Activos -->
+          <div class="neo-card flex flex-col justify-between">
             <div>
-              <h2 class="text-lg font-semibold text-white">Evolución Diaria</h2>
-              <p class="text-sm text-gray-400">Asistencias durante el mes</p>
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Socios Activos</span>
+                <div class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.8)]"></div>
+              </div>
+              <p id="kpiSociosActivosTotal" class="text-3xl lg:text-4xl font-extrabold text-emerald-400 font-mono tracking-tight tabular-nums">0</p>
+            </div>
+            <div class="flex items-center justify-between mt-4 pt-3 border-t border-[#1e1e24]">
+              <span class="text-xs text-zinc-500 font-medium">Socios concurrentes</span>
+              <span id="varSociosActivos" class="text-xs font-bold font-mono text-zinc-400"></span>
+            </div>
+          </div>
+
+          <!-- Promedio por Socio -->
+          <div class="neo-card flex flex-col justify-between text-right">
+            <div>
+              <div class="flex items-center justify-between mb-3 flex-row-reverse">
+                <span class="text-xs font-bold uppercase tracking-wider text-sky-400">Promedio / Socio</span>
+                <div class="w-2.5 h-2.5 rounded-full bg-sky-400 shadow-[0_0_10px_rgba(56,189,248,0.8)]"></div>
+              </div>
+              <p id="kpiPromedio" class="text-3xl lg:text-4xl font-extrabold text-sky-400 font-mono tracking-tight tabular-nums">0</p>
+            </div>
+            <div class="flex items-center justify-between flex-row-reverse mt-4 pt-3 border-t border-[#1e1e24]">
+              <span class="text-xs text-zinc-500 font-medium">Visitas / socio</span>
+              <span id="varPromedio" class="text-xs font-bold font-mono text-zinc-400"></span>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- CHARTS & PEAK HOUR -->
+      <div class="flex flex-col lg:flex-row gap-6 lg:items-start">
+        
+        <!-- Gráfico Evolución (Izquierda 2/3) -->
+        <section class="flex-[2] neo-card w-full">
+          <div class="flex items-center justify-between mb-6 pb-4 border-b border-[#1e1e24]">
+            <div>
+              <h2 class="text-base font-bold text-white tracking-tight m-0">Evolución Diaria</h2>
+              <p class="text-xs text-zinc-400 mt-0.5">Asistencias registradas a lo largo del mes</p>
             </div>
             <input
               type="month"
               id="filtroMesAsistencias"
-              class="bg-[#161616] text-sm text-[var(--beige)] border border-[#333] rounded px-3 py-1.5 focus:outline-none focus:border-[var(--orange)]"
+              class="filter-select-modern font-mono text-xs"
               aria-label="Filtrar por mes"
             />
           </div>
 
-          <div class="flex-1 w-full relative min-h-[300px]">
-            <canvas
-              id="AsistenciasDiaChart"
-              class="absolute inset-0 w-full h-full"
-            ></canvas>
+          <div class="chart-container relative h-[300px]">
+            <canvas id="AsistenciasDiaChart" class="w-full h-full"></canvas>
           </div>
-        </div>
+        </section>
 
-        <!-- Highlight e Info Relevante (1/3) -->
-        <div class="lg:col-span-1 flex flex-col gap-6">
+        <!-- Columna Derecha: Hora Pico + Top Socios (1/3) -->
+        <aside class="flex-[1] flex flex-col gap-6 w-full min-w-0">
+          
           <!-- Hora Pico -->
-          <div
-            class="glass-card flex flex-col justify-center items-center text-center px-8 py-8 relative overflow-hidden group border border-[#333] bg-gradient-to-b from-[#111] to-[#0a0a0a]"
-          >
-            <!-- Icono sutil de fondo -->
-            <svg
-              class="absolute -right-4 -top-4 w-32 h-32 text-white/[0.02] transform -rotate-12 group-hover:scale-110 transition-transform duration-700"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z"
-              />
-            </svg>
-
-            <p
-              class="text-xs uppercase tracking-widest text-gray-500 mb-1 z-10"
-            >
-              Hora Pico
-            </p>
-            <p
-              id="kpiHoraPico"
-              class="text-4xl font-bold text-[var(--orange)] tabular-nums mb-1 z-10"
-            >
-              --:--
-            </p>
-            <p id="kpiHoraPicoAsistencias" class="text-sm text-gray-400 z-10">
-              -- asistencias
-            </p>
+          <div class="neo-card neo-card-hero w-full flex flex-col items-center justify-center text-center">
+            <span class="text-xs font-bold uppercase tracking-[0.2em] text-zinc-400 mb-1">Hora de Mayor Afluencia</span>
+            <p id="kpiHoraPico" class="text-3xl lg:text-4xl font-black text-orange-400 font-mono tracking-tight tabular-nums my-1">--:--</p>
+            <p id="kpiHoraPicoAsistencias" class="text-xs text-zinc-400 font-mono">-- asistencias</p>
           </div>
 
-          <!-- Socios más activos -->
-          <div class="glass-card flex flex-col flex-1 px-8 py-6 max-h-[400px]">
-            <h3
-              class="text-sm uppercase tracking-widest text-gray-400 font-medium mb-4 pb-4 border-b border-[#222]"
-            >
-              Top Socios del mes
-            </h3>
-            <ul
-              id="kpiSociosActivos"
-              class="flex flex-col gap-3 overflow-y-auto pr-2 custom-scrollbar"
-            >
-              <!-- Se llenará dinámicamente desde asistencias.js -->
+          <!-- Top Socios del Mes -->
+          <div class="neo-card w-full p-5 flex flex-col max-h-[300px]">
+            <div class="pb-3 mb-3 border-b border-[#1e1e24]">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-300 m-0">Top Socios del Mes</h3>
+            </div>
+            <ul id="kpiSociosActivos" class="flex flex-col gap-2.5 overflow-y-auto pr-1">
+              <!-- Se llenará dinámicamente -->
             </ul>
           </div>
-        </div>
+
+        </aside>
+
       </div>
 
-      <!-- TABLA DE ASISTENCIAS -->
-      <section class="glass-card flex flex-col">
-        <div
-          class="px-8 py-6 border-b border-[#222] flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-        >
+      <!-- MASTER TABLE: HISTORIAL DE ASISTENCIAS -->
+      <section class="master-table-card">
+        <div class="master-toolbar">
           <div>
-            <h2 class="text-lg font-semibold text-white">
-              Registro de Asistencias
-            </h2>
+            <h2 class="text-lg font-bold text-white tracking-tight m-0">Registro de Asistencias</h2>
+            <p class="text-xs text-zinc-400 mt-0.5">Control de ingresos y accesos diarios</p>
           </div>
-        </div>
 
-        <!-- Barra de Filtros Integrada -->
-        <div class="px-8 py-5 bg-[#0a0a0a] border-b border-[#222]">
-          <div class="flex flex-wrap items-end gap-4 h-full">
-            <div class="flex-1 min-w-[200px]">
-              <label
-                class="block text-xs uppercase text-gray-500 mb-1.5"
-                for="inputBusqueda"
-                >Buscar (DNI o Nombre)</label
-              >
-              <div class="relative">
-                <div
-                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-                >
-                  <svg
-                    class="h-4 w-4 text-gray-500"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    />
-                  </svg>
-                </div>
-                <input
-                  type="text"
-                  id="inputBusqueda"
-                  placeholder="Ej: 12345678"
-                  class="w-full bg-[#161616] text-[var(--beige)] text-sm border border-[#333] rounded-md pl-10 pr-3 py-2 outline-none focus:border-[var(--orange)] transition-colors"
-                />
-              </div>
+          <div class="flex flex-wrap items-center gap-3">
+            <div class="search-box-wrapper min-w-[200px] max-w-xs">
+              <svg class="search-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input type="text" id="inputBusqueda" placeholder="Buscar DNI o nombre..." class="search-box-input" autocomplete="off" />
             </div>
-            <div class="w-36">
-              <label
-                class="block text-xs uppercase text-gray-500 mb-1.5"
-                for="filtroDesde"
-                >Desde</label
-              >
-              <input
-                type="date"
-                id="filtroDesde"
-                class="w-full bg-[#161616] text-gray-300 text-sm border border-[#333] rounded-md px-3 py-2 outline-none focus:border-[var(--orange)] transition-colors"
-              />
+
+            <div class="flex items-center gap-2 bg-[#141418] border border-[#26262e] rounded-xl p-1 px-2.5 shadow-inner">
+              <input type="date" id="filtroDesde" class="bg-transparent border-none text-xs text-zinc-200 focus:outline-none py-1 px-1 font-mono" aria-label="Desde" />
+              <span class="text-zinc-500 text-xs font-mono">→</span>
+              <input type="date" id="filtroHasta" class="bg-transparent border-none text-xs text-zinc-200 focus:outline-none py-1 px-1 font-mono" aria-label="Hasta" />
             </div>
-            <div class="w-36">
-              <label
-                class="block text-xs uppercase text-gray-500 mb-1.5"
-                for="filtroHasta"
-                >Hasta</label
-              >
-              <input
-                type="date"
-                id="filtroHasta"
-                class="w-full bg-[#161616] text-gray-300 text-sm border border-[#333] rounded-md px-3 py-2 outline-none focus:border-[var(--orange)] transition-colors"
-              />
-            </div>
-            <div class="flex gap-2">
-              <button id="btnBuscar" class="btn btn-primary px-5 py-2">
-                Buscar
-              </button>
-              <button
-                id="btnLimpiarFiltros"
-                class="btn border border-[#333] text-gray-300 hover:bg-[#222] px-4 py-2"
-              >
-                Limpiar
-              </button>
+
+            <div class="flex items-center gap-2">
+              <button id="btnBuscar" class="btn-search-action">Buscar</button>
+              <button id="btnLimpiarFiltros" class="btn-clear-action">Limpiar</button>
             </div>
           </div>
         </div>
 
-        <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse">
+        <div class="master-table-wrapper">
+          <table class="master-table">
             <thead>
-              <tr class="bg-[#111] border-b border-[#222]">
-                <th
-                  class="py-3 px-8 text-xs uppercase tracking-wider text-gray-500 font-medium"
-                >
-                  Nombre
-                </th>
-                <th
-                  class="py-3 px-8 text-xs uppercase tracking-wider text-gray-500 font-medium text-right"
-                >
-                  DNI
-                </th>
-                <th
-                  class="py-3 px-8 text-xs uppercase tracking-wider text-gray-500 font-medium text-right"
-                >
-                  Fecha / Hora
-                </th>
+              <tr>
+                <th>Socio</th>
+                <th class="text-left">DNI</th>
+                <th class="text-right">Fecha / Hora</th>
               </tr>
             </thead>
-            <tbody
-              id="tablaAsistenciasBody"
-              class="text-sm divide-y divide-[#1f1f1f]"
-            >
-              <!-- Empty state -->
-              <tr id="emptyStateAsistencias" class="hidden">
-                <td colspan="3" class="py-12">
-                  <div
-                    class="flex flex-col items-center justify-center text-center"
-                  >
-                    <div
-                      class="w-16 h-16 rounded-full bg-[#161616] flex items-center justify-center mb-4 border border-[#333]"
-                    >
-                      <svg
-                        class="w-8 h-8 text-gray-600"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.5"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                    </div>
-                    <h3 class="text-lg font-medium text-white mb-1">
-                      Sin asistencias
-                    </h3>
-                    <p class="text-gray-500 max-w-sm mx-auto">
-                      Probá cambiando el rango de fechas o el buscador.
-                    </p>
-                  </div>
-                </td>
-              </tr>
-              <!-- filas dinámicas -->
+            <tbody id="tablaAsistenciasBody">
+              <!-- Filas generadas dinámicamente -->
             </tbody>
           </table>
+
+          <!-- Empty state -->
+          <div id="emptyStateAsistencias" class="hidden py-16 text-center">
+            <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-[#141418] flex items-center justify-center text-zinc-500 border border-[#26262e]">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <p class="font-semibold text-zinc-300 text-sm">Sin asistencias registradas</p>
+            <p class="text-xs text-zinc-500 mt-1 max-w-sm mx-auto">Prueba cambiando el rango de fechas o el término de búsqueda.</p>
+          </div>
         </div>
 
-        <!-- Contenedor Paginación -->
-        <div id="paginationContainer" class="p-4 border-t border-[#222]"></div>
+        <!-- Paginación -->
+        <div id="paginationContainer" class="p-4 border-t border-[#1e1e24] bg-[#0c0c10]"></div>
       </section>
+
     </div>
   </div>
 </main>

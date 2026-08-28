@@ -726,6 +726,8 @@ function actualizarVisibilidadFechaInicio() {
       if (radioVencimiento) radioVencimiento.checked = true;
     } else {
       // Socio nuevo: ocultar opción de vencimiento y seleccionar 'hoy' por defecto
+      const lblVenc = document.getElementById("lblFechaVencimiento");
+      if (lblVenc) lblVenc.textContent = "";
       if (labelVencimiento) labelVencimiento.classList.add("hidden");
       if (radioHoy) radioHoy.checked = true;
     }
@@ -737,6 +739,10 @@ function actualizarVisibilidadFechaInicio() {
     grupo.classList.remove("hidden");
     evaluarWarningAsistencias();
   } else {
+    const lblVenc = document.getElementById("lblFechaVencimiento");
+    if (lblVenc) lblVenc.textContent = "";
+    const lblHoy = document.getElementById("lblFechaHoy");
+    if (lblHoy) lblHoy.textContent = "";
     grupo.classList.add("hidden");
     ocultarWarningAsistencias();
   }

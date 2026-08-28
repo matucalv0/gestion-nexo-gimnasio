@@ -138,35 +138,63 @@ public class SocioTest {
 
         org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(0, 10);
 
-        // Test filtro Activos (true) buscando el DNI específico
+        // Test filtro Activos buscando el DNI específico
         org.springframework.data.domain.Page<Socio> resultadosActivos = 
-            socioRepository.buscarSociosPaginados("11111111", true, pageable);
+            socioRepository.buscarSociosPaginados("11111111", "ACTIVOS", pageable);
         
         long countActivos = resultadosActivos.getContent().stream().filter(s -> s.getDni().equals("11111111")).count();
         assertEquals(1, countActivos, "Debería encontrar al socio con membresía vigente");
 
         org.springframework.data.domain.Page<Socio> resultadosActivosInvalido = 
-            socioRepository.buscarSociosPaginados("22222222", true, pageable);
+            socioRepository.buscarSociosPaginados("22222222", "ACTIVOS", pageable);
         assertEquals(0, resultadosActivosInvalido.getTotalElements(), "No debería encontrar al socio inactivo");
 
-        // Test filtro Inactivos (false) buscando el DNI específico
+        // Test filtro Vencidos buscando el DNI específico
         org.springframework.data.domain.Page<Socio> resultadosInactivos = 
-            socioRepository.buscarSociosPaginados("22222222", false, pageable);
+            socioRepository.buscarSociosPaginados("22222222", "VENCIDOS", pageable);
         
         long countInactivos = resultadosInactivos.getContent().stream().filter(s -> s.getDni().equals("22222222")).count();
         assertEquals(1, countInactivos, "Debería encontrar al socio con membresía vencida");
 
         org.springframework.data.domain.Page<Socio> resultadosInactivosInvalido = 
-            socioRepository.buscarSociosPaginados("11111111", false, pageable);
+            socioRepository.buscarSociosPaginados("11111111", "VENCIDOS", pageable);
         assertEquals(0, resultadosInactivosInvalido.getTotalElements(), "No debería encontrar al socio activo");
 
-        // Test sin filtro (null)
+        // Test sin filtro
         org.springframework.data.domain.Page<Socio> resultadosTodosUno = 
-            socioRepository.buscarSociosPaginados("11111111", null, pageable);
+            socioRepository.buscarSociosPaginados("11111111", "TODOS", pageable);
         assertEquals(1, resultadosTodosUno.getContent().size(), "Debería encontrar al socio activo en búsqueda total");
 
         org.springframework.data.domain.Page<Socio> resultadosTodosDos = 
-            socioRepository.buscarSociosPaginados("22222222", null, pageable);
+            socioRepository.buscarSociosPaginados("22222222", "TODOS", pageable);
         assertEquals(1, resultadosTodosDos.getContent().size(), "Debería encontrar al socio inactivo en búsqueda total");
     }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void verificarSocioDTOConMembresiasEncadenadas() {
+        Socio socio = new Socio("99887766", "Agustin", "1199887766", "agus@test.com", LocalDate.of(1998, 4, 15));
+        socioRepository.save(socio);
+
+        Membresia membresia = new Membresia("Plan Mensual", 30, BigDecimal.valueOf(45000));
+        membresiaRepository.save(membresia);
+
+        // Membresía 1 (vigente hoy)
+        SocioMembresia sm1 = new SocioMembresia(socio, membresia, LocalDate.now(), LocalDate.now().plusDays(30));
+        socioMembresiaRepository.save(sm1);
+
+        // Membresía 2 (encadenada a futuro)
+        SocioMembresia sm2 = new SocioMembresia(socio, membresia, LocalDate.now().plusDays(31), LocalDate.now().plusDays(60));
+        socioMembresiaRepository.save(sm2);
+
+        SocioDTO socioDTO = socioService.buscarSocioPorDni("99887766");
+        assertNotNull(socioDTO);
+        org.junit.jupiter.api.Assertions.assertTrue(socioDTO.activo());
+        org.junit.jupiter.api.Assertions.assertTrue(socioDTO.tieneMembresiaVigente());
+        assertEquals(LocalDate.now().plusDays(60), socioDTO.fechaVencimientoMembresia());
+        assertEquals(60, socioDTO.diasRestantes());
+        assertEquals("Plan Mensual", socioDTO.nombreMembresia());
+    }
 }
+

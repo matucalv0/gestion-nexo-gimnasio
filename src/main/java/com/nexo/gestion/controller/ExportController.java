@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @RestController
 @RequestMapping("/exportar")
@@ -31,15 +32,16 @@ public class ExportController {
     @GetMapping(value = "/socios", produces = "text/csv")
     public ResponseEntity<String> exportarSocios(
             @RequestParam(required = false) String q,
-            @RequestParam(required = false) Boolean activo) {
+            @RequestParam(required = false) String activo) {
 
         // Obtener todos los socios usando endpoint básico
-        PageResponseDTO<SocioDTO> socios = socioService.buscarSociosPaginados(0, 10000, q, activo);
+        SociosCategorizadosDTO sociosData = socioService.buscarSociosCategorizados(0, 10000, q, activo);
+        List<SocioDTO> socios = sociosData.socios();
 
         StringBuilder csv = new StringBuilder();
         csv.append("DNI,Nombre,Telefono,Email,Fecha_Nacimiento\n");
 
-        for (SocioDTO s : socios.content()) {
+        for (SocioDTO s : socios) {
             csv.append(escapeCsv(s.dni())).append(",");
             csv.append(escapeCsv(s.nombre())).append(",");
             csv.append(escapeCsv(s.telefono())).append(",");

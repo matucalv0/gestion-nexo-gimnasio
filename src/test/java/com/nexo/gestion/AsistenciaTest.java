@@ -194,5 +194,53 @@ public class AsistenciaTest {
 
 
 
+    @Test
+    @Transactional
+    @Rollback
+    public void verificarQueSeRegistraAsistenciaConMembresiasEncadenadasAFuturo() {
+        Socio socio = new Socio("88990011", "Lucas", "1133445566", "lucas@gmail.com", LocalDate.of(1995, 3, 10));
+        SocioDTO socioGuardado = socioService.registrarSocio(
+                new SocioCreateDTO(socio.getDni(), socio.getNombre(), socio.getTelefono(), socio.getEmail(), socio.getFechaNacimiento())
+        );
 
+        Membresia membresia = new Membresia("Plan Pase Libre", 30, new BigDecimal("60000"), 0, TipoMembresia.MUSCULACION);
+        MembresiaDTO guardada = membresiaService.registrarMembresia(
+                new MembresiaCreateDTO(membresia.getDuracionDias(), membresia.getPrecioSugerido(), membresia.getNombre(), membresia.getAsistenciasPorSemana(), membresia.getTipoMembresia())
+        );
+
+        // Membresía 1: Inicia hoy y vence en 30 días
+        SocioMembresia sm1 = new SocioMembresia(socio, membresia, LocalDate.now(), LocalDate.now().plusDays(30));
+        socioMembresiaRepository.saveAndFlush(sm1);
+
+        // Membresía 2 (encadenada a futuro): Inicia en 31 días y vence en 60 días
+        SocioMembresia sm2 = new SocioMembresia(socio, membresia, LocalDate.now().plusDays(31), LocalDate.now().plusDays(60));
+        socioMembresiaRepository.saveAndFlush(sm2);
+
+        // Verificar que la membresía activa HOY es la primera (que cubre hoy)
+        Optional<SocioMembresia> activaHoyOpt = socioMembresiaRepository.findActivaBySocio(socioGuardado.dni());
+        assertTrue(activaHoyOpt.isPresent());
+        assertEquals(sm1.getIdSm(), activaHoyOpt.get().getIdSm());
+        assertTrue(activaHoyOpt.get().cubre(LocalDate.now()));
+
+        // Verificar asistencias disponibles (ilimitadas para pase libre)
+        int disponibles = socioService.asistenciasDisponibles(socioGuardado.dni());
+        assertEquals(Integer.MAX_VALUE, disponibles);
+
+        // Registrar asistencia: NO debe lanzar MembresiaVencidaException y debe quedar como VALIDA
+        AsistenciaSocioIdDTO asistencia = socioService.registrarAsistencia(socioGuardado.dni());
+        assertNotNull(asistencia);
+        Asistencia asistenciaDB = asistenciaRepository.findById(new AsistenciaSocioId(asistencia.dniSocio(), asistencia.fechaHora())).get();
+        assertEquals(EstadoAsistencia.VALIDA, asistenciaDB.getEstadoAsistencia());
+
+        // Verificar membresia vigente DTO (debe tener el nombre del plan y la fecha de vencimiento total encadenada)
+        MembresiaVigenteDTO vigenteDTO = socioService.membresiaVigenteSocio(socioGuardado.dni());
+        assertNotNull(vigenteDTO);
+        assertEquals("Plan Pase Libre", vigenteDTO.tipo());
+        assertEquals(LocalDate.now().plusDays(60), vigenteDTO.vencimiento());
+
+        // Verificar días restantes calculados contra la fecha máxima encadenada
+        Integer diasRestantes = socioService.diasParaVencimientoMembresiaVigente(socioGuardado.dni());
+        assertNotNull(diasRestantes);
+        assertEquals(60, diasRestantes);
+    }
 }

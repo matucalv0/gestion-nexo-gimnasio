@@ -41,6 +41,7 @@ public class MembresiaService {
         return convertirAMembresiaDTO(guardada);
     }
 
+
     public MembresiaDTO bajaMembresia(Integer id){
         Membresia membresia = membresiaRepository.findById(id).orElseThrow(() -> new ObjetoNoEncontradoException("id"));
         membresia.setActivo(false);
@@ -48,6 +49,7 @@ public class MembresiaService {
         return convertirAMembresiaDTO(guardada);
     }
 
+    @Transactional
     public MembresiaDTO patchMembresia(Integer id, MembresiaPatchDTO membresiaPatchDTO){
         Membresia membresia = membresiaRepository.findById(id).orElseThrow(()-> new ObjetoNoEncontradoException(String.valueOf(id)));
 
@@ -72,7 +74,9 @@ public class MembresiaService {
 
         for (Membresia membresia: membresias){
             MembresiaDTO membresiaConvertida = convertirAMembresiaDTO(membresia);
-            membresiasDTO.add(membresiaConvertida);
+            if (membresiaConvertida.estado()) {
+                membresiasDTO.add(membresiaConvertida);
+            }
         }
 
         return membresiasDTO;

@@ -39,8 +39,8 @@ public class DataInitializer implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
         try {
-            initializeAdminUser();
-            initializePaymentMethods();
+            //initializeAdminUser();
+            //initializePaymentMethods();
             log.info("Inicialización de datos completada correctamente.");
         } catch (Exception e) {
             log.error("Error durante la inicialización de datos: {}", e.getMessage());

@@ -10,7 +10,13 @@ public record SocioDTO(
                 @NotBlank String nombre,
                 String telefono,
                 @Email String email,
-                @NotBlank LocalDate fechaNacimiento,
+                LocalDate fechaNacimiento,
                 boolean activo,
+                Integer diasRestantes,
+                Integer diasVencidos,
+                LocalDate fechaVencimientoMembresia,
+                LocalDate ultimaMembresiaVencimiento,
+                boolean tieneMembresiaVigente,
+                String nombreMembresia,
                 RutinaDTO rutinaActiva) {
 }

@@ -64,7 +64,7 @@ public class SocioControllerTest {
     @WithMockUser(roles = "ADMIN")
     public void altaSocio_conRolAdmin_retorna201() throws Exception {
         SocioCreateDTO dto = new SocioCreateDTO("44048664", "Mateo", "11566862", "mateo@test.com", LocalDate.of(2002, 1, 28));
-        SocioDTO respuesta = new SocioDTO("44048664", "Mateo", "11566862", "mateo@test.com", LocalDate.of(2002, 1, 28), true, null);
+        SocioDTO respuesta = new SocioDTO("44048664", "Mateo", "11566862", "mateo@test.com", LocalDate.of(2002, 1, 28), true, null, null, null, null, false, null, null);
         when(socioService.registrarSocio(any())).thenReturn(respuesta);
 
         mockMvc.perform(post("/socios")
@@ -206,8 +206,8 @@ public class SocioControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     public void mostrarSocios_retornaPaginado() throws Exception {
-        PageResponseDTO<SocioDTO> pagina = new PageResponseDTO<>(List.of(), 0, 20, 0, 0);
-        when(socioService.buscarSociosPaginados(anyInt(), anyInt(), any(), any())).thenReturn(pagina);
+        SociosCategorizadosDTO respuesta = new SociosCategorizadosDTO(0, 0, 0, List.of(), 0, 20, 0, 0);
+        when(socioService.buscarSociosCategorizados(anyInt(), anyInt(), any(), any())).thenReturn(respuesta);
 
         mockMvc.perform(get("/socios")
                         .param("page", "0")

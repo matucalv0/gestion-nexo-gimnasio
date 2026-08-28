@@ -559,39 +559,56 @@ async function cargarEvolucion(filtro) {
 
 // CHART
 
+// CHART
+
 function renderChart({ labels, ingresos, egresos }) {
   if (chartEvolucion) chartEvolucion.destroy();
 
-  const ctx = byId("chartEvolucion");
+  const canvas = byId("chartEvolucion");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+
+  // Create smooth gradients for Ingresos and Gastos
+  const gradIngresos = ctx.createLinearGradient(0, 0, 0, 240);
+  gradIngresos.addColorStop(0, "rgba(16, 185, 129, 0.22)");
+  gradIngresos.addColorStop(0.7, "rgba(16, 185, 129, 0.03)");
+  gradIngresos.addColorStop(1, "rgba(16, 185, 129, 0.0)");
+
+  const gradGastos = ctx.createLinearGradient(0, 0, 0, 240);
+  gradGastos.addColorStop(0, "rgba(244, 63, 94, 0.20)");
+  gradGastos.addColorStop(0.7, "rgba(244, 63, 94, 0.02)");
+  gradGastos.addColorStop(1, "rgba(244, 63, 94, 0.0)");
 
   chartEvolucion = new Chart(ctx, {
     type: "line",
     data: {
       labels,
       datasets: [
-        createDataset("Ingresos", ingresos, "#22c55e", "rgba(34,197,94,0.08)"),
-        createDataset("Gastos", egresos, "#ef4444", "rgba(239,68,68,0.08)"),
+        createDataset("Ingresos", ingresos, "#10b981", gradIngresos),
+        createDataset("Gastos", egresos, "#f43f5e", gradGastos),
       ],
     },
     options: chartOptions(),
   });
 }
 
-function createDataset(label, data, color, bgColor) {
+function createDataset(label, data, color, bgGradient) {
   return {
     label,
     data,
     borderColor: color,
-    backgroundColor: bgColor,
+    backgroundColor: bgGradient,
     fill: true,
-    tension: 0.4,
-    pointRadius: 0,
+    tension: 0.28,
+    borderWidth: 2.5,
+    pointRadius: 3,
     pointHoverRadius: 6,
-    pointBackgroundColor: color,
-    pointHoverBackgroundColor: "#111",
-    pointBorderColor: "#fff",
+    pointBackgroundColor: "#0d0d11",
+    pointHoverBackgroundColor: color,
+    pointBorderColor: color,
+    pointHoverBorderColor: "#ffffff",
+    pointBorderWidth: 2,
     pointHoverBorderWidth: 2,
-    borderWidth: 2,
   };
 }
 
@@ -604,42 +621,57 @@ function chartOptions() {
 
     plugins: {
       legend: {
+        position: "top",
+        align: "end",
         labels: {
-          color: "#9ca3af",
+          color: "#a1a1aa",
+          font: { family: "'Plus Jakarta Sans', sans-serif", size: 11, weight: 600 },
           usePointStyle: true,
           pointStyle: "circle",
-          padding: 20,
+          boxWidth: 6,
+          boxHeight: 6,
+          padding: 14,
         },
       },
       tooltip: {
-        backgroundColor: "rgba(10,10,10,0.9)",
-        borderColor: "rgba(255,255,255,0.1)",
+        backgroundColor: "rgba(13, 13, 17, 0.95)",
+        borderColor: "rgba(255, 255, 255, 0.12)",
         borderWidth: 1,
-        displayColors: false,
-        titleColor: "#fff",
-        bodyColor: "#d1d5db",
+        displayColors: true,
+        titleColor: "#ffffff",
+        titleFont: { family: "'Plus Jakarta Sans', sans-serif", size: 12, weight: 700 },
+        bodyColor: "#d4d4d8",
+        bodyFont: { family: "'JetBrains Mono', monospace", size: 12, weight: 600 },
         padding: 12,
-        cornerRadius: 8,
+        cornerRadius: 10,
+        boxPadding: 4,
+        usePointStyle: true,
         callbacks: {
-          label: (ctx) =>
-            `${ctx.dataset.label}: ${formatCurrency(ctx.parsed.y)}`,
+          label: (ctx) => `  ${ctx.dataset.label}: ${formatCurrency(ctx.parsed.y)}`,
         },
       },
     },
 
     scales: {
       x: {
-        ticks: { color: "#6b7280", font: { size: 11 } },
+        ticks: { color: "#71717a", font: { family: "'Plus Jakarta Sans', sans-serif", size: 11 } },
         grid: { display: false },
         border: { display: false },
       },
       y: {
+        beginAtZero: true,
         ticks: {
-          color: "#6b7280",
-          font: { size: 11 },
+          color: "#71717a",
+          font: { family: "'JetBrains Mono', monospace", size: 10 },
+          padding: 8,
+          maxTicksLimit: 6,
           callback: (v) => `${formatCurrency(v)}`,
         },
-        grid: { display: false },
+        grid: {
+          color: "rgba(255, 255, 255, 0.04)",
+          borderDash: [4, 4],
+          drawBorder: false,
+        },
         border: { display: false },
       },
     },
@@ -649,7 +681,39 @@ function chartOptions() {
 function renderDonut(ingresos, gastos) {
   if (chartDonut) chartDonut.destroy();
 
-  const ctx = byId("donutIngresos").getContext("2d");
+  const canvas = byId("donutIngresos");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+
+  const total = ingresos + gastos;
+  const neto = ingresos - gastos;
+
+  // Custom center text plugin
+  const centerTextPlugin = {
+    id: "centerTextPlugin",
+    beforeDraw: (chart) => {
+      const { width, height, ctx } = chart;
+      ctx.save();
+      const centerX = width / 2;
+      const centerY = height / 2 - 12;
+
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      // Label
+      ctx.font = "600 9px 'Plus Jakarta Sans', sans-serif";
+      ctx.fillStyle = "#71717a";
+      ctx.fillText("BALANCE NETO", centerX, centerY - 10);
+
+      // Value
+      const formatted = formatCurrency(neto);
+      ctx.font = "700 15px 'JetBrains Mono', monospace";
+      ctx.fillStyle = neto >= 0 ? "#10b981" : "#f43f5e";
+      ctx.fillText(formatted, centerX, centerY + 10);
+
+      ctx.restore();
+    },
+  };
 
   chartDonut = new Chart(ctx, {
     type: "doughnut",
@@ -657,11 +721,13 @@ function renderDonut(ingresos, gastos) {
       labels: ["Ingresos", "Gastos"],
       datasets: [
         {
-          data: [ingresos, gastos],
-          backgroundColor: ["#22c55e", "#ef4444"],
-          hoverBackgroundColor: ["#34d399", "#f87171"],
-          borderColor: "transparent",
-          borderWidth: 0,
+          data: total > 0 ? [ingresos, gastos] : [1, 0],
+          backgroundColor: total > 0 ? ["#10b981", "#f43f5e"] : ["#27272a", "#18181b"],
+          hoverBackgroundColor: total > 0 ? ["#34d399", "#fb7185"] : ["#3f3f46", "#27272a"],
+          borderColor: "#0d0d11",
+          borderWidth: 3,
+          borderRadius: 4,
+          spacing: 3,
           hoverOffset: 4,
         },
       ],
@@ -669,38 +735,46 @@ function renderDonut(ingresos, gastos) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      cutout: "82%",
+      cutout: "76%",
+      animation: { animateScale: true, animateRotate: true, duration: 600, easing: "easeOutQuart" },
       plugins: {
         legend: {
           position: "bottom",
           labels: {
-            color: "#9ca3af",
-            padding: 24,
-            boxWidth: 8,
+            color: "#a1a1aa",
+            padding: 16,
+            font: { family: "'Plus Jakarta Sans', sans-serif", size: 11, weight: 600 },
             usePointStyle: true,
             pointStyle: "circle",
+            boxWidth: 6,
+            boxHeight: 6,
           },
         },
         tooltip: {
-          backgroundColor: "rgba(10,10,10,0.95)",
+          backgroundColor: "rgba(13, 13, 17, 0.95)",
           titleColor: "#fff",
-          bodyColor: "#d1d5db",
-          borderColor: "rgba(255,255,255,0.1)",
+          bodyColor: "#d4d4d8",
+          titleFont: { family: "'Plus Jakarta Sans', sans-serif", size: 12, weight: 700 },
+          bodyFont: { family: "'JetBrains Mono', monospace", size: 12, weight: 600 },
+          borderColor: "rgba(255, 255, 255, 0.12)",
           borderWidth: 1,
           padding: 12,
-          cornerRadius: 8,
-          displayColors: false,
+          cornerRadius: 10,
+          displayColors: true,
+          boxPadding: 4,
+          usePointStyle: true,
           callbacks: {
             label: (ctx) => {
-              const total = ingresos + gastos;
+              if (total === 0) return "  Sin datos registrados";
               const value = ctx.raw;
               const pct = total ? ((value / total) * 100).toFixed(1) : 0;
-              return `$ ${value.toLocaleString()} (${pct}%)`;
+              return `  $ ${value.toLocaleString()} (${pct}%)`;
             },
           },
         },
       },
     },
+    plugins: [centerTextPlugin],
   });
 }
 

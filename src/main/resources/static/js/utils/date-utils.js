@@ -114,3 +114,30 @@ export function formatDateLong(dateValue) {
   });
 }
 
+/**
+ * Formatea la cantidad de días restantes para una membresía activa
+ * @param {number} dias - Cantidad de días
+ * @returns {string} - Texto formateado
+ */
+export function formatDiasRestantes(dias) {
+  if (dias === null || dias === undefined) return '-';
+  const d = Math.max(0, dias);
+  if (d === 0) return 'Vence hoy';
+  const plural = d !== 1 ? 's' : '';
+  return `${d} día${plural} restante${plural}`;
+}
+
+/**
+ * Formatea la cantidad de días desde que venció una membresía
+ * @param {number} dias - Cantidad de días
+ * @returns {string} - Texto formateado
+ */
+export function formatDiasDesdeVencimiento(dias) {
+  if (dias === null || dias === undefined) return '-';
+  if (dias === 0) return 'Venció hoy';
+  if (dias === 1) return 'Venció ayer';
+  const plural = dias !== 1 ? 's' : '';
+  return `Hace ${dias} día${plural}`;
+}
+
+

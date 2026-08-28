@@ -27,6 +27,10 @@ services:
       DB_PASS: ${DB_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
       COOKIE_SECURE: ${COOKIE_SECURE}
+      MAIL_HOST: ${MAIL_HOST:-smtp.gmail.com}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
     ports:
       - "8080:8080"
 volumes:
