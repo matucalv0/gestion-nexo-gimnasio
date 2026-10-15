@@ -26,7 +26,6 @@
 ## Contexto del Proyecto
 
 **Cliente:** Nexo (gimnasio local)  
-**Estado:** En desarrollo avanzado – Próximo a implementación productiva
 
 ### Problema
 
