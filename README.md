@@ -304,7 +304,6 @@ src/main/resources/
 
 ### Dashboard de Métricas
 <img width="1440" height="900" alt="localhost_8080_finanzas html Desktop HD (2026-02-14 01 04 22)" src="https://github.com/user-attachments/assets/748511fb-6082-452a-8034-27b336d55b31" />
-<img width="1440" height="900" alt="localhost_8080_asistencias html Desktop HD (2026-02-14 01 04 55)" src="https://github.com/user-attachments/assets/5b3c2cdd-080c-4bb8-a8da-059934354476" />
 <img width="1440" height="900" alt="localhost_8080_pagos html Desktop HD (2026-02-14 01 03 24)" src="https://github.com/user-attachments/assets/9235736c-4e43-4919-a052-709676ee7fb5" />
 
 
